@@ -34,6 +34,8 @@ public final class JavaParserAndPropagatorUtils {
 	private static final Logger LOGGER = Logger.getLogger("cipm." + JavaParserAndPropagatorUtils.class.getSimpleName());
 	private static Configuration config = new Configuration(true, new BuildFileBasedComponentDetectionStrategy());
 
+	private static final ArrayList<IJavaModelParserListener> PARSE_LISTENERS = new ArrayList<IJavaModelParserListener>();
+	
 	private JavaParserAndPropagatorUtils() {
 	}
 
@@ -105,6 +107,18 @@ public final class JavaParserAndPropagatorUtils {
 		JavaParserAndPropagatorUtils.config = config;
 	}
 
+	public static void addParseListener(IJavaModelParserListener l) {
+		PARSE_LISTENERS.add(l);
+	}
+	
+	public static void removeParseListener(IJavaModelParserListener l) {
+		PARSE_LISTENERS.remove(l);
+	}
+	
+	public static void removeAllParseListeners() {
+		PARSE_LISTENERS.clear();
+	}
+	
 	/**
 	 * Performs an integration or change propagation of Java code into Vitruvius.
 	 * 
@@ -117,8 +131,9 @@ public final class JavaParserAndPropagatorUtils {
 	public static void parseAndPropagateJavaCode(Path dir, Path target, VirtualModel vsum, Path configPath) {
 		// 1. Parse the Java code and create one Resource with all models.
 		Resource all = parseJavaCodeIntoOneModel(dir, target, configPath);
+		PARSE_LISTENERS.forEach((l) -> l.javaModelParsed(dir, target, vsum, configPath, all));
 		all.getContents().forEach(content -> JavaClasspath.get().registerJavaRoot((JavaRoot) content, all.getURI()));
-
+		
 		// 2. Propagate the Java models.
 		LOGGER.debug("Propagating the Java models.");
 		vsum.propagateChangedState(all);

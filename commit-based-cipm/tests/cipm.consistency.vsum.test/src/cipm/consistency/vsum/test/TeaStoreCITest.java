@@ -1,6 +1,5 @@
 package cipm.consistency.vsum.test;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.emf.common.util.URI;
@@ -13,42 +12,25 @@ import org.junit.jupiter.api.Test;
 
 import cipm.consistency.commitintegration.diff.util.ComparisonBasedJaccardCoefficientCalculator;
 import cipm.consistency.commitintegration.diff.util.pcm.PCMModelComparator;
-import cipm.consistency.cpr.javapcm.CommitIntegrationJavaPCMChangePropagationSpecification;
-import tools.vitruv.framework.propagation.ChangePropagationSpecification;
+import cipm.consistency.vsum.test.TeaStoreRepoSettings.TeaStoreCommitTag;
 
 /**
  * A test class for the TeaStore.
  * 
  * @author Martin Armbruster
  */
-public class TeaStoreCITest extends AbstractCITest {
-	private static final String COMMIT_TAG_1_0 = "b0d046e178dbaab7e045de57c01795ce5d1dac92";
-	private static final String COMMIT_TAG_1_1 = "77733d9c6ab6680c6cc460c631cd408a588a595c";
-	private static final String COMMIT_TAG_1_2 = "53c6efa1dca64a87e536d8c5a3dcc3c12ad933b5";
-	private static final String COMMIT_TAG_1_2_1 = "f8f13f4390f80d3dc8adb0a6167938a688ddb45e";
-	private static final String COMMIT_TAG_1_3 = "745469e55fad8a801a92b0be96dc009acbe7e3fb";
-	private static final String COMMIT_TAG_1_3_1 = "de69e957597d20d4be17fc7db2a0aa2fb3a414f7";
+public class TeaStoreCITest extends AbstractRepoTest {
 
 	@Override
-	protected String getTestPath() {
-		return "target" + File.separator + "TeaStoreTest";
+	protected HasRepoSettings initRepoSettings() {
+		return new TeaStoreRepoSettings();
 	}
-
-	@Override
-	protected String getRepositoryPath() {
-		return "https://github.com/DescartesResearch/TeaStore";
-	}
-
-	@Override
-	protected String getSettingsPath() {
-		return "teastore-exec-files" + File.separator + "settings.properties";
-	}
-
+	
 	@Disabled("Only one test case should run at once.")
 	@Test
 	public void testTeaStore1_0Integration() throws Exception {
 		// Integrates TeaStore version 1.0.
-		executePropagationAndEvaluation(null, COMMIT_TAG_1_0, 0);
+		executePropagationAndEvaluation(null, this.getCommitHash(TeaStoreCommitTag.COMMIT_1_0), 0);
 //		performIndependentEvaluation();
 	}
 
@@ -56,21 +38,23 @@ public class TeaStoreCITest extends AbstractCITest {
 	@Test
 	public void testTeaStore1_0To1_1Propagation() throws Exception {
 		// Propagation of changes between TeaStore version 1.0 and 1.1.
-		executePropagationAndEvaluation(COMMIT_TAG_1_0, COMMIT_TAG_1_1, 1);
+		executePropagationAndEvaluation(this.getCommitHash(TeaStoreCommitTag.COMMIT_1_0),
+				this.getCommitHash(TeaStoreCommitTag.COMMIT_1_1), 1);
 //		performIndependentEvaluation();
 	}
 
 	@Disabled("Only one test case should run at once.")
 	@Test
 	public void testTeaStoreWithMultipleCommits1_0To1_1() throws GitAPIException, IOException, InterruptedException {
-		propagateMultipleCommits(COMMIT_TAG_1_0, COMMIT_TAG_1_1);
+		propagateMultipleCommits(this.getCommitHash(TeaStoreCommitTag.COMMIT_1_0),
+				this.getCommitHash(TeaStoreCommitTag.COMMIT_1_1));
 	}
 
 	@Disabled("Only one test case should run at once.")
 	@Test
 	public void testTeaStore1_1Integration() throws Exception {
 		// Integrates TeaStore version 1.1.
-		executePropagationAndEvaluation(null, COMMIT_TAG_1_1, 0);
+		executePropagationAndEvaluation(null, this.getCommitHash(TeaStoreCommitTag.COMMIT_1_1), 0);
 //		performIndependentEvaluation();
 	}
 
@@ -78,21 +62,23 @@ public class TeaStoreCITest extends AbstractCITest {
 	@Test
 	public void testTeaStore1_1To1_2Propagation() throws Exception {
 		// Propagation of changes between TeaStore version 1.1 and 1.2.
-		executePropagationAndEvaluation(COMMIT_TAG_1_1, COMMIT_TAG_1_2, 1);
+		executePropagationAndEvaluation(this.getCommitHash(TeaStoreCommitTag.COMMIT_1_1),
+				this.getCommitHash(TeaStoreCommitTag.COMMIT_1_2), 1);
 //		performIndependentEvaluation();
 	}
 
 	@Disabled("Only one test case should run at once.")
 	@Test
 	public void testTeaStoreWithMultipleCommits1_1To_1_2() throws Exception {
-		propagateMultipleCommits(COMMIT_TAG_1_1, COMMIT_TAG_1_2);
+		propagateMultipleCommits(this.getCommitHash(TeaStoreCommitTag.COMMIT_1_1),
+				this.getCommitHash(TeaStoreCommitTag.COMMIT_1_2));
 	}
 
 	@Disabled("Only one test case should run at once.")
 	@Test
 	public void testTeaStore1_2Integration() throws Exception {
 		// Integrates TeaStore version 1.2.
-		executePropagationAndEvaluation(null, COMMIT_TAG_1_2, 0);
+		executePropagationAndEvaluation(null, this.getCommitHash(TeaStoreCommitTag.COMMIT_1_2), 0);
 //		performIndependentEvaluation();
 	}
 
@@ -100,21 +86,23 @@ public class TeaStoreCITest extends AbstractCITest {
 	@Test
 	public void testTeaStore1_2To_1_2_1Propagation() throws Exception {
 		// Propagation of changes between TeaStore version 1.2 and 1.2.1.
-		executePropagationAndEvaluation(COMMIT_TAG_1_2, COMMIT_TAG_1_2_1, 1);
+		executePropagationAndEvaluation(this.getCommitHash(TeaStoreCommitTag.COMMIT_1_2),
+				this.getCommitHash(TeaStoreCommitTag.COMMIT_1_2_1), 1);
 //		performIndependentEvaluation();
 	}
 
 	@Disabled("Only one test case should run at once.")
 	@Test
 	public void testTeaStoreWithMultipleCommits1_2To1_2_1() throws GitAPIException, IOException, InterruptedException {
-		propagateMultipleCommits(COMMIT_TAG_1_2, COMMIT_TAG_1_2_1);
+		propagateMultipleCommits(this.getCommitHash(TeaStoreCommitTag.COMMIT_1_2),
+				this.getCommitHash(TeaStoreCommitTag.COMMIT_1_2_1));
 	}
 
 	@Disabled("Only one test case should run at once.")
 	@Test
 	public void testTeaStore1_2_1Integration() throws Exception {
 		// Integrates TeaStore version 1.2.1.
-		executePropagationAndEvaluation(null, COMMIT_TAG_1_2_1, 0);
+		executePropagationAndEvaluation(null, this.getCommitHash(TeaStoreCommitTag.COMMIT_1_2_1), 0);
 //		performIndependentEvaluation();
 	}
 
@@ -122,21 +110,23 @@ public class TeaStoreCITest extends AbstractCITest {
 	@Test
 	public void testTeaStore1_2_1To_1_3Propagation() throws Exception {
 		// Propagation of changes between TeaStore version 1.2.1 and 1.3.
-		executePropagationAndEvaluation(COMMIT_TAG_1_2_1, COMMIT_TAG_1_3, 1);
+		executePropagationAndEvaluation(this.getCommitHash(TeaStoreCommitTag.COMMIT_1_2_1),
+				this.getCommitHash(TeaStoreCommitTag.COMMIT_1_3), 1);
 //		performIndependentEvaluation();
 	}
 
 	@Disabled("Only one test case should run at once.")
 	@Test
 	public void testTeaStoreWithMultipleCommits1_2_1To1_3() throws GitAPIException, IOException, InterruptedException {
-		propagateMultipleCommits(COMMIT_TAG_1_2_1, COMMIT_TAG_1_3);
+		propagateMultipleCommits(this.getCommitHash(TeaStoreCommitTag.COMMIT_1_2_1),
+				this.getCommitHash(TeaStoreCommitTag.COMMIT_1_3));
 	}
 
 	@Disabled("Only one test case should run at once.")
 	@Test
 	public void testTeaStore1_3Integration() throws Exception {
 		// Integrates TeaStore version 1.3.
-		executePropagationAndEvaluation(null, COMMIT_TAG_1_3, 0);
+		executePropagationAndEvaluation(null, this.getCommitHash(TeaStoreCommitTag.COMMIT_1_3), 0);
 //		performIndependentEvaluation();
 	}
 
@@ -144,21 +134,23 @@ public class TeaStoreCITest extends AbstractCITest {
 	@Test
 	public void testTeaStore1_3To_1_3_1Propagation() throws Exception {
 		// Propagation of changes between TeaStore version 1.3 and 1.3.1.
-		executePropagationAndEvaluation(COMMIT_TAG_1_3, COMMIT_TAG_1_3_1, 1);
+		executePropagationAndEvaluation(this.getCommitHash(TeaStoreCommitTag.COMMIT_1_3),
+				this.getCommitHash(TeaStoreCommitTag.COMMIT_1_3_1), 1);
 //		performIndependentEvaluation();
 	}
 
 	@Disabled("Only one test case should run at once.")
 	@Test
 	public void testTeaStoreWithMultipleCommits1_3To1_3_1() throws GitAPIException, IOException, InterruptedException {
-		propagateMultipleCommits(COMMIT_TAG_1_3, COMMIT_TAG_1_3_1);
+		propagateMultipleCommits(this.getCommitHash(TeaStoreCommitTag.COMMIT_1_3),
+				this.getCommitHash(TeaStoreCommitTag.COMMIT_1_3_1));
 	}
 
 	@Disabled("Only one test case should run at once.")
 	@Test
 	public void testTeaStore1_3_1Integration() throws Exception {
 		// Integrates TeaStore version 1.3.1.
-		executePropagationAndEvaluation(null, COMMIT_TAG_1_3_1, 0);
+		executePropagationAndEvaluation(null, this.getCommitHash(TeaStoreCommitTag.COMMIT_1_3_1), 0);
 //		performIndependentEvaluation();
 	}
 
@@ -170,10 +162,5 @@ public class TeaStoreCITest extends AbstractCITest {
 		var comp = PCMModelComparator.compareRepositoryModels(res1, res2);
 		var res = ComparisonBasedJaccardCoefficientCalculator.calculateJaccardCoefficient(comp);
 		System.out.println(res);
-	}
-
-	@Override
-	protected ChangePropagationSpecification getJavaPCMSpecification() {
-		return new CommitIntegrationJavaPCMChangePropagationSpecification();
 	}
 }

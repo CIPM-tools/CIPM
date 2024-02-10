@@ -19,6 +19,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import cipm.consistency.commitintegration.settings.CommitIntegrationSettingsContainer;
+import cipm.consistency.cpr.javapcm.CommitIntegrationJavaPCMChangePropagationSpecification;
 import cipm.consistency.tools.evaluation.data.EvaluationDataContainer;
 import cipm.consistency.tools.evaluation.data.EvaluationDataContainerReaderWriter;
 import cipm.consistency.vsum.CommitIntegrationController;
@@ -35,27 +36,78 @@ public abstract class AbstractCITest {
 
 	@BeforeEach
 	public void setUp() throws Exception {
+		this.initLogger();
+		LOGGER.debug("Logger initialised");
+
+		LOGGER.debug("Initialising settings container");
+		this.initCommitIntegrationSettingsContainer();
+		LOGGER.debug("Initialised settings container");
+
+		LOGGER.debug("Initialising controller");
+		controller = this.initController();
+		LOGGER.debug("Initialised controller");
+	}
+
+	@AfterEach
+	public void tearDown() throws Exception {
+		controller.shutdown();
+	}
+
+	/**
+	 * Prepares loggers. Enabling too many loggers can cause Java memory issues.
+	 */
+	protected void initLogger() {
 		Logger logger = Logger.getLogger("cipm");
 		logger.setLevel(Level.ALL);
 		logger = Logger.getLogger("jamopp");
 		logger.setLevel(Level.ALL);
+//		logger = Logger.getLogger("fi.SimilaritySwitch");
+//		logger.setLevel(Level.ALL);
+//		logger = Logger.getLogger("fi.JaMoPPDiffBuilder");
+//		logger.setLevel(Level.ALL);
+//		logger = Logger.getLogger("fi.HierarchicalMatchEngine");
+//		logger.setLevel(Level.ALL);
+//		logger = Logger.getLogger("fi.JaMoPPSoftwareModelExtractor");
+//		logger.setLevel(Level.ALL);
+//		logger = Logger.getLogger("fi.NormalizationUtil");
+//		logger.setLevel(Level.ALL);
 		logger = Logger.getRootLogger();
 		logger.removeAllAppenders();
 		ConsoleAppender ap = new ConsoleAppender(new PatternLayout("[%d{DATE}] %-5p: %c - %m%n"),
 				ConsoleAppender.SYSTEM_OUT);
 		logger.addAppender(ap);
-		
-		// Needed to instantiate the singleton CommitIntegrationSettingsContainer for the first time,
-		// so that CommitIntegrationController can be instantiated, since getJavaPCMSpecification() requires it
+	}
+
+	/**
+	 * Call to make sure that {@link CommitIntegrationSettingsContainer} is
+	 * instantiated, before {@link #getJavaPCMSpecification()} is called (for
+	 * instance via {@link #initController()}). The reason is that some
+	 * {@link ChangePropagationSpecification} implementors may need a settings
+	 * container instance to be instantiated in their constructor (such as
+	 * {@link CommitIntegrationJavaPCMChangePropagationSpecification}) <br>
+	 * <br>
+	 * <b>Make sure to call it before {@link #initController()}</b>
+	 */
+	protected void initCommitIntegrationSettingsContainer() {
 		if (CommitIntegrationSettingsContainer.getSettingsContainer() == null) {
 			Path settingsPath = Paths.get(getSettingsPath());
 			CommitIntegrationSettingsContainer.initialize(settingsPath);
 		}
-		
-		controller = new CommitIntegrationController(Paths.get(getTestPath()), getRepositoryPath(),
+	}
+
+	/**
+	 * @return The {@link CommitIntegrationController} to be used during unit tests.
+	 */
+	protected CommitIntegrationController initController() throws IOException, GitAPIException {
+		return new CommitIntegrationController(Paths.get(getTestPath()), getRepositoryPath(),
 				Paths.get(getSettingsPath()), getJavaPCMSpecification());
 	}
-	
+
+	/**
+	 * @return The name of the test group (example: TeammatesTest)
+	 */
+	protected abstract String getTestType();
+
 	protected void propagateMultipleCommits(String firstCommit, String lastCommit)
 			throws InterruptedException, GitAPIException, IOException {
 		List<String> successfulCommits = new ArrayList<>();
@@ -104,8 +156,8 @@ public abstract class AbstractCITest {
 			throws GitAPIException, IOException {
 		EvaluationDataContainer evalResult = new EvaluationDataContainer();
 		EvaluationDataContainer.setGlobalContainer(evalResult);
-		String repoFile = this.controller.getVSUMFacade().getPCMWrapper().getRepository().eResource()
-				.getURI().toFileString();
+		String repoFile = this.controller.getVSUMFacade().getPCMWrapper().getRepository().eResource().getURI()
+				.toFileString();
 		FileUtils.copyFile(new File(repoFile), new File(this.getTestPath(), "Repository.repository"));
 		FileUtils.copyFile(new File(repoFile), new File(this.getTestPath(), "Repository_" + num + "_mu.repository"));
 		boolean result = this.controller.propagateChanges(oldCommit, newCommit, true);
@@ -160,14 +212,8 @@ public abstract class AbstractCITest {
 				this.controller.getVSUMFacade().getVSUM().getCorrespondenceModel());
 		Path root = this.controller.getVSUMFacade().getFileLayout().getRootPath();
 		EvaluationDataContainerReaderWriter.write(evalResult,
-				root.resolveSibling("EvaluationResult-" + newCommit
-						+ "-" + evalResult.getEvaluationTime() + ".json"));
+				root.resolveSibling("EvaluationResult-" + newCommit + "-" + evalResult.getEvaluationTime() + ".json"));
 		LOGGER.debug("Finished the evaluation.");
-	}
-
-	@AfterEach
-	public void tearDown() throws Exception {
-		controller.shutdown();
 	}
 
 	/**
@@ -190,7 +236,7 @@ public abstract class AbstractCITest {
 	 * @return the path.
 	 */
 	protected abstract String getSettingsPath();
-	
+
 	/**
 	 * Returns the CPRs between Java and the PCM.
 	 * 
