@@ -157,6 +157,11 @@ public class SimilaritySwitch extends ComposedSwitch<Boolean> {
 
     /** The logger for this class. */
     private Logger logger = Logger.getLogger(SimilaritySwitch.class);
+    
+    /** 
+     * The secondary, more detailed logger
+     */
+    private Logger fiLogger = Logger.getLogger("fi."+SimilaritySwitch.class.getSimpleName());
 
     /** The object to compare the switched element with. */
     private EObject compareElement = null;
@@ -208,8 +213,50 @@ public class SimilaritySwitch extends ComposedSwitch<Boolean> {
         addSwitch(new VariablesSimilaritySwitch());
         addSwitch(new LayoutSimilaritySwitch());
         addSwitch(new ModulesSimilaritySwitch());
+        
+        SSLoggingHelper.setLogger(fiLogger);
     }
-
+    
+    /**
+     * A class to help log the switch classes without having to duplicate
+     * similar log message structures.
+     * <br><br>
+     * Log messages' level is set to "info" to avoid flooding the console
+     * and causing memory issues.
+     * 
+     * @author atora
+     */
+    static final class SSLoggingHelper {
+    	private static String comparisonSubjectType = "";
+    	private static Logger ssLogger;
+    	
+    	static String getComparisonSubjectType() {
+    		return comparisonSubjectType;
+    	}
+    	
+    	static void setLogger(Logger logger) {
+    		ssLogger = logger;
+    		ssLogger.info("SimilaritySwitch logger set");
+    	}
+    	
+    	static void setComparisonSubjectType(String cst) {
+    		comparisonSubjectType = cst;
+    	}
+    	
+    	static void logComparison(String subject1, String subject2) {
+    		ssLogger.info("Comparing " + getComparisonSubjectType() + "s (1 vs 2): " +
+        			Strings.nullToEmpty(subject1) + " vs " + Strings.nullToEmpty(subject2));
+        }
+        
+    	static void logResult(boolean result) {
+    		ssLogger.info(getComparisonSubjectType() + "s similar: " + result);
+        }
+    	
+    	static void logMessage(String msg) {
+    		ssLogger.info(msg + " (while comparing" + getComparisonSubjectType() + ")");
+    	}
+    }
+    
     /**
      * Similarity decisions for annotation elements.
      */
@@ -217,28 +264,41 @@ public class SimilaritySwitch extends ComposedSwitch<Boolean> {
 
         @Override
         public Boolean caseAnnotationInstance(AnnotationInstance instance1) {
+        	SSLoggingHelper.setComparisonSubjectType("Annotation");
+        	
             AnnotationInstance instance2 = (AnnotationInstance) compareElement;
+            SSLoggingHelper.logComparison(
+            		instance1.getAnnotation().getName(),
+            		instance2.getAnnotation().getName());
 
             Classifier class1 = instance1.getAnnotation();
             Classifier class2 = instance2.getAnnotation();
             Boolean classifierSimilarity = similarityChecker.isSimilar(class1, class2);
+            SSLoggingHelper.logResult(classifierSimilarity);
             if (classifierSimilarity == Boolean.FALSE) {
                 return Boolean.FALSE;
             }
 
             String namespace1 = instance1.getNamespacesAsString();
             String namespace2 = instance2.getNamespacesAsString();
+            SSLoggingHelper.setComparisonSubjectType("Annotation namespace");
+            SSLoggingHelper.logComparison(namespace1, namespace2);
             if (namespace1 == null) {
+            	SSLoggingHelper.logResult(namespace2 == null);
                 return (namespace2 == null);
             } else {
+            	SSLoggingHelper.logResult(namespace1.equals(namespace2));
                 return (namespace1.equals(namespace2));
             }
         }
 
         @Override
         public Boolean caseAnnotationAttributeSetting(AnnotationAttributeSetting setting1) {
+        	SSLoggingHelper.setComparisonSubjectType("Annotation attribute setting");
             AnnotationAttributeSetting setting2 = (AnnotationAttributeSetting) compareElement;
+            SSLoggingHelper.logComparison(setting1.getAttribute().getName(), setting2.getAttribute().getName());
             Boolean similarity = similarityChecker.isSimilar(setting1.getAttribute(), setting2.getAttribute());
+            SSLoggingHelper.logResult(similarity);
             if (similarity == Boolean.FALSE) {
                 return Boolean.FALSE;
             }
@@ -247,6 +307,8 @@ public class SimilaritySwitch extends ComposedSwitch<Boolean> {
 
         @Override
         public Boolean defaultCase(EObject object) {
+        	SSLoggingHelper.setComparisonSubjectType("Annotation");
+        	SSLoggingHelper.logMessage("Default annotation comparing case (" + object.eClass().getName() +"), similarity: true");
             return Boolean.TRUE;
         }
     }
@@ -385,23 +447,36 @@ public class SimilaritySwitch extends ComposedSwitch<Boolean> {
          */
         @Override
         public Boolean caseCompilationUnit(CompilationUnit unit1) {
-
+        	SSLoggingHelper.setComparisonSubjectType("Compilation unit");
             CompilationUnit unit2 = (CompilationUnit) compareElement;
-
+            SSLoggingHelper.logComparison(unit1.getName(), unit2.getName());
+            SSLoggingHelper.logComparison(unit1.eClass().getName(), unit2.eClass().getName());
+            
             String name1 = NormalizationUtil.normalize(unit1.getName(), compilationUnitNormalizations);
             name1 = NormalizationUtil.normalize(name1, packageNormalizations);
             String name2 = unit2.getName();
+            
+            SSLoggingHelper.setComparisonSubjectType("Compilation unit name");
+            SSLoggingHelper.logComparison(name1, name2);
+            SSLoggingHelper.logResult(name1.equals(name2));
             if (!name1.equals(name2)) {
                 return Boolean.FALSE;
             }
 
+            SSLoggingHelper.setComparisonSubjectType("Compilation unit namespace");
+            
             String namespaceString1 = NormalizationUtil.normalizeNamespace(unit1.getNamespacesAsString(),
                     packageNormalizations);
             String namespaceString2 = Strings.nullToEmpty(unit2.getNamespacesAsString());
+            
+            SSLoggingHelper.logComparison(namespaceString1, namespaceString2);
+            SSLoggingHelper.logResult(namespaceString1.equals(namespaceString2));
+            
             if (!namespaceString1.equals(namespaceString2)) {
                 return Boolean.FALSE;
             }
-
+            SSLoggingHelper.setComparisonSubjectType("Compilation unit");
+            SSLoggingHelper.logResult(true);
             return Boolean.TRUE;
         }
 
@@ -418,15 +493,23 @@ public class SimilaritySwitch extends ComposedSwitch<Boolean> {
          */
         @Override
         public Boolean casePackage(Package package1) {
+        	SSLoggingHelper.setComparisonSubjectType("Package");
             Package package2 = (Package) compareElement;
-
+            SSLoggingHelper.logComparison(package1.getName(), package2.getName());
+            SSLoggingHelper.logComparison(package1.getNamespacesAsString(), package2.getNamespacesAsString());
+            SSLoggingHelper.setComparisonSubjectType("Package path");
+            
             String packagePath1 = JaMoPPModelUtil.buildNamespacePath(package1);
             packagePath1 = NormalizationUtil.normalizeNamespace(packagePath1, packageNormalizations);
             String packagePath2 = JaMoPPModelUtil.buildNamespacePath(package2);
+            
+            SSLoggingHelper.logComparison(packagePath1, packagePath2);
+            SSLoggingHelper.logResult(packagePath1.equals(packagePath2));
             if (!packagePath1.equals(packagePath2)) {
                 return Boolean.FALSE;
             }
-
+            SSLoggingHelper.setComparisonSubjectType("Package");
+            SSLoggingHelper.logResult(true);
             return Boolean.TRUE;
         }
         
@@ -442,8 +525,11 @@ public class SimilaritySwitch extends ComposedSwitch<Boolean> {
          */
         @Override
         public Boolean caseModule(org.emftext.language.java.containers.Module module1) {
+        	SSLoggingHelper.setComparisonSubjectType("Module");
         	org.emftext.language.java.containers.Module module2 =
         			(org.emftext.language.java.containers.Module) compareElement;
+        	SSLoggingHelper.logComparison(module1.getName(), module2.getName());
+        	SSLoggingHelper.logResult(module1.getName().equals(module2.getName()));
         	if (!module1.getName().equals(module2.getName())) {
         		return Boolean.FALSE;
         	}

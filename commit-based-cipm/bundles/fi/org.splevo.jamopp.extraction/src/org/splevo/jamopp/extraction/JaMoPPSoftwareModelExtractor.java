@@ -33,6 +33,7 @@ import jamopp.resource.JavaResource2Factory;
 public class JaMoPPSoftwareModelExtractor implements SoftwareModelExtractor {
 
     private static Logger logger = Logger.getLogger(JaMoPPSoftwareModelExtractor.class);
+    private static Logger fiLogger = Logger.getLogger("fi."+JaMoPPSoftwareModelExtractor.class.getSimpleName());
 
     public static final boolean EXTRACTOR_EXTRACT_LAYOUT_BY_DEFAULT = false;
     public static final String EXTRACTOR_ID = "JaMoPPSoftwareModelExtractor";
@@ -53,6 +54,7 @@ public class JaMoPPSoftwareModelExtractor implements SoftwareModelExtractor {
      */
     public ResourceSet extractSoftwareModel(List<String> projectPaths, IProgressMonitor monitor)
             throws SoftwareModelExtractionException {
+    	fiLogger.info("Extracting software model - Delegating");
         return extractSoftwareModel(projectPaths, monitor, null);
     }
 
@@ -69,6 +71,7 @@ public class JaMoPPSoftwareModelExtractor implements SoftwareModelExtractor {
     @Override
     public ResourceSet extractSoftwareModel(List<String> projectPaths, IProgressMonitor monitor, String sourceModelPath)
             throws SoftwareModelExtractionException {
+    	fiLogger.info("Extracting software model - Delegating");
         return extractSoftwareModel(projectPaths, monitor, sourceModelPath, EXTRACTOR_EXTRACT_LAYOUT_BY_DEFAULT);
     }
 
@@ -98,8 +101,10 @@ public class JaMoPPSoftwareModelExtractor implements SoftwareModelExtractor {
      */
     public ResourceSet extractSoftwareModel(List<String> projectPaths, IProgressMonitor monitor,
             String sourceModelPath, boolean extractLayoutInfo) throws SoftwareModelExtractionException {
-
+    	fiLogger.info("Extracting software model");
+    	
         if (sourceModelPath != null) {
+        	fiLogger.info("Use cache file: " + sourceModelPath);
             logger.info("Use cache file: " + sourceModelPath);
         }
 
@@ -133,11 +138,13 @@ public class JaMoPPSoftwareModelExtractor implements SoftwareModelExtractor {
      */
     protected List<Resource> loadProjectJavaFiles(ResourceSet targetResourceSet, Iterable<String> projectPaths)
             throws SoftwareModelExtractionException {
+    	fiLogger.info("Loading Java files into ResourceSet");
         List<Resource> resources = Lists.newArrayList();
         for (String projectPath : projectPaths) {
             List<Resource> projectResources = loadProjectJavaFiles(targetResourceSet, projectPath);
             resources.addAll(projectResources);
         }
+        fiLogger.info(String.format("%d Java files added to resource set", resources.size()));
         logger.info(String.format("%d Java files added to resource set", resources.size()));
         return resources;
     }
@@ -156,6 +163,7 @@ public class JaMoPPSoftwareModelExtractor implements SoftwareModelExtractor {
      */
     private List<Resource> loadProjectJavaFiles(ResourceSet targetResourceSet, String projectPath)
             throws SoftwareModelExtractionException {
+    	fiLogger.info("Loading Java files into ResourceSet from project path: " + projectPath);
         List<Resource> projectResources;
         try {
             File srcFolder = new File(projectPath);
@@ -175,6 +183,7 @@ public class JaMoPPSoftwareModelExtractor implements SoftwareModelExtractor {
      */
     private void triggerCacheSave(ResourceSet targetResourceSet) {
         ReferenceCache cache = getReferenceCache(targetResourceSet);
+        fiLogger.debug("References not resolved from Cache: " + cache.getNotResolvedFromCacheCounterReference());
         logger.debug("References not resolved from Cache: " + cache.getNotResolvedFromCacheCounterReference());
         cache.save();
     }
@@ -206,7 +215,7 @@ public class JaMoPPSoftwareModelExtractor implements SoftwareModelExtractor {
      *             An exception during resource access.
      */
     private List<Resource> loadAllJavaFilesInResourceSet(File rootFolder, ResourceSet rs) throws IOException {
-
+    	fiLogger.info("Loading all files into ResourceSet recursively, starting from: " + rootFolder.getCanonicalPath());
         List<Resource> resources = Lists.newArrayList();
 
         Collection<File> javaFiles = FileUtils.listFiles(rootFolder, new String[] { "java" }, true);
@@ -216,6 +225,7 @@ public class JaMoPPSoftwareModelExtractor implements SoftwareModelExtractor {
             if (resource != null) {
                 resources.add(resource);
             } else {
+            	fiLogger.warn("Failed to load resource: " + javaFile);
                 logger.warn("Failed to load resource: " + javaFile);
             }
         }
@@ -235,6 +245,7 @@ public class JaMoPPSoftwareModelExtractor implements SoftwareModelExtractor {
      *             An exception during resource access.
      */
     private Resource parseResource(File file, ResourceSet rs) throws IOException {
+    	fiLogger.info("Parsing Resource from File: " + file.getCanonicalPath());
         return loadResource(file.getCanonicalPath(), rs);
     }
 
@@ -250,6 +261,7 @@ public class JaMoPPSoftwareModelExtractor implements SoftwareModelExtractor {
      *             An exception during resource access.
      */
     private Resource loadResource(String filePath, ResourceSet rs) throws IOException {
+    	fiLogger.info("Loading resource from file path: " + filePath);
         return loadResource(URI.createFileURI(filePath), rs);
     }
 
@@ -265,6 +277,7 @@ public class JaMoPPSoftwareModelExtractor implements SoftwareModelExtractor {
      *             An exception during resource access.
      */
     private Resource loadResource(URI uri, ResourceSet rs) throws IOException {
+    	fiLogger.info("Loading resource from URI: " + uri.toFileString());
         return rs.getResource(uri, true);
     }
 
@@ -281,11 +294,14 @@ public class JaMoPPSoftwareModelExtractor implements SoftwareModelExtractor {
      * @return The initialized resource set.
      */
     private ResourceSet setUpResourceSet(String sourceModelDirectory, boolean extractLayoutInfo) {
+    	fiLogger.info("Setting up ResourceSet");
         ArrayList<String> directories = Lists.newArrayList();
         if (sourceModelDirectory != null) {
+        	fiLogger.info("Adding source model directory");
             directories.add(sourceModelDirectory);
         }
         
+        fiLogger.info("Creating SPLevoResourceSet");
         ResourceSet rs = new SPLevoResourceSet();
         initResourceSet(rs, directories, extractLayoutInfo);
         return rs;
@@ -307,6 +323,7 @@ public class JaMoPPSoftwareModelExtractor implements SoftwareModelExtractor {
     }
     
     private void initResourceSet(ResourceSet rs, List<String> sourceModelPaths, boolean loadLayoutInformation) {
+    	fiLogger.info("Initialising ResourceSet");
         final Boolean disableLayoutOption = loadLayoutInformation ? Boolean.FALSE : Boolean.TRUE;
 
         JavaClasspath.get().registerStdLib();

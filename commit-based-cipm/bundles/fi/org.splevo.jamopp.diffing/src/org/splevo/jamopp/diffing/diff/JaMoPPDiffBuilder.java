@@ -57,6 +57,11 @@ public class JaMoPPDiffBuilder extends DiffBuilder {
     /** The logger for this class. */
     private Logger logger = Logger.getLogger(JaMoPPDiffBuilder.class);
 
+    /** 
+     * The secondary, more detailed logger
+     */
+    private Logger fiLogger = Logger.getLogger("fi."+JaMoPPDiffBuilder.class.getSimpleName());
+
     /** The factory to create custom changes. */
     private JaMoPPChangeFactory customChangeFactory = new JaMoPPChangeFactory();
 
@@ -79,6 +84,7 @@ public class JaMoPPDiffBuilder extends DiffBuilder {
      */
     public JaMoPPDiffBuilder(PackageIgnoreChecker packageIgnoreChecker) {
         this.packageIgnoreChecker = packageIgnoreChecker;
+        fiLogger.info("JaMoPPDiffBuilder instantiated");
     }
 
     /**
@@ -87,7 +93,6 @@ public class JaMoPPDiffBuilder extends DiffBuilder {
      */
     @Override
     public void resourceAttachmentChange(Match match, String uri, DifferenceKind kind, DifferenceSource source) {
-
         EObject changedElement = null;
         if (match.getLeft() != null) {
             changedElement = match.getLeft();
@@ -95,7 +100,12 @@ public class JaMoPPDiffBuilder extends DiffBuilder {
             changedElement = match.getRight();
         }
 
+        fiLogger.info("Resource attachment change for: " +
+        match + " difference kind/source: " + kind.getName() +
+        "/" + source.getName());
+        
         if (packageIgnoreChecker.isInIgnorePackage(changedElement)) {
+        	fiLogger.debug("Element to ignore: " + changedElement);
             logger.warn("Element to ignore: " + changedElement);
         }
 
@@ -108,17 +118,23 @@ public class JaMoPPDiffBuilder extends DiffBuilder {
         // DevBoost is notified about this.
         if (resourceAttachementRegistry.contains(changedElement)) {
             logger.info("Ressource Attachement Change hit twice: " + changedElement);
+            fiLogger.debug("Ressource Attachement Change hit twice: " + changedElement);
             return;
         }
 
         Diff change = customChangeFactory.doSwitch(changedElement);
         if (change != null) {
+            fiLogger.info("Non-null change: " +
+                    change + " difference kind/source: " + kind.getName() +
+                    "/" + source.getName());
             fillStandardFields(change, match, kind, source);
             resourceAttachementRegistry.add(changedElement);
             return;
         }
 
         logger.info("Unhandled Resource Attachment Change (" + kind + ") : left: " + match.getLeft() + ", right: "
+                + match.getRight() + ", source: " + source);
+        fiLogger.debug("Unhandled Resource Attachment Change (" + kind + ") : left: " + match.getLeft() + ", right: "
                 + match.getRight() + ", source: " + source);
     }
 
@@ -131,17 +147,19 @@ public class JaMoPPDiffBuilder extends DiffBuilder {
     @Override
     public void referenceChange(Match match, EReference reference, EObject value, DifferenceKind kind,
             DifferenceSource source) {
-
+    	fiLogger.info("Reference change for: " + reference.getName());
         // a changed default extends relationship is always
         // coupled with another change. As the default extends is implicit, a change to it must not
         // be made explicit.
         if ("defaultExtends".equals(reference.getName())) {
+        	fiLogger.info("defaultExtends change detected, returning");
             return;
         }
 
         // handle containment changes as typical ADD / DELETE cases for
         // custom elements.
         if (reference.isContainment()) {
+        	fiLogger.info("Containment reference");
             if (addDeleteCache.containsKey(value)) {
                 return;
             }
@@ -153,6 +171,7 @@ public class JaMoPPDiffBuilder extends DiffBuilder {
             }
         }
 
+        fiLogger.info("Checking value type");
         if (value instanceof EnumConstant || value instanceof Expression
                 || value instanceof org.emftext.language.java.classifiers.Class || value instanceof Interface
                 || value instanceof Method || value instanceof Constructor || value instanceof Variable
@@ -160,16 +179,21 @@ public class JaMoPPDiffBuilder extends DiffBuilder {
                 || value instanceof Final || value instanceof CatchBlock
                 || value instanceof NamespaceClassifierReference || value instanceof PackageReference
                 || value instanceof IdentifierReference || value instanceof PrimitiveType || value instanceof NormalSwitchCase) {
+        	fiLogger.info("Value type check successful, getting next parent match");
             Match nextParent = nextResonableMatch(match);
             if (nextParent != null) {
+            	fiLogger.info("Got next parent match, computing parent object");
                 EObject parentObject = null;
                 if (nextParent.getLeft() != null) {
                     parentObject = nextParent.getLeft();
+                    fiLogger.info("Parent object = nextParent.getLeft() = " + parentObject);
                 } else if (nextParent.getRight() != null) {
                     parentObject = nextParent.getRight();
+                    fiLogger.info("Parent object = nextParent.getRight() = " + parentObject);
                 }
-
+                fiLogger.info("Parent object = " + parentObject);
                 if (!changeRegisteredBefore(parentObject)) {
+                	fiLogger.info("Change not registered before parent object");
                     Diff change = customChangeFactory.doSwitch(parentObject);
                     fillStandardFields(change, nextParent, DifferenceKind.CHANGE, source);
                     changeCache.put(parentObject, change);
@@ -180,6 +204,8 @@ public class JaMoPPDiffBuilder extends DiffBuilder {
 
         logger.info("Unhandled Reference Change (" + kind + ") :" + reference.getName() + ", left: " + match.getLeft()
                 + ", right: " + match.getRight() + ", value: " + value);
+        fiLogger.debug("Unhandled Reference Change (" + kind + ") :" + reference.getName() + ", left: " + match.getLeft()
+        + ", right: " + match.getRight() + ", value: " + value);
     }
 
     @Override
@@ -188,6 +214,8 @@ public class JaMoPPDiffBuilder extends DiffBuilder {
 
         logger.info("Attribute Change (" + kind + ") :" + attribute.getName() + ", left: " + match.getLeft()
                 + ", right: " + match.getRight() + ", value: " + value);
+        fiLogger.info("Attribute Change (" + kind + ") :" + attribute.getName() + ", left: " + match.getLeft()
+        + ", right: " + match.getRight() + ", value: " + value);
         super.attributeChange(match, attribute, value, kind, source);
     }
 
@@ -200,39 +228,55 @@ public class JaMoPPDiffBuilder extends DiffBuilder {
      * @return The next reasonable match or null if none exists.
      */
     private Match nextResonableMatch(Match match) {
-
+    	fiLogger.info("Finding next reasonable match");
         if (match == null) {
+        	fiLogger.debug("Given match is null, returning");
             return null;
         }
 
+        fiLogger.info("Computing parent object");
         EObject parentObject = null;
         if (match.getLeft() != null) {
             parentObject = match.getLeft();
+            fiLogger.info("Parent object = match.getLeft() = " + parentObject);
         } else {
             parentObject = match.getRight();
+            fiLogger.info("Parent object = match.getRight() = " + parentObject);
         }
 
+        fiLogger.info("Checking parent object type: ");
         if (parentObject instanceof org.emftext.language.java.classifiers.Class) {
+        	fiLogger.info("Class");
             return match;
         } else if (parentObject instanceof Field) {
+        	fiLogger.info("Field");
             return match;
         } else if (parentObject instanceof Method) {
+        	fiLogger.info("Method");
             return match;
         } else if (parentObject instanceof Constructor) {
+        	fiLogger.info("Constructor");
             return match;
-        } else if (parentObject instanceof Package) {
+        } else if (parentObject instanceof org.emftext.language.java.containers.Package) {
+        	fiLogger.info("Package");
             return match;
         } else if (parentObject instanceof Enumeration) {
+        	fiLogger.info("Enumeration");
             return match;
         } else if (parentObject instanceof Import) {
+        	fiLogger.info("Import");
             return match;
         } else if (parentObject instanceof Statement) {
+        	fiLogger.info("Statement");
             return match;
         }
 
+        fiLogger.debug("Parent object type not valid, checking match.eContainer()");
         if (match.eContainer() instanceof Match) {
+        	fiLogger.info("match.eContainer() is Match, recursing function call");
             return nextResonableMatch((Match) match.eContainer());
         } else {
+        	fiLogger.debug("match.eContainer() is not a Match, returning null");
             return null;
         }
 
@@ -248,25 +292,32 @@ public class JaMoPPDiffBuilder extends DiffBuilder {
      *            The match element to process and store the diff in.
      */
     public void createRootDiff(Match match) {
+    	fiLogger.info("Creating root diff");
         if (match.getLeft() == null) {
             EObject value = match.getRight();
+            fiLogger.info("Working with right object");
             if (changeRegisteredBefore(value)) {
+            	fiLogger.info("Change already registered, returning");
                 return;
             }
             Diff diff = customChangeFactory.doSwitch(value);
             diff.setSource(DifferenceSource.RIGHT);
             diff.setKind(DifferenceKind.DELETE);
             diff.setMatch(match);
+            fiLogger.info("Setting match of diff: Right Delete");
             changeCache.put(value, diff);
         } else {
             EObject value = match.getLeft();
+            fiLogger.info("Working with left object");
             if (changeRegisteredBefore(value)) {
+            	fiLogger.info("Change already registered, returning");
                 return;
             }
             Diff diff = customChangeFactory.doSwitch(value);
             diff.setSource(DifferenceSource.LEFT);
             diff.setKind(DifferenceKind.ADD);
             diff.setMatch(match);
+            fiLogger.info("Setting match of diff: Left Add");
             changeCache.put(value, diff);
         }
     }
@@ -281,6 +332,7 @@ public class JaMoPPDiffBuilder extends DiffBuilder {
         // For example CompilationUnits are at the root and inside packages.
         // DevBoost is notified about this.
         if (resourceAttachementRegistry.contains(value)) {
+        	fiLogger.debug("Ressource Attachement Change hit twice: " + value);
             logger.debug("Ressource Attachement Change hit twice: " + value);
             return true;
         }

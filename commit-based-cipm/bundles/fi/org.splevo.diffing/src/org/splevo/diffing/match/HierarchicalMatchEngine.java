@@ -50,6 +50,11 @@ public class HierarchicalMatchEngine implements IMatchEngine {
     /** The class logger to use. */
     private static Logger logger = Logger.getLogger(HierarchicalMatchEngine.class);
 
+    /** 
+     * The secondary, more detailed logger
+     */
+    private Logger fiLogger = Logger.getLogger("fi."+HierarchicalMatchEngine.class.getSimpleName());
+    
     /** The equality helper for the model. */
     private IEqualityHelper equalityHelper = null;
 
@@ -80,11 +85,14 @@ public class HierarchicalMatchEngine implements IMatchEngine {
         this.equalityStrategy = equalityStrategy;
         this.ignoreStrategy = ignoreStrategy;
         this.resourceMatcher = resourceMatcher;
+        
+        fiLogger.info("HierarchicalMatchEngine instantiated");
     }
 
     @Override
     public Comparison match(IComparisonScope scope, Monitor monitor) {
-
+    	fiLogger.info("Matching with given scope and monitor");
+    	
         final Notifier left = scope.getLeft();
         final Notifier right = scope.getRight();
 
@@ -114,13 +122,21 @@ public class HierarchicalMatchEngine implements IMatchEngine {
      */
     protected void match(Comparison comparison, IComparisonScope scope, final Notifier left, final Notifier right,
             Monitor monitor) {
+    	fiLogger.info("Delegating to proper match function, checking types");
         if (left instanceof ResourceSet || right instanceof ResourceSet) {
+        	fiLogger.info("ResourceSet found. Is left/right ResourceSet: " +
+        			(left instanceof ResourceSet) + "/" + (right instanceof ResourceSet));
             match(comparison, scope, (ResourceSet) left, (ResourceSet) right, monitor);
         } else if (left instanceof Resource || right instanceof Resource) {
+        	fiLogger.info("Resource found. Is left/right Resource: " +
+        			(left instanceof Resource) + "/" + (right instanceof Resource));
             match(comparison, (Resource) left, (Resource) right, monitor);
         } else if (left instanceof EObject || right instanceof EObject) {
+        	fiLogger.info("EObject found. Is left/right EObject: " +
+        			(left instanceof EObject) + "/" + (right instanceof EObject));
             match(comparison, (EObject) left, (EObject) right, monitor);
         } else {
+        	fiLogger.error("Unhandled type of elements to match. (" + left + ", " + right + ")");
             throw new IllegalArgumentException("Unhandled type of elements to match. (" + left + ", " + right + ")");
         }
     }
@@ -151,19 +167,23 @@ public class HierarchicalMatchEngine implements IMatchEngine {
      */
     protected void match(Comparison comparison, IComparisonScope scope, ResourceSet left, ResourceSet right,
             Monitor monitor) {
+    	fiLogger.info("Matching given ResourceSet instances");
         final Iterator<? extends Resource> leftChildren = scope.getCoveredResources(left);
         final Iterator<? extends Resource> rightChildren = scope.getCoveredResources(right);
         final Iterator<? extends Resource> originChildren = Iterators.cycle();
 
+        fiLogger.info("Creating resource matcher and mappings");
         final IResourceMatcher matcher = createResourceMatcher();
         final Iterable<MatchResource> mappings = matcher.createMappings(leftChildren, rightChildren, originChildren);
 
+        fiLogger.info("Adding matched resources to comparison");
         for (MatchResource mapping : mappings) {
             comparison.getMatchedResources().add(mapping);
 
             final Resource leftRes = mapping.getLeft();
             final Resource rightRes = mapping.getRight();
 
+            fiLogger.info("Matching: " + leftRes + " with " + rightRes);
             match(comparison, leftRes, rightRes, monitor);
 
         }
@@ -183,7 +203,7 @@ public class HierarchicalMatchEngine implements IMatchEngine {
      *            The progress monitor.
      */
     protected void match(Comparison comparison, final Resource leftRes, final Resource rightRes, Monitor monitor) {
-
+    	fiLogger.info("Matching given Resource instances");
     	if (comparison.getMatchedResources().size() == 0) {
     		resourceMatcher.createMappings(List.of(leftRes).iterator(), List.of(rightRes).iterator(), null)
     			.forEach(match -> comparison.getMatchedResources().add(match));
@@ -193,13 +213,16 @@ public class HierarchicalMatchEngine implements IMatchEngine {
         List<EObject> rightElements = new ArrayList<EObject>();
 
         if (leftRes != null) {
+        	fiLogger.info("Left resource not null, getting contents");
             leftElements = leftRes.getContents();
         }
         if (rightRes != null) {
+        	fiLogger.info("Right resource not null, getting contents");
             rightElements = rightRes.getContents();
         }
 
         List<Match> matches = match(comparison, leftElements, rightElements, monitor);
+        fiLogger.info("Adding all found matches");
         comparison.getMatches().addAll(matches);
     }
 
@@ -217,7 +240,7 @@ public class HierarchicalMatchEngine implements IMatchEngine {
      *            The progress monitor.
      */
     protected void match(Comparison comparison, final EObject left, final EObject right, Monitor monitor) {
-
+    	fiLogger.info("Matching given EObject instances");
         List<EObject> leftElements = Lists.newArrayList(left);
         List<EObject> rightElements = Lists.newArrayList(right);
 
@@ -241,7 +264,7 @@ public class HierarchicalMatchEngine implements IMatchEngine {
      */
     private List<Match> match(Comparison comparison, List<EObject> leftElements, List<EObject> rightElements,
             Monitor monitor) {
-
+    	fiLogger.info("Matching given EObject instance elements recursively");
         List<Match> matches = new ArrayList<Match>();
 
         List<EObject> leftElementsInScope = filterIgnoredElements(leftElements);
@@ -253,6 +276,7 @@ public class HierarchicalMatchEngine implements IMatchEngine {
 
             for (EObject rightElement : rightElementsInScope) {
                 if (equalityStrategy.areEqual(leftElement, rightElement)) {
+                	fiLogger.info("EObject elements matched, recursing function call");
                     rightElementsInScope.remove(rightElement);
                     match.setRight(rightElement);
                     List<Match> subMatches = match(comparison, leftElement.eContents(), rightElement.eContents(),
@@ -263,12 +287,14 @@ public class HierarchicalMatchEngine implements IMatchEngine {
             }
             
             if (match.getRight() == null) {
+            	fiLogger.info("Right element is null, substituting with empty list and recursing");
             	match.getSubmatches().addAll(match(comparison, leftElement.eContents(), new BasicEList<>(), monitor));
             }
 
             matches.add(match);
         }
 
+        fiLogger.info("Elements in left scope matched");
         List<Match> rightOnlyMatches = createMatchesForRightElements(rightElementsInScope);
         matches.addAll(rightOnlyMatches);
 
@@ -283,6 +309,7 @@ public class HierarchicalMatchEngine implements IMatchEngine {
      * @return The prepared elements.
      */
     private List<Match> createMatchesForRightElements(List<EObject> elements) {
+    	fiLogger.info("Creating right only matches recursively");
         List<Match> rightMatches = Lists.newArrayList();
         for (EObject element : elements) {
             Match match = CompareFactory.eINSTANCE.createMatch();
@@ -309,6 +336,7 @@ public class HierarchicalMatchEngine implements IMatchEngine {
 
         for (EObject object : elements) {
             if (object == null) {
+            	fiLogger.error("Null object provided to ignore filter. Containing element list: " + elements);
                 logger.error("Null object provided to ignore filter. Containing element list: " + elements);
                 continue;
             }
