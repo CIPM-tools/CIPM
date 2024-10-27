@@ -6,7 +6,6 @@ import org.emftext.language.java.expressions.Expression;
 import org.emftext.language.java.references.IdentifierReference;
 import org.emftext.language.java.references.ReferenceableElement;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import cipm.consistency.fitests.similarity.jamopp.AbstractJaMoPPSimilarityTest;
@@ -23,7 +22,6 @@ import cipm.consistency.initialisers.jamopp.statements.ExpressionStatementInitia
  * 
  * @author Alp Torac Genc
  */
-@Disabled("Disabled till null pointer exceptions are fixed")
 public class IdentifierReferenceContainerTest extends AbstractJaMoPPSimilarityTest implements UsesConcreteClassifiers {
 	/**
 	 * Realises the functionality of
