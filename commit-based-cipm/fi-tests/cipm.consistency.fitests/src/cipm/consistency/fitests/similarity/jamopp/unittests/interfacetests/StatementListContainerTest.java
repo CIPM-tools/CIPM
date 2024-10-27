@@ -6,7 +6,6 @@ import org.emftext.language.java.statements.Statement;
 import org.emftext.language.java.statements.StatementListContainer;
 import org.emftext.language.java.statements.StatementsPackage;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -23,7 +22,7 @@ import cipm.consistency.initialisers.jamopp.statements.IStatementListContainerIn
 public class StatementListContainerTest extends AbstractJaMoPPSimilarityTest implements UsesStatements {
 
 	private static Stream<Arguments> provideArguments() {
-		return AbstractJaMoPPSimilarityTest.getEachInitialiserArgumentsOnceFor(IStatementListContainerInitialiser.class);
+		return AbstractJaMoPPSimilarityTest.getAllInitialiserArgumentsFor(IStatementListContainerInitialiser.class);
 	}
 
 	protected StatementListContainer initElement(IStatementListContainerInitialiser init, Statement[] sts) {
@@ -58,7 +57,6 @@ public class StatementListContainerTest extends AbstractJaMoPPSimilarityTest imp
 						|| (!init.canContainStatements(objOne) && !init.canContainStatements(objTwo)));
 	}
 
-	@Disabled("Disabled till null pointer exceptions are fixed")
 	@ParameterizedTest
 	@MethodSource("provideArguments")
 	public void testStatementsNullCheck(IStatementListContainerInitialiser init) {

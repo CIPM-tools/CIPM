@@ -6,7 +6,6 @@ import org.emftext.language.java.expressions.Expression;
 import org.emftext.language.java.references.Argumentable;
 import org.emftext.language.java.references.ReferencesPackage;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -21,7 +20,7 @@ public class ArgumentableTest extends AbstractJaMoPPSimilarityTest
 		implements UsesConcreteClassifiers, UsesExpressions, UsesLiterals {
 	
 	private static Stream<Arguments> provideArguments() {
-		return AbstractJaMoPPSimilarityTest.getEachInitialiserArgumentsOnceFor(IArgumentableInitialiser.class);
+		return AbstractJaMoPPSimilarityTest.getAllInitialiserArgumentsFor(IArgumentableInitialiser.class);
 	}
 	
 	protected Argumentable initElement(IArgumentableInitialiser init, Expression[] args) {
@@ -50,7 +49,6 @@ public class ArgumentableTest extends AbstractJaMoPPSimilarityTest
 		this.testSimilarity(objOne, objTwo, ReferencesPackage.Literals.ARGUMENTABLE__ARGUMENTS);
 	}
 
-	@Disabled("Disabled till null pointer exceptions are fixed")
 	@ParameterizedTest
 	@MethodSource("provideArguments")
 	public void testArgumentsNullCheck(IArgumentableInitialiser init) {

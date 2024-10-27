@@ -5,7 +5,6 @@ import java.util.stream.Stream;
 import org.emftext.language.java.commons.CommonsPackage;
 import org.emftext.language.java.commons.NamespaceAwareElement;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -16,7 +15,7 @@ import cipm.consistency.initialisers.jamopp.commons.INamespaceAwareElementInitia
 public class NamespaceAwareElementTest extends AbstractJaMoPPSimilarityTest {
 
 	private static Stream<Arguments> provideArguments() {
-		return AbstractJaMoPPSimilarityTest.getEachInitialiserArgumentsOnceFor(INamespaceAwareElementInitialiser.class);
+		return AbstractJaMoPPSimilarityTest.getAllInitialiserArgumentsFor(INamespaceAwareElementInitialiser.class);
 	}
 
 	private final String[] nss1 = new String[] { "ns11", "ns12", "ns13" };
@@ -58,7 +57,6 @@ public class NamespaceAwareElementTest extends AbstractJaMoPPSimilarityTest {
 		}
 	}
 
-	@Disabled("Disabled till null pointer exceptions are fixed")
 	@ParameterizedTest
 	@MethodSource("provideArguments")
 	public void testNamespaceNullCheck(INamespaceAwareElementInitialiser init) {

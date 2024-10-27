@@ -6,7 +6,6 @@ import org.emftext.language.java.references.ElementReference;
 import org.emftext.language.java.references.ReferenceableElement;
 import org.emftext.language.java.references.ReferencesPackage;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -18,7 +17,7 @@ import cipm.consistency.initialisers.jamopp.references.IElementReferenceInitiali
 public class ElementReferenceTest extends AbstractJaMoPPSimilarityTest implements UsesConcreteClassifiers {
 
 	private static Stream<Arguments> provideArguments() {
-		return AbstractJaMoPPSimilarityTest.getEachInitialiserArgumentsOnceFor(IElementReferenceInitialiser.class);
+		return AbstractJaMoPPSimilarityTest.getAllInitialiserArgumentsFor(IElementReferenceInitialiser.class);
 	}
 
 	protected ElementReference initElement(IElementReferenceInitialiser init, ReferenceableElement target,
@@ -39,7 +38,6 @@ public class ElementReferenceTest extends AbstractJaMoPPSimilarityTest implement
 		this.testSimilarity(objOne, objTwo, ReferencesPackage.Literals.ELEMENT_REFERENCE__TARGET);
 	}
 
-	@Disabled("Disabled till null pointer exceptions are fixed")
 	@ParameterizedTest
 	@MethodSource("provideArguments")
 	public void testTargetNullCheck(IElementReferenceInitialiser init) {
@@ -51,7 +49,6 @@ public class ElementReferenceTest extends AbstractJaMoPPSimilarityTest implement
 	 * Makes sure that not providing a container for the created element reference
 	 * does not result in an exception.
 	 */
-	@Disabled("Disabled till null pointer exceptions are fixed")
 	@ParameterizedTest
 	@MethodSource("provideArguments")
 	public void testTargetNoException(IElementReferenceInitialiser init) {
@@ -67,7 +64,6 @@ public class ElementReferenceTest extends AbstractJaMoPPSimilarityTest implement
 	 * does not result in an exception, if it is compared to an uninitialised
 	 * element reference.
 	 */
-	@Disabled("Disabled till null pointer exceptions are fixed")
 	@ParameterizedTest
 	@MethodSource("provideArguments")
 	public void testTargetNoExceptionNullCheck(IElementReferenceInitialiser init) {

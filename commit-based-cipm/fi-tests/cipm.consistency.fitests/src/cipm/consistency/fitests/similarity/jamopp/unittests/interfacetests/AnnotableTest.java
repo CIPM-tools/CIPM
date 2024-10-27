@@ -6,7 +6,6 @@ import org.emftext.language.java.annotations.Annotable;
 import org.emftext.language.java.annotations.AnnotationInstance;
 import org.emftext.language.java.annotations.AnnotationsPackage;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -18,7 +17,7 @@ import cipm.consistency.initialisers.jamopp.annotations.IAnnotableInitialiser;
 public class AnnotableTest extends AbstractJaMoPPSimilarityTest implements UsesAnnotationInstances {
 	
 	private static Stream<Arguments> provideArguments() {
-		return AbstractJaMoPPSimilarityTest.getEachInitialiserArgumentsOnceFor(IAnnotableInitialiser.class);
+		return AbstractJaMoPPSimilarityTest.getAllInitialiserArgumentsFor(IAnnotableInitialiser.class);
 	}
 	
 	protected Annotable initElement(IAnnotableInitialiser init, AnnotationInstance[] annotations) {
@@ -51,7 +50,6 @@ public class AnnotableTest extends AbstractJaMoPPSimilarityTest implements UsesA
 		this.testSimilarity(objOne, objTwo, AnnotationsPackage.Literals.ANNOTABLE__ANNOTATIONS);
 	}
 
-	@Disabled("Disabled till null pointer exceptions are fixed")
 	@ParameterizedTest
 	@MethodSource("provideArguments")
 	public void testAnnotationNullCheck(IAnnotableInitialiser init) {

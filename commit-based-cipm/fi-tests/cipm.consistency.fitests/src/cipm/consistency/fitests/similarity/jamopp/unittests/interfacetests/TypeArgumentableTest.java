@@ -6,7 +6,6 @@ import org.emftext.language.java.generics.GenericsPackage;
 import org.emftext.language.java.generics.TypeArgument;
 import org.emftext.language.java.generics.TypeArgumentable;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -18,7 +17,7 @@ import cipm.consistency.initialisers.jamopp.generics.ITypeArgumentableInitialise
 public class TypeArgumentableTest extends AbstractJaMoPPSimilarityTest implements UsesTypeArguments {
 
 	private static Stream<Arguments> provideArguments() {
-		return AbstractJaMoPPSimilarityTest.getEachInitialiserArgumentsOnceFor(ITypeArgumentableInitialiser.class);
+		return AbstractJaMoPPSimilarityTest.getAllInitialiserArgumentsFor(ITypeArgumentableInitialiser.class);
 	}
 
 	protected TypeArgumentable initElement(ITypeArgumentableInitialiser init, TypeArgument[] typeArgs) {
@@ -47,7 +46,6 @@ public class TypeArgumentableTest extends AbstractJaMoPPSimilarityTest implement
 		this.testSimilarity(objOne, objTwo, GenericsPackage.Literals.TYPE_ARGUMENTABLE__TYPE_ARGUMENTS);
 	}
 
-	@Disabled("Disabled till null pointer exceptions are fixed")
 	@ParameterizedTest
 	@MethodSource("provideArguments")
 	public void testTypeArgumentNullCheck(ITypeArgumentableInitialiser init) {

@@ -6,7 +6,6 @@ import org.emftext.language.java.generics.GenericsPackage;
 import org.emftext.language.java.generics.TypeParameter;
 import org.emftext.language.java.generics.TypeParametrizable;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -18,7 +17,7 @@ import cipm.consistency.initialisers.jamopp.generics.ITypeParametrizableInitiali
 public class TypeParametrizableTest extends AbstractJaMoPPSimilarityTest implements UsesTypeParameters {
 
 	private static Stream<Arguments> provideArguments() {
-		return AbstractJaMoPPSimilarityTest.getEachInitialiserArgumentsOnceFor(ITypeParametrizableInitialiser.class);
+		return AbstractJaMoPPSimilarityTest.getAllInitialiserArgumentsFor(ITypeParametrizableInitialiser.class);
 	}
 
 	protected TypeParametrizable initElement(ITypeParametrizableInitialiser init, TypeParameter[] tParams) {
@@ -47,7 +46,6 @@ public class TypeParametrizableTest extends AbstractJaMoPPSimilarityTest impleme
 		this.testSimilarity(objOne, objTwo, GenericsPackage.Literals.TYPE_PARAMETRIZABLE__TYPE_PARAMETERS);
 	}
 
-	@Disabled("Disabled till null pointer exceptions are fixed")
 	@ParameterizedTest
 	@MethodSource("provideArguments")
 	public void testTypeParametersNullCheck(ITypeParametrizableInitialiser init) {

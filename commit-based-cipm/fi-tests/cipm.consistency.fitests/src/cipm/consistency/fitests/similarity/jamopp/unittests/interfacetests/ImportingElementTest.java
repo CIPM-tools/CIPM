@@ -1,7 +1,6 @@
 package cipm.consistency.fitests.similarity.jamopp.unittests.interfacetests;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -19,7 +18,7 @@ import cipm.consistency.initialisers.jamopp.imports.IImportingElementInitialiser
 public class ImportingElementTest extends AbstractJaMoPPSimilarityTest implements UsesImportingElements {
 
 	private static Stream<Arguments> provideArguments() {
-		return AbstractJaMoPPSimilarityTest.getEachInitialiserArgumentsOnceFor(IImportingElementInitialiser.class);
+		return AbstractJaMoPPSimilarityTest.getAllInitialiserArgumentsFor(IImportingElementInitialiser.class);
 	}
 
 	protected ImportingElement initElement(IImportingElementInitialiser init, Import[] imps) {
@@ -48,7 +47,6 @@ public class ImportingElementTest extends AbstractJaMoPPSimilarityTest implement
 		this.testSimilarity(objOne, objTwo, ImportsPackage.Literals.IMPORTING_ELEMENT__IMPORTS);
 	}
 
-	@Disabled("Disabled till null pointer exceptions are fixed")
 	@ParameterizedTest
 	@MethodSource("provideArguments")
 	public void testImportsNullCheck(IImportingElementInitialiser init) {

@@ -5,7 +5,6 @@ import java.util.stream.Stream;
 import org.emftext.language.java.commons.CommonsPackage;
 import org.emftext.language.java.commons.NamedElement;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -16,7 +15,7 @@ import cipm.consistency.initialisers.jamopp.commons.INamedElementInitialiser;
 public class NamedElementTest extends AbstractJaMoPPSimilarityTest {
 
 	private static Stream<Arguments> provideArguments() {
-		return AbstractJaMoPPSimilarityTest.getEachInitialiserArgumentsOnceFor(INamedElementInitialiser.class);
+		return AbstractJaMoPPSimilarityTest.getAllInitialiserArgumentsFor(INamedElementInitialiser.class);
 	}
 
 	protected NamedElement initElement(INamedElementInitialiser init, String name) {
@@ -35,7 +34,6 @@ public class NamedElementTest extends AbstractJaMoPPSimilarityTest {
 		this.testSimilarity(objOne, objTwo, CommonsPackage.Literals.NAMED_ELEMENT__NAME);
 	}
 
-	@Disabled("Disabled till null pointer exceptions are fixed")
 	@ParameterizedTest
 	@MethodSource("provideArguments")
 	public void testNameNullCheck(INamedElementInitialiser init) {

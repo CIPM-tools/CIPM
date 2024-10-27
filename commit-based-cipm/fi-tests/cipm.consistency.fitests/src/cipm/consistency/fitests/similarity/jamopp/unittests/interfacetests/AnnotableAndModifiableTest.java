@@ -7,7 +7,6 @@ import org.emftext.language.java.modifiers.ModifiersPackage;
 import org.emftext.language.java.modifiers.AnnotableAndModifiable;
 import org.emftext.language.java.modifiers.Modifier;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -21,9 +20,9 @@ public class AnnotableAndModifiableTest extends AbstractJaMoPPSimilarityTest
 		implements UsesAnnotationInstances, UsesModifiers {
 
 	private static Stream<Arguments> provideArguments() {
-		return AbstractJaMoPPSimilarityTest.getEachInitialiserArgumentsOnceFor(IAnnotableAndModifiableInitialiser.class);
+		return AbstractJaMoPPSimilarityTest.getAllInitialiserArgumentsFor(IAnnotableAndModifiableInitialiser.class);
 	}
-
+	
 	protected AnnotableAndModifiable initElement(IAnnotableAndModifiableInitialiser init, Modifier[] modifs,
 			AnnotationInstance[] ais) {
 
@@ -55,7 +54,6 @@ public class AnnotableAndModifiableTest extends AbstractJaMoPPSimilarityTest
 				ModifiersPackage.Literals.ANNOTABLE_AND_MODIFIABLE__ANNOTATIONS_AND_MODIFIERS);
 	}
 
-	@Disabled("Disabled till null pointer exceptions are fixed")
 	@ParameterizedTest()
 	@MethodSource("provideArguments")
 	public void testModifierNullCheck(IAnnotableAndModifiableInitialiser init) {
@@ -89,7 +87,6 @@ public class AnnotableAndModifiableTest extends AbstractJaMoPPSimilarityTest
 				ModifiersPackage.Literals.ANNOTABLE_AND_MODIFIABLE__ANNOTATIONS_AND_MODIFIERS);
 	}
 
-	@Disabled("Disabled till null pointer exceptions are fixed")
 	@ParameterizedTest()
 	@MethodSource("provideArguments")
 	public void testAnnotationInstanceNullCheck(IAnnotableAndModifiableInitialiser init) {
@@ -112,7 +109,6 @@ public class AnnotableAndModifiableTest extends AbstractJaMoPPSimilarityTest
 				ModifiersPackage.Literals.ANNOTABLE_AND_MODIFIABLE__ANNOTATIONS_AND_MODIFIERS);
 	}
 
-	@Disabled("Disabled till null pointer exceptions are fixed")
 	@ParameterizedTest()
 	@MethodSource("provideArguments")
 	public void testPrivateNullCheck(IAnnotableAndModifiableInitialiser init) {
@@ -136,7 +132,6 @@ public class AnnotableAndModifiableTest extends AbstractJaMoPPSimilarityTest
 				ModifiersPackage.Literals.ANNOTABLE_AND_MODIFIABLE__ANNOTATIONS_AND_MODIFIERS);
 	}
 
-	@Disabled("Disabled till null pointer exceptions are fixed")
 	@ParameterizedTest()
 	@MethodSource("provideArguments")
 	public void testProtectedNullCheck(IAnnotableAndModifiableInitialiser init) {
@@ -160,7 +155,6 @@ public class AnnotableAndModifiableTest extends AbstractJaMoPPSimilarityTest
 				ModifiersPackage.Literals.ANNOTABLE_AND_MODIFIABLE__ANNOTATIONS_AND_MODIFIERS);
 	}
 
-	@Disabled("Disabled till null pointer exceptions are fixed")
 	@ParameterizedTest()
 	@MethodSource("provideArguments")
 	public void testPublicNullCheck(IAnnotableAndModifiableInitialiser init) {
