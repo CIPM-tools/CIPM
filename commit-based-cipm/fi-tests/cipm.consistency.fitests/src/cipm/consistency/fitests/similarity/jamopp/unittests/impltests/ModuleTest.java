@@ -5,7 +5,6 @@ import org.emftext.language.java.containers.ContainersPackage;
 import org.emftext.language.java.containers.Package;
 import org.emftext.language.java.modules.ModuleDirective;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import cipm.consistency.fitests.similarity.jamopp.AbstractJaMoPPSimilarityTest;
@@ -38,7 +37,6 @@ public class ModuleTest extends AbstractJaMoPPSimilarityTest implements UsesModu
 		this.testSimilarity(objOne, objTwo, ContainersPackage.Literals.MODULE__OPEN);
 	}
 
-	@Disabled("Disabled till null pointer exceptions are fixed")
 	@Test
 	public void testOpenNullCheck() {
 		this.testSimilarityNullCheck(this.initElement(null, null, true), new ModuleInitialiser(), false,
@@ -62,7 +60,6 @@ public class ModuleTest extends AbstractJaMoPPSimilarityTest implements UsesModu
 		this.testSimilarity(objOne, objTwo, ContainersPackage.Literals.MODULE__PACKAGES);
 	}
 
-	@Disabled("Disabled till null pointer exceptions are fixed")
 	@Test
 	public void testPackagesNullCheck() {
 		this.testSimilarityNullCheck(
@@ -90,7 +87,6 @@ public class ModuleTest extends AbstractJaMoPPSimilarityTest implements UsesModu
 		this.testSimilarity(objOne, objTwo, ContainersPackage.Literals.MODULE__TARGET);
 	}
 
-	@Disabled("Disabled till null pointer exceptions are fixed")
 	@Test
 	public void testTargetsNullCheck() {
 		this.testSimilarityNullCheck(

@@ -3,7 +3,6 @@ package cipm.consistency.fitests.similarity.jamopp.unittests.impltests;
 import org.emftext.language.java.literals.CharacterLiteral;
 import org.emftext.language.java.literals.LiteralsPackage;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import cipm.consistency.fitests.similarity.jamopp.AbstractJaMoPPSimilarityTest;
@@ -23,7 +22,6 @@ public class CharacterLiteralTest extends AbstractJaMoPPSimilarityTest {
 				LiteralsPackage.Literals.CHARACTER_LITERAL__VALUE);
 	}
 
-	@Disabled("Disabled till null pointer exceptions are fixed")
 	@Test
 	public void testValueNullCheck() {
 		this.testSimilarityNullCheck(this.initElement("a"), new CharacterLiteralInitialiser(), false,

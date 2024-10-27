@@ -4,7 +4,6 @@ import org.emftext.language.java.classifiers.ConcreteClassifier;
 import org.emftext.language.java.containers.CompilationUnit;
 import org.emftext.language.java.containers.ContainersPackage;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import cipm.consistency.fitests.similarity.jamopp.AbstractJaMoPPSimilarityTest;
@@ -37,7 +36,6 @@ public class CompilationUnitTest extends AbstractJaMoPPSimilarityTest implements
 		this.testSimilarity(objOne, objTwo, ContainersPackage.Literals.COMPILATION_UNIT__CLASSIFIERS);
 	}
 
-	@Disabled("Disabled till null pointer exceptions are fixed")
 	@Test
 	public void testClassifierNullCheck() {
 		this.testSimilarityNullCheck(this.initElement(new ConcreteClassifier[] { this.createMinimalClass("cls1") }),

@@ -3,7 +3,6 @@ package cipm.consistency.fitests.similarity.jamopp.unittests.impltests;
 import org.emftext.language.java.literals.DecimalIntegerLiteral;
 import org.emftext.language.java.literals.LiteralsPackage;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import cipm.consistency.fitests.similarity.jamopp.AbstractJaMoPPSimilarityTest;
@@ -23,7 +22,6 @@ public class DecimalIntegerLiteralTest extends AbstractJaMoPPSimilarityTest {
 				LiteralsPackage.Literals.DECIMAL_INTEGER_LITERAL__DECIMAL_VALUE);
 	}
 
-	@Disabled("Disabled till null pointer exceptions are fixed")
 	@Test
 	public void testDecimalValueNullCheck() {
 		this.testSimilarityNullCheck(this.initElement(1), new DecimalIntegerLiteralInitialiser(), false,

@@ -5,7 +5,6 @@ import org.emftext.language.java.annotations.AnnotationValue;
 import org.emftext.language.java.annotations.AnnotationsPackage;
 import org.emftext.language.java.members.InterfaceMethod;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import cipm.consistency.fitests.similarity.jamopp.AbstractJaMoPPSimilarityTest;
@@ -31,7 +30,6 @@ public class AnnotationAttributeSettingTest extends AbstractJaMoPPSimilarityTest
 		this.testSimilarity(objOne, objTwo, AnnotationsPackage.Literals.ANNOTATION_ATTRIBUTE_SETTING__ATTRIBUTE);
 	}
 
-	@Disabled("Disabled till null pointer exceptions are fixed")
 	@Test
 	public void testAttributeNullCheck() {
 		this.testSimilarityNullCheck(this.initElement(this.createMinimalInterfaceMethodWithNullReturn("im1Name"), null),
@@ -47,7 +45,6 @@ public class AnnotationAttributeSettingTest extends AbstractJaMoPPSimilarityTest
 		this.testSimilarity(objOne, objTwo, AnnotationsPackage.Literals.ANNOTATION_ATTRIBUTE_SETTING__VALUE);
 	}
 
-	@Disabled("Disabled till null pointer exceptions are fixed")
 	@Test
 	public void testValueNullCheck() {
 		this.testSimilarityNullCheck(this.initElement(null, this.createNullLiteral()),

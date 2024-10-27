@@ -4,7 +4,6 @@ import org.emftext.language.java.variables.AdditionalLocalVariable;
 import org.emftext.language.java.variables.LocalVariable;
 import org.emftext.language.java.variables.VariablesPackage;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import cipm.consistency.fitests.similarity.jamopp.AbstractJaMoPPSimilarityTest;
@@ -38,7 +37,6 @@ public class LocalVariableTest extends AbstractJaMoPPSimilarityTest implements U
 		this.testSimilarity(objOne, objTwo, VariablesPackage.Literals.LOCAL_VARIABLE__ADDITIONAL_LOCAL_VARIABLES);
 	}
 
-	@Disabled("Disabled till null pointer exceptions are fixed")
 	@Test
 	public void testLocalVariableNullCheck() {
 		this.testSimilarityNullCheck(this.initElement(new AdditionalLocalVariable[] { this.createMinimalALV("alv1") }),
