@@ -2,15 +2,12 @@ package cipm.consistency.base.shared.pcm;
 
 import java.io.File;
 
-import lombok.Data;
-
 /**
  * Contains file system paths where a PCM model can be stored.
  * 
  * @author David Monschein
  *
  */
-@Data
 public class LocalFilesystemPCM {
 
     private File repositoryFile;
@@ -30,4 +27,43 @@ public class LocalFilesystemPCM {
                 && usageModelFile.exists() && allocationModelFile.exists() && resourceEnvironmentFile.exists();
     }
 
+	public File getRepositoryFile() {
+		return repositoryFile;
+	}
+
+	public void setRepositoryFile(File repositoryFile) {
+		this.repositoryFile = repositoryFile;
+	}
+
+	public File getSystemFile() {
+		return systemFile;
+	}
+
+	public void setSystemFile(File systemFile) {
+		this.systemFile = systemFile;
+	}
+
+	public File getUsageModelFile() {
+		return usageModelFile;
+	}
+
+	public void setUsageModelFile(File usageModelFile) {
+		this.usageModelFile = usageModelFile;
+	}
+
+	public File getAllocationModelFile() {
+		return allocationModelFile;
+	}
+
+	public void setAllocationModelFile(File allocationModelFile) {
+		this.allocationModelFile = allocationModelFile;
+	}
+
+	public File getResourceEnvironmentFile() {
+		return resourceEnvironmentFile;
+	}
+
+	public void setResourceEnvironmentFile(File resourceEnvironmentFile) {
+		this.resourceEnvironmentFile = resourceEnvironmentFile;
+	}
 }

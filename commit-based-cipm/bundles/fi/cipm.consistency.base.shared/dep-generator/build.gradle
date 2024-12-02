@@ -8,7 +8,6 @@ repositories {
 
 platform {
     bundle 'org.cache2k:cache2k-core:1.2.4.Final'
-	bundle 'org.projectlombok:lombok:1.18.12'
 	bundle files('../../../cipm.consistency.root/mvn-supplemental/mvn-repo/org/pcm/headless/api/0.6.3/api-0.6.3.jar'), {
 		bnd {
 			version = '0.6.3'

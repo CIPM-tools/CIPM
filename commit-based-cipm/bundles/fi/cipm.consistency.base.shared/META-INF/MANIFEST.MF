@@ -26,6 +26,5 @@ Bundle-ClassPath:
  dep-gen/org.cache2k.api_1.2.4.Final.jar,
  dep-gen/org.cache2k.core_1.2.4.Final.jar,
  dep-gen/org.pcm.headless.api_0.6.3.jar,
- dep-gen/org.projectlombok.lombok_1.18.12.jar,
  .
 Bundle-ActivationPolicy: lazy

@@ -8,15 +8,12 @@ import java.util.Map;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 
-import lombok.Data;
-
 /**
  * Class that can be used to wrap a {@link EObject} as a valid JSON object.
  * 
  * @author David Monschein
  *
  */
-@Data
 public final class JsonEObject {
 
     /**
@@ -70,4 +67,29 @@ public final class JsonEObject {
         this.attributes = new HashMap<>();
     }
 
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public List<JsonEObject> getChilds() {
+		return new ArrayList<>(childs);
+	}
+
+	public void setChilds(List<JsonEObject> childs) {
+		this.childs.clear();
+		this.childs.addAll(childs);
+	}
+
+	public Map<String, String> getAttributes() {
+		return new HashMap<>(attributes);
+	}
+
+	public void setAttributes(Map<String, String> attributes) {
+		this.attributes.clear();
+		this.attributes.putAll(attributes);
+	}
 }

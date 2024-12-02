@@ -24,8 +24,6 @@ import com.google.common.collect.Lists;
 import cipm.consistency.base.shared.FileBackedModelUtil;
 import cipm.consistency.base.shared.ModelUtil;
 import cipm.consistency.base.shared.pcm.util.PCMUtils;
-import lombok.Builder;
-import lombok.Data;
 
 /**
  * Represents an instance of a Palladio Component Model (PCM) with all corresponding model types
@@ -35,7 +33,6 @@ import lombok.Data;
  * @author David Monschein
  *
  */
-@Data
 public class InMemoryPCM {
 
     /**
@@ -82,7 +79,6 @@ public class InMemoryPCM {
      * @param resourceEnvironmentModel
      *            the resource environment model
      */
-    @Builder
     public InMemoryPCM(Repository repository, System system, UsageModel usageModel, Allocation allocationModel,
             ResourceEnvironment resourceEnvironmentModel) {
         this.repository = repository;
@@ -305,4 +301,116 @@ public class InMemoryPCM {
             .usageModel(usage)
             .build();
     }
+
+	public Repository getRepository() {
+		return repository;
+	}
+
+	public void setRepository(Repository repository) {
+		this.repository = repository;
+	}
+
+	public System getSystem() {
+		return system;
+	}
+
+	public void setSystem(System system) {
+		this.system = system;
+	}
+
+	public UsageModel getUsageModel() {
+		return usageModel;
+	}
+
+	public void setUsageModel(UsageModel usageModel) {
+		this.usageModel = usageModel;
+	}
+
+	public Allocation getAllocationModel() {
+		return allocationModel;
+	}
+
+	public void setAllocationModel(Allocation allocationModel) {
+		this.allocationModel = allocationModel;
+	}
+
+	public ResourceEnvironment getResourceEnvironmentModel() {
+		return resourceEnvironmentModel;
+	}
+
+	public void setResourceEnvironmentModel(ResourceEnvironment resourceEnvironmentModel) {
+		this.resourceEnvironmentModel = resourceEnvironmentModel;
+	}
+
+	public LocalFilesystemPCM getReflected() {
+		return reflected;
+	}
+
+	public void setReflected(LocalFilesystemPCM reflected) {
+		this.reflected = reflected;
+	}
+	
+	public static class InMemoryPCMBuilder {
+		private Repository repository;
+		private System system;
+		private UsageModel usageModel;
+		private Allocation allocationModel;
+		private ResourceEnvironment resourceEnvironmentModel;
+
+		InMemoryPCMBuilder() {
+		}
+
+		/**
+		 * @param repository               the repository model
+		 * @return {@code this}.
+		 */
+		public InMemoryPCM.InMemoryPCMBuilder repository(final Repository repository) {
+			this.repository = repository;
+			return this;
+		}
+
+		/**
+		 * @param system                   the system model
+		 * @return {@code this}.
+		 */
+		public InMemoryPCM.InMemoryPCMBuilder system(final System system) {
+			this.system = system;
+			return this;
+		}
+
+		/**
+		 * @param usageModel               the usage model
+		 * @return {@code this}.
+		 */
+		public InMemoryPCM.InMemoryPCMBuilder usageModel(final UsageModel usageModel) {
+			this.usageModel = usageModel;
+			return this;
+		}
+
+		/**
+		 * @param allocationModel          the allocation model
+		 * @return {@code this}.
+		 */
+		public InMemoryPCM.InMemoryPCMBuilder allocationModel(final Allocation allocationModel) {
+			this.allocationModel = allocationModel;
+			return this;
+		}
+
+		/**
+		 * @return {@code this}.
+		 */
+		public InMemoryPCM.InMemoryPCMBuilder resourceEnvironmentModel(final ResourceEnvironment resourceEnvironmentModel) {
+			this.resourceEnvironmentModel = resourceEnvironmentModel;
+			return this;
+		}
+
+		public InMemoryPCM build() {
+			return new InMemoryPCM(this.repository, this.system, this.usageModel, this.allocationModel, this.resourceEnvironmentModel);
+		}
+	}
+
+	@java.lang.SuppressWarnings("all")
+	public static InMemoryPCM.InMemoryPCMBuilder builder() {
+		return new InMemoryPCM.InMemoryPCMBuilder();
+	}
 }
