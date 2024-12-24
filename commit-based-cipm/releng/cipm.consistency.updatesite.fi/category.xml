@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <bundle id="cipm.consistency.base.shared"/>
+   <bundle id="cipm.consistency.commitintegration.diff.util"/>
+   <bundle id="cipm.consistency.commitintegration.settings"/>
+   <bundle id="cipm.consistency.domains.im"/>
+   <bundle id="cipm.consistency.domains.java"/>
+   <bundle id="cipm.consistency.domains.pcm"/>
+   <bundle id="cipm.consistency.models.instrumentation"/>
+   <bundle id="cipm.consistency.tools.evaluation.data"/>
+   <bundle id="org.splevo.commons"/>
+   <bundle id="org.splevo.diffing"/>
+   <bundle id="org.splevo.extraction"/>
+   <bundle id="org.splevo.jamopp.diffing"/>
+   <bundle id="org.splevo.jamopp.extraction"/>
+   <bundle id="org.splevo.jamopp.util"/>
+</site>

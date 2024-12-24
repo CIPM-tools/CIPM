@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Commit-Based Integration of Source Code
 Bundle-SymbolicName: cipm.consistency.commitintegration
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 0.2.0.qualifier
 Export-Package: cipm.consistency.commitintegration,
  cipm.consistency.commitintegration.git,
  cipm.consistency.commitintegration.lang.detection,

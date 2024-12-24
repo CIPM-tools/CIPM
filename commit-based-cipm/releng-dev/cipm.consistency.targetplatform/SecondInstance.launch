@@ -22,7 +22,7 @@
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_ATTR_USE_ARGFILE" value="false"/>
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_SHOW_CODEDETAILS_IN_EXCEPTION_MESSAGES" value="true"/>
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
-    <stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17"/>
+    <stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog"/>
     <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
     <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dorg.eclipse.swt.graphics.Resource.reportNonDisposed=true"/>
@@ -265,7 +265,8 @@
         <setEntry value="org.eclipse.core.filesystem.linux.x86_64@default:false"/>
         <setEntry value="org.eclipse.core.filesystem@default:default"/>
         <setEntry value="org.eclipse.core.jobs@default:default"/>
-        <setEntry value="org.eclipse.core.net.linux@default:false"/>
+        <setEntry value="org.eclipse.core.net.win32.x86_64@default:false"/>
+        <setEntry value="org.eclipse.core.net.win32@default:false"/>
         <setEntry value="org.eclipse.core.net@default:default"/>
         <setEntry value="org.eclipse.core.resources@default:default"/>
         <setEntry value="org.eclipse.core.runtime@default:true"/>
@@ -663,7 +664,6 @@
         <setEntry value="org.slf4j.binding.nop@default:false"/>
         <setEntry value="org.somox.core@default:default"/>
         <setEntry value="org.somox.filter@default:default"/>
-        <setEntry value="org.somox.gast2seff@default:default"/>
         <setEntry value="org.somox.kdmhelper@default:default"/>
         <setEntry value="org.somox.metrics.dsl@default:default"/>
         <setEntry value="org.somox.metrics@default:default"/>
@@ -710,6 +710,21 @@
         <setEntry value="org.xtext.lua.ui.tests@default:default"/>
         <setEntry value="org.xtext.lua.ui@default:default"/>
         <setEntry value="org.xtext.lua@default:default"/>
+        <setEntry value="cipm.consistency.base.shared@default:default"/>
+        <setEntry value="cipm.consistency.commitintegration.diff.util@default:default"/>
+        <setEntry value="cipm.consistency.commitintegration.settings@default:default"/>
+        <setEntry value="cipm.consistency.domains.im@default:default"/>
+        <setEntry value="cipm.consistency.domains.java@default:default"/>
+        <setEntry value="cipm.consistency.domains.pcm@default:default"/>
+        <setEntry value="cipm.consistency.models.instrumentation@default:default"/>
+        <setEntry value="cipm.consistency.tools.evaluation.data@default:default"/>
+        <setEntry value="org.somox.gast2seff@default:default"/>
+        <setEntry value="org.splevo.commons@default:default"/>
+        <setEntry value="org.splevo.diffing@default:default"/>
+        <setEntry value="org.splevo.extraction@default:default"/>
+        <setEntry value="org.splevo.jamopp.diffing@default:default"/>
+        <setEntry value="org.splevo.jamopp.extraction@default:default"/>
+        <setEntry value="org.splevo.jamopp.util@default:default"/>
     </setAttribute>
     <booleanAttribute key="show_selected_only" value="false"/>
     <stringAttribute key="templateConfig" value="${target_home}\configuration\config.ini"/>

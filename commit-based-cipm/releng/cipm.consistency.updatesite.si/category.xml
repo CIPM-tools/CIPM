@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <category-def name="cipm.consistency" label="CIPM"/>
+   <feature id="cipm.consistency.feature">
+      <category name="cipm.consistency"/>
+   </feature>
+</site>

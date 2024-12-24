@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Consistency Preservation Rules from the PCM to the Instrumentation Model
 Bundle-SymbolicName: cipm.consistency.cpr.pcmim;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 0.2.0.qualifier
 Export-Package: cipm.consistency.cpr.pcmim,
  mir.reactions.pcmImUpdate,
  mir.routines.pcmImUpdate
@@ -14,6 +14,11 @@ Require-Bundle: org.palladiosimulator.pcm,
  tools.vitruv.change.interaction,
  tools.vitruv.dsls.reactions.runtime,
  cipm.consistency.models.instrumentation,
- org.eclipse.xtext;bundle-version="2.28.0"
+ org.eclipse.xtext,
+ cipm.consistency.domains.im,
+ tools.vitruv.framework.domains,
+ tools.vitruv.domains.pcm,
+ cipm.consistency.domains.pcm,
+ cipm.consistency.cpr.util
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Automatic-Module-Name: cipm.consistency.cpr.pcmim

@@ -2,13 +2,13 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Utilities for diffing Java models
 Bundle-SymbolicName: cipm.consistency.commitintegration.diff.util;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 0.2.0.qualifier
 Export-Package: cipm.consistency.commitintegration.diff.util,
  cipm.consistency.commitintegration.diff.util.pcm
 Require-Bundle: org.eclipse.emf.ecore,
  org.eclipse.emf.compare,
  org.eclipse.emf.common,
- com.google.guava,
+ com.google.guava;bundle-version="[30.0.0,33.2.0)",
  org.splevo.commons,
  org.splevo.diffing,
  org.splevo.extraction,

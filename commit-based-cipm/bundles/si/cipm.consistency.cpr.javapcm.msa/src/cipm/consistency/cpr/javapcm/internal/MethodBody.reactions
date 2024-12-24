@@ -1,0 +1,50 @@
+import org.emftext.language.java.members.ClassMethod
+import cipm.consistency.cpr.util.InternalUtils
+
+import "http://www.emftext.org/java" as java
+import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
+
+reactions: methodBody
+in reaction to changes in AdjustedJava
+execute actions in PCMExtended
+
+
+// The currently used change propagation rules for the changes on method bodies are defined 
+// in the ExtendedJava2PcmMethodBodyChangePreprocessor.
+// Otherwise, you can define change propagation rules for changes on method bodies here.
+
+import classifierBody
+
+reaction AddedMethodCall {
+	after element java::Method inserted in java::MethodCall[target]
+	call {
+		createOrFindCallTarget(affectedEObject, newValue)
+	}
+}
+
+routine createOrFindCallTarget(java::MethodCall methCall, java::Method method) {
+	match {
+		val callCom = retrieve pcm::BasicComponent corresponding to methCall.containingConcreteClassifier
+		val com = retrieve pcm::BasicComponent corresponding to method.containingConcreteClassifier
+		require absence of pcm::OperationSignature corresponding to method
+		require absence of pcm::ResourceDemandingSEFF corresponding to method
+	}
+	action {
+		call {
+			val classifier = method.containingConcreteClassifier
+			if (callCom !== com && InternalUtils.isExternalCall(
+					method, correspondenceModel, com)) {
+				createInterface(classifier)
+				createOrFindPCMSignature(method)
+				if (classifier instanceof org.emftext.language.java.classifiers.Class) {
+					createOrFindOperationProvidedRole(classifier, classifier)
+					// Required role
+					if (method instanceof ClassMethod) {
+						createSEFF(method, classifier, method)
+						// SEFF reconstruction
+					}
+				}
+			}
+		}
+	}
+}

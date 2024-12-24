@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <category-def name="cipm.consistency" label="CIPM"/>
+   <feature id="cipm.consistency.feature">
+      <category name="cipm.consistency"/>
+   </feature>
+   <feature id="org.emftext.language.java.feature">
+      <category name="cipm.consistency"/>
+   </feature>
+   <feature id="org.somox.seff.feature">
+      <category name="cipm.consistency"/>
+   </feature>
+   <feature id="edu.kit.ipd.sdq.commons.util.eclipse.feature">
+      <category name="cipm.consistency"/>
+   </feature>
+   <feature id="edu.kit.ipd.sdq.commons.util.emf.feature">
+      <category name="cipm.consistency"/>
+   </feature>
+   <feature id="edu.kit.ipd.sdq.commons.util.java.feature">
+      <category name="cipm.consistency"/>
+   </feature>
+   <feature id="edu.kit.ipd.sdq.commons.util.pcm.feature">
+      <category name="cipm.consistency"/>
+   </feature>
+   <feature id="de.uka.ipd.sdq.workflow.feature.core">
+      <category name="cipm.consistency"/>
+   </feature>
+   <feature id="de.uka.ipd.sdq.workflow.feature.mdsd">
+      <category name="cipm.consistency"/>
+   </feature>
+   <feature id="org.palladiosimulator.pcm.feature">
+      <category name="cipm.consistency"/>
+   </feature>
+   <feature id="de.uka.ipd.sdq.identifier.feature">
+      <category name="cipm.consistency"/>
+   </feature>
+   <feature id="org.eclipse.jdt">
+      <category name="cipm.consistency"/>
+   </feature>
+   <feature id="org.eclipse.emf.sdk">
+      <category name="cipm.consistency"/>
+   </feature>
+   <feature id="org.eclipse.emf.compare.ide.ui">
+      <category name="cipm.consistency"/>
+   </feature>
+   <feature id="org.eclipse.jgit">
+      <category name="cipm.consistency"/>
+   </feature>
+   <feature id="org.eclipse.uml2.sdk">
+      <category name="cipm.consistency"/>
+   </feature>
+   <bundle id="com.google.gson">
+      <category name="cipm.consistency"/>
+   </bundle>
+   <bundle id="org.apache.commons.compress">
+      <category name="cipm.consistency"/>
+   </bundle>
+   <bundle id="org.apache.commons.math">
+      <category name="cipm.consistency"/>
+   </bundle>
+   <bundle id="edu.kit.ipd.sdq.activextendannotations">
+      <category name="cipm.consistency"/>
+   </bundle>
+   <bundle id="org.apache.log4j">
+      <category name="cipm.consistency"/>
+   </bundle>
+   <bundle id="org.palladiosimulator.branding">
+      <category name="cipm.consistency"/>
+   </bundle>
+   <feature id="de.uka.ipd.sdq.dialogs.feature">
+      <category name="cipm.consistency"/>
+   </feature>
+   <bundle id="org.somox.filter">
+      <category name="cipm.consistency"/>
+   </bundle>
+   <bundle id="org.somox.util">
+      <category name="cipm.consistency"/>
+   </bundle>
+   <feature id="org.palladiosimulator.commons.stoex.sdk">
+      <category name="cipm.consistency"/>
+   </feature>
+   <feature id="org.palladiosimulator.commons.feature">
+      <category name="cipm.consistency"/>
+   </feature>
+   <feature id="de.uka.ipd.sdq.probfunction.feature">
+      <category name="cipm.consistency"/>
+   </feature>
+   <feature id="de.uka.ipd.sdq.units.feature">
+      <category name="cipm.consistency"/>
+   </feature>
+   <feature id="de.uka.ipd.sdq.stoex.feature">
+      <category name="cipm.consistency"/>
+   </feature>
+   <feature id="de.uka.ipd.sdq.errorhandling.feature">
+      <category name="cipm.consistency"/>
+   </feature>
+</site>

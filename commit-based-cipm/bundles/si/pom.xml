@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>cipm.consistency</groupId>
+		<artifactId>bundles</artifactId>
+		<version>0.2.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>si</artifactId>
+	<packaging>pom</packaging>
+	<name>Bundles for second Eclipse instance</name>
+
+	<modules>
+		<module>cipm.consistency.commitintegration</module>
+		<module>cipm.consistency.cpr.javaim</module>
+		<module>cipm.consistency.cpr.javapcm.additional.validation</module>
+		<module>cipm.consistency.cpr.javapcm.msa</module>
+		<module>cipm.consistency.cpr.javapcm.teammates</module>
+		<module>cipm.consistency.cpr.pcmim</module>
+		<module>cipm.consistency.designtime.instrumentation2</module>
+		<module>cipm.consistency.vsum</module>
+		<module>tools.vitruv.applications.pcmjava.seffstatements</module>
+		<module>tools.vitruv.applications.pcmjava.seffstatements.extended</module>
+		<module>tools.vitruv.applications.pcmjava.seffstatements.finegrained</module>
+		<module>tools.vitruv.applications.pcmjava.seffstatements.pojotransformations</module>
+		<module>cipm.consistency.cpr.util</module>
+	</modules>
+
+</project>

@@ -2,10 +2,10 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: VSUM for CIPM
 Bundle-SymbolicName: cipm.consistency.vsum
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 0.2.0.qualifier
 Automatic-Module-Name: cipm.consistency.vsum
-Bundle-RequiredExecutionEnvironment: JavaSE-13
-Require-Bundle: 
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Require-Bundle: cipm.consistency.commitintegration,
  tools.vitruv.framework.vsum,
  tools.vitruv.dsls.reactions.runtime,
  cipm.consistency.base.shared,

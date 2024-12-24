@@ -1,0 +1,28 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Vitruvius PCM-Java Seffstatment for POJO Transformations
+Bundle-SymbolicName: tools.vitruv.applications.pcmjava.seffstatements.pojotransformations
+Bundle-Version: 0.2.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Require-Bundle: org.apache.log4j,
+ com.google.guava,
+ org.eclipse.xtext.xbase.lib,
+ org.eclipse.xtend.lib,
+ org.eclipse.xtend.lib.macro,
+ org.eclipse.emf.ecore,
+ org.emftext.language.java,
+ org.palladiosimulator.pcm,
+ org.somox.sourcecodedecorator,
+ tools.vitruv.framework.util,
+ tools.vitruv.framework.userinteraction,
+ tools.vitruv.framework.correspondence,
+ tools.vitruv.framework.change,
+ tools.vitruv.applications.pcmjava.seffstatements,
+ tools.vitruv.applications.pcmjava.util,
+ tools.vitruv.framework.propagation,
+ tools.vitruv.framework.domains,
+ tools.vitruv.extensions.dslsruntime.reactions
+Export-Package: tools.vitruv.applications.pcmjava.seffstatements.pojotransformations,
+ tools.vitruv.applications.pcmjava.seffstatements.pojotransformations.code2seff
+Automatic-Module-Name: tools.vitruv.applications.pcmjava.seffstatements.pojotransformations
+

@@ -64,9 +64,9 @@ import com.google.common.collect.Lists;
  */
 public final class JaMoPPElementUtil {
 
-    /** Disable constructor for utility class. */
-    private JaMoPPElementUtil() {
-    }
+	/** Disable constructor for utility class. */
+	private JaMoPPElementUtil() {
+	}
 
     /**
      * Get the first container that is not of any given type.
@@ -93,81 +93,76 @@ public final class JaMoPPElementUtil {
         return getTransitiveContainerForPredicate(element, matchingPredicate);
     }
 
-    /**
-     * Get the first container of an element which matches the given predicate.
-     * 
-     * @param element
-     *            The element to get an appropriate container for.
-     * @param predicate
-     *            The predicate that matches a valid container.
-     * @return The first matching container, which can be null as well.
-     */
-    private static EObject getTransitiveContainerForPredicate(Commentable element, Predicate<EObject> predicate) {
-        EObject container = element.eContainer();
-        while (!predicate.apply(container)) {
-            container = container.eContainer();
-        }
-        return container;
-    }
+	/**
+	 * Get the first container of an element which matches the given predicate.
+	 * 
+	 * @param element   The element to get an appropriate container for.
+	 * @param predicate The predicate that matches a valid container.
+	 * @return The first matching container, which can be null as well.
+	 */
+	private static EObject getTransitiveContainerForPredicate(Commentable element, Predicate<EObject> predicate) {
+		EObject container = element.eContainer();
+		while (container != null && !predicate.apply(container)) {
+			container = container.eContainer();
+		}
+		return container;
+	}
 
-    /**
-     * Check if a candidate is in the container hierarchy of the child.
-     * 
-     * @param parentCandidate
-     *            The candidate to check.
-     * @param child
-     *            The child to prove the hierarchy of.
-     * @return True/false depending on parent relationship exists or not.
-     */
-    public static boolean isParentOf(Commentable parentCandidate, Commentable child) {
+	/**
+	 * Check if a candidate is in the container hierarchy of the child.
+	 * 
+	 * @param parentCandidate The candidate to check.
+	 * @param child           The child to prove the hierarchy of.
+	 * @return True/false depending on parent relationship exists or not.
+	 */
+	public static boolean isParentOf(Commentable parentCandidate, Commentable child) {
 
-        EObject container = child;
-        while (container != null) {
+		EObject container = child;
+		while (container != null) {
 
-            if (container == parentCandidate) {
-                return true;
-            }
+			if (container == parentCandidate) {
+				return true;
+			}
 
-            container = container.eContainer();
-        }
+			container = container.eContainer();
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    /**
-     * Get the name for a JaMoPP element.<br>
-     * This is the name in case of {@link NamedElement}s, otherwise null will be returned.<br>
-     * 
-     * If you want to always get a string representation, check out
-     * {@link JaMoPPElementUtil#getLabel(Commentable)}.
-     * 
-     * @param element
-     *            The JaMoPP element to get the name for.
-     * @return The name attribute of an element.
-     */
-    public static String getName(Commentable element) {
-        if (element == null) {
-            return null;
-        }
-        if (element instanceof NamedElement) {
-            return ((NamedElement) element).getName();
-        } else {
-            return null;
-        }
-    }
+	/**
+	 * Get the name for a JaMoPP element.<br>
+	 * This is the name in case of {@link NamedElement}s, otherwise null will be
+	 * returned.<br>
+	 * 
+	 * If you want to always get a string representation, check out
+	 * {@link JaMoPPElementUtil#getLabel(Commentable)}.
+	 * 
+	 * @param element The JaMoPP element to get the name for.
+	 * @return The name attribute of an element.
+	 */
+	public static String getName(Commentable element) {
+		if (element == null) {
+			return null;
+		}
+		if (element instanceof NamedElement) {
+			return ((NamedElement) element).getName();
+		} else {
+			return null;
+		}
+	}
 
-    /**
-     * Get the name of a JaMoPP element.<br>
-     * This will always return a representative String for the element.<br>
-     * The main purpose of the method is to get a human readable representation.
-     * 
-     * @param element
-     *            The JaMoPP element to get the label for.
-     * @return The String representation.
-     */
-    public static String getLabel(Commentable element) {
-        if (element == null) {
-            return "NULL";
+	/**
+	 * Get the name of a JaMoPP element.<br>
+	 * This will always return a representative String for the element.<br>
+	 * The main purpose of the method is to get a human readable representation.
+	 * 
+	 * @param element The JaMoPP element to get the label for.
+	 * @return The String representation.
+	 */
+	public static String getLabel(Commentable element) {
+		if (element == null) {
+			return "NULL";
 
         } else if (element instanceof CompilationUnit) {
             CompilationUnit cu = (CompilationUnit) element;
@@ -179,18 +174,18 @@ public final class JaMoPPElementUtil {
                 return "CompilationUnit (no name)";
             }
 
-        } else if (element instanceof LocalVariableStatement) {
-            LocalVariableStatement statement = (LocalVariableStatement) element;
-            LocalVariable variable = statement.getVariable();
+		} else if (element instanceof LocalVariableStatement) {
+			LocalVariableStatement statement = (LocalVariableStatement) element;
+			LocalVariable variable = statement.getVariable();
 
-            StringBuilder labelBuilder = new StringBuilder("Variable Declaration (");
-            labelBuilder.append(variable.getName());
-            for (AdditionalLocalVariable addVar : variable.getAdditionalLocalVariables()) {
-                labelBuilder.append(", ");
-                labelBuilder.append(addVar.getName());
-            }
-            labelBuilder.append(") :");
-            return labelBuilder.toString();
+			StringBuilder labelBuilder = new StringBuilder("Variable Declaration (");
+			labelBuilder.append(variable.getName());
+			for (AdditionalLocalVariable addVar : variable.getAdditionalLocalVariables()) {
+				labelBuilder.append(", ");
+				labelBuilder.append(addVar.getName());
+			}
+			labelBuilder.append(") :");
+			return labelBuilder.toString();
 
         } else if (element instanceof ExpressionStatement) {
             ExpressionStatement statement = (ExpressionStatement) element;
@@ -208,46 +203,46 @@ public final class JaMoPPElementUtil {
                 return "Expression Statement (void)";
             }
 
-        } else if (element instanceof Return) {
-            return "Return Statement";
+		} else if (element instanceof Return) {
+			return "Return Statement";
 
         } else if (element instanceof ClassifierImport) {
             ClassifierImport importDecl = (ClassifierImport) element;
             return "Import: " + importDecl.getClassifier()
                 .getName();
 
-        } else if (element instanceof Import) {
-            return "Import";
+		} else if (element instanceof Import) {
+			return "Import";
 
         } else if (element instanceof MethodCall) {
             MethodCall invocation = (MethodCall) element;
             return "Method Invocation: " + invocation.getTarget()
                 .getName() + "()";
 
-        } else if (element instanceof Method) {
-            Method method = (Method) element;
-            return method.getName() + "()";
+		} else if (element instanceof Method) {
+			Method method = (Method) element;
+			return method.getName() + "()";
 
-        } else if (element instanceof Constructor) {
-            Constructor method = (Constructor) element;
-            return method.getName() + "()";
+		} else if (element instanceof Constructor) {
+			Constructor method = (Constructor) element;
+			return method.getName() + "()";
 
-        } else if (element instanceof Block && getContainingMethod(element) != null) {
-            Method method = getContainingMethod(element);
-            return method.getName() + "()";
+		} else if (element instanceof Block && getContainingMethod(element) != null) {
+			Method method = getContainingMethod(element);
+			return method.getName() + "()";
 
-        } else if (element instanceof TryBlock) {
-            String containerName = null;
-            if (element.eContainer() instanceof Commentable) {
-                containerName = getLabel((Commentable) element.eContainer());
-            } else {
-                containerName = "" + element.eContainer();
-            }
-            return "try-Block in " + containerName;
+		} else if (element instanceof TryBlock) {
+			String containerName = null;
+			if (element.eContainer() instanceof Commentable) {
+				containerName = getLabel((Commentable) element.eContainer());
+			} else {
+				containerName = "" + element.eContainer();
+			}
+			return "try-Block in " + containerName;
 
-        } else if (element instanceof NamedElement) {
-            return ((NamedElement) element).getName();
-        }
+		} else if (element instanceof NamedElement) {
+			return ((NamedElement) element).getName();
+		}
 
         return "JaMoPP Element " + element.getClass()
             .getSimpleName();
@@ -318,10 +313,6 @@ public final class JaMoPPElementUtil {
             return defaultCase(theEObject);
         }
 
-        private String doSuperSwitch(EObject obj) {
-            return super.doSwitch(obj);
-        }
-
         private static Optional<NamedElement> findRelevantContainer(EObject obj) {
             EObject relevantContainer = obj;
             while (relevantContainer != null && !isRelevantContainerObject(relevantContainer)) {
@@ -344,11 +335,6 @@ public final class JaMoPPElementUtil {
                         }
                     });
         }
-
-        /**
-         * Determines the qualified name for a container element.
-         */
-        private class ContainersQualifiedNameSwitch extends ContainersSwitch<String> {
 
             @Override
             public String caseJavaRoot(JavaRoot object) {
@@ -375,10 +361,22 @@ public final class JaMoPPElementUtil {
 
         }
 
-        /**
-         * Determines the qualified name for a member element.
-         */
-        private class MembersQualifiedNameSwitch extends MembersSwitch<String> {
+		@Override
+		protected String doSwitch(EClass theEClass, EObject theEObject) {
+			List<EClass> typesToCheck = Lists.newLinkedList(theEClass.getEAllSuperTypes());
+			typesToCheck.add(0, theEClass);
+			typesToCheck.remove(CommonsPackage.eINSTANCE.getCommentable());
+			for (EClass eclass : typesToCheck) {
+				Switch<String> delegate = findDelegate(eclass.getEPackage());
+				if (delegate != null) {
+					String result = delegatedDoSwitch(delegate, eclass, theEObject);
+					if (result != null) {
+						return result;
+					}
+				}
+			}
+			return defaultCase(theEObject);
+		}
 
             @Override
             public String caseField(Field object) {
@@ -396,40 +394,47 @@ public final class JaMoPPElementUtil {
                         object.getName());
             }
 
-        }
+		@SuppressWarnings("unchecked")
+		private static boolean isRelevantContainerObject(final EObject obj) {
+			return Iterables.any(
+					Lists.newArrayList(JavaRoot.class, Classifier.class, Method.class, Constructor.class, Field.class),
+					new Predicate<Class<?>>() {
+						@Override
+						public boolean apply(Class<?> input) {
+							return input.isAssignableFrom(obj.getClass());
+						}
+					});
+		}
 
     }
 
-    private static Method getContainingMethod(Commentable element) {
-        EObject container = element.eContainer();
-        while (container != null) {
-            if (container instanceof Method) {
-                return (Method) container;
-            } else {
-                container = container.eContainer();
-            }
-        }
-        return null;
-    }
+	@Override
+			public String caseJavaRoot(JavaRoot object) {
+				String namespaces = object.getNamespacesAsString();
+				Matcher m = Pattern.compile(Pattern.quote(namespaces) + "(.*?)(\\.java)?").matcher(object.getName());
+				if (m.matches()) {
+					return m.group(1);
+				}
+				return object.getName();
+			}
 
-    /**
-     * Get the position of a statement in its container. If the container is not a
-     * {@link StatementListContainer} the method will always return -1.
-     * 
-     * @param statement
-     *            The statement to check the position of.
-     * @return The position in the container's statement list.
-     */
-    public static int getPositionInContainer(Statement statement) {
+		}
 
-        if (statement.eContainer() instanceof StatementListContainer) {
+		if (statement.eContainer() instanceof StatementListContainer) {
             StatementListContainer container = (StatementListContainer) statement.eContainer();
             return container.getStatements()
                 .indexOf(statement);
         }
 
-        return -1;
-    }
+		/**
+		 * Determines the qualified name for a container element.
+		 */
+		private class ContainersQualifiedNameSwitch extends ContainersSwitch<String> {
+
+			@Override
+			public String caseClassifier(Classifier object) {
+				return String.format("%s::%s", doSuperSwitch(object.getContainingCompilationUnit()), object.getName());
+			}
 
     /**
      * Get the import declaration for a type in the compilation unit of a JaMoPP element.
@@ -452,33 +457,16 @@ public final class JaMoPPElementUtil {
         return null;
     }
 
-    /**
-     * Get a human readable label for the type of an element.
-     * 
-     * @param element
-     *            The element to get the type label for.
-     * @return The type identifier.
-     */
-    public static String getTypeLabel(Commentable element) {
-        if (element instanceof Enumeration) {
-            return "Enumeration";
-        } else if (element instanceof org.emftext.language.java.classifiers.Class) {
-            return "Class";
-        } else if (element instanceof Interface) {
-            return "Interface";
-        } else if (element instanceof Field || element instanceof AdditionalField) {
-            return "Field";
-        } else if (element instanceof Method || element instanceof Constructor) {
-            return "Method";
-        } else if (element instanceof Statement) {
-            return "Statement";
-        } else if (element instanceof LocalVariable || element instanceof AdditionalLocalVariable) {
-            return "Variable";
-        } else if (element instanceof Parameter) {
-            return "Parameter";
+		/**
+		 * Determines the qualified name for a member element.
+		 */
+		private class MembersQualifiedNameSwitch extends MembersSwitch<String> {
 
-        } else if (element instanceof ClassifierImport) {
-            return getTypeLabel(((ClassifierImport) element).getClassifier());
+			@Override
+			public String caseField(Field object) {
+				return String.format("%s::%s::%s", doSuperSwitch(object.getContainingCompilationUnit()),
+						object.getContainingConcreteClassifier().getName(), object.getName());
+			}
 
         } else {
             int implLength = 4;
@@ -487,34 +475,121 @@ public final class JaMoPPElementUtil {
             return className.substring(0, className.length() - implLength);
         }
     }
+		}
 
-    /**
-     * Get the constructor matching a given constructor call.
-     * 
-     * The call itself does not have an explicit reference, thus the members of the referenced type
-     * are scanned for a constructor with arguments matching the given call.
-     * 
-     * In case of an implicit constructor call, null will be returned. Only explicit constructors
-     * are returned.
-     * 
-     * @param call
-     *            The call to search the constructor for.
-     * @return The constructor or null if none found.
-     */
-    public static Constructor getConstructor(NewConstructorCall call) {
+	}
 
-        Type type = call.getReferencedType();
-        if (type instanceof ConcreteClassifier) {
-            for (Constructor constructor : ((ConcreteClassifier) type).getConstructors()) {
+	private static Method getContainingMethod(Commentable element) {
+		EObject container = element.eContainer();
+		while (container != null) {
+			if (container instanceof Method) {
+				return (Method) container;
+			} else {
+				container = container.eContainer();
+			}
+		}
+		return null;
+	}
 
-                // TODO: Allow for none perfect matches such as varying parameter lengths
-                boolean constructorForCall = ConstructorExtension.isConstructorForCall(constructor, call, true);
-                if (constructorForCall) {
-                    return constructor;
-                }
-            }
-        }
-        return null;
-    }
+	/**
+	 * Get the position of a statement in its container. If the container is not a
+	 * {@link StatementListContainer} the method will always return -1.
+	 * 
+	 * @param statement The statement to check the position of.
+	 * @return The position in the container's statement list.
+	 */
+	public static int getPositionInContainer(Statement statement) {
+		var statementContainer = statement.eContainer();
+
+		if (statementContainer instanceof StatementListContainer) {
+			var sts = ((StatementListContainer) statementContainer).getStatements();
+
+			return sts != null ? sts.indexOf(statement) : -1;
+		}
+
+		return -1;
+	}
+
+	/**
+	 * Get the import declaration for a type in the compilation unit of a JaMoPP
+	 * element.
+	 * 
+	 * @param referenceElement The element to inspect the container of.
+	 * @param type             The type to search the import for.
+	 * @return The Import declaration or null if none found.
+	 */
+	public static Import checkForImport(Commentable referenceElement, Type type) {
+		CompilationUnit cu = referenceElement.getContainingCompilationUnit();
+		EList<ClassifierImport> imports = cu.getChildrenByType(ClassifierImport.class);
+		for (ClassifierImport importDecl : imports) {
+			if (importDecl.getClassifier().equals(type)) {
+				return importDecl;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Get a human readable label for the type of an element.
+	 * 
+	 * @param element The element to get the type label for.
+	 * @return The type identifier.
+	 */
+	public static String getTypeLabel(Commentable element) {
+		if (element instanceof Enumeration) {
+			return "Enumeration";
+		} else if (element instanceof org.emftext.language.java.classifiers.Class) {
+			return "Class";
+		} else if (element instanceof Interface) {
+			return "Interface";
+		} else if (element instanceof Field || element instanceof AdditionalField) {
+			return "Field";
+		} else if (element instanceof Method || element instanceof Constructor) {
+			return "Method";
+		} else if (element instanceof Statement) {
+			return "Statement";
+		} else if (element instanceof LocalVariable || element instanceof AdditionalLocalVariable) {
+			return "Variable";
+		} else if (element instanceof Parameter) {
+			return "Parameter";
+
+		} else if (element instanceof ClassifierImport) {
+			return getTypeLabel(((ClassifierImport) element).getClassifier());
+
+		} else {
+			int implLength = 4;
+			String className = element.getClass().getSimpleName();
+			return className.substring(0, className.length() - implLength);
+		}
+	}
+
+	/**
+	 * Get the constructor matching a given constructor call.
+	 * 
+	 * The call itself does not have an explicit reference, thus the members of the
+	 * referenced type are scanned for a constructor with arguments matching the
+	 * given call.
+	 * 
+	 * In case of an implicit constructor call, null will be returned. Only explicit
+	 * constructors are returned.
+	 * 
+	 * @param call The call to search the constructor for.
+	 * @return The constructor or null if none found.
+	 */
+	public static Constructor getConstructor(NewConstructorCall call) {
+
+		Type type = call.getReferencedType();
+		if (type instanceof ConcreteClassifier) {
+			for (Constructor constructor : ((ConcreteClassifier) type).getConstructors()) {
+
+				// TODO: Allow for none perfect matches such as varying parameter lengths
+				boolean constructorForCall = ConstructorExtension.isConstructorForCall(constructor, call, true);
+				if (constructorForCall) {
+					return constructor;
+				}
+			}
+		}
+		return null;
+	}
 
 }

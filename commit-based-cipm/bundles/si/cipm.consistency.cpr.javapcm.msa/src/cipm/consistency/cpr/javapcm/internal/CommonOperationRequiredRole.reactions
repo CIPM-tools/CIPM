@@ -1,0 +1,222 @@
+import static tools.vitruv.applications.util.temporary.java.JavaTypeUtil.*
+import static cipm.consistency.cpr.util.InternalUtils.findRequiredRole
+import org.palladiosimulator.pcm.repository.OperationRequiredRole
+import org.palladiosimulator.pcm.repository.RepositoryPackage
+
+import "http://www.emftext.org/java" as java
+import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
+
+
+reactions: commonOperationRequiredRole
+in reaction to changes in AdjustedJava
+execute actions in PCMExtended
+
+
+reaction AddedImport {
+	after element java::Import inserted in java::JavaRoot[imports]
+	call {
+		checkImportForImportedRequiredRoles(newValue)
+	}
+}
+
+routine checkImportForImportedRequiredRoles(java::Import importSt) {
+	action {
+		call {
+			for (classifier : importSt.containingCompilationUnit.classifiers) {
+				createOrFindRequiredRoleForImport(importSt, classifier)
+			}
+		}
+	}
+}
+
+routine checkClassifierForImportedRequiredRoles(java::ConcreteClassifier classifier) {
+	action {
+		call {
+			for (importSt : classifier.containingCompilationUnit.imports) {
+				createOrFindRequiredRoleForImport(importSt, classifier)
+			}
+		}
+	}
+}
+
+routine createOrFindRequiredRoleForImport(java::Import importSt, java::ConcreteClassifier importingClassifier) {
+	match {
+		val opInterface = retrieve pcm::OperationInterface corresponding to importSt.classifier
+		val opInterfaceCom = retrieve pcm::RepositoryComponent corresponding to importSt.classifier
+		val containingCom = retrieve pcm::RepositoryComponent corresponding to importingClassifier
+	}
+	action {
+		call {
+			if (opInterfaceCom !== containingCom) {
+				var reqRole = findRequiredRole(containingCom, opInterface)
+				if (reqRole !== null) {
+					addCorrespondenceForImportAndRequiredRole(importSt, reqRole)
+					return;
+				}
+				createRequiredRoleForImport(importSt, opInterface, containingCom)
+			}
+		}
+	}
+}
+
+routine createRequiredRoleForImport(java::Import importSt, pcm::OperationInterface opInterface,
+		pcm::RepositoryComponent requiringCom) {
+	match {
+		require absence of pcm::OperationRequiredRole corresponding to importSt
+	}
+	action {
+		val reqRole = create pcm::OperationRequiredRole and initialize {
+			reqRole.requiredInterface__OperationRequiredRole = opInterface
+			reqRole.requiringEntity_RequiredRole = requiringCom
+			reqRole.entityName = "Component_" + requiringCom.entityName + "_requires_"
+				+ opInterface.entityName
+		}
+		call {
+			addCorrespondenceForImportAndRequiredRole(importSt, reqRole)
+		}
+	}
+}
+
+routine addCorrespondenceForImportAndRequiredRole(java::Import importSt, pcm::OperationRequiredRole reqRole) {
+	action {
+		add correspondence between importSt and reqRole
+	}
+}
+
+routine checkFieldForRequiredInterface(java::Classifier classifier, java::Field javaField) {
+	match {
+		val correspondingInterface = retrieve pcm::OperationInterface corresponding to classifier
+		val correspondingComponent = retrieve pcm::RepositoryComponent corresponding to classifier
+		val repositoryComponent = retrieve pcm::RepositoryComponent 
+			corresponding to javaField.containingConcreteClassifier
+	}
+	action {
+		call {
+			if (correspondingComponent != repositoryComponent) {
+				var reqRole = findRequiredRole(repositoryComponent, correspondingInterface)
+				if (reqRole !== null) {
+					addCorrespondenceForFieldAndRequiredRole(javaField, reqRole)
+				} else {
+					createOperationRequiredRoleForField(javaField, correspondingInterface,
+						repositoryComponent)
+				}
+			}
+		}
+	}
+}
+
+routine createOperationRequiredRoleForField(java::Field javaField,
+	pcm::OperationInterface operationInterface, pcm::RepositoryComponent repoComponent) {
+	action {
+		val operationRequiredRole = create pcm::OperationRequiredRole and initialize {
+			operationRequiredRole.requiredInterface__OperationRequiredRole = operationInterface
+			operationRequiredRole.requiringEntity_RequiredRole = repoComponent
+			operationRequiredRole.entityName = "Component_" + repoComponent.entityName + "_requires_" +
+				operationInterface.entityName
+		}
+		call {
+			addCorrespondenceForFieldAndRequiredRole(javaField, operationRequiredRole)
+		}
+	}
+}
+
+routine addCorrespondenceForFieldAndRequiredRole(java::Field javaField, pcm::OperationRequiredRole reqRole) {
+	action {
+		add correspondence between reqRole and javaField
+	}
+}
+
+reaction RemovedImport {
+	after element java::Import removed from java::JavaRoot[imports]
+	call {
+		removeRequiredRoleForJavaElement(oldValue)
+	}
+}
+
+routine removeRequiredRoleForJavaElement(java::Commentable javaElement) {
+	match {
+		val reqRole = retrieve pcm::OperationRequiredRole corresponding to javaElement
+		val allImports = retrieve many java::Commentable corresponding to reqRole
+	}
+	action {
+		call {
+			if (allImports.size === 1) {
+				removeRequiredRole(reqRole)
+			} else {
+				removeCorrespondenceForJavaElementAndRequiredRole(javaElement, reqRole)
+			}
+		}
+	}
+}
+
+routine checkUpdatedFieldType(java::Field field, java::TypeReference oldType, java::TypeReference newType) {
+	match {
+		val oldCorrespondingOpInterface = retrieve optional pcm::OperationInterface
+			corresponding to getNormalizedClassifierFromTypeReference(oldType)
+		val oldCorrespondingCom = retrieve optional pcm::RepositoryComponent
+			corresponding to getNormalizedClassifierFromTypeReference(oldType)
+		val opInterface = retrieve optional pcm::OperationInterface
+			corresponding to getNormalizedClassifierFromTypeReference(newType)
+		val newCom = retrieve optional pcm::RepositoryComponent
+			corresponding to getNormalizedClassifierFromTypeReference(newType)
+		val opRequiredRole = retrieve optional pcm::OperationRequiredRole corresponding to field
+		val basicComponent = retrieve pcm::BasicComponent corresponding to field.containingConcreteClassifier
+	}
+	action {
+		call {
+			if (opRequiredRole.present
+					&& oldCorrespondingOpInterface.present && opInterface.present
+					&& oldCorrespondingCom.present && newCom.present
+					&& newCom.get !== basicComponent) {
+				// Reset required role.
+				removeRequiredRoleForJavaElement(field)
+				checkFieldForRequiredInterface(field.containingConcreteClassifier, field)
+				return
+			}
+			if (!oldCorrespondingOpInterface.present && opInterface.present
+					&& newCom.present && newCom.get !== basicComponent) {
+				// New required role needs to be added.
+				checkFieldForRequiredInterface(field.containingConcreteClassifier, field)
+				return
+			}
+			if (opRequiredRole.present
+					&& (oldCorrespondingOpInterface.present && !opInterface.present
+					|| oldCorrespondingOpInterface.present && opInterface.present
+					&& oldCorrespondingCom.present && newCom.present
+					&& newCom.get === basicComponent)) {
+				// Remove required role and correspondence.
+				removeRequiredRoleForJavaElement(field)
+			}
+		}
+	}
+}
+
+routine removeOperationRequiredRolesForRemovedClass(java::Classifier classifier) {
+	match {
+		val pcmInterface = retrieve pcm::Interface corresponding to classifier
+		val pcmRepository = retrieve pcm::Repository corresponding to RepositoryPackage.Literals.REPOSITORY
+	}
+	action {
+		call {
+			pcmRepository.components__Repository.forEach[
+				it.requiredRoles_InterfaceRequiringEntity
+					.filter(OperationRequiredRole)
+					.filter[it.requiredInterface__OperationRequiredRole === pcmInterface]
+					.toSet
+					.forEach[removeRequiredRole(it)]
+			]
+		}
+	}
+}
+
+routine removeRequiredRole(pcm::OperationRequiredRole reqRole) {
+	action {
+		delete reqRole
+	}
+}
+
+routine removeCorrespondenceForJavaElementAndRequiredRole(java::Commentable javaElement, pcm::OperationRequiredRole reqRole) {
+	action {
+		remove correspondence between javaElement and reqRole
+	}
+}

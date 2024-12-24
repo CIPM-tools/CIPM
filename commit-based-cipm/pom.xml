@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>cipm.consistency</groupId>
+		<artifactId>pipeline.parent</artifactId>
+		<version>0.2.0-SNAPSHOT</version>
+		<relativePath>releng/cipm.consistency.parent</relativePath>
+	</parent>
+	<artifactId>pipeline</artifactId>
+	<packaging>pom</packaging>
+
+	<profiles>
+		<profile>
+			<id>run-one</id>
+			<modules>
+				<module>bundles</module>
+				<module>releng/cipm.consistency.workflow</module>
+				<module>releng/cipm.consistency.updatesite.fi</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>run-two</id>
+			<modules>
+				<module>bundles</module>
+				<module>releng/cipm.consistency.dependencywrapper</module>
+				<module>releng/cipm.consistency.updatesite.si</module>
+				<module>releng/cipm.consistency.feature</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>run-three</id>
+			<modules>
+				<module>releng/cipm.consistency.updatesite.ti</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>test</id>
+			<modules>
+				<module>tests/cipm.consistency.vsum.test</module>
+			</modules>
+		</profile>
+	</profiles>
+
+</project>

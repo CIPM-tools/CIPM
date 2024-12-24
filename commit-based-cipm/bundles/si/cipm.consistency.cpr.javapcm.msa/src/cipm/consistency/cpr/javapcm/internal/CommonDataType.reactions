@@ -1,0 +1,235 @@
+import org.palladiosimulator.pcm.repository.RepositoryPackage
+import org.palladiosimulator.pcm.repository.CompositeDataType
+import org.emftext.language.java.classifiers.ConcreteClassifier
+import tools.vitruv.applications.pcmjava.util.java2pcm.TypeReferenceCorrespondenceHelper
+import org.emftext.language.java.members.Field
+import org.emftext.language.java.classifiers.Interface
+import org.emftext.language.java.extensions.types.TypeReferenceExtension
+import org.emftext.language.java.commons.NamedElement
+import org.palladiosimulator.pcm.repository.CollectionDataType
+import org.emftext.language.java.containers.Origin
+import cipm.consistency.cpr.util.InternalUtils
+
+import "http://www.emftext.org/java" as java
+import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
+
+
+reactions: commonDataType
+in reaction to changes in AdjustedJava
+execute actions in PCMExtended
+
+
+routine checkInnerDeclarationsCreation(pcm::DataType type, java::TypeReference typeRef) {
+	action {
+		call {
+			val refTarget = typeRef.target
+			if (refTarget.containingCompilationUnit.origin !== Origin.FILE) {
+				return
+			}
+			if (type instanceof CompositeDataType && refTarget instanceof ConcreteClassifier) {
+				for (mem : (refTarget as ConcreteClassifier).members) {
+					if (mem instanceof Field) {
+						createInnerDeclaration(type as CompositeDataType, mem)
+					}
+				}
+			}
+		}
+	}
+}
+
+routine createInnerDeclaration(pcm::CompositeDataType dataType, java::Field javaField) {
+	match {
+		require absence of pcm::InnerDeclaration corresponding to javaField
+		val repository = retrieve pcm::Repository corresponding to RepositoryPackage.Literals.REPOSITORY
+	}
+	action {
+		call {
+			checkCollectionDataTypeCreation(javaField.typeReference)
+		}
+		val innerDeclaration = create pcm::InnerDeclaration and initialize {
+			innerDeclaration.entityName = javaField.name
+			innerDeclaration.datatype_InnerDeclaration = TypeReferenceCorrespondenceHelper.
+				getDataTypeFromTypeReference(javaField.typeReference, correspondenceModel,
+					userInteractor, repository)
+			innerDeclaration.compositeDataType_InnerDeclaration = dataType
+		}
+		add correspondence between innerDeclaration and javaField
+		call {
+			checkInnerDeclarationsCreation(innerDeclaration.datatype_InnerDeclaration, javaField.typeReference)
+		}
+	}
+}
+
+routine checkCollectionDataTypeCreation(java::TypeReference typeRef) {
+	match {
+		val repo = retrieve pcm::Repository corresponding to RepositoryPackage.Literals.REPOSITORY
+	}
+	action {
+		call {
+			val target = typeRef.target
+			if (target instanceof ConcreteClassifier) {
+				val classifierReference = typeRef.pureClassifierReference
+				val superRef = target.superTypeReferences
+				for (superReference : superRef) {
+					if (superReference.target instanceof Interface) {
+						val superRefName = superReference.target.name
+						if (superRefName.equals("Collection")
+							&& classifierReference.typeArguments.size === 1) {
+							var argRef = TypeReferenceExtension.getTypeReferenceOfTypeArgument(
+								classifierReference.typeArguments.get(0))
+							if (argRef === null) {
+								argRef = InternalUtils
+									.getTypeReferenceToObject(classifierReference)
+							}
+							if (argRef !== null) {
+								createOrFindCollectionDataType(typeRef, argRef)
+							}
+							return
+						} else if (superRefName.equals("Map")
+							&& classifierReference.typeArguments.size === 2) {
+							var argRef = TypeReferenceExtension.getTypeReferenceOfTypeArgument(
+								classifierReference.typeArguments.get(1))
+							if (argRef === null) {
+								argRef = InternalUtils
+									.getTypeReferenceToObject(classifierReference)
+							}
+							if (argRef !== null) {
+								createOrFindCollectionDataType(typeRef, argRef)
+							}
+							return
+						}
+					}
+				}
+			}
+		}
+		call {
+			if (typeRef.arrayDimension > 0) {
+				createOrFindCollectionDataTypeForArray(typeRef)
+			}
+		}
+	}
+}
+
+routine createOrFindCollectionDataType(java::TypeReference typeRef, java::TypeReference innerDeclaration) {
+	match {
+		val dataTypes = retrieve many pcm::CollectionDataType corresponding to typeRef.target
+		val repo = retrieve pcm::Repository corresponding to RepositoryPackage.Literals.REPOSITORY
+	}
+	action {
+		call {
+			checkCollectionDataTypeCreation(innerDeclaration)
+			val innerType = TypeReferenceCorrespondenceHelper
+				.getDataTypeFromTypeReference(innerDeclaration, correspondenceModel, userInteractor, repo)
+			for (collType : dataTypes) {
+				if (collType.innerType_CollectionDataType === innerType) {
+					return
+				}
+			}
+			createCollectionDataType(typeRef, innerType)
+		}
+	}
+}
+
+routine createCollectionDataType(java::TypeReference typeRef, pcm::DataType innerType) {
+	match {
+		val repo = retrieve pcm::Repository corresponding to RepositoryPackage.Literals.REPOSITORY
+	}
+	action {
+		val collectionType = create pcm::CollectionDataType and initialize {
+			collectionType.entityName = (typeRef.target as NamedElement).name + "_of_"
+				+ InternalUtils.convertToName(innerType)
+			collectionType.innerType_CollectionDataType = innerType
+		}
+		add correspondence between typeRef.target and collectionType
+		update repo {
+			repo.dataTypes__Repository += collectionType
+		}
+	}
+}
+
+routine createOrFindCollectionDataTypeForArray(java::TypeReference elementType) {
+	match {
+		val repo = retrieve pcm::Repository corresponding to RepositoryPackage.Literals.REPOSITORY
+	}
+	action {
+		call {
+			val innerType = TypeReferenceCorrespondenceHelper.getDataTypeFromTypeReference(
+				elementType, correspondenceModel, userInteractor, repo)
+			val types = repo.dataTypes__Repository.filter(CollectionDataType)
+				.filter[
+					it.innerType_CollectionDataType === innerType
+						&& it.entityName.startsWith("Array_of_")
+				]
+			if (types.size === 0) {
+				createCollectionDataTypeForArray(innerType)
+			}
+		}
+	}
+}
+
+routine createCollectionDataTypeForArray(pcm::DataType innerType) {
+	match {
+		val repo = retrieve pcm::Repository corresponding to RepositoryPackage.Literals.REPOSITORY
+	}
+	action {
+		val collectionType = create pcm::CollectionDataType and initialize {
+			collectionType.entityName = "Array_of_" + InternalUtils.convertToName(innerType)
+			collectionType.innerType_CollectionDataType = innerType
+		}
+		update repo {
+			repo.dataTypes__Repository += collectionType
+		}
+	}
+}
+
+routine changeInnerDeclarationType(java::TypeReference typeReference, java::Field javaField) {
+	match {
+		val innerDeclaration = retrieve pcm::InnerDeclaration corresponding to javaField
+		val repository = retrieve pcm::Repository corresponding to RepositoryPackage.Literals.REPOSITORY
+	}
+	action {
+		call {
+			checkCollectionDataTypeCreation(typeReference)
+		}
+		update innerDeclaration {
+			innerDeclaration.datatype_InnerDeclaration = TypeReferenceCorrespondenceHelper.
+				getDataTypeFromTypeReference(typeReference, correspondenceModel, userInteractor, repository)
+		}
+		call {
+			checkInnerDeclarationsCreation(innerDeclaration.datatype_InnerDeclaration, typeReference)
+		}
+	}
+}
+
+routine checkInnerDeclarationRemoval(java::Field field) {
+	match {
+		val innerDeclaration = retrieve pcm::InnerDeclaration corresponding to field
+	}
+	action {
+		delete innerDeclaration
+	}
+}
+
+routine checkDataTypeRemoval(java::ConcreteClassifier javaClass) {
+	match {
+		val pcmRepository = retrieve pcm::Repository corresponding to RepositoryPackage.Literals.REPOSITORY
+		val collTypes = retrieve many pcm::CollectionDataType corresponding to javaClass
+		val compTypes = retrieve many pcm::CompositeDataType corresponding to javaClass
+	}
+	action {
+		call {
+			for (type : compTypes) {
+				removeDataType(type)
+			}
+			for (type : collTypes) {
+				removeDataType(type)
+			}
+		}
+	}
+}
+
+routine removeDataType(pcm::Entity type) {
+	action {
+		delete type
+	}
+}

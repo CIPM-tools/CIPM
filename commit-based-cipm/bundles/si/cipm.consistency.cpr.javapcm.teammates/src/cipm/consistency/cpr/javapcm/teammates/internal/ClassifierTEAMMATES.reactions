@@ -1,0 +1,92 @@
+import org.emftext.language.java.containers.Origin
+import cipm.consistency.cpr.util.InternalUtils
+
+import "http://www.emftext.org/java" as java
+import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
+
+
+reactions: classifierTEAMMATES
+in reaction to changes in AdjustedJava
+execute actions in PCMExtended
+
+
+import Servlet
+import component
+
+// Created Class.
+reaction AddedClass {
+	after element java::Class inserted in java::CompilationUnit[classifiers]
+	call {
+		createOrFindArchitecturalElement(newValue)
+		decideInterfaceCreation(newValue)
+		createOrFindOperationProvidedRole(newValue, newValue)
+		checkClassifierForImportedRequiredRoles(newValue)
+	}
+}
+
+// Created Interface.
+reaction AddedInterface {
+	after element java::Interface inserted in java::CompilationUnit[classifiers]
+	call {
+		createOrFindArchitecturalElement(newValue)
+		decideInterfaceCreation(newValue)
+		checkClassifierForImportedRequiredRoles(newValue)
+	}
+}
+
+routine decideInterfaceCreation(java::ConcreteClassifier javaInterface) {
+	match {
+		val com = retrieve pcm::RepositoryComponent corresponding to javaInterface
+	}
+	action {
+		call {
+			var mod = InternalUtils.getModule(javaInterface)
+			if (mod === null) {
+				return
+			}
+			if (mod.origin == Origin.FILE) {
+				checkServletInterfaceCreation(javaInterface)
+			} else if (mod.origin == Origin.ARCHIVE) {
+				if (javaInterface.public) {
+					createInterface(javaInterface)
+				}
+			}
+		}
+	}
+}
+
+// Removed Class.
+reaction RemovedClass {
+	after element java::Class removed from java::CompilationUnit[classifiers]
+	call {
+		checkBasicComponentRemovalForClassifier(oldValue)
+		checkDataTypeRemoval(oldValue)
+		removeOperationProvidedRolesForRemovedClass(oldValue)
+		removeOperationRequiredRolesForRemovedClass(oldValue)
+		removeInterface(oldValue)
+	}
+} 
+
+// Removed Interface.
+reaction RemovedInterface {
+	after element java::Interface removed from java::CompilationUnit[classifiers]
+	call {
+		checkBasicComponentRemovalForClassifier(oldValue)
+		checkDataTypeRemoval(oldValue)
+		removeInterface(oldValue)
+	}
+}
+
+reaction RemovedInnerClassifier {
+	after element java::ConcreteClassifier removed from java::MemberContainer[members]
+	call {
+		checkDataTypeRemoval(oldValue)
+	}
+}
+
+reaction RemovedModule {
+	after element java::Module removed from java::Package[module]
+	call {
+		checkBasicComponentRemovalForModule(oldValue)
+	}
+}

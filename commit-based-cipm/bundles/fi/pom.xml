@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>cipm.consistency</groupId>
+		<artifactId>bundles</artifactId>
+		<version>0.2.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>fi</artifactId>
+	<packaging>pom</packaging>
+	<name>Bundles for first Eclipse instance</name>
+
+	<modules>
+		<module>cipm.consistency.base.shared</module>
+		<module>cipm.consistency.commitintegration.diff.util</module>
+		<module>cipm.consistency.commitintegration.settings</module>
+		<module>cipm.consistency.domains.im</module>
+		<module>cipm.consistency.domains.java</module>
+		<module>cipm.consistency.domains.pcm</module>
+		<module>cipm.consistency.models.instrumentation</module>
+		<module>cipm.consistency.tools.evaluation.data</module>
+		<module>org.splevo.commons</module>
+		<module>org.splevo.diffing</module>
+		<module>org.splevo.extraction</module>
+		<module>org.splevo.jamopp.diffing</module>
+		<module>org.splevo.jamopp.extraction</module>
+		<module>org.splevo.jamopp.util</module>
+	</modules>
+
+</project>

@@ -221,7 +221,7 @@ public class JaMoPPDiffBuilder extends DiffBuilder {
             return match;
         } else if (parentObject instanceof Constructor) {
             return match;
-        } else if (parentObject instanceof Package) {
+        } else if (parentObject instanceof org.emftext.language.java.containers.Package) {
             return match;
         } else if (parentObject instanceof Enumeration) {
             return match;

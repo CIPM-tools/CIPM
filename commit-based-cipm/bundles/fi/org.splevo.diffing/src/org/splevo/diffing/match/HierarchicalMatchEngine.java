@@ -261,14 +261,20 @@ public class HierarchicalMatchEngine implements IMatchEngine {
             Match match = CompareFactory.eINSTANCE.createMatch();
             match.setLeft(leftElement);
 
-            for (EObject rightElement : rightElementsInScope) {
+            var rightElementsIterator = rightElementsInScope.iterator();
+            while (rightElementsIterator.hasNext()) {
+            	var rightElement = rightElementsIterator.next();
+            	
                 if (equalityStrategy.areEqual(leftElement, rightElement)) {
-                    rightElementsInScope.remove(rightElement);
+                	rightElementsIterator.remove();
                     match.setRight(rightElement);
+                    
                     List<Match> subMatches = match(comparison, leftElement.eContents(), rightElement.eContents(),
                             monitor);
+
                     match.getSubmatches()
                         .addAll(subMatches);
+
                     break;
                 }
             }

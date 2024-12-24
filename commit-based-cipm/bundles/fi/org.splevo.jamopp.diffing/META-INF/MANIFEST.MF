@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.splevo.jamopp.diffing;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 0.2.0.qualifier
 Bundle-ClassPath: .
 Bundle-Activator: org.splevo.jamopp.diffing.Activator
 Bundle-Vendor: %providerName
@@ -19,7 +19,8 @@ Require-Bundle: org.eclipse.core.runtime,
  com.google.guava,
  jamopp.printer,
  org.splevo.commons,
- org.splevo.extraction
+ org.splevo.extraction,
+ cipm.consistency.workflow;resolution:=optional
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Export-Package: org.splevo.jamopp.diffing,
  org.splevo.jamopp.diffing.diff,

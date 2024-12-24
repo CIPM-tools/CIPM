@@ -1,0 +1,27 @@
+name: build-wf
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - name: Enable Long Paths in Git (Windows)
+        run: git config --system core.longpaths true
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 11
+          cache: 'maven'
+      - name: Build
+        run: scripts\build.bat
+      - name: Store P2 Repositories
+        uses: actions/upload-artifact@v4
+        with:
+          name: p2-cipm
+          path: |
+            commit-based-cipm/releng/cipm.consistency.updatesite.ti/target/cipm*.zip

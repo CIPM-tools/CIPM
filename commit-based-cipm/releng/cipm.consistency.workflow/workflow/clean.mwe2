@@ -1,0 +1,13 @@
+module clean
+
+import org.eclipse.emf.mwe.utils.DirectoryCleaner
+
+Workflow {
+    component = DirectoryCleaner {
+        directory = "../../bundles/fi/org.splevo.diffing/src-gen"
+    }
+    
+    component = DirectoryCleaner {
+        directory = "../../bundles/fi/org.splevo.jamopp.diffing/src-gen"
+    }
+}

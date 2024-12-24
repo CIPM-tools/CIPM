@@ -1,16 +1,6 @@
-[submodule "CIPM-Pipeline"]
-	path = CIPM-Pipeline
-	url = https://github.com/CIPM-tools/CIPM-Pipeline.git
-	branch = vitruv3
 [submodule "Palladio-Build-CodingConventions"]
 	path = CodingConventions/Palladio-Build-CodingConventions
 	url = https://github.com/PalladioSimulator/Palladio-Build-CodingConventions
-[submodule "Palladio-Supporting-EclipseJavaDevelopmentTools"]
-	path = Palladio-Supporting-EclipseJavaDevelopmentTools
-	url = https://github.com/PalladioSimulator/Palladio-Supporting-EclipseJavaDevelopmentTools
-[submodule "Palladio-ReverseEngineering-SoMoX-JaMoPP"]
-	path = Palladio-ReverseEngineering-SoMoX-JaMoPP
-	url = https://github.com/PalladioSimulator/Palladio-ReverseEngineering-SoMoX-JaMoPP
 [submodule "commit-based-cipm/bundles/si/cipm.consistency.vsum.test/ciTestRepos/caseStudy1"]
 	path = commit-based-cipm/bundles/si/cipm.consistency.vsum.test/ciTestRepos/caseStudy1
 	url = https://git.scc.kit.edu/luaCIPM/caseStudy1
