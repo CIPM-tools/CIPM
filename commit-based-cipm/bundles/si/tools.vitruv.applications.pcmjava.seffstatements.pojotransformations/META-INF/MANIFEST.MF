@@ -22,7 +22,6 @@ Require-Bundle: org.apache.log4j,
  tools.vitruv.framework.propagation,
  tools.vitruv.framework.domains,
  tools.vitruv.extensions.dslsruntime.reactions
-Export-Package: tools.vitruv.applications.pcmjava.seffstatements.pojotransformations,
- tools.vitruv.applications.pcmjava.seffstatements.pojotransformations.code2seff
+Export-Package: tools.cipm.seff.pojotransformations,
+ tools.cipm.seff.pojotransformations.code2seff
 Automatic-Module-Name: tools.vitruv.applications.pcmjava.seffstatements.pojotransformations
-

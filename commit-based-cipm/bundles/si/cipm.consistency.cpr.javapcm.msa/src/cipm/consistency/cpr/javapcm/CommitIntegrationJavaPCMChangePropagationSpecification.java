@@ -5,8 +5,8 @@ import cipm.consistency.commitintegration.settings.SettingKeys;
 import cipm.consistency.cpr.javaim.Java2ImChangePropagationSpecification;
 import mir.reactions.all.AllChangePropagationSpecification;
 
-import tools.vitruv.applications.pcmjava.seffstatements.code2seff.extended.ExtendedJava2PcmMethodBodyChangePreprocessor;
-import tools.vitruv.applications.pcmjava.seffstatements.code2seff.finegrained.FineGrainedJava2PcmMethodBodyChangePreprocessor;
+import tools.cipm.seff.extended.ExtendedJava2PcmMethodBodyChangePreprocessor;
+import tools.cipm.seff.finegrained.FineGrainedJava2PcmMethodBodyChangePreprocessor;
 
 /**
  * Change propagation specification in order to propagate changes on JaMoPP models to the PCM models.

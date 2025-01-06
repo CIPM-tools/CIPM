@@ -11,7 +11,7 @@ import cipm.consistency.base.models.instrumentation.InstrumentationModel.Instrum
 import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationModelPackage
 import tools.vitruv.framework.change.echange.feature.attribute.ReplaceSingleValuedEAttribute
 import cipm.consistency.models.instrumentation.InstrumentationModelUtil
-import tools.vitruv.applications.pcmjava.seffstatements.code2seff.extended.ExtendedJava2PcmMethodBodyChangePreprocessor
+import tools.cipm.seff.extended.ExtendedJava2PcmMethodBodyChangePreprocessor
 
 /**
  * Propagates changes in method bodies to the extended instrumentation model.

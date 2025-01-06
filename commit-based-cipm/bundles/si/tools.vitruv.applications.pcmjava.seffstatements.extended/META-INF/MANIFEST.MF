@@ -29,5 +29,5 @@ Require-Bundle: com.google.guava,
  cipm.consistency.domains.java,
  cipm.consistency.domains.pcm,
  cipm.consistency.commitintegration.settings
-Export-Package: tools.vitruv.applications.pcmjava.seffstatements.code2seff.extended
+Export-Package: tools.cipm.seff.extended
 Automatic-Module-Name: tools.vitruv.applications.pcmjava.seffstatements.extended

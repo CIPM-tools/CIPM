@@ -3,8 +3,8 @@ package cipm.consistency.cpr.javapcm.teammates.seff;
 import org.palladiosimulator.pcm.repository.BasicComponent;
 import org.somox.gast2seff.visitors.AbstractFunctionClassificationStrategy;
 
-import tools.vitruv.applications.pcmjava.seffstatements.code2seff.BasicComponentFinding;
-import tools.vitruv.applications.pcmjava.seffstatements.code2seff.extended.CommitIntegrationCodeToSeffFactory;
+import tools.cipm.seff.BasicComponentFinding;
+import tools.cipm.seff.extended.CommitIntegrationCodeToSeffFactory;
 import tools.vitruv.framework.correspondence.CorrespondenceModel;
 
 public class TeammatesCodeToSeffFactory extends CommitIntegrationCodeToSeffFactory {
