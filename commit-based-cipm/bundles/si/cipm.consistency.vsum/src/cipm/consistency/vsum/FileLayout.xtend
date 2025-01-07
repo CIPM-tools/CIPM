@@ -41,8 +41,9 @@ class FileLayout {
 	
 	new(Path rootDir) {
 		rootPath = rootDir;
-		vsumPath = rootDir.resolve(vsumDirName);
-		var pcm = rootDir.resolve(pcmDirName);
+		var vsumDir = rootDir.resolve("vsum-all");
+		vsumPath = vsumDir.resolve(vsumDirName);
+		var pcm = vsumDir.resolve(pcmDirName);
 		pcmRepositoryPath = pcm.resolve(pcmRepositoryFileName).toAbsolutePath();
 		pcmRepositoryURI = URI.createFileURI(pcmRepositoryPath.toString());
 		pcmSystemPath = pcm.resolve(pcmSystemFileName).toAbsolutePath();
@@ -53,10 +54,10 @@ class FileLayout {
 		pcmUsageModelURI = URI.createFileURI(pcmUsageModelPath.toString());
 		pcmResourceEnvironmentPath = pcm.resolve(pcmResourceEnvironmentFileName).toAbsolutePath();
 		pcmResourceEnvironmentURI = URI.createFileURI(pcmResourceEnvironmentPath.toString());
-		pcm = rootDir.resolve(imDirName);
+		pcm = vsumDir.resolve(imDirName);
 		imPath = pcm.resolve(imFileName).toAbsolutePath();
 		imURI = URI.createFileURI(imPath.toString());
-		javaPath = rootDir.resolve(javaDirName);
+		javaPath = vsumDir.resolve(javaDirName);
 		commitsPath = rootDir.resolve(commitsFileName);
 	}
 }
