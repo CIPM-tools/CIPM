@@ -1,9 +1,13 @@
 package cipm.consistency.vsum.test;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.function.Consumer;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.ConsoleAppender;
@@ -11,7 +15,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.Git;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -63,12 +67,10 @@ public abstract class AbstractCITest {
 	 * @param newCommit the second commit.
 	 * @param num       the number of the propagation.
 	 * @return true if the changes were propagated. false otherwise.
-	 * @throws GitAPIException if an exception occurs during the Git processing.
-	 * @throws IOException     if an IO operation cannot be performed.
 	 */
 	@SuppressWarnings("restriction")
 	protected boolean executePropagationAndEvaluation(String oldCommit, String newCommit, int num)
-			throws GitAPIException, IOException {
+			throws Exception {
 		EvaluationDataContainer evalResult = new EvaluationDataContainer();
 		evalResult.setNumberOfPropagation(num);
 		EvaluationDataContainer.setGlobalContainer(evalResult);
@@ -85,10 +87,18 @@ public abstract class AbstractCITest {
 			new InstrumentationEvaluator().evaluateInstrumentationDependently(
 					this.controller.getVSUMFacade().getInstrumentationModel(), javaModel, instrumentedModel,
 					this.controller.getVSUMFacade().getVSUM().getCorrespondenceModel());
-			EvaluationDataContainerReaderWriter.write(evalResult, root.resolve(this.evaluationResultFileNamePrefix + newCommit + ".json"));
+			var resultFile = root.resolve(this.evaluationResultFileNamePrefix + newCommit + ".json");
+			EvaluationDataContainerReaderWriter.write(evalResult, resultFile);
 			LOGGER.debug("Copying the propagated state.");
-			Path copy = root.resolveSibling(root.getFileName().toString() + "-" + num + "-" + newCommit);
-			FileUtils.copyDirectory(root.toFile(), copy.toFile());
+			updateBackupRepository(root, "Changes: " + oldCommit + " to " + newCommit + " (" + num + ")", (gitDir) -> {
+				try {
+					FileUtils.copyDirectory(root.resolve("vsum-all").toFile(), gitDir.resolve("vsum-all").toFile());
+					FileUtils.copyFileToDirectory(root.resolve(".commits").toFile(), gitDir.toFile());
+					FileUtils.copyFileToDirectory(resultFile.toFile(), gitDir.toFile());
+				} catch (IOException e) {
+					fail(e);
+				}
+			});
 			LOGGER.debug("Finished the evaluation.");
 		}
 		return result;
@@ -103,13 +113,14 @@ public abstract class AbstractCITest {
 	 * @throws IOException if an IO operation cannot be performed.
 	 */
 	@SuppressWarnings("restriction")
-	protected void performIndependentEvaluation() throws IOException {
+	protected void performIndependentEvaluation() throws Exception {
 		String[] commits = this.controller.loadCommits();
 		String oldCommit = commits[0];
 		String newCommit = commits[1];
 		
 		LOGGER.debug("Evaluating the propagation " + oldCommit + "->" + newCommit);
-		var evalResultFile = this.controller.getVSUMFacade().getFileLayout().getRootPath().resolve(this.evaluationResultFileNamePrefix + newCommit + ".json");
+		Path root = this.controller.getVSUMFacade().getFileLayout().getRootPath();
+		var evalResultFile = root.resolve(this.evaluationResultFileNamePrefix + newCommit + ".json");
 		EvaluationDataContainer evalResult = EvaluationDataContainerReaderWriter.read(evalResultFile);
 		EvaluationDataContainer.setGlobalContainer(evalResult);
 		Resource javaModel = this.controller.getJavaModelResource();
@@ -121,7 +132,7 @@ public abstract class AbstractCITest {
 				this.controller.getCommitChangePropagator().getJavaFileSystemLayout().getModuleConfiguration());
 		
 		// For the initial commit (i.e., number of propagation equals 0), no comparison is performed.
-		if (evalResult.getNumberOfPropagation() != 0) {
+		if (evalResult.getNumberOfPropagation() != 0 && this.getReferenceRepositoryModelDirectoryName() != null) {
 			LOGGER.debug("Evaluating the Repository Model.");
 			new RepositoryModelEvaluator().evaluateRepositoryModel(
 				Paths.get("..", "..", "..", "data", this.getReferenceRepositoryModelDirectoryName(), "Repository_" + evalResult.getNumberOfPropagation() + "_mu.repository"),
@@ -140,7 +151,31 @@ public abstract class AbstractCITest {
 				this.controller.getVSUMFacade().getVSUM().getCorrespondenceModel());
 		EvaluationDataContainerReaderWriter.write(evalResult, evalResultFile);
 		
+		updateBackupRepository(root, "Updated evaluation for: " + oldCommit + " to " + newCommit, (Path gitDir) -> {
+			try {
+				FileUtils.copyFileToDirectory(evalResultFile.toFile(), gitDir.toFile());
+			} catch (IOException e) {
+				fail(e);
+			}
+		});
+		
 		LOGGER.debug("Finished the evaluation.");
+	}
+	
+	private void updateBackupRepository(Path root, String commitMessage, Consumer<Path> repositoryUpdater) throws Exception {
+		Path copyContainer = root.resolveSibling(root.getFileName().toString() + "-git");
+		Path copyGitDir = copyContainer.resolve(".git");
+		Git copy;
+		if (Files.notExists(copyGitDir)) {
+			copy = Git.init().setDirectory(copyContainer.toFile()).call();
+		} else {
+			copy = Git.open(copyContainer.toFile());
+		}
+		repositoryUpdater.accept(copyContainer);
+		copy.add().addFilepattern(".").call();
+		copy.commit().setAuthor("CIPM", "").setMessage(commitMessage).call();
+		copy.getRepository().close();
+		copy.close();
 	}
 
 	@AfterEach
