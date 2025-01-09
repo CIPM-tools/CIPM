@@ -63,10 +63,14 @@ public class IMUpdateEvaluator {
 		currentEvalResult.setNumberAIP(currentEvalResult.getNumberAllIP() - currentEvalResult.getNumberSIP());
 		currentEvalResult.setNumberDeactivatedAIP(currentEvalResult.getNumberAIP()
 				- currentEvalResult.getNumberActivatedAIP());
-		currentEvalResult.setDeactivatedIPAllIPRatio((double) currentEvalResult.getNumberDeactivatedAIP()
-				/ currentEvalResult.getNumberAllIP());
-		currentEvalResult.setDeactivatedAIPAllAIPRatio((double) currentEvalResult.getNumberDeactivatedAIP()
-				/ currentEvalResult.getNumberAIP());
+		if (currentEvalResult.getNumberAllIP() != 0) {
+			currentEvalResult.setDeactivatedIPAllIPRatio((double) currentEvalResult.getNumberDeactivatedAIP()
+					/ currentEvalResult.getNumberAllIP());
+		}
+		if (currentEvalResult.getNumberAIP() != 0) {
+			currentEvalResult.setDeactivatedAIPAllAIPRatio((double) currentEvalResult.getNumberDeactivatedAIP()
+					/ currentEvalResult.getNumberAIP());
+		}
 		
 		this.checkChangedActions(repo, rootDir, im);
 	}

@@ -9,12 +9,12 @@ import java.util.List;
  * @author Martin Armbruster
  */
 public class InstrumentationEvaluationData {
-	private int expectedLowerStatementDifferenceCount;
-	private int expectedUpperStatementDifferenceCount;
-	private int statementDifferenceCount;
-	private int reloadedStatementDifferenceCount;
-	private boolean compiles;
-	private int numberChangedMethods;
+	private int expectedLowerStatementDifferenceCount = -1;
+	private int expectedUpperStatementDifferenceCount = -1;
+	private int statementDifferenceCount = -1;
+	private int reloadedStatementDifferenceCount = -1;
+	private boolean compiles = false;
+	private int numberChangedMethods = -1;
 	private List<String> unmatchedChangedMethods = new ArrayList<>();
 	private List<String> unmatchedIPs = new ArrayList<>();
 	

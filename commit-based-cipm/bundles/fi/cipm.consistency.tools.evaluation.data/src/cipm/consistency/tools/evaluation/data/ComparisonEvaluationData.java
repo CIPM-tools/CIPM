@@ -1,11 +1,11 @@
 package cipm.consistency.tools.evaluation.data;
 
 public abstract class ComparisonEvaluationData {
-	private int oldElementsCount;
-	private int newElementsCount;
-	private int intersectionCardinality;
-	private int unionCardinality;
-	private double jc;
+	private int oldElementsCount = -1;
+	private int newElementsCount = -1;
+	private int intersectionCardinality = -1;
+	private int unionCardinality = -1;
+	private double jc = -1;
 	
 	public int getOldElementsCount() {
 		return oldElementsCount;
