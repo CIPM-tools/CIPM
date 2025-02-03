@@ -1,6 +1,7 @@
 package org.splevo.jamopp.diffing.similarity.switches;
 
 import org.eclipse.emf.common.util.EList;
+import org.emftext.language.java.members.AdditionalField;
 import org.emftext.language.java.members.Constructor;
 import org.emftext.language.java.members.EnumConstant;
 import org.emftext.language.java.members.Member;
@@ -8,6 +9,7 @@ import org.emftext.language.java.members.Method;
 import org.emftext.language.java.members.util.MembersSwitch;
 import org.emftext.language.java.parameters.Parameter;
 import org.emftext.language.java.types.Type;
+import org.emftext.language.java.types.TypedElement;
 import org.splevo.jamopp.diffing.similarity.IJavaSimilaritySwitch;
 import org.splevo.jamopp.diffing.similarity.ILoggableJavaSwitch;
 import org.splevo.jamopp.diffing.similarity.base.ISimilarityRequestHandler;
@@ -199,5 +201,77 @@ public class MembersSimilaritySwitch extends MembersSwitch<Boolean>
 		Member member2 = (Member) this.getCompareElement();
 		return JaMoPPNameComparisonUtil.namesEqual(member1, member2);
 	}
+
+	/**
+	 * TODO Review this method to make sure it is correct.
+	 * 
+	 * <i><b>This method was added later, because comparing improperly
+	 * initialised additional fields could result in null otherwise.</b></i>
+	 * <br><br>
+	 * 
+	 * Additional fields are considered similar, if:
+	 * <ul>
+	 * <li> Their names ({@link AdditionalField#getName()}) are equal,
+	 * <li> Their types ({@link AdditionalField#getTypeReference()}) are similar,
+	 * <li> Types of their containers ({@code additionalField.eContainer().getTypeReference()}) are similar,
+	 * <li> Containers of their containers ({@code additionalField.eContainer().eContainer()}) are similar.
+	 * </ul>
+	 * 
+	 * @param additionalField1 The additional field to compare with compareElement
+	 * @return False if not similar, true otherwise.
+	 * 
+	 * @see {@link #getCompareElement()}
+	 */
+	@Override
+	public Boolean caseAdditionalField(AdditionalField additionalField1) {
+		this.logInfoMessage("caseAdditionalField");
+
+		AdditionalField additionalField2 = (AdditionalField) this.getCompareElement();
+		var nameSimilarity = JaMoPPNameComparisonUtil.namesEqual(additionalField1, additionalField2);
+		if (JaMoPPBooleanUtil.isFalse(nameSimilarity)) {
+			return Boolean.FALSE;
+		}
+
+		var type1 = additionalField1.getTypeReference();
+		var type2 = additionalField2.getTypeReference();
+
+		// Compare additional field types
+		// Account for similarity result being null
+		if (JaMoPPBooleanUtil.isNotTrue(this.isSimilar(type1, type2))) {
+			return Boolean.FALSE;
+		}
+
+		var container1 = additionalField1.eContainer();
+		var container2 = additionalField2.eContainer();
+
+		if (JaMoPPNullCheckUtil.onlyOneIsNull(container1, container2)) {
+			return Boolean.FALSE;
+		}
+
+		// Null check to avoid null pointer exceptions
+		if (JaMoPPNullCheckUtil.allNonNull(container1, container2)) {
+			var castedCon1 = (TypedElement) container1;
+			var castedCon2 = (TypedElement) container2;
+
+			var conType1 = castedCon1.getTypeReference();
+			var conType2 = castedCon2.getTypeReference();
+
+			// Compare container types
+			// Account for similarity result being null
+			if (JaMoPPBooleanUtil.isNotTrue(this.isSimilar(conType1, conType2))) {
+				return Boolean.FALSE;
+			}
+
+			var containerOfCon1 = castedCon1.eContainer();
+			var containerOfCon2 = castedCon2.eContainer();
+
+			// Compare container of container
+			// Account for similarity result being null
+			if (JaMoPPBooleanUtil.isNotTrue(this.isSimilar(containerOfCon1, containerOfCon2))) {
+				return Boolean.FALSE;
+			}
+		}
+
+		return Boolean.TRUE;
 	}
 }
