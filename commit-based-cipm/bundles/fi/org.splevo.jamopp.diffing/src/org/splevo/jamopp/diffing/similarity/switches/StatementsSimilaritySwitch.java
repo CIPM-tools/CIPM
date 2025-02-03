@@ -299,9 +299,9 @@ public class StatementsSimilaritySwitch extends StatementsSwitch<Boolean> implem
      * @return True if their successor differ, false if not.
      */
     private boolean differentSuccessor(Statement statement1, Statement statement2) {
-        Statement pred1 = getSuccessor(statement1);
-        Statement pred2 = getSuccessor(statement2);
-        Boolean similarity = this.isSimilar(pred1, pred2, false);
+        Statement succ1 = getSuccessor(statement1);
+        Statement succ2 = getSuccessor(statement2);
+        Boolean similarity = this.isSimilar(succ1, succ2, false);
         return JaMoPPBooleanUtil.isNotTrue(similarity);
     }
 
