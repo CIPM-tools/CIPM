@@ -20,13 +20,6 @@ public abstract class AbstractSimilarityToolboxBuilder implements ISimilarityToo
 	 */
 	private ISimilarityToolbox st;
 
-	/**
-	 * Constructs an instance.
-	 */
-	public AbstractSimilarityToolboxBuilder() {
-		super();
-	}
-
 	@Override
 	public void setSimilarityToolboxFactory(ISimilarityToolboxFactory stf) {
 		this.stf = stf;
