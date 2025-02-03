@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
+import org.splevo.jamopp.diffing.util.JaMoPPNullCheckUtil;
 
 /**
  * An interface that extends {@link IInnerSwitch} with methods, which are mutual
@@ -68,9 +69,6 @@ public interface IPositionInnerSwitch extends IInnerSwitch {
 
 		Collection<IComposedSwitchAdapter> sss = new ArrayList<IComposedSwitchAdapter>();
 
-		if (csps == null)
-			return null;
-
 		csps.forEach((csp) -> sss.add((IComposedSwitchAdapter) this.requestNewSwitch(csp)));
 
 		return this.areSimilar(eos1, eos2, sss);
@@ -82,11 +80,12 @@ public interface IPositionInnerSwitch extends IInnerSwitch {
 	 * @see {@link ISimilarityChecker}
 	 */
 	public default Boolean areSimilar(Collection<? extends EObject> eos1, Collection<? extends EObject> eos2) {
+
 		var csps = new ArrayList<Boolean>();
 
-		if (eos1 == eos2) {
+		if (JaMoPPNullCheckUtil.allNull(eos1, eos2)) {
 			return Boolean.TRUE;
-		} else if (eos1 == null ^ eos2 == null) {
+		} else if (JaMoPPNullCheckUtil.onlyOneIsNull(eos1, eos2)) {
 			return Boolean.FALSE;
 		}
 
