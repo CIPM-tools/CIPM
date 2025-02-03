@@ -14,7 +14,7 @@ import org.splevo.jamopp.diffing.similarity.ILoggableJavaSwitch;
 public class ArraysSimilaritySwitch extends ArraysSwitch<Boolean> implements ILoggableJavaSwitch {
 	@Override
     public Boolean defaultCase(EObject object) {
-		this.logMessage("defaultCase for Array");
+		this.logInfoMessage("defaultCase for Array");
 		
         return Boolean.TRUE;
     }

@@ -40,7 +40,7 @@ public class ImportsSimilaritySwitch extends ImportsSwitch<Boolean>
 
 	@Override
 	public Boolean caseClassifierImport(ClassifierImport import1) {
-		this.logMessage("caseClassifierImport");
+		this.logInfoMessage("caseClassifierImport");
 
 		ClassifierImport import2 = (ClassifierImport) this.getCompareElement();
 
@@ -56,7 +56,7 @@ public class ImportsSimilaritySwitch extends ImportsSwitch<Boolean>
 
 	@Override
 	public Boolean caseStaticMemberImport(StaticMemberImport import1) {
-		this.logMessage("caseStaticMemberImport");
+		this.logInfoMessage("caseStaticMemberImport");
 
 		StaticMemberImport import2 = (StaticMemberImport) this.getCompareElement();
 

@@ -42,7 +42,7 @@ public class GenericsSimilaritySwitch extends GenericsSwitch<Boolean>
 
 	@Override
 	public Boolean caseQualifiedTypeArgument(QualifiedTypeArgument qta1) {
-		this.logMessage("caseQualifiedTypeArgument");
+		this.logInfoMessage("caseQualifiedTypeArgument");
 
 		QualifiedTypeArgument qta2 = (QualifiedTypeArgument) this.getCompareElement();
 		return this.isSimilar(qta1.getTypeReference(), qta2.getTypeReference());
@@ -50,7 +50,7 @@ public class GenericsSimilaritySwitch extends GenericsSwitch<Boolean>
 
 	@Override
 	public Boolean caseSuperTypeArgument(SuperTypeArgument sta1) {
-		this.logMessage("caseSuperTypeArgument");
+		this.logInfoMessage("caseSuperTypeArgument");
 
 		SuperTypeArgument sta2 = (SuperTypeArgument) this.getCompareElement();
 		return this.isSimilar(sta1.getSuperType(), sta2.getSuperType());
@@ -58,7 +58,7 @@ public class GenericsSimilaritySwitch extends GenericsSwitch<Boolean>
 
 	@Override
 	public Boolean caseExtendsTypeArgument(ExtendsTypeArgument eta1) {
-		this.logMessage("caseExtendsTypeArgument");
+		this.logInfoMessage("caseExtendsTypeArgument");
 
 		ExtendsTypeArgument eta2 = (ExtendsTypeArgument) this.getCompareElement();
 		return this.isSimilar(eta1.getExtendType(), eta2.getExtendType());
@@ -66,14 +66,14 @@ public class GenericsSimilaritySwitch extends GenericsSwitch<Boolean>
 
 	@Override
 	public Boolean caseUnknownTypeArgument(UnknownTypeArgument arg) {
-		this.logMessage("caseUnknownTypeArgument");
+		this.logInfoMessage("caseUnknownTypeArgument");
 
 		return Boolean.TRUE;
 	}
 
 	@Override
 	public Boolean caseTypeParameter(TypeParameter param1) {
-		this.logMessage("caseTypeParameter");
+		this.logInfoMessage("caseTypeParameter");
 
 		TypeParameter param2 = (TypeParameter) this.getCompareElement();
 

@@ -42,7 +42,7 @@ public class VariablesSimilaritySwitch extends VariablesSwitch<Boolean>
 	 */
 	@Override
 	public Boolean caseVariable(Variable var1) {
-		this.logMessage("caseVariable");
+		this.logInfoMessage("caseVariable");
 
 		Variable var2 = (Variable) this.getCompareElement();
 		return JaMoPPNameComparisonUtil.namesEqual(var1, var2);
@@ -50,7 +50,7 @@ public class VariablesSimilaritySwitch extends VariablesSwitch<Boolean>
 
 	@Override
 	public Boolean caseAdditionalLocalVariable(AdditionalLocalVariable var1) {
-		this.logMessage("caseAdditionalLocalVariable");
+		this.logInfoMessage("caseAdditionalLocalVariable");
 
 		AdditionalLocalVariable var2 = (AdditionalLocalVariable) this.getCompareElement();
 		return JaMoPPNameComparisonUtil.namesEqual(var1, var2);

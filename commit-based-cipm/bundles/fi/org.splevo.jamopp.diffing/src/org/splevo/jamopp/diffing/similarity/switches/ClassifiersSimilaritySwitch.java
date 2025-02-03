@@ -46,7 +46,7 @@ public class ClassifiersSimilaritySwitch extends ClassifiersSwitch<Boolean> impl
      */
     @Override
     public Boolean caseConcreteClassifier(ConcreteClassifier classifier1) {
-    	this.logMessage("caseConcreteClassifier");
+    	this.logInfoMessage("caseConcreteClassifier");
     	
         ConcreteClassifier classifier2 = (ConcreteClassifier) this.getCompareElement();
 
@@ -65,7 +65,7 @@ public class ClassifiersSimilaritySwitch extends ClassifiersSwitch<Boolean> impl
      */
     @Override
     public Boolean caseAnonymousClass(AnonymousClass anon) {
-    	this.logMessage("caseAnonymousClass");
+    	this.logInfoMessage("caseAnonymousClass");
     	
     	return Boolean.TRUE;
     }

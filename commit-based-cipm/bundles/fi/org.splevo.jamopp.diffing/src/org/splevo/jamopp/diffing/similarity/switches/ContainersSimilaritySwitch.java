@@ -55,7 +55,7 @@ public class ContainersSimilaritySwitch extends ContainersSwitch<Boolean>
 	 */
 	@Override
 	public Boolean caseCompilationUnit(CompilationUnit unit1) {
-		this.logMessage("caseCompilationUnit");
+		this.logInfoMessage("caseCompilationUnit");
 
 		CompilationUnit unit2 = (CompilationUnit) this.getCompareElement();
 
@@ -92,7 +92,7 @@ public class ContainersSimilaritySwitch extends ContainersSwitch<Boolean>
 	 */
 	@Override
 	public Boolean casePackage(Package package1) {
-		this.logMessage("casePackage");
+		this.logInfoMessage("casePackage");
 
 		Package package2 = (Package) this.getCompareElement();
 
@@ -120,7 +120,7 @@ public class ContainersSimilaritySwitch extends ContainersSwitch<Boolean>
 	 */
 	@Override
 	public Boolean caseModule(org.emftext.language.java.containers.Module module1) {
-		this.logMessage("caseModule");
+		this.logInfoMessage("caseModule");
 
 		org.emftext.language.java.containers.Module module2 = (org.emftext.language.java.containers.Module) this
 				.getCompareElement();

@@ -53,7 +53,7 @@ public class TypesSimilaritySwitch extends TypesSwitch<Boolean> implements ILogg
      */
     @Override
     public Boolean caseClassifierReference(ClassifierReference ref1) {
-    	this.logMessage("caseClassifierReference");
+    	this.logInfoMessage("caseClassifierReference");
     	
         ClassifierReference ref2 = (ClassifierReference) this.getCompareElement();
 
@@ -63,7 +63,7 @@ public class TypesSimilaritySwitch extends TypesSwitch<Boolean> implements ILogg
 
     @Override
     public Boolean caseTypeReference(TypeReference ref1) {
-    	this.logMessage("caseTypeReference");
+    	this.logInfoMessage("caseTypeReference");
 
         TypeReference ref2 = (TypeReference) this.getCompareElement();
 
@@ -73,7 +73,7 @@ public class TypesSimilaritySwitch extends TypesSwitch<Boolean> implements ILogg
 
     @Override
     public Boolean caseNamespaceClassifierReference(NamespaceClassifierReference ref1) {
-    	this.logMessage("caseNamespaceClassifierReference");
+    	this.logInfoMessage("caseNamespaceClassifierReference");
 
         NamespaceClassifierReference ref2 = (NamespaceClassifierReference) this.getCompareElement();
 
@@ -101,7 +101,7 @@ public class TypesSimilaritySwitch extends TypesSwitch<Boolean> implements ILogg
      */
     @Override
     public Boolean casePrimitiveType(PrimitiveType type) {
-    	this.logMessage("casePrimitiveType");
+    	this.logInfoMessage("casePrimitiveType");
     	
         return Boolean.TRUE;
     }
@@ -114,7 +114,7 @@ public class TypesSimilaritySwitch extends TypesSwitch<Boolean> implements ILogg
      */
     @Override
     public Boolean caseInferableType(InferableType type) {
-    	this.logMessage("caseInferableType");
+    	this.logInfoMessage("caseInferableType");
     	
     	return Boolean.TRUE;
     }
@@ -126,7 +126,7 @@ public class TypesSimilaritySwitch extends TypesSwitch<Boolean> implements ILogg
      */
     @Override
     public Boolean defaultCase(EObject object) {
-    	this.logMessage("defaultCase for Type");
+    	this.logInfoMessage("defaultCase for Type");
     	
         return Boolean.TRUE;
     }

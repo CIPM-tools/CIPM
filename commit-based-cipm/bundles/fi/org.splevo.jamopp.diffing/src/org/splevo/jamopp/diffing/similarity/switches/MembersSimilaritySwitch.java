@@ -1,6 +1,5 @@
 package org.splevo.jamopp.diffing.similarity.switches;
 
-import org.apache.log4j.Level;
 import org.eclipse.emf.common.util.EList;
 import org.emftext.language.java.classifiers.AnonymousClass;
 import org.emftext.language.java.classifiers.ConcreteClassifier;
@@ -73,7 +72,7 @@ public class MembersSimilaritySwitch extends MembersSwitch<Boolean>
 	 */
 	@Override
 	public Boolean caseMethod(Method method1) {
-		this.logMessage("caseMethod");
+		this.logInfoMessage("caseMethod");
 
 		Method method2 = (Method) this.getCompareElement();
 
@@ -141,7 +140,6 @@ public class MembersSimilaritySwitch extends MembersSwitch<Boolean>
 
 		var containerString = method1.eContainer() == null ? "" : method1.eContainer().toString();
 
-		this.logMessage("MethodDeclaration in unknown container: " + name1 + " : " + containerString, Level.WARN);
 		return super.caseMethod(method1);
 	}
 
@@ -170,7 +168,7 @@ public class MembersSimilaritySwitch extends MembersSwitch<Boolean>
 	 */
 	@Override
 	public Boolean caseConstructor(Constructor constructor1) {
-		this.logMessage("caseConstructor");
+		this.logInfoMessage("caseConstructor");
 
 		Constructor constructor2 = (Constructor) this.getCompareElement();
 
@@ -211,13 +209,12 @@ public class MembersSimilaritySwitch extends MembersSwitch<Boolean>
 
 		var containerString = constructor1.eContainer() == null ? "" : constructor1.eContainer().toString();
 
-		this.logMessage("ConstructorDeclaration in unknown container: " + name1 + " : " + containerString, Level.WARN);
 		return super.caseConstructor(constructor1);
 	}
 
 	@Override
 	public Boolean caseEnumConstant(EnumConstant const1) {
-		this.logMessage("caseEnumConstant");
+		this.logInfoMessage("caseEnumConstant");
 
 		EnumConstant const2 = (EnumConstant) this.getCompareElement();
 		return JaMoPPNameComparisonUtil.namesEqual(const1, const2);
@@ -225,7 +222,7 @@ public class MembersSimilaritySwitch extends MembersSwitch<Boolean>
 
 	@Override
 	public Boolean caseMember(Member member1) {
-		this.logMessage("caseMember");
+		this.logInfoMessage("caseMember");
 
 		Member member2 = (Member) this.getCompareElement();
 		return JaMoPPNameComparisonUtil.namesEqual(member1, member2);

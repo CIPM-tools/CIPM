@@ -56,7 +56,7 @@ public class InstantiationsSimilaritySwitch extends InstantiationsSwitch<Boolean
 	 */
 	@Override
 	public Boolean caseExplicitConstructorCall(ExplicitConstructorCall call1) {
-		this.logMessage("caseExplicitConstructorCall");
+		this.logInfoMessage("caseExplicitConstructorCall");
 
 		ExplicitConstructorCall call2 = (ExplicitConstructorCall) this.getCompareElement();
 
@@ -75,7 +75,7 @@ public class InstantiationsSimilaritySwitch extends InstantiationsSwitch<Boolean
 
 	@Override
 	public Boolean caseNewConstructorCall(NewConstructorCall call1) {
-		this.logMessage("caseNewConstructorCall");
+		this.logInfoMessage("caseNewConstructorCall");
 
 		NewConstructorCall call2 = (NewConstructorCall) this.getCompareElement();
 
@@ -102,7 +102,7 @@ public class InstantiationsSimilaritySwitch extends InstantiationsSwitch<Boolean
 
 	@Override
 	public Boolean defaultCase(EObject object) {
-		this.logMessage("defaultCase for Instantiation");
+		this.logInfoMessage("defaultCase for Instantiation");
 
 		return Boolean.TRUE;
 	}

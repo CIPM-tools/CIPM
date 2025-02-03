@@ -15,7 +15,7 @@ import org.splevo.jamopp.diffing.similarity.ILoggableJavaSwitch;
 public class OperatorsSimilaritySwitch extends OperatorsSwitch<Boolean> implements ILoggableJavaSwitch {
     @Override
     public Boolean defaultCase(EObject object) {
-    	this.logMessage("defaultCase for Operator");
+    	this.logInfoMessage("defaultCase for Operator");
     	
         return Boolean.TRUE;
     }
