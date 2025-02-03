@@ -1,8 +1,6 @@
 package org.splevo.jamopp.diffing.similarity.switches;
 
 import org.eclipse.emf.common.util.EList;
-import org.emftext.language.java.classifiers.AnonymousClass;
-import org.emftext.language.java.classifiers.ConcreteClassifier;
 import org.emftext.language.java.members.Constructor;
 import org.emftext.language.java.members.EnumConstant;
 import org.emftext.language.java.members.Member;
@@ -116,31 +114,18 @@ public class MembersSimilaritySwitch extends MembersSwitch<Boolean>
 			}
 		}
 
-		/*
-		 * ************************************** methods as members of regular classes
-		 */
-		if (method1.getContainingConcreteClassifier() != null) {
-			ConcreteClassifier type1 = method1.getContainingConcreteClassifier();
-			ConcreteClassifier type2 = method2.getContainingConcreteClassifier();
-			return this.isSimilar(type1, type2);
+		var method1Container = method1.eContainer();
+		var method2Container = method2.eContainer();
+
+		if (method1Container == null) {
+			this.logWarnMessage("MethodDeclaration (method1, parameter of caseMethod) " + Strings.nullToEmpty(method1.getName()) + " has no container");
 		}
 
-		/*
-		 * ************************************** methods as members of anonymous
-		 * classes
-		 */
-		if (method1.getContainingAnonymousClass() != null) {
-			AnonymousClass type1 = method1.getContainingAnonymousClass();
-			AnonymousClass type2 = method2.getContainingAnonymousClass();
-			Boolean typeSimilarity = this.isSimilar(type1, type2);
-			if (typeSimilarity != null) {
-				return typeSimilarity;
-			}
+		if (method2Container == null) {
+			this.logWarnMessage("MethodDeclaration (method2, compare element) " + Strings.nullToEmpty(method2.getName()) + " has no container");
 		}
 
-		var containerString = method1.eContainer() == null ? "" : method1.eContainer().toString();
-
-		return super.caseMethod(method1);
+		return this.isSimilar(method1Container, method2Container);
 	}
 
 	/**
@@ -185,31 +170,18 @@ public class MembersSimilaritySwitch extends MembersSwitch<Boolean>
 			return Boolean.FALSE;
 		}
 
-		/*
-		 * ************************************** methods as members of regular classes
-		 */
-		if (constructor1.getContainingConcreteClassifier() != null) {
-			ConcreteClassifier type1 = constructor1.getContainingConcreteClassifier();
-			ConcreteClassifier type2 = constructor2.getContainingConcreteClassifier();
-			return this.isSimilar(type1, type2);
+		var constructor1Container = constructor1.eContainer();
+		var constructor2Container = constructor2.eContainer();
+
+		if (constructor1Container == null) {
+			this.logWarnMessage("ConstructorDeclaration (constructor1, parameter of caseConstructor) " + Strings.nullToEmpty(constructor1.getName()) + " has no container");
 		}
 
-		/*
-		 * ************************************** methods as members of anonymous
-		 * classes
-		 */
-		if (constructor1.getContainingAnonymousClass() != null) {
-			AnonymousClass type1 = constructor1.getContainingAnonymousClass();
-			AnonymousClass type2 = constructor2.getContainingAnonymousClass();
-			Boolean typeSimilarity = this.isSimilar(type1, type2);
-			if (typeSimilarity != null) {
-				return typeSimilarity;
-			}
+		if (constructor2Container == null) {
+			this.logWarnMessage("ConstructorDeclaration (constructor2, compare element) " + Strings.nullToEmpty(constructor2.getName()) + " has no container");
 		}
 
-		var containerString = constructor1.eContainer() == null ? "" : constructor1.eContainer().toString();
-
-		return super.caseConstructor(constructor1);
+		return this.isSimilar(constructor1Container, constructor2Container);
 	}
 
 	@Override
