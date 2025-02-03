@@ -38,7 +38,7 @@ public class NamespaceNormalizationHandler implements ISimilarityRequestHandler 
 	public Object handleSimilarityRequest(ISimilarityRequest req) {
 		NamespaceNormalizationRequest castedR = (NamespaceNormalizationRequest) req;
 
-		return NormalizationUtil.normalize((String) castedR.getParams(), this.packageNormalizations);
+		return NormalizationUtil.normalizeNamespace((String) castedR.getParams(), this.packageNormalizations);
 	}
 
 	@Override
