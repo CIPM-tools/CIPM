@@ -4,9 +4,9 @@ import org.emftext.language.java.commons.NamespaceAwareElement;
 import org.splevo.jamopp.diffing.similarity.base.ecore.IInnerSwitch;
 import org.splevo.jamopp.diffing.similarity.requests.ClassifierNormalizationRequest;
 import org.splevo.jamopp.diffing.similarity.requests.CompilationUnitNormalizationRequest;
-import org.splevo.jamopp.diffing.similarity.requests.NamespaceCheckRequest;
 import org.splevo.jamopp.diffing.similarity.requests.NamespaceNormalizationRequest;
 import org.splevo.jamopp.diffing.similarity.requests.PackageNormalizationRequest;
+import org.splevo.jamopp.diffing.util.JaMoPPNamespaceUtil;
 
 /**
  * An interface that contains default methods, which create and send
@@ -57,11 +57,9 @@ public interface IJavaSimilarityInnerSwitch extends IInnerSwitch {
 	}
 
 	/**
-	 * Sends out a {@link NamespaceCheckRequest} and returns the result.
-	 * 
-	 * @see {@link #handleSimilarityRequest(org.splevo.jamopp.diffing.similarity.base.ISimilarityRequest)}
+	 * @see {@link JaMoPPNamespaceUtil#compareNamespacesByPart(NamespaceAwareElement, NamespaceAwareElement)}
 	 */
 	public default Boolean compareNamespacesByPart(NamespaceAwareElement ele1, NamespaceAwareElement ele2) {
-		return (Boolean) this.handleSimilarityRequest(new NamespaceCheckRequest(ele1, ele2));
+		return JaMoPPNamespaceUtil.compareNamespacesByPart(ele1, ele2);
 	}
 }

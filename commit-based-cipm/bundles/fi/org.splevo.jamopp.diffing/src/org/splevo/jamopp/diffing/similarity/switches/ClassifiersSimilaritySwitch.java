@@ -6,8 +6,8 @@ import org.emftext.language.java.classifiers.util.ClassifiersSwitch;
 import org.splevo.jamopp.diffing.similarity.IJavaSimilaritySwitch;
 import org.splevo.jamopp.diffing.similarity.ILoggableJavaSwitch;
 import org.splevo.jamopp.diffing.similarity.base.ISimilarityRequestHandler;
-
 import com.google.common.base.Strings;
+import org.splevo.jamopp.diffing.util.JaMoPPStringUtil;
 
 /**
  * Similarity decisions for classifier elements.
@@ -54,7 +54,7 @@ public class ClassifiersSimilaritySwitch extends ClassifiersSwitch<Boolean> impl
         name1 = Strings.nullToEmpty(this.normalizeClassifier(name1));
         String name2 = Strings.nullToEmpty(classifier2.getQualifiedName());
 
-        return (name1.equals(name2));
+        return JaMoPPStringUtil.stringsEqual(name1, name2);
     }
     
     /**

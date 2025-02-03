@@ -6,6 +6,8 @@ import org.emftext.language.java.containers.util.ContainersSwitch;
 import org.splevo.jamopp.diffing.similarity.IJavaSimilaritySwitch;
 import org.splevo.jamopp.diffing.similarity.ILoggableJavaSwitch;
 import org.splevo.jamopp.diffing.similarity.base.ISimilarityRequestHandler;
+import org.splevo.jamopp.diffing.util.JaMoPPNameComparisonUtil;
+import org.splevo.jamopp.diffing.util.JaMoPPStringUtil;
 import org.splevo.jamopp.diffing.util.JaMoPPModelUtil;
 
 import com.google.common.base.Strings;
@@ -63,7 +65,7 @@ public class ContainersSimilaritySwitch extends ContainersSwitch<Boolean>
 
 		String name2 = Strings.nullToEmpty(unit2.getName());
 
-		if (!name1.equals(name2)) {
+		if (!JaMoPPStringUtil.stringsEqual(name1, name2)) {
 			return Boolean.FALSE;
 		}
 

@@ -9,8 +9,8 @@ import org.emftext.language.java.generics.util.GenericsSwitch;
 import org.splevo.jamopp.diffing.similarity.IJavaSimilaritySwitch;
 import org.splevo.jamopp.diffing.similarity.ILoggableJavaSwitch;
 import org.splevo.jamopp.diffing.similarity.base.ISimilarityRequestHandler;
-
-import com.google.common.base.Strings;
+import org.splevo.jamopp.diffing.util.JaMoPPBooleanUtil;
+import org.splevo.jamopp.diffing.util.JaMoPPNameComparisonUtil;
 
 /**
  * Similarity decisions for the generic elements.
@@ -77,10 +77,8 @@ public class GenericsSimilaritySwitch extends GenericsSwitch<Boolean>
 
 		TypeParameter param2 = (TypeParameter) this.getCompareElement();
 
-		var name1 = Strings.nullToEmpty(param1.getName());
-		var name2 = Strings.nullToEmpty(param2.getName());
-
-		if (!name1.equals(name2)) {
+		var nameSimilarity = JaMoPPNameComparisonUtil.namesEqual(param1, param2);
+		if (JaMoPPBooleanUtil.isFalse(nameSimilarity)) {
 			return Boolean.FALSE;
 		}
 

@@ -30,6 +30,7 @@ import org.emftext.language.java.types.TypeReference;
 import org.splevo.jamopp.diffing.similarity.IJavaSimilaritySwitch;
 import org.splevo.jamopp.diffing.similarity.ILoggableJavaSwitch;
 import org.splevo.jamopp.diffing.similarity.base.ISimilarityRequestHandler;
+import org.splevo.jamopp.diffing.util.JaMoPPBooleanUtil;
 
 /**
  * Similarity decisions for expression elements.
@@ -72,25 +73,21 @@ public class ExpressionsSimilaritySwitch extends ExpressionsSwitch<Boolean> impl
         AssignmentExpressionChild child1 = exp1.getChild();
         AssignmentExpressionChild child2 = exp2.getChild();
         Boolean childSimilarity = this.isSimilar(child1, child2);
-        if (childSimilarity == Boolean.FALSE) {
+        if (JaMoPPBooleanUtil.isFalse(childSimilarity)) {
             return Boolean.FALSE;
         }
 
         AssignmentOperator op1 = exp1.getAssignmentOperator();
         AssignmentOperator op2 = exp2.getAssignmentOperator();
         Boolean operatorSimilarity = this.isSimilar(op1, op2);
-        if (operatorSimilarity == Boolean.FALSE) {
+        if (JaMoPPBooleanUtil.isFalse(operatorSimilarity)) {
             return Boolean.FALSE;
         }
 
         Expression value1 = exp1.getValue();
         Expression value2 = exp2.getValue();
         Boolean valueSimilarity = this.isSimilar(value1, value2);
-        if (valueSimilarity == Boolean.FALSE) {
-            return Boolean.FALSE;
-        }
-
-        return Boolean.TRUE;
+        return JaMoPPBooleanUtil.isNotFalse(valueSimilarity);
     }
 
     @Override
@@ -103,7 +100,7 @@ public class ExpressionsSimilaritySwitch extends ExpressionsSwitch<Boolean> impl
         EList<EqualityOperator> operators1 = exp1.getEqualityOperators();
         EList<EqualityOperator> operators2 = exp2.getEqualityOperators();
         Boolean operatorSimilarity = this.areSimilar(operators1, operators2);
-        if (operatorSimilarity == Boolean.FALSE) {
+        if (JaMoPPBooleanUtil.isFalse(operatorSimilarity)) {
             return Boolean.FALSE;
         }
 
@@ -111,11 +108,7 @@ public class ExpressionsSimilaritySwitch extends ExpressionsSwitch<Boolean> impl
         EList<EqualityExpressionChild> children1 = exp1.getChildren();
         EList<EqualityExpressionChild> children2 = exp2.getChildren();
         Boolean childSimilarity = this.areSimilar(children1, children2);
-        if (childSimilarity == Boolean.FALSE) {
-            return Boolean.FALSE;
-        }
-
-        return Boolean.TRUE;
+        return JaMoPPBooleanUtil.isNotFalse(childSimilarity);
     }
 
     @Override
@@ -128,7 +121,7 @@ public class ExpressionsSimilaritySwitch extends ExpressionsSwitch<Boolean> impl
         EList<RelationOperator> operators1 = exp1.getRelationOperators();
         EList<RelationOperator> operators2 = exp2.getRelationOperators();
         Boolean operatorSimilarity = this.areSimilar(operators1, operators2);
-        if (operatorSimilarity == Boolean.FALSE) {
+        if (JaMoPPBooleanUtil.isFalse(operatorSimilarity)) {
             return Boolean.FALSE;
         }
 
@@ -136,11 +129,7 @@ public class ExpressionsSimilaritySwitch extends ExpressionsSwitch<Boolean> impl
         EList<RelationExpressionChild> children1 = exp1.getChildren();
         EList<RelationExpressionChild> children2 = exp2.getChildren();
         Boolean childSimilarity = this.areSimilar(children1, children2);
-        if (childSimilarity == Boolean.FALSE) {
-            return Boolean.FALSE;
-        }
-
-        return Boolean.TRUE;
+        return JaMoPPBooleanUtil.isNotFalse(childSimilarity);
     }
 
     @Override
@@ -153,11 +142,7 @@ public class ExpressionsSimilaritySwitch extends ExpressionsSwitch<Boolean> impl
         EList<AndExpressionChild> children1 = exp1.getChildren();
         EList<AndExpressionChild> children2 = exp2.getChildren();
         Boolean childSimilarity = this.areSimilar(children1, children2);
-        if (childSimilarity == Boolean.FALSE) {
-            return Boolean.FALSE;
-        }
-
-        return Boolean.TRUE;
+        return JaMoPPBooleanUtil.isNotFalse(childSimilarity);
     }
 
     @Override
@@ -170,7 +155,7 @@ public class ExpressionsSimilaritySwitch extends ExpressionsSwitch<Boolean> impl
         EList<UnaryOperator> operators1 = exp1.getOperators();
         EList<UnaryOperator> operators2 = exp2.getOperators();
         Boolean operatorSimilarity = this.areSimilar(operators1, operators2);
-        if (operatorSimilarity == Boolean.FALSE) {
+        if (JaMoPPBooleanUtil.isFalse(operatorSimilarity)) {
             return Boolean.FALSE;
         }
 
@@ -187,7 +172,7 @@ public class ExpressionsSimilaritySwitch extends ExpressionsSwitch<Boolean> impl
     	AdditiveExpression exp2 = (AdditiveExpression) this.getCompareElement();
     	
     	Boolean opSimilarity = this.areSimilar(exp1.getAdditiveOperators(), exp2.getAdditiveOperators());
-    	if (opSimilarity == Boolean.FALSE) {
+    	if (JaMoPPBooleanUtil.isFalse(opSimilarity)) {
     		return Boolean.FALSE;
     	}
     	
@@ -204,7 +189,7 @@ public class ExpressionsSimilaritySwitch extends ExpressionsSwitch<Boolean> impl
         TypeReference typeReference1 = exp1.getTypeReference();
         TypeReference typeReference2 = exp2.getTypeReference();
         Boolean typeSimilarity = this.isSimilar(typeReference1, typeReference2);
-        if (typeSimilarity == Boolean.FALSE) {
+        if (JaMoPPBooleanUtil.isFalse(typeSimilarity)) {
             return Boolean.FALSE;
         }
 

@@ -9,6 +9,7 @@ import org.emftext.language.java.modules.util.ModulesSwitch;
 import org.splevo.jamopp.diffing.similarity.IJavaSimilaritySwitch;
 import org.splevo.jamopp.diffing.similarity.ILoggableJavaSwitch;
 import org.splevo.jamopp.diffing.similarity.base.ISimilarityRequestHandler;
+import org.splevo.jamopp.diffing.util.JaMoPPBooleanUtil;
 
 /**
  * Similarity Decisions for module elements.
@@ -52,10 +53,7 @@ public class ModulesSimilaritySwitch extends ModulesSwitch<Boolean> implements I
 		this.logMessage("caseModuleReference");
 		
 		ModuleReference modRef2 = (ModuleReference) this.getCompareElement();
-		if (this.compareNamespacesByPart(modRef1, modRef2)) {
-			return Boolean.TRUE;
-		}
-		return Boolean.FALSE;
+		return JaMoPPBooleanUtil.isTrue(this.compareNamespacesByPart(modRef1, modRef2));
 	}
 	
 	/**
@@ -73,10 +71,7 @@ public class ModulesSimilaritySwitch extends ModulesSwitch<Boolean> implements I
 		this.logMessage("caseAccessProvidingModuleDirective");
 		
 		AccessProvidingModuleDirective dir2 = (AccessProvidingModuleDirective) this.getCompareElement();
-		if (!this.compareNamespacesByPart(dir1, dir2)) {
-			return Boolean.FALSE;
-		}
-		return Boolean.TRUE;
+		return JaMoPPBooleanUtil.isTrue(this.compareNamespacesByPart(dir1, dir2));
 	}
 	
 	/**

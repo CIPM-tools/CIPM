@@ -19,6 +19,8 @@ import org.emftext.language.java.literals.util.LiteralsSwitch;
 import org.splevo.jamopp.diffing.similarity.IJavaSimilaritySwitch;
 import org.splevo.jamopp.diffing.similarity.ILoggableJavaSwitch;
 import org.splevo.jamopp.diffing.similarity.base.ISimilarityRequestHandler;
+import org.splevo.jamopp.diffing.util.JaMoPPNullCheckUtil;
+import org.splevo.jamopp.diffing.util.JaMoPPStringUtil;
 
 /**
  * Similarity decisions for literal elements.
@@ -54,18 +56,7 @@ public class LiteralsSimilaritySwitch extends LiteralsSwitch<Boolean>
 		this.logMessage("caseCharacterLiteral");
 
 		CharacterLiteral char2 = (CharacterLiteral) this.getCompareElement();
-
-		var val1 = char1.getValue();
-		var val2 = char2.getValue();
-
-		// Null check to avoid NullPointerExceptions
-		if (val1 == val2) {
-			return Boolean.TRUE;
-		} else if (val1 == null ^ val2 == null) {
-			return Boolean.FALSE;
-		}
-
-		return val1.equals(val2);
+		return JaMoPPStringUtil.stringsEqual(char1.getValue(), char2.getValue());
 	}
 
 	@Override
@@ -112,15 +103,7 @@ public class LiteralsSimilaritySwitch extends LiteralsSwitch<Boolean>
 
 		var val1 = int1.getDecimalValue();
 		var val2 = int2.getDecimalValue();
-
-		// Null check to avoid NullPointerExceptions
-		if (val1 == val2) {
-			return Boolean.TRUE;
-		} else if (val1 == null ^ val2 == null) {
-			return Boolean.FALSE;
-		}
-
-		return val1.equals(val2);
+		return JaMoPPNullCheckUtil.bothNullOrEqual(val1, val2);
 	}
 
 	@Override
@@ -131,15 +114,7 @@ public class LiteralsSimilaritySwitch extends LiteralsSwitch<Boolean>
 
 		var val1 = int1.getHexValue();
 		var val2 = int2.getHexValue();
-
-		// Null check to avoid NullPointerExceptions
-		if (val1 == val2) {
-			return Boolean.TRUE;
-		} else if (val1 == null ^ val2 == null) {
-			return Boolean.FALSE;
-		}
-
-		return val1.equals(val2);
+		return JaMoPPNullCheckUtil.bothNullOrEqual(val1, val2);
 	}
 
 	@Override
@@ -150,15 +125,7 @@ public class LiteralsSimilaritySwitch extends LiteralsSwitch<Boolean>
 
 		var val1 = int1.getOctalValue();
 		var val2 = int2.getOctalValue();
-
-		// Null check to avoid NullPointerExceptions
-		if (val1 == val2) {
-			return Boolean.TRUE;
-		} else if (val1 == null ^ val2 == null) {
-			return Boolean.FALSE;
-		}
-
-		return val1.equals(val2);
+		return JaMoPPNullCheckUtil.bothNullOrEqual(val1, val2);
 	}
 
 	@Override
@@ -169,15 +136,7 @@ public class LiteralsSimilaritySwitch extends LiteralsSwitch<Boolean>
 
 		var val1 = long1.getDecimalValue();
 		var val2 = long2.getDecimalValue();
-
-		// Null check to avoid NullPointerExceptions
-		if (val1 == val2) {
-			return Boolean.TRUE;
-		} else if (val1 == null ^ val2 == null) {
-			return Boolean.FALSE;
-		}
-
-		return val1.equals(val2);
+		return JaMoPPNullCheckUtil.bothNullOrEqual(val1, val2);
 	}
 
 	@Override
@@ -188,15 +147,7 @@ public class LiteralsSimilaritySwitch extends LiteralsSwitch<Boolean>
 
 		var val1 = long1.getHexValue();
 		var val2 = long2.getHexValue();
-
-		// Null check to avoid NullPointerExceptions
-		if (val1 == val2) {
-			return Boolean.TRUE;
-		} else if (val1 == null ^ val2 == null) {
-			return Boolean.FALSE;
-		}
-
-		return val1.equals(val2);
+		return JaMoPPNullCheckUtil.bothNullOrEqual(val1, val2);
 	}
 
 	@Override
@@ -207,15 +158,7 @@ public class LiteralsSimilaritySwitch extends LiteralsSwitch<Boolean>
 
 		var val1 = long1.getOctalValue();
 		var val2 = long2.getOctalValue();
-
-		// Null check to avoid NullPointerExceptions
-		if (val1 == val2) {
-			return Boolean.TRUE;
-		} else if (val1 == null ^ val2 == null) {
-			return Boolean.FALSE;
-		}
-
-		return val1.equals(val2);
+		return JaMoPPNullCheckUtil.bothNullOrEqual(val1, val2);
 	}
 
 	@Override
@@ -226,15 +169,7 @@ public class LiteralsSimilaritySwitch extends LiteralsSwitch<Boolean>
 
 		var val1 = long1.getBinaryValue();
 		var val2 = long2.getBinaryValue();
-
-		// Null check to avoid NullPointerExceptions
-		if (val1 == val2) {
-			return Boolean.TRUE;
-		} else if (val1 == null ^ val2 == null) {
-			return Boolean.FALSE;
-		}
-
-		return val1.equals(val2);
+		return JaMoPPNullCheckUtil.bothNullOrEqual(val1, val2);
 	}
 
 	@Override
@@ -245,15 +180,7 @@ public class LiteralsSimilaritySwitch extends LiteralsSwitch<Boolean>
 
 		var val1 = int1.getBinaryValue();
 		var val2 = int2.getBinaryValue();
-
-		// Null check to avoid NullPointerExceptions
-		if (val1 == val2) {
-			return Boolean.TRUE;
-		} else if (val1 == null ^ val2 == null) {
-			return Boolean.FALSE;
-		}
-
-		return val1.equals(val2);
+		return JaMoPPNullCheckUtil.bothNullOrEqual(val1, val2);
 	}
 
 	/**

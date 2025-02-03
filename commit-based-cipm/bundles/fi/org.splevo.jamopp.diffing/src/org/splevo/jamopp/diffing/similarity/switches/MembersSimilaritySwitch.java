@@ -14,6 +14,9 @@ import org.emftext.language.java.types.Type;
 import org.splevo.jamopp.diffing.similarity.IJavaSimilaritySwitch;
 import org.splevo.jamopp.diffing.similarity.ILoggableJavaSwitch;
 import org.splevo.jamopp.diffing.similarity.base.ISimilarityRequestHandler;
+import org.splevo.jamopp.diffing.util.JaMoPPBooleanUtil;
+import org.splevo.jamopp.diffing.util.JaMoPPNameComparisonUtil;
+import org.splevo.jamopp.diffing.util.JaMoPPNullCheckUtil;
 
 import com.google.common.base.Strings;
 
@@ -74,11 +77,9 @@ public class MembersSimilaritySwitch extends MembersSwitch<Boolean>
 
 		Method method2 = (Method) this.getCompareElement();
 
-		var name1 = Strings.nullToEmpty(method1.getName());
-		var name2 = Strings.nullToEmpty(method2.getName());
-
 		// if methods have different names they are not similar.
-		if (!name1.equals(name2)) {
+		var nameSimilarity = JaMoPPNameComparisonUtil.namesEqual(method1, method2);
+		if (JaMoPPBooleanUtil.isFalse(nameSimilarity)) {
 			return Boolean.FALSE;
 		}
 
@@ -86,9 +87,9 @@ public class MembersSimilaritySwitch extends MembersSwitch<Boolean>
 		var params2 = method2.getParameters();
 
 		// Null check to avoid NullPointerExceptions
-		if (params1 == null ^ params2 == null) {
+		if (JaMoPPNullCheckUtil.onlyOneIsNull(params1, params2)) {
 			return Boolean.FALSE;
-		} else if (params1 != null && params2 != null) {
+		} else if (JaMoPPNullCheckUtil.allNonNull(params1, params2)) {
 			if (params1.size() != params2.size()) {
 				return Boolean.FALSE;
 			}
@@ -100,13 +101,13 @@ public class MembersSimilaritySwitch extends MembersSwitch<Boolean>
 				var tref1 = param1.getTypeReference();
 				var tref2 = param2.getTypeReference();
 
-				if (tref1 == null ^ tref2 == null) {
+				if (JaMoPPNullCheckUtil.onlyOneIsNull(tref1, tref2)) {
 					return Boolean.FALSE;
-				} else if (tref1 != null && tref2 != null) {
+				} else if (JaMoPPNullCheckUtil.allNonNull(tref1, tref2)) {
 					Type type1 = tref1.getTarget();
 					Type type2 = tref2.getTarget();
 					Boolean typeSimilarity = this.isSimilar(type1, type2);
-					if (typeSimilarity == Boolean.FALSE) {
+					if (JaMoPPBooleanUtil.isFalse(typeSimilarity)) {
 						return Boolean.FALSE;
 					}
 					if (tref1.getArrayDimension() != tref2.getArrayDimension()) {
@@ -173,18 +174,16 @@ public class MembersSimilaritySwitch extends MembersSwitch<Boolean>
 
 		Constructor constructor2 = (Constructor) this.getCompareElement();
 
-		var name1 = Strings.nullToEmpty(constructor1.getName());
-		var name2 = Strings.nullToEmpty(constructor2.getName());
-
 		// if methods have different names they are not similar.
-		if (!name1.equals(name2)) {
+		var nameSimilarity = JaMoPPNameComparisonUtil.namesEqual(constructor1, constructor2);
+		if (JaMoPPBooleanUtil.isFalse(nameSimilarity)) {
 			return Boolean.FALSE;
 		}
 
 		EList<Parameter> params1 = constructor1.getParameters();
 		EList<Parameter> params2 = constructor2.getParameters();
 		Boolean parameterSimilarity = this.areSimilar(params1, params2);
-		if (parameterSimilarity == Boolean.FALSE) {
+		if (JaMoPPBooleanUtil.isFalse(parameterSimilarity)) {
 			return Boolean.FALSE;
 		}
 
@@ -221,9 +220,7 @@ public class MembersSimilaritySwitch extends MembersSwitch<Boolean>
 		this.logMessage("caseEnumConstant");
 
 		EnumConstant const2 = (EnumConstant) this.getCompareElement();
-		String name1 = Strings.nullToEmpty(const1.getName());
-		String name2 = Strings.nullToEmpty(const2.getName());
-		return (name1.equals(name2));
+		return JaMoPPNameComparisonUtil.namesEqual(const1, const2);
 	}
 
 	@Override
@@ -231,8 +228,7 @@ public class MembersSimilaritySwitch extends MembersSwitch<Boolean>
 		this.logMessage("caseMember");
 
 		Member member2 = (Member) this.getCompareElement();
-		String name1 = Strings.nullToEmpty(member1.getName());
-		String name2 = Strings.nullToEmpty(member2.getName());
-		return (name1.equals(name2));
+		return JaMoPPNameComparisonUtil.namesEqual(member1, member2);
+	}
 	}
 }

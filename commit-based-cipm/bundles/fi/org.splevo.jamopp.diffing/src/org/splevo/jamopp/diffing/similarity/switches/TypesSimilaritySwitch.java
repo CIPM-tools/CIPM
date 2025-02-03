@@ -8,11 +8,11 @@ import org.emftext.language.java.types.PrimitiveType;
 import org.emftext.language.java.types.TypeReference;
 import org.emftext.language.java.types.util.TypesSwitch;
 import org.splevo.jamopp.diffing.similarity.base.ISimilarityRequestHandler;
+import org.splevo.jamopp.diffing.util.JaMoPPBooleanUtil;
+import org.splevo.jamopp.diffing.util.JaMoPPNamespaceUtil;
 import org.splevo.jamopp.diffing.similarity.IJavaSimilaritySwitch;
 import org.splevo.jamopp.diffing.similarity.ILoggableJavaSwitch;
 import org.splevo.jamopp.diffing.similarity.JavaSimilarityChecker;
-
-import com.google.common.base.Strings;
 
 /**
  * Similarity decisions for elements of the types package.
@@ -58,11 +58,7 @@ public class TypesSimilaritySwitch extends TypesSwitch<Boolean> implements ILogg
         ClassifierReference ref2 = (ClassifierReference) this.getCompareElement();
 
         Boolean targetSimilarity = this.isSimilar(ref1.getTarget(), ref2.getTarget());
-        if (targetSimilarity == Boolean.FALSE) {
-            return Boolean.FALSE;
-        }
-
-        return Boolean.TRUE;
+        return JaMoPPBooleanUtil.isNotFalse(targetSimilarity);
     }
 
     @Override
@@ -72,11 +68,7 @@ public class TypesSimilaritySwitch extends TypesSwitch<Boolean> implements ILogg
         TypeReference ref2 = (TypeReference) this.getCompareElement();
 
         Boolean targetSimilarity = this.isSimilar(ref1.getTarget(), ref2.getTarget());
-        if (targetSimilarity == Boolean.FALSE) {
-            return Boolean.FALSE;
-        }
-
-        return Boolean.TRUE;
+        return JaMoPPBooleanUtil.isNotFalse(targetSimilarity);
     }
 
     @Override
@@ -85,9 +77,8 @@ public class TypesSimilaritySwitch extends TypesSwitch<Boolean> implements ILogg
 
         NamespaceClassifierReference ref2 = (NamespaceClassifierReference) this.getCompareElement();
 
-        String namespace1 = Strings.nullToEmpty(ref1.getNamespacesAsString());
-        String namespace2 = Strings.nullToEmpty(ref2.getNamespacesAsString());
-        if (!namespace1.equals(namespace2)) {
+        var namespaceSimilarity = JaMoPPNamespaceUtil.compareNamespacesAsString(ref1, ref2);
+        if (JaMoPPBooleanUtil.isFalse(namespaceSimilarity)) {
             return Boolean.FALSE;
         }
 

@@ -4,6 +4,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.splevo.jamopp.diffing.similarity.base.ISimilarityRequest;
 import org.splevo.jamopp.diffing.similarity.base.ISimilarityRequestHandler;
+import org.splevo.jamopp.diffing.util.JaMoPPNullCheckUtil;
 
 /**
  * A {@link ISimilarityRequestHandler} that processes
@@ -27,11 +28,11 @@ public class SingleSimilarityCheckHandler implements ISimilarityRequestHandler {
 		}
 
 		// check that either both or none of them is null
-		if (element1 == element2) {
+		if (JaMoPPNullCheckUtil.allNull(element1, element2)) {
 			return Boolean.TRUE;
 		}
 
-		if (onlyOneIsNull(element1, element2)) {
+		if (JaMoPPNullCheckUtil.onlyOneIsNull(element1, element2)) {
 			return Boolean.FALSE;
 		}
 
@@ -54,23 +55,6 @@ public class SingleSimilarityCheckHandler implements ISimilarityRequestHandler {
 
 		// check type specific similarity
 		return ss.compare(element1, element2);
-	}
-
-	/**
-	 * Method to check if only one of the provided elements is null.
-	 *
-	 * @param element1 The first element.
-	 * @param element2 The second element.
-	 * @return True if only one element is null and the other is not.
-	 */
-	protected Boolean onlyOneIsNull(final EObject element1, final EObject element2) {
-		Boolean onlyOneIsNull = false;
-		if (element1 != null && element2 == null) {
-			onlyOneIsNull = Boolean.TRUE;
-		} else if (element1 == null && element2 != null) {
-			onlyOneIsNull = Boolean.TRUE;
-		}
-		return onlyOneIsNull;
 	}
 
 	/**

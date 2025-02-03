@@ -13,6 +13,9 @@ import org.emftext.language.java.references.util.ReferencesSwitch;
 import org.splevo.jamopp.diffing.similarity.IJavaSimilaritySwitch;
 import org.splevo.jamopp.diffing.similarity.ILoggableJavaSwitch;
 import org.splevo.jamopp.diffing.similarity.base.ISimilarityRequestHandler;
+import org.splevo.jamopp.diffing.util.JaMoPPBooleanUtil;
+import org.splevo.jamopp.diffing.util.JaMoPPNullCheckUtil;
+import org.splevo.jamopp.diffing.util.JaMoPPStringUtil;
 import org.splevo.jamopp.util.JaMoPPElementUtil;
 
 /**
@@ -48,18 +51,7 @@ public class ReferencesSimilaritySwitch extends ReferencesSwitch<Boolean>
 		this.logMessage("caseStringReference");
 
 		StringReference ref2 = (StringReference) this.getCompareElement();
-
-		var val1 = ref1.getValue();
-		var val2 = ref2.getValue();
-
-		// Null check to avoid NullPointerException
-		if (val1 == val2) {
-			return Boolean.TRUE;
-		} else if (val1 == null ^ val2 == null) {
-			return Boolean.FALSE;
-		}
-
-		return val1.equals(val2);
+		return JaMoPPStringUtil.stringsEqual(ref1.getValue(), ref2.getValue());
 	}
 
 	@Override
@@ -71,8 +63,8 @@ public class ReferencesSimilaritySwitch extends ReferencesSwitch<Boolean>
 		ReferenceableElement target2 = ref2.getTarget();
 
 		// target identity similarity
-		Boolean similarity = this.isSimilar(target1, target2);
-		if (similarity == Boolean.FALSE) {
+		Boolean targetSimilarity = this.isSimilar(target1, target2);
+		if (JaMoPPBooleanUtil.isFalse(targetSimilarity)) {
 			return Boolean.FALSE;
 		}
 
@@ -92,7 +84,7 @@ public class ReferencesSimilaritySwitch extends ReferencesSwitch<Boolean>
 			if (target1Container != ref1Container && target2Container != ref2Container && target1Container != ref1
 					&& target2Container != ref2) {
 				Boolean containerSimilarity = this.isSimilar(target1Container, target2Container);
-				if (containerSimilarity == Boolean.FALSE) {
+				if (JaMoPPBooleanUtil.isFalse(containerSimilarity)) {
 					return Boolean.FALSE;
 				}
 			}
@@ -102,9 +94,9 @@ public class ReferencesSimilaritySwitch extends ReferencesSwitch<Boolean>
 		var arrSels2 = ref2.getArraySelectors();
 
 		// Null check to avoid NullPointerExceptions
-		if (arrSels1 == null ^ arrSels2 == null) {
+		if (JaMoPPNullCheckUtil.onlyOneIsNull(arrSels1, arrSels2)) {
 			return Boolean.FALSE;
-		} else if (arrSels1 != null && arrSels2 != null) {
+		} else if (JaMoPPNullCheckUtil.allNonNull(arrSels1, arrSels2)) {
 			if (arrSels1.size() != arrSels2.size()) {
 				return Boolean.FALSE;
 			}
@@ -112,7 +104,7 @@ public class ReferencesSimilaritySwitch extends ReferencesSwitch<Boolean>
 				ArraySelector selector1 = arrSels1.get(i);
 				ArraySelector selector2 = arrSels2.get(i);
 				Boolean positionSimilarity = this.isSimilar(selector1.getPosition(), selector2.getPosition());
-				if (positionSimilarity == Boolean.FALSE) {
+				if (JaMoPPBooleanUtil.isFalse(positionSimilarity)) {
 					return Boolean.FALSE;
 				}
 			}
@@ -121,11 +113,7 @@ public class ReferencesSimilaritySwitch extends ReferencesSwitch<Boolean>
 		Reference next1 = ref1.getNext();
 		Reference next2 = ref2.getNext();
 		Boolean nextSimilarity = this.isSimilar(next1, next2);
-		if (nextSimilarity == Boolean.FALSE) {
-			return Boolean.FALSE;
-		}
-
-		return Boolean.TRUE;
+		return JaMoPPBooleanUtil.isNotFalse(nextSimilarity);
 	}
 
 	/**
@@ -144,11 +132,7 @@ public class ReferencesSimilaritySwitch extends ReferencesSwitch<Boolean>
 		ElementReference ref2 = (ElementReference) this.getCompareElement();
 
 		Boolean targetSimilarity = this.isSimilar(ref1.getTarget(), ref2.getTarget());
-		if (targetSimilarity == Boolean.FALSE) {
-			return Boolean.FALSE;
-		}
-
-		return Boolean.TRUE;
+		return JaMoPPBooleanUtil.isNotFalse(targetSimilarity);
 	}
 
 	/**
@@ -167,37 +151,19 @@ public class ReferencesSimilaritySwitch extends ReferencesSwitch<Boolean>
 		MethodCall call2 = (MethodCall) this.getCompareElement();
 
 		Boolean targetSimilarity = this.isSimilar(call1.getTarget(), call2.getTarget());
-		if (targetSimilarity == Boolean.FALSE) {
+		if (JaMoPPBooleanUtil.isFalse(targetSimilarity)) {
 			return Boolean.FALSE;
 		}
 
 		var args1 = call1.getArguments();
 		var args2 = call2.getArguments();
-
-		// Null check to avoid NullPointerExceptions
-		if (args1 == null ^ args2 == null) {
+		var argSimilarity = this.areSimilar(args1, args2);
+		if (JaMoPPBooleanUtil.isFalse(argSimilarity)) {
 			return Boolean.FALSE;
-		} else if (args1 != null && args2 != null) {
-			if (args1.size() != args2.size()) {
-				return Boolean.FALSE;
-			}
-
-			for (int i = 0; i < args1.size(); i++) {
-				Expression exp1 = args1.get(i);
-				Expression exp2 = args2.get(i);
-				Boolean argSimilarity = this.isSimilar(exp1, exp2);
-				if (argSimilarity == Boolean.FALSE) {
-					return Boolean.FALSE;
-				}
-			}
 		}
 
 		Boolean nextSimilarity = this.isSimilar(call1.getNext(), call2.getNext());
-		if (nextSimilarity == Boolean.FALSE) {
-			return Boolean.FALSE;
-		}
-
-		return Boolean.TRUE;
+		return JaMoPPBooleanUtil.isNotFalse(nextSimilarity);
 	}
 
 	@Override

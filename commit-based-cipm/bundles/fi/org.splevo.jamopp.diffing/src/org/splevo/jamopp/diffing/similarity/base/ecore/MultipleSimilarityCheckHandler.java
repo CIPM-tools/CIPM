@@ -5,6 +5,8 @@ import java.util.Collection;
 import org.eclipse.emf.ecore.EObject;
 import org.splevo.jamopp.diffing.similarity.base.ISimilarityRequest;
 import org.splevo.jamopp.diffing.similarity.base.ISimilarityRequestHandler;
+import org.splevo.jamopp.diffing.util.JaMoPPBooleanUtil;
+import org.splevo.jamopp.diffing.util.JaMoPPNullCheckUtil;
 
 /**
  * A {@link ISimilarityRequestHandler} that processes
@@ -29,7 +31,7 @@ public class MultipleSimilarityCheckHandler implements ISimilarityRequestHandler
 	public MultipleSimilarityCheckHandler(ISimilarityRequestHandler srh) {
 		this.srh = srh;
 	}
-
+	
 	/**
 	 * {@inheritDoc} <br>
 	 * <br>
@@ -52,6 +54,10 @@ public class MultipleSimilarityCheckHandler implements ISimilarityRequestHandler
 	@SuppressWarnings("unchecked")
 	@Override
 	public Object handleSimilarityRequest(ISimilarityRequest req) {
+		/*
+		 * FIXME: What to do, if a similarity checking results in Boolean.NULL
+		 */
+		
 		MultipleSimilarityCheckRequest castedR = (MultipleSimilarityCheckRequest) req;
 
 		Object[] params = (Object[]) castedR.getParams();
@@ -60,12 +66,13 @@ public class MultipleSimilarityCheckHandler implements ISimilarityRequestHandler
 		Collection<? extends IComposedSwitchAdapter> sss = (Collection<? extends IComposedSwitchAdapter>) params[2];
 
 		// Null check to avoid NullPointerExceptions
-		if (elements1 == elements2) {
+		if (JaMoPPNullCheckUtil.allNull(elements1, elements2)) {
 			return Boolean.TRUE;
-		} else if (elements1 == null ^ elements2 == null) {
+		}
+		else if (JaMoPPNullCheckUtil.onlyOneIsNull(elements1, elements2)) {
 			return Boolean.FALSE;
 		}
-
+		
 		int size = elements1.size();
 
 		if (size != elements2.size()) {
@@ -84,7 +91,7 @@ public class MultipleSimilarityCheckHandler implements ISimilarityRequestHandler
 			Boolean childSimilarity = (Boolean) this.srh
 					.handleSimilarityRequest(new SingleSimilarityCheckRequest(es1[i], es2[i], ssA[i]));
 
-			if (childSimilarity == Boolean.FALSE) {
+			if (JaMoPPBooleanUtil.isNotTrue(childSimilarity)) {
 				return Boolean.FALSE;
 			}
 		}

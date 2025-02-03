@@ -11,6 +11,8 @@ import org.emftext.language.java.types.TypeReference;
 import org.splevo.jamopp.diffing.similarity.IJavaSimilaritySwitch;
 import org.splevo.jamopp.diffing.similarity.ILoggableJavaSwitch;
 import org.splevo.jamopp.diffing.similarity.base.ISimilarityRequestHandler;
+import org.splevo.jamopp.diffing.util.JaMoPPBooleanUtil;
+import org.splevo.jamopp.diffing.util.JaMoPPNullCheckUtil;
 
 /**
  * Similarity decisions for object instantiation elements.
@@ -60,34 +62,15 @@ public class InstantiationsSimilaritySwitch extends InstantiationsSwitch<Boolean
 
 		// check the class instance types
 		Boolean typeSimilarity = this.isSimilar(call1.getCallTarget(), call2.getCallTarget());
-		if (typeSimilarity == Boolean.FALSE) {
+		if (JaMoPPBooleanUtil.isFalse(typeSimilarity)) {
 			return Boolean.FALSE;
 		}
 
 		// check number of type arguments
 		EList<Expression> cic1Args = call1.getArguments();
 		EList<Expression> cic2Args = call2.getArguments();
-
-		// Null check to avoid NullPointerExceptions
-		if (cic1Args == cic2Args) {
-			return Boolean.TRUE;
-		} else if (cic1Args == null ^ cic2Args == null) {
-			return Boolean.FALSE;
-		}
-
-		if (cic1Args.size() != cic2Args.size()) {
-			return Boolean.FALSE;
-		}
-
-		// check the argument similarity
-		for (int i = 0; i < cic1Args.size(); i++) {
-			Boolean argumentSimilarity = this.isSimilar(cic1Args.get(i), cic2Args.get(i));
-			if (argumentSimilarity == Boolean.FALSE) {
-				return Boolean.FALSE;
-			}
-		}
-
-		return Boolean.TRUE;
+		var cicArgsSimilarity = this.areSimilar(cic1Args, cic2Args);
+		return JaMoPPBooleanUtil.isNotFalse(cicArgsSimilarity);
 	}
 
 	@Override
@@ -100,40 +83,21 @@ public class InstantiationsSimilaritySwitch extends InstantiationsSwitch<Boolean
 		TypeReference tref2 = call2.getTypeReference();
 
 		// Null check to avoid NullPointerExceptions
-		if (tref1 == null ^ tref2 == null) {
+		if (JaMoPPNullCheckUtil.onlyOneIsNull(tref1, tref2)) {
 			return Boolean.FALSE;
-		} else if (tref1 != null && tref2 != null) {
+		} else if (JaMoPPNullCheckUtil.allNonNull(tref1, tref2)) {
 			Type type1 = tref1.getTarget();
 			Type type2 = tref2.getTarget();
 			Boolean typeSimilarity = this.isSimilar(type1, type2);
-			if (typeSimilarity == Boolean.FALSE) {
+			if (JaMoPPBooleanUtil.isFalse(typeSimilarity)) {
 				return Boolean.FALSE;
 			}
 		}
 
 		EList<Expression> types1 = call1.getArguments();
 		EList<Expression> types2 = call2.getArguments();
-
-		// Null check to avoid NullPointerExceptions
-		if (types1 == types2) {
-			return Boolean.TRUE;
-		} else if (types1 == null ^ types2 == null) {
-			return Boolean.FALSE;
-		}
-
-		if (types1.size() != types2.size()) {
-			return Boolean.FALSE;
-		}
-		for (int i = 0; i < types1.size(); i++) {
-			Expression argType1 = types1.get(i);
-			Expression argType2 = types2.get(i);
-			Boolean similarity = this.isSimilar(argType1, argType2);
-			if (similarity == Boolean.FALSE) {
-				return Boolean.FALSE;
-			}
-		}
-
-		return Boolean.TRUE;
+		var argsSimilarity = this.areSimilar(types1, types2);
+		return JaMoPPBooleanUtil.isNotFalse(argsSimilarity);
 	}
 
 	@Override
