@@ -12,9 +12,6 @@
  *******************************************************************************/
 package org.splevo.jamopp.diffing.similarity;
 
-import java.util.Collection;
-
-import org.eclipse.emf.ecore.util.Switch;
 import org.splevo.jamopp.diffing.similarity.base.ISimilarityRequestHandler;
 import org.splevo.jamopp.diffing.similarity.base.ecore.AbstractComposedSimilaritySwitch;
 import org.splevo.jamopp.diffing.similarity.switches.AnnotationsSimilaritySwitch;
@@ -88,41 +85,5 @@ public class JavaSimilaritySwitch extends AbstractComposedSimilaritySwitch imple
 		addSwitch(new VariablesSimilaritySwitch(this));
 		addSwitch(new LayoutSimilaritySwitch());
 		addSwitch(new ModulesSimilaritySwitch(this, checkStatementPosition));
-	}
-
-	/**
-	 * Variation of
-	 * {@link #JavaSimilaritySwitch(ISimilarityRequestHandler, boolean)} that
-	 * constructs an instance without any inner switches.
-	 * 
-	 * @see {@link AbstractComposedSimilaritySwitch}
-	 * @see {@link IInnerSwitch}
-	 */
-	protected JavaSimilaritySwitch(ISimilarityRequestHandler srh) {
-		super(srh);
-	}
-
-	/**
-	 * Variation of
-	 * {@link #JavaSimilaritySwitch(ISimilarityRequestHandler, boolean)} that
-	 * constructs an instance with the given switches.
-	 * 
-	 * @see {@link AbstractComposedSimilaritySwitch}
-	 * @see {@link IInnerSwitch}
-	 */
-	protected JavaSimilaritySwitch(ISimilarityRequestHandler srh, Collection<Switch<Boolean>> switches) {
-		super(srh, switches);
-	}
-
-	/**
-	 * Variation of
-	 * {@link #JavaSimilaritySwitch(ISimilarityRequestHandler, boolean)} that
-	 * constructs an instance with the given switches.
-	 * 
-	 * @see {@link AbstractComposedSimilaritySwitch}
-	 * @see {@link IInnerSwitch}
-	 */
-	protected JavaSimilaritySwitch(ISimilarityRequestHandler srh, Switch<Boolean>[] switches) {
-		super(srh, switches);
 	}
 }

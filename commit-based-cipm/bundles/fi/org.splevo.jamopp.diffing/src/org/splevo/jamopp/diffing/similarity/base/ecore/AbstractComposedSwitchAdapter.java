@@ -1,11 +1,7 @@
 package org.splevo.jamopp.diffing.similarity.base.ecore;
 
-import java.util.Collection;
-import java.util.List;
-
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.ComposedSwitch;
-import org.eclipse.emf.ecore.util.Switch;
 
 /**
  * An abstract class that complements {@link IComposedSwitchAdapter} with an
@@ -17,31 +13,6 @@ import org.eclipse.emf.ecore.util.Switch;
 public abstract class AbstractComposedSwitchAdapter extends ComposedSwitch<Boolean> implements IComposedSwitchAdapter {
 	/** The object to compare the switched element with. */
 	private EObject compareElement = null;
-
-	/**
-	 * @see {@link ComposedSwitch#ComposedSwitch()}
-	 */
-	public AbstractComposedSwitchAdapter() {
-
-	}
-
-	/**
-	 * Constructs an instance with the given switches. <br>
-	 * <br>
-	 * Meant to be used while testing.
-	 */
-	protected AbstractComposedSwitchAdapter(Collection<Switch<Boolean>> switches) {
-		super(switches);
-	}
-
-	/**
-	 * Constructs an instance with the given switches. <br>
-	 * <br>
-	 * Meant to be used while testing.
-	 */
-	protected AbstractComposedSwitchAdapter(Switch<Boolean>[] switches) {
-		this(List.of(switches));
-	}
 
 	/**
 	 * {@inheritDoc}
