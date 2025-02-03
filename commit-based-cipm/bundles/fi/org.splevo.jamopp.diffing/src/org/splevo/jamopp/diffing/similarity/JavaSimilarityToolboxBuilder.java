@@ -13,12 +13,10 @@ import org.splevo.jamopp.diffing.similarity.base.ecore.SingleSimilarityCheckHand
 import org.splevo.jamopp.diffing.similarity.base.ecore.SingleSimilarityCheckRequest;
 import org.splevo.jamopp.diffing.similarity.handlers.ClassifierNormalizationHandler;
 import org.splevo.jamopp.diffing.similarity.handlers.CompilationUnitNormalizationHandler;
-import org.splevo.jamopp.diffing.similarity.handlers.NamespaceCheckHandler;
 import org.splevo.jamopp.diffing.similarity.handlers.NamespaceNormalizationHandler;
 import org.splevo.jamopp.diffing.similarity.handlers.NewSimilaritySwitchHandler;
 import org.splevo.jamopp.diffing.similarity.handlers.PackageNormalizationHandler;
 import org.splevo.jamopp.diffing.similarity.requests.ClassifierNormalizationRequest;
-import org.splevo.jamopp.diffing.similarity.requests.NamespaceCheckRequest;
 import org.splevo.jamopp.diffing.similarity.requests.CompilationUnitNormalizationRequest;
 import org.splevo.jamopp.diffing.similarity.requests.NamespaceNormalizationRequest;
 import org.splevo.jamopp.diffing.similarity.requests.NewSimilaritySwitchRequest;
@@ -93,7 +91,6 @@ public class JavaSimilarityToolboxBuilder extends AbstractSimilarityToolboxBuild
 		this.buildRequestHandlerPair(SingleSimilarityCheckRequest.class, new SingleSimilarityCheckHandler());
 		this.buildRequestHandlerPair(MultipleSimilarityCheckRequest.class,
 				new MultipleSimilarityCheckHandler(this.getCurrentToolbox()));
-		this.buildRequestHandlerPair(NamespaceCheckRequest.class, new NamespaceCheckHandler());
 
 		return this;
 	}
