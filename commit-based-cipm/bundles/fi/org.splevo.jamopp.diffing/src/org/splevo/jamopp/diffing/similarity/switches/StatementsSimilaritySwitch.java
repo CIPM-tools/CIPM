@@ -3,6 +3,7 @@ package org.splevo.jamopp.diffing.similarity.switches;
 import org.eclipse.emf.ecore.EObject;
 import org.emftext.language.java.expressions.Expression;
 import org.emftext.language.java.parameters.OrdinaryParameter;
+import org.emftext.language.java.statements.Block;
 import org.emftext.language.java.statements.CatchBlock;
 import org.emftext.language.java.statements.Conditional;
 import org.emftext.language.java.statements.ExpressionStatement;
@@ -110,8 +111,10 @@ public class StatementsSimilaritySwitch extends StatementsSwitch<Boolean> implem
         }
         
         if (this.shouldCheckStatementPosition()) {
-        	varSimilarity = this.isSimilar(varStmt1.eContainer(), varStmt2.eContainer(), false);
-        	if (!varSimilarity) {
+        	var con1 = JaMoPPElementUtil.getFirstContainerNotOfGivenType(varStmt1, Block.class);
+        	var con2 = JaMoPPElementUtil.getFirstContainerNotOfGivenType(varStmt2, Block.class);
+        	varSimilarity = this.isSimilar(con1, con2, false);
+        	if (JaMoPPBooleanUtil.isFalse(varSimilarity)) {
         		return Boolean.FALSE;
         	}
         	if (differentPredecessor(varStmt1, varStmt2) && differentSuccessor(varStmt1, varStmt2)) {
