@@ -12,7 +12,6 @@ import org.splevo.jamopp.diffing.util.JaMoPPBooleanUtil;
 import org.splevo.jamopp.diffing.util.JaMoPPNamespaceUtil;
 import org.splevo.jamopp.diffing.similarity.IJavaSimilaritySwitch;
 import org.splevo.jamopp.diffing.similarity.ILoggableJavaSwitch;
-import org.splevo.jamopp.diffing.similarity.JavaSimilarityChecker;
 
 /**
  * Similarity decisions for elements of the types package.
