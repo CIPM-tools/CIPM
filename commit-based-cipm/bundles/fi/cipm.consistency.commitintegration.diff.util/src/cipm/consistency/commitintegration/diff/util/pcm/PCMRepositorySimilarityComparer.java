@@ -8,7 +8,7 @@ import org.splevo.jamopp.diffing.similarity.base.ISimilarityToolbox;
  * Concrete implementation of {@link AbstractComposedSimilaritySwitchComparer}
  * for for comparing Palladio Component Model (PCM) repositories.
  * 
- * @author atora
+ * @author Alp Torac Genc
  */
 public class PCMRepositorySimilarityComparer extends AbstractComposedSimilaritySwitchComparer {
 	/**

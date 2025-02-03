@@ -9,7 +9,7 @@ import org.splevo.jamopp.diffing.similarity.requests.NewSimilaritySwitchRequest;
  * An {@link ISimilarityRequestHandler} that processes incoming
  * {@link NewSimilaritySwitchRequest} instances.
  * 
- * @author atora
+ * @author Alp Torac Genc
  */
 public class NewSimilaritySwitchHandler implements ISimilarityRequestHandler {
 	/**

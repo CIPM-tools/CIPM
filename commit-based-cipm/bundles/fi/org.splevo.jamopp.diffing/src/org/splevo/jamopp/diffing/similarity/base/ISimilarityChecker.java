@@ -18,7 +18,7 @@ import java.util.Collection;
  * used, this interface can be directly implemented.
  * 
  * @see {@link AbstractSimilarityChecker}, {@link ISimilarityComparer}
- * @author atora
+ * @author Alp Torac Genc
  */
 public interface ISimilarityChecker {
 	/**

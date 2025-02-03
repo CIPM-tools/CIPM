@@ -11,7 +11,7 @@ import cipm.consistency.commitintegration.diff.util.pcm.requests.NewPCMRepositor
  * to computing similarity in the context of Palladio Component Model (PCM)
  * repositories.
  * 
- * @author atora
+ * @author Alp Torac Genc
  */
 public interface IPCMPositionInnerSwitch extends IPCMInnerSwitch, IPositionInnerSwitch {
 	/**

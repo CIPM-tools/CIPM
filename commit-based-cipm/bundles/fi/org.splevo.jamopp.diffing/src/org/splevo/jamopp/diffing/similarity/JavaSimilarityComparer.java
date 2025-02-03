@@ -8,7 +8,7 @@ import org.splevo.jamopp.diffing.similarity.base.ecore.AbstractComposedSimilarit
  * Concrete implementation of {@link AbstractComposedSimilaritySwitchComparer}
  * for comparing Java elements.
  * 
- * @author atora
+ * @author Alp Torac Genc
  */
 public class JavaSimilarityComparer extends AbstractComposedSimilaritySwitchComparer {
 	/**

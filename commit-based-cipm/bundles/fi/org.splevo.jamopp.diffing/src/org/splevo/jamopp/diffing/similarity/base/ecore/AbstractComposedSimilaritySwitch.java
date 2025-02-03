@@ -13,7 +13,7 @@ import org.splevo.jamopp.diffing.similarity.base.ISimilarityRequestHandler;
  * {@link ISimilarityRequest} instances to their proper
  * {@link ISimilarityRequestHandler} instance.
  * 
- * @author atora
+ * @author Alp Torac Genc
  */
 public abstract class AbstractComposedSimilaritySwitch extends AbstractComposedSwitchAdapter
 		implements ISimilarityRequestHandler {

@@ -26,7 +26,7 @@ package org.splevo.jamopp.diffing.similarity.base;
  * 
  * @see {@link AbstractSimilarityChecker}, {@link AbstractSimilarityComparer},
  *      {@link ISimilarityToolbox}
- * @author atora
+ * @author Alp Torac Genc
  */
 public interface ISimilarityComparer extends ISimilarityRequestHandler {
 

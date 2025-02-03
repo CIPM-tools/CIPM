@@ -12,7 +12,7 @@ import org.splevo.jamopp.diffing.similarity.requests.NamespaceNormalizationReque
  * An {@link ISimilarityRequestHandler} that processes incoming
  * {@link NamespaceNormalizationRequest} instances.
  * 
- * @author atora
+ * @author Alp Torac Genc
  */
 public class NamespaceNormalizationHandler implements ISimilarityRequestHandler {
 	/**

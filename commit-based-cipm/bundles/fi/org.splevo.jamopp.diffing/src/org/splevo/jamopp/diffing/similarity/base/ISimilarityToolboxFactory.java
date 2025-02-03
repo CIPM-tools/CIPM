@@ -11,7 +11,7 @@ package org.splevo.jamopp.diffing.similarity.base;
  * implementors to build {@link ISimilarityToolbox} instances.
  * 
  * @see {@link ISimilarityToolbox}, {@link ISimilarityToolboxBuilder}
- * @author atora
+ * @author Alp Torac Genc
  */
 public interface ISimilarityToolboxFactory {
 	/**

@@ -22,7 +22,7 @@ package org.splevo.jamopp.diffing.similarity.base;
  * one method. In such cases, it is recommended to use those methods instead, in
  * order to keep the building process tidier.
  * 
- * @author atora
+ * @author Alp Torac Genc
  */
 public interface ISimilarityToolboxBuilder {
 	/**

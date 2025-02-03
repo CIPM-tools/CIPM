@@ -9,7 +9,7 @@ package org.splevo.jamopp.diffing.similarity.base;
  * especially if the concrete similarity requests are planned to be extended.
  * 
  * @see {@link ISimilarityToolbox}, {@link ISimilarityRequestHandler}
- * @author atora
+ * @author Alp Torac Genc
  */
 public interface ISimilarityRequest {
 	/**

@@ -10,7 +10,7 @@ import org.splevo.jamopp.diffing.similarity.base.ISimilarityRequestHandler;
  * {@link org.eclipse.emf.ecore.util.ComposedSwitch}. This interface contains
  * getters and delegation methods that are mutual among its implementors.
  * 
- * @author atora
+ * @author Alp Torac Genc
  */
 public interface IInnerSwitch extends ISimilarityRequestHandler {
 	/**

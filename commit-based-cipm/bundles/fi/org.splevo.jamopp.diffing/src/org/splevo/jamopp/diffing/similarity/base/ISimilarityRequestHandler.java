@@ -13,7 +13,7 @@ package org.splevo.jamopp.diffing.similarity.base;
  * {@link ISimilarityRequestHandler} instances, if they have to process requests
  * that need further processing.
  * 
- * @author atora
+ * @author Alp Torac Genc
  */
 public interface ISimilarityRequestHandler {
 	/**

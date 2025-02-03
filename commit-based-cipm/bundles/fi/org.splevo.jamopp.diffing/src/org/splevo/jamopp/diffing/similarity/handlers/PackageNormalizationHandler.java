@@ -12,7 +12,7 @@ import org.splevo.jamopp.diffing.similarity.requests.PackageNormalizationRequest
  * An {@link ISimilarityRequestHandler} that processes incoming
  * {@link PackageNormalizationRequest} instances.
  * 
- * @author atora
+ * @author Alp Torac Genc
  */
 public class PackageNormalizationHandler implements ISimilarityRequestHandler {
 	/**

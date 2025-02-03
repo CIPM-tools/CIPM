@@ -11,7 +11,7 @@ import de.uka.ipd.sdq.identifier.Identifier;
  * A {@link SingleSimilarityCheckHandler} sub-class that handles
  * {@link SingleSimilarityCheckRequest} instances.
  * 
- * @author atora
+ * @author Alp Torac Genc
  */
 public class IDBasedSingleSimilarityCheckHandler extends SingleSimilarityCheckHandler {
 	/**

@@ -29,7 +29,7 @@ import org.splevo.jamopp.diffing.similarity.requests.PackageNormalizationRequest
  * constructing {@link ISimilarityToolbox} instances for computing similarity of
  * Java model elements.
  * 
- * @author atora
+ * @author Alp Torac Genc
  */
 public class JavaSimilarityToolboxBuilder extends AbstractSimilarityToolboxBuilder {
 	@Override

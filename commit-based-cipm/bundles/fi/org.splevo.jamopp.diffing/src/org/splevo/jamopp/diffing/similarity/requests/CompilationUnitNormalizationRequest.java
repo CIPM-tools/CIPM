@@ -6,8 +6,7 @@ import org.splevo.jamopp.diffing.similarity.base.ISimilarityRequest;
  * An {@link ISimilarityRequest}, which contains the name of a
  * {@link CompilationUnit} instance: {@code compUnit.name()}.
  * 
- * @author atora
- *
+ * @author Alp Torac Genc
  */
 public class CompilationUnitNormalizationRequest implements ISimilarityRequest {
 	/**

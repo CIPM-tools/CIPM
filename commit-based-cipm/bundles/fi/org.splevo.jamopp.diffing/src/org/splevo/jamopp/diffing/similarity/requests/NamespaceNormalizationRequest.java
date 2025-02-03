@@ -7,8 +7,7 @@ import org.splevo.jamopp.diffing.similarity.base.ISimilarityRequest;
  * {@link NamespaceAwareElement} instance as String:
  * {@code nae.getNamespacesAsString()}
  * 
- * @author atora
- *
+ * @author Alp Torac Genc
  */
 public class NamespaceNormalizationRequest implements ISimilarityRequest {
 	/**

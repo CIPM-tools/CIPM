@@ -15,7 +15,7 @@ import java.util.Map;
  * delegation to those handlers must be implemented in the initial handler or
  * another concrete {@link ISimilarityToolbox} implementation should be used.
  * 
- * @author atora
+ * @author Alp Torac Genc
  */
 public class MapSimilarityToolbox implements ISimilarityToolbox {
 	/**

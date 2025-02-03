@@ -14,7 +14,7 @@ import cipm.consistency.commitintegration.diff.util.pcm.switches.SimilaritySeffS
  * Concrete implementation of {@link AbstractComposedSimilaritySwitch} for
  * computing the similarity of Palladio Component Model (PCM) repositories.
  * 
- * @author atora
+ * @author Alp Torac Genc
  */
 public class PCMRepositorySimilaritySwitch extends AbstractComposedSimilaritySwitch
 		implements IPCMRepositorySimilaritySwitch {

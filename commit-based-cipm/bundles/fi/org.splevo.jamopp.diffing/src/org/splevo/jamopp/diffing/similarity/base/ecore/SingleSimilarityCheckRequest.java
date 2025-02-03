@@ -7,7 +7,7 @@ import org.splevo.jamopp.diffing.similarity.base.ISimilarityRequest;
  * An {@link ISimilarityRequest} for checking the similarity of 2
  * {@link EObject} instances.
  * 
- * @author atora
+ * @author Alp Torac Genc
  */
 public class SingleSimilarityCheckRequest implements ISimilarityRequest {
 	private EObject element1;

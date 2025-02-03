@@ -11,7 +11,7 @@ package org.splevo.jamopp.diffing.similarity.base;
  * call to similarity checking methods, such as
  * {@link #isSimilar(Object, Object)}, at the start.
  * 
- * @author atora
+ * @author Alp Torac Genc
  */
 public abstract class AbstractSimilarityChecker implements ISimilarityChecker {
 	/**

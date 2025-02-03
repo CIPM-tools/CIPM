@@ -5,7 +5,7 @@ package org.splevo.jamopp.diffing.similarity.base;
  * to extend. Complements {@link ISimilarityToolboxBuilder} with the integration
  * of {@link ISimilarityToolboxFactory}.
  * 
- * @author atora
+ * @author Alp Torac Genc
  */
 public abstract class AbstractSimilarityToolboxBuilder implements ISimilarityToolboxBuilder {
 	/**

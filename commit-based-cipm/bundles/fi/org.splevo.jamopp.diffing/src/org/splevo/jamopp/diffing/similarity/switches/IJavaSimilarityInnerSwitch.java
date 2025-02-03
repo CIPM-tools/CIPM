@@ -16,7 +16,7 @@ import org.splevo.jamopp.diffing.similarity.requests.PackageNormalizationRequest
  * These methods can be used to spare code duplication in inner switches, which
  * need them.
  * 
- * @author atora
+ * @author Alp Torac Genc
  */
 public interface IJavaSimilarityInnerSwitch extends IInnerSwitch {
 	/**

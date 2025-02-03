@@ -7,8 +7,7 @@ import org.splevo.jamopp.diffing.similarity.base.ISimilarityRequest;
  * {@link CompilationUnit} instance normalised via
  * {@link CompilationUnitNormalizationRequest} first.
  * 
- * @author atora
- *
+ * @author Alp Torac Genc
  */
 public class PackageNormalizationRequest implements ISimilarityRequest {
 	/**

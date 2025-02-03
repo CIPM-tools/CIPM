@@ -10,7 +10,7 @@ import cipm.consistency.commitintegration.diff.util.pcm.requests.NewPCMRepositor
  * An {@link ISimilarityRequestHandler} that processes incoming
  * {@link NewPCMRepositorySimilaritySwitchRequest} instances.
  * 
- * @author atora
+ * @author Alp Torac Genc
  */
 public class NewPCMRepositorySimilaritySwitchHandler implements ISimilarityRequestHandler {
 	/**

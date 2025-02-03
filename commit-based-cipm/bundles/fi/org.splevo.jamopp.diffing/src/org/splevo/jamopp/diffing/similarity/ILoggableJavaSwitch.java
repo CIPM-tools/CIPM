@@ -12,7 +12,7 @@ import com.google.common.base.Strings;
  * Log messages' level is set to {@code Priority.INFO} to avoid flooding the
  * console and causing memory issues.
  * 
- * @author atora
+ * @author Alp Torac Genc
  */
 public interface ILoggableJavaSwitch {
 	/**

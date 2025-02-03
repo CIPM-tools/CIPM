@@ -16,7 +16,7 @@ import org.eclipse.emf.ecore.EObject;
  * {@link #getCompareElement()} when needed.
  * 
  * @see {@link IComposedSimilaritySwitch}
- * @author atora
+ * @author Alp Torac Genc
  */
 public interface IComposedSwitchAdapter {
 	/**

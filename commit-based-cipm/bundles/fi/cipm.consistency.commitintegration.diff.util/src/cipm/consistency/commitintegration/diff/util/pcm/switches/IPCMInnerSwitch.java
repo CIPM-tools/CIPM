@@ -10,7 +10,7 @@ import org.splevo.jamopp.diffing.similarity.base.ecore.IInnerSwitch;
  * These methods can be used to spare code duplication in inner switches, which
  * need them.
  * 
- * @author atora
+ * @author Alp Torac Genc
  */
 public interface IPCMInnerSwitch extends IInnerSwitch {
 

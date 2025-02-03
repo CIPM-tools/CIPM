@@ -17,7 +17,7 @@ import cipm.consistency.commitintegration.diff.util.pcm.requests.NewPCMRepositor
  * constructing {@link ISimilarityToolbox} instances for computing similarity of
  * Palladio Component Model (PCM) repositories.
  * 
- * @author atora
+ * @author Alp Torac Genc
  */
 public class PCMRepositorySimilarityToolboxBuilder extends AbstractSimilarityToolboxBuilder {
 	@Override

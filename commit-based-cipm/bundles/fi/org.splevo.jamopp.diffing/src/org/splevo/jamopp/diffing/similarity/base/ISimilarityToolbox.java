@@ -23,7 +23,7 @@ package org.splevo.jamopp.diffing.similarity.base;
  * internally handled.
  * 
  * @see {@link ISimilarityToolboxBuilder}, {@link ISimilarityToolboxFactory}
- * @author atora
+ * @author Alp Torac Genc
  */
 public interface ISimilarityToolbox extends ISimilarityRequestHandler {
 	/**

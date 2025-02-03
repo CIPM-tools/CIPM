@@ -9,7 +9,7 @@ import org.splevo.jamopp.diffing.similarity.base.ISimilarityRequestHandler;
  * A {@link ISimilarityRequestHandler} that processes
  * {@link SingleSimilarityCheckRequest} instances.
  * 
- * @author atora
+ * @author Alp Torac Genc
  */
 public class SingleSimilarityCheckHandler implements ISimilarityRequestHandler {
 	/**

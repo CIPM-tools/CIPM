@@ -6,7 +6,7 @@ import org.splevo.jamopp.diffing.similarity.base.ISimilarityRequest;
  * An {@link ISimilarityRequest}, which contains the qualified name of a
  * {@link ConcreteClassifier} instance: {@code conCls.getQualifiedName()}.
  * 
- * @author atora
+ * @author Alp Torac Genc
  */
 public class ClassifierNormalizationRequest implements ISimilarityRequest {
 	/**

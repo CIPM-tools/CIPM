@@ -8,7 +8,7 @@ import org.splevo.jamopp.diffing.similarity.base.ISimilarityToolbox;
  * An abstract class provided for integrating future {@link EObject} constructs
  * that may complement {@link AbstractSimilarityComparer}.
  * 
- * @author atora
+ * @author Alp Torac Genc
  */
 public abstract class AbstractComposedSimilaritySwitchComparer extends AbstractSimilarityComparer {
 	/**

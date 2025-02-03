@@ -8,7 +8,7 @@ package org.splevo.jamopp.diffing.similarity.base;
  * Delegates incoming {@link ISimilarityRequest} instances to its
  * {@link ISimilarityToolbox}.
  * 
- * @author atora
+ * @author Alp Torac Genc
  */
 public abstract class AbstractSimilarityComparer implements ISimilarityComparer {
 	/**
