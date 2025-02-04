@@ -27,4 +27,10 @@ public class HexDoubleLiteralTest extends AbstractJaMoPPSimilarityTest {
 		this.testSimilarityNullCheck(this.initElement(1.5d), new HexDoubleLiteralInitialiser(), false,
 				LiteralsPackage.Literals.HEX_DOUBLE_LITERAL__HEX_VALUE);
 	}
+
+	@Test
+	public void testHexValueNaN() {
+		this.testSimilarity(this.initElement(Double.NaN), this.initElement(1.5d),
+				LiteralsPackage.Literals.HEX_DOUBLE_LITERAL__HEX_VALUE);
+	}
 }

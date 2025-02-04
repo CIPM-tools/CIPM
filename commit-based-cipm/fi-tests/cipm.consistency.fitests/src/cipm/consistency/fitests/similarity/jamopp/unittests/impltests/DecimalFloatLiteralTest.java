@@ -27,4 +27,10 @@ public class DecimalFloatLiteralTest extends AbstractJaMoPPSimilarityTest {
 		this.testSimilarityNullCheck(this.initElement(1.5f), new DecimalFloatLiteralInitialiser(), false,
 				LiteralsPackage.Literals.DECIMAL_FLOAT_LITERAL__DECIMAL_VALUE);
 	}
+
+	@Test
+	public void testDecimalValueNaN() {
+		this.testSimilarity(this.initElement(Float.NaN), this.initElement(1.5f),
+				LiteralsPackage.Literals.DECIMAL_FLOAT_LITERAL__DECIMAL_VALUE);
+	}
 }
