@@ -54,8 +54,7 @@ public class UtilityTests implements IJaMoPPUtilityTest {
 		return new JaMoPPInitialiserPackage();
 	}
 
-	@Override
-	public Collection<File> getAllFiles() {
+	private Collection<File> getAllFiles() {
 		return this.getAllFiles(root);
 	}
 

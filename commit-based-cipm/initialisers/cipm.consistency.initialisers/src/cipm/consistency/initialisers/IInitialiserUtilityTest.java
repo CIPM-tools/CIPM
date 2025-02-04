@@ -16,12 +16,6 @@ import java.util.stream.Stream;
  * @author Alp Torac Genc
  */
 public interface IInitialiserUtilityTest {
-
-	/**
-	 * @return A list of all files under the root directory.
-	 */
-	public Collection<File> getAllFiles();
-
 	/**
 	 * @return The {@link IInitialiserPackage} that will be used within the utility
 	 *         test.
