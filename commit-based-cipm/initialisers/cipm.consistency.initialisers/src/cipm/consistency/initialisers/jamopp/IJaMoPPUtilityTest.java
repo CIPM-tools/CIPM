@@ -3,6 +3,8 @@ package cipm.consistency.initialisers.jamopp;
 import java.util.Collection;
 import java.util.Set;
 
+import org.eclipse.emf.ecore.EObject;
+
 import cipm.consistency.initialisers.eobject.IEObjectUtilityTest;
 
 /**
@@ -22,21 +24,21 @@ public interface IJaMoPPUtilityTest extends IEObjectUtilityTest {
 	/**
 	 * {@link JaMoPPHelper#getAllPossibleTypes()}
 	 */
-	public default Set<Class<?>> getAllPossibleJaMoPPEObjectTypes() {
+	public default Set<Class<? extends EObject>> getAllPossibleJaMoPPEObjectTypes() {
 		return this.getJaMoPPHelper().getAllPossibleTypes();
 	}
 
 	/**
 	 * {@link JaMoPPHelper#getAllInitialiserCandidates()}
 	 */
-	public default Collection<Class<?>> getAllInitialiserCandidates() {
+	public default Collection<Class<? extends EObject>> getAllInitialiserCandidates() {
 		return this.getJaMoPPHelper().getAllInitialiserCandidates();
 	}
 
 	/**
 	 * {@link JaMoPPHelper#getAllConcreteInitialiserCandidates()}
 	 */
-	public default Collection<Class<?>> getAllConcreteInitialiserCandidates() {
+	public default Collection<Class<? extends EObject>> getAllConcreteInitialiserCandidates() {
 		return this.getJaMoPPHelper().getAllConcreteInitialiserCandidates();
 	}
 }
