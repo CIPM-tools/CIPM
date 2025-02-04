@@ -54,10 +54,6 @@ public class MultipleSimilarityCheckHandler implements ISimilarityRequestHandler
 	@SuppressWarnings("unchecked")
 	@Override
 	public Object handleSimilarityRequest(ISimilarityRequest req) {
-		/*
-		 * FIXME: What to do, if a similarity checking results in Boolean.NULL
-		 */
-		
 		MultipleSimilarityCheckRequest castedR = (MultipleSimilarityCheckRequest) req;
 
 		Object[] params = (Object[]) castedR.getParams();
