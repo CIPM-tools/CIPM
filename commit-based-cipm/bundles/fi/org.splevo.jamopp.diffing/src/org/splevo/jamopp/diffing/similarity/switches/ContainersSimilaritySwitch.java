@@ -10,8 +10,6 @@ import org.splevo.jamopp.diffing.util.JaMoPPNameComparisonUtil;
 import org.splevo.jamopp.diffing.util.JaMoPPStringUtil;
 import org.splevo.jamopp.diffing.util.JaMoPPModelUtil;
 
-import com.google.common.base.Strings;
-
 /**
  * Similarity decisions for container elements.
  */
@@ -110,12 +108,6 @@ public class ContainersSimilaritySwitch extends ContainersSwitch<Boolean>
 		org.emftext.language.java.containers.Module module2 = (org.emftext.language.java.containers.Module) this
 				.getCompareElement();
 
-		var name1 = Strings.nullToEmpty(module1.getName());
-		var name2 = Strings.nullToEmpty(module2.getName());
-
-		if (!name1.equals(name2)) {
-			return Boolean.FALSE;
-		}
-		return Boolean.TRUE;
+		return JaMoPPNameComparisonUtil.namesEqual(module1, module2);
 	}
 }
