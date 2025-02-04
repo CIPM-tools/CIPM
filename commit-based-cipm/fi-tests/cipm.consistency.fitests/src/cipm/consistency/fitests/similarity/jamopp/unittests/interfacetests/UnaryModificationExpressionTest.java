@@ -24,6 +24,7 @@ public class UnaryModificationExpressionTest extends AbstractJaMoPPSimilarityTes
 	protected UnaryModificationExpression initElement(IUnaryModificationExpressionInitialiser init,
 			UnaryModificationExpressionChild child, UnaryModificationOperator op) {
 		UnaryModificationExpression result = init.instantiate();
+		Assertions.assertTrue(init.initialise(result));
 		Assertions.assertTrue(init.setChild(result, child));
 		Assertions.assertTrue(init.setOperator(result, op));
 		return result;
@@ -40,7 +41,7 @@ public class UnaryModificationExpressionTest extends AbstractJaMoPPSimilarityTes
 	@ParameterizedTest
 	@MethodSource("provideArguments")
 	public void testChildNullCheck(IUnaryModificationExpressionInitialiser init) {
-		this.testSimilarityNullCheck(this.initElement(init, this.createDecimalIntegerLiteral(1), null), init, false,
+		this.testSimilarityNullCheck(this.initElement(init, this.createDecimalIntegerLiteral(1), null), init, true,
 				ExpressionsPackage.Literals.UNARY_MODIFICATION_EXPRESSION__CHILD);
 	}
 
@@ -55,7 +56,7 @@ public class UnaryModificationExpressionTest extends AbstractJaMoPPSimilarityTes
 	@ParameterizedTest
 	@MethodSource("provideArguments")
 	public void testOperatorNullCheck(IUnaryModificationExpressionInitialiser init) {
-		this.testSimilarityNullCheck(this.initElement(init, null, this.createPlusPlusOperator()), init, false,
+		this.testSimilarityNullCheck(this.initElement(init, null, this.createPlusPlusOperator()), init, true,
 				ExpressionsPackage.Literals.UNARY_MODIFICATION_EXPRESSION__OPERATOR);
 	}
 }

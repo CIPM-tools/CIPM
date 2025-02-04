@@ -22,6 +22,7 @@ public class ArrayTypeableTest extends AbstractJaMoPPSimilarityTest implements U
 	protected ArrayTypeable initElement(IArrayTypeableInitialiser init, ArrayDimension[] arrDimsBefore,
 			ArrayDimension[] arrDimsAfter) {
 		ArrayTypeable result = init.instantiate();
+		Assertions.assertTrue(init.initialise(result));
 		Assertions.assertTrue(init.addArrayDimensionsBefore(result, arrDimsBefore));
 		Assertions.assertTrue(init.addArrayDimensionsAfter(result, arrDimsAfter));
 		return result;
@@ -57,7 +58,7 @@ public class ArrayTypeableTest extends AbstractJaMoPPSimilarityTest implements U
 		this.testSimilarityNullCheck(
 				this.initElement(init,
 						new ArrayDimension[] { this.createArrayDimension(new String[] { "ns1" }, "ai1") }, null),
-				init, false, ArraysPackage.Literals.ARRAY_TYPEABLE__ARRAY_DIMENSIONS_BEFORE);
+				init, true, ArraysPackage.Literals.ARRAY_TYPEABLE__ARRAY_DIMENSIONS_BEFORE);
 	}
 
 	@ParameterizedTest
@@ -89,6 +90,6 @@ public class ArrayTypeableTest extends AbstractJaMoPPSimilarityTest implements U
 		this.testSimilarityNullCheck(
 				this.initElement(init, null,
 						new ArrayDimension[] { this.createArrayDimension(new String[] { "ns1" }, "ai1") }),
-				init, false, ArraysPackage.Literals.ARRAY_TYPEABLE__ARRAY_DIMENSIONS_AFTER);
+				init, true, ArraysPackage.Literals.ARRAY_TYPEABLE__ARRAY_DIMENSIONS_AFTER);
 	}
 }

@@ -27,6 +27,7 @@ public class AccessProvidingModuleDirectiveTest extends AbstractJaMoPPSimilarity
 	protected AccessProvidingModuleDirective initElement(IAccessProvidingModuleDirectiveInitialiser init,
 			ModuleReference[] modRefs, Package accessablePac) {
 		var result = init.instantiate();
+		Assertions.assertTrue(init.initialise(result));
 		Assertions.assertTrue(init.addModules(result, modRefs));
 		Assertions.assertTrue(init.setAccessablePackage(result, accessablePac));
 		return result;
@@ -55,7 +56,7 @@ public class AccessProvidingModuleDirectiveTest extends AbstractJaMoPPSimilarity
 	@MethodSource("provideArguments")
 	public void testModuleNullCheck(IAccessProvidingModuleDirectiveInitialiser init) {
 		this.testSimilarityNullCheck(
-				this.initElement(init, new ModuleReference[] { this.createMinimalMR("mod1") }, null), init, false,
+				this.initElement(init, new ModuleReference[] { this.createMinimalMR("mod1") }, null), init, true,
 				ModulesPackage.Literals.ACCESS_PROVIDING_MODULE_DIRECTIVE__MODULES);
 	}
 
@@ -73,7 +74,7 @@ public class AccessProvidingModuleDirectiveTest extends AbstractJaMoPPSimilarity
 	@MethodSource("provideArguments")
 	public void testAccessablePackageNullCheck(IAccessProvidingModuleDirectiveInitialiser init) {
 		this.testSimilarityNullCheck(
-				this.initElement(init, null, this.createMinimalPackage(new String[] { "ns1", "ns2" })), init, false,
+				this.initElement(init, null, this.createMinimalPackage(new String[] { "ns1", "ns2" })), init, true,
 				ModulesPackage.Literals.ACCESS_PROVIDING_MODULE_DIRECTIVE__ACCESSABLE_PACKAGE);
 	}
 }

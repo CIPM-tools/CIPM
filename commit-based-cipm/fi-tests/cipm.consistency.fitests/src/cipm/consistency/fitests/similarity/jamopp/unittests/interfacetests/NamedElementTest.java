@@ -37,7 +37,7 @@ public class NamedElementTest extends AbstractJaMoPPSimilarityTest {
 	@ParameterizedTest
 	@MethodSource("provideArguments")
 	public void testNameNullCheck(INamedElementInitialiser init) {
-		this.testSimilarityNullCheck(this.initElement(init, "name11"), init, false,
+		this.testSimilarityNullCheck(this.initElement(init, "name11"), init, true,
 				CommonsPackage.Literals.NAMED_ELEMENT__NAME);
 	}
 }

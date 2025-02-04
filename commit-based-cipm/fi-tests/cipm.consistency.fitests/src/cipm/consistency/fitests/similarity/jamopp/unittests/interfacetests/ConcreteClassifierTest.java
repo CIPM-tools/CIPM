@@ -24,6 +24,7 @@ public class ConcreteClassifierTest extends AbstractJaMoPPSimilarityTest impleme
 	protected ConcreteClassifier initElement(IConcreteClassifierInitialiser init, Package pac) {
 
 		ConcreteClassifier result = init.instantiate();
+		Assertions.assertTrue(init.initialise(result));
 		Assertions.assertTrue(init.setPackage(result, pac));
 
 		return result;
@@ -41,7 +42,7 @@ public class ConcreteClassifierTest extends AbstractJaMoPPSimilarityTest impleme
 	@ParameterizedTest
 	@MethodSource("provideArguments")
 	public void testPackageNullCheck(IConcreteClassifierInitialiser init) {
-		this.testSimilarityNullCheck(this.initElement(init, this.createMinimalPackage("pOneNS", 2)), init, false,
+		this.testSimilarityNullCheck(this.initElement(init, this.createMinimalPackage("pOneNS", 2)), init, true,
 				ClassifiersPackage.Literals.CONCRETE_CLASSIFIER__PACKAGE);
 	}
 }

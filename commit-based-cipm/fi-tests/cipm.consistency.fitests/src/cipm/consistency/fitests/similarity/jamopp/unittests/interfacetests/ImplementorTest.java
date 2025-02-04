@@ -22,6 +22,7 @@ public class ImplementorTest extends AbstractJaMoPPSimilarityTest implements Use
 
 	protected Implementor initElement(IImplementorInitialiser init, TypeReference[] impls) {
 		Implementor result = init.instantiate();
+		Assertions.assertTrue(init.initialise(result));
 		Assertions.assertTrue(init.addImplements(result, impls));
 		return result;
 	}
@@ -49,6 +50,6 @@ public class ImplementorTest extends AbstractJaMoPPSimilarityTest implements Use
 	@MethodSource("provideArguments")
 	public void testImplementsNullCheck(IImplementorInitialiser init) {
 		this.testSimilarityNullCheck(this.initElement(init, new TypeReference[] { this.createMinimalClsRef("cls1") }),
-				init, false, ClassifiersPackage.Literals.IMPLEMENTOR__IMPLEMENTS);
+				init, true, ClassifiersPackage.Literals.IMPLEMENTOR__IMPLEMENTS);
 	}
 }

@@ -25,6 +25,7 @@ public class MemberContainerTest extends AbstractJaMoPPSimilarityTest
 
 	protected MemberContainer initElement(IMemberContainerInitialiser init, Member[] members, Member[] defMembers) {
 		MemberContainer result = init.instantiate();
+		Assertions.assertTrue(init.initialise(result));
 		Assertions.assertTrue(init.addMembers(result, members));
 		Assertions.assertTrue(init.addDefaultMembers(result, defMembers));
 		return result;
@@ -53,7 +54,7 @@ public class MemberContainerTest extends AbstractJaMoPPSimilarityTest
 	@MethodSource("provideArguments")
 	public void testMemberNullCheck(IMemberContainerInitialiser init) {
 		this.testSimilarityNullCheck(this.initElement(init, new Member[] { this.createMinimalClass("cls1") }, null),
-				init, false, MembersPackage.Literals.MEMBER_CONTAINER__MEMBERS);
+				init, true, MembersPackage.Literals.MEMBER_CONTAINER__MEMBERS);
 	}
 
 	@ParameterizedTest
@@ -79,6 +80,6 @@ public class MemberContainerTest extends AbstractJaMoPPSimilarityTest
 	@MethodSource("provideArguments")
 	public void testDefaultMemberNullCheck(IMemberContainerInitialiser init) {
 		this.testSimilarityNullCheck(this.initElement(init, null, new Member[] { this.createMinimalClass("cls1") }),
-				init, false, MembersPackage.Literals.MEMBER_CONTAINER__DEFAULT_MEMBERS);
+				init, true, MembersPackage.Literals.MEMBER_CONTAINER__DEFAULT_MEMBERS);
 	}
 }

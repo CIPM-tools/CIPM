@@ -22,6 +22,7 @@ public class ModifiableTest extends AbstractJaMoPPSimilarityTest implements Uses
 
 	protected Modifiable initElement(IModifiableInitialiser init, Modifier[] modifs) {
 		Modifiable result = init.instantiate();
+		Assertions.assertTrue(init.initialise(result));
 		Assertions.assertTrue(init.addModifiers(result, modifs));
 		return result;
 	}
@@ -49,6 +50,7 @@ public class ModifiableTest extends AbstractJaMoPPSimilarityTest implements Uses
 	public void testModifierNullCheck(IModifiableInitialiser init) {
 		var objOne = this.initElement(init, new Modifier[] { this.createFinal() });
 		var objTwo = init.instantiate();
+		Assertions.assertTrue(init.initialise(objTwo));
 
 		this.testSimilarity(objOne, objTwo, ModifiersPackage.Literals.MODIFIABLE__MODIFIERS);
 	}

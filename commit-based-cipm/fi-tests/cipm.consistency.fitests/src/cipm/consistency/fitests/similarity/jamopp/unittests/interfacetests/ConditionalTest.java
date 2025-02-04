@@ -22,6 +22,7 @@ public class ConditionalTest extends AbstractJaMoPPSimilarityTest implements Use
 
 	protected Conditional initElement(IConditionalInitialiser init, Expression cond) {
 		Conditional result = init.instantiate();
+		Assertions.assertTrue(init.initialise(result));
 		Assertions.assertTrue(init.setCondition(result, cond));
 		return result;
 	}
@@ -38,7 +39,7 @@ public class ConditionalTest extends AbstractJaMoPPSimilarityTest implements Use
 	@ParameterizedTest
 	@MethodSource("provideArguments")
 	public void testConditionNullCheck(IConditionalInitialiser init) {
-		this.testSimilarityNullCheck(this.initElement(init, this.createMinimalTrueEE()), init, false,
+		this.testSimilarityNullCheck(this.initElement(init, this.createMinimalTrueEE()), init, true,
 				StatementsPackage.Literals.CONDITIONAL__CONDITION);
 	}
 }

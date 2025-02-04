@@ -22,6 +22,7 @@ public class ImportTest extends AbstractJaMoPPSimilarityTest implements UsesImpo
 
 	protected Import initElement(IImportInitialiser init, ConcreteClassifier cls) {
 		Import result = init.instantiate();
+		Assertions.assertTrue(init.initialise(result));
 		Assertions.assertTrue(init.setClassifier(result, cls));
 
 		return result;
@@ -39,7 +40,7 @@ public class ImportTest extends AbstractJaMoPPSimilarityTest implements UsesImpo
 	@ParameterizedTest
 	@MethodSource("provideArguments")
 	public void testClassifierNullCheck(IImportInitialiser init) {
-		this.testSimilarityNullCheck(this.initElement(init, this.createMinimalClass("cls1Name")), init, false,
+		this.testSimilarityNullCheck(this.initElement(init, this.createMinimalClass("cls1Name")), init, true,
 				ImportsPackage.Literals.IMPORT__CLASSIFIER);
 	}
 }

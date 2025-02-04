@@ -41,7 +41,7 @@ public class ElementReferenceTest extends AbstractJaMoPPSimilarityTest implement
 	@ParameterizedTest
 	@MethodSource("provideArguments")
 	public void testTargetNullCheck(IElementReferenceInitialiser init) {
-		this.testSimilarityNullCheck(this.initElement(init, this.createMinimalClass("cls1"), null), init, false,
+		this.testSimilarityNullCheck(this.initElement(init, this.createMinimalClass("cls1"), null), init, true,
 				ReferencesPackage.Literals.ELEMENT_REFERENCE__TARGET);
 	}
 
@@ -69,6 +69,7 @@ public class ElementReferenceTest extends AbstractJaMoPPSimilarityTest implement
 	public void testTargetNoExceptionNullCheck(IElementReferenceInitialiser init) {
 		var objOne = this.initElement(init, this.createMinimalClass("cls1"), null);
 		var objTwo = init.instantiate();
+		Assertions.assertTrue(init.initialise(objTwo));
 
 		Assertions.assertDoesNotThrow(
 				() -> this.testSimilarity(objOne, objTwo, ReferencesPackage.Literals.ELEMENT_REFERENCE__TARGET));
@@ -86,7 +87,7 @@ public class ElementReferenceTest extends AbstractJaMoPPSimilarityTest implement
 	@ParameterizedTest
 	@MethodSource("provideArguments")
 	public void testContainedTargetNullCheck(IElementReferenceInitialiser init) {
-		this.testSimilarityNullCheck(this.initElement(init, null, this.createMinimalClass("cls1")), init, false,
+		this.testSimilarityNullCheck(this.initElement(init, null, this.createMinimalClass("cls1")), init, true,
 				ReferencesPackage.Literals.ELEMENT_REFERENCE__CONTAINED_TARGET);
 	}
 }
