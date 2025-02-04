@@ -20,7 +20,6 @@ import org.emftext.language.java.generics.GenericsPackage;
 import org.emftext.language.java.generics.QualifiedTypeArgument;
 import org.emftext.language.java.imports.ClassifierImport;
 import org.emftext.language.java.imports.ImportsPackage;
-import org.emftext.language.java.imports.PackageImport;
 import org.emftext.language.java.imports.StaticClassifierImport;
 import org.emftext.language.java.instantiations.Instantiation;
 import org.emftext.language.java.instantiations.InstantiationsPackage;
@@ -101,9 +100,9 @@ public class JaMoPPSimilarityValues extends AbstractSimilarityValues {
 	}
 
 	public void addCommonsSimilarityEntries() {
-		this.addSimilarityEntry(new Class[] { AdditionalField.class, Package.class, Block.class },
-				CommonsPackage.Literals.NAMED_ELEMENT__NAME, Boolean.TRUE);
-		this.addSimilarityEntry(new Class[] { PackageImport.class, StaticClassifierImport.class, Module.class },
+		this.addSimilarityEntry(new Class[] { Package.class, Block.class }, CommonsPackage.Literals.NAMED_ELEMENT__NAME,
+				Boolean.TRUE);
+		this.addSimilarityEntry(new Class[] { Module.class },
 				CommonsPackage.Literals.NAMESPACE_AWARE_ELEMENT__NAMESPACES, Boolean.TRUE);
 		this.addSimilarityEntry(new Class[] { EmptyModel.class, PackageReference.class },
 				new EStructuralFeature[] { CommonsPackage.Literals.NAMED_ELEMENT__NAME,
@@ -161,6 +160,8 @@ public class JaMoPPSimilarityValues extends AbstractSimilarityValues {
 		this.addSimilarityEntry(ImportsPackage.Literals.IMPORTING_ELEMENT__IMPORTS, Boolean.TRUE);
 		this.addSimilarityEntry(ImportsPackage.Literals.IMPORT__CLASSIFIER, Boolean.TRUE);
 		this.addSimilarityEntry(ImportsPackage.Literals.STATIC_IMPORT__STATIC, Boolean.TRUE);
+		this.addSimilarityEntry(StaticClassifierImport.class, ImportsPackage.Literals.IMPORT__CLASSIFIER,
+				Boolean.FALSE);
 		this.addSimilarityEntry(ClassifierImport.class, ImportsPackage.Literals.IMPORT__CLASSIFIER, Boolean.FALSE);
 	}
 
@@ -241,9 +242,9 @@ public class JaMoPPSimilarityValues extends AbstractSimilarityValues {
 		this.addSimilarityEntry(TypesPackage.Literals.TYPED_ELEMENT_EXTENSION__ACTUAL_TARGETS, Boolean.TRUE);
 		this.addSimilarityEntry(TypesPackage.Literals.TYPED_ELEMENT__TYPE_REFERENCE, Boolean.TRUE);
 		this.addSimilarityEntry(
-				new Class[] { InstanceOfExpression.class, QualifiedTypeArgument.class, NewConstructorCall.class,
-						NewConstructorCallWithInferredTypeArguments.class, ProvidesModuleDirective.class,
-						UsesModuleDirective.class },
+				new Class[] { AdditionalField.class, InstanceOfExpression.class, QualifiedTypeArgument.class,
+						NewConstructorCall.class, NewConstructorCallWithInferredTypeArguments.class,
+						ProvidesModuleDirective.class, UsesModuleDirective.class },
 				TypesPackage.Literals.TYPED_ELEMENT__TYPE_REFERENCE, Boolean.FALSE);
 	}
 
