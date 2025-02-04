@@ -8,6 +8,6 @@ public interface IDecimalDoubleLiteralInitialiser extends IDoubleLiteralInitiali
 
 	public default boolean setDecimalValue(DecimalDoubleLiteral ddl, double val) {
 		ddl.setDecimalValue(val);
-		return ddl.getDecimalValue() == val;
+		return ddl.getDecimalValue() == val || (Double.isNaN(ddl.getDecimalValue()) && Double.isNaN(val));
 	}
 }

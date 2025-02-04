@@ -8,6 +8,6 @@ public interface IDecimalFloatLiteralInitialiser extends IFloatLiteralInitialise
 
 	public default boolean setDecimalValue(DecimalFloatLiteral dfl, float val) {
 		dfl.setDecimalValue(val);
-		return dfl.getDecimalValue() == val;
+		return dfl.getDecimalValue() == val || (Float.isNaN(dfl.getDecimalValue()) && Float.isNaN(val));
 	}
 }

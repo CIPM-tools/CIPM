@@ -8,6 +8,6 @@ public interface IHexDoubleLiteralInitialiser extends IDoubleLiteralInitialiser 
 
 	public default boolean setHexValue(HexDoubleLiteral hdl, double val) {
 		hdl.setHexValue(val);
-		return hdl.getHexValue() == val;
+		return hdl.getHexValue() == val || (Double.isNaN(hdl.getHexValue()) && Double.isNaN(val));
 	}
 }
