@@ -2,6 +2,7 @@ package org.splevo.jamopp.diffing.similarity.switches;
 
 import org.emftext.language.java.imports.ClassifierImport;
 import org.emftext.language.java.imports.PackageImport;
+import org.emftext.language.java.imports.StaticClassifierImport;
 import org.emftext.language.java.imports.StaticMemberImport;
 import org.emftext.language.java.imports.util.ImportsSwitch;
 import org.splevo.jamopp.diffing.similarity.IJavaSimilaritySwitch;
@@ -89,6 +90,38 @@ public class ImportsSimilaritySwitch extends ImportsSwitch<Boolean>
 		
 		PackageImport import2 = (PackageImport) this.getCompareElement();
 		
+		return JaMoPPNamespaceUtil.compareNamespacesAsString(import1, import2);
+	}
+
+	/**
+	 * TODO Review this method to make sure it is correct.
+	 * 
+	 * <i><b>This method was added later, because comparing improperly
+	 * initialised static classifier imports could result in null otherwise.</b></i>
+	 * <br><br>
+	 * 
+	 * Static classifier imports are considered similar, if:
+	 * <ul>
+	 * <li> Their classifiers ({@link StaticClassifierImport#getClassifier()}) are similar
+	 * <li> Their namespaces ({@link StaticClassifierImport#getNamespacesAsString()}) are equal
+	 * </ul>
+	 * 
+	 * @param import1 the package import to compare with the compare element
+	 * @return False if not similar, true otherwise.
+	 * 
+	 * @see {@link #getCompareElement()}
+	 */
+	@Override
+	public Boolean caseStaticClassifierImport(StaticClassifierImport import1) {
+		this.logInfoMessage("caseStaticClassifierImport");
+
+		StaticClassifierImport import2 = (StaticClassifierImport) this.getCompareElement();
+
+		Boolean similarity = this.isSimilar(import1.getClassifier(), import2.getClassifier());
+		if (JaMoPPBooleanUtil.isFalse(similarity)) {
+			return Boolean.FALSE;
+		}
+
 		return JaMoPPNamespaceUtil.compareNamespacesAsString(import1, import2);
 	}
 }
