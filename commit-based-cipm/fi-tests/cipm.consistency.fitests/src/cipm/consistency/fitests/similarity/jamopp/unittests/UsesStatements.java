@@ -14,7 +14,6 @@ import cipm.consistency.initialisers.jamopp.statements.BlockInitialiser;
 import cipm.consistency.initialisers.jamopp.statements.JumpLabelInitialiser;
 import cipm.consistency.initialisers.jamopp.statements.LocalVariableStatementInitialiser;
 import cipm.consistency.initialisers.jamopp.statements.ReturnInitialiser;
-import cipm.consistency.initialisers.jamopp.variables.LocalVariableInitialiser;
 
 /**
  * An interface that can be implemented by tests, which work with
@@ -22,7 +21,7 @@ import cipm.consistency.initialisers.jamopp.variables.LocalVariableInitialiser;
  * <br>
  * Contains methods that can be used to create {@link Statement} instances.
  */
-public interface UsesStatements extends UsesLiterals {
+public interface UsesStatements extends UsesLiterals, UsesLocalVariables {
 	/**
 	 * @param returnVal The return value of the instance to be constructed
 	 * @return A {@link Return} instance with the given {@link Expression} as its
@@ -36,14 +35,15 @@ public interface UsesStatements extends UsesLiterals {
 	}
 
 	/**
-	 * @param lvName The name of the instance to be constructed
-	 * @return A {@link LocalVariableStatement} instance with the given name.
+	 * @param lvName The name of the {@link LocalVariable} instance to be
+	 *               constructed which will be used by the returned
+	 *               {@link LocalVariableStatement}.
+	 * 
+	 * @return A {@link LocalVariableStatement} instance with a
+	 *         {@link LocalVariable} instance with the given name.
 	 */
 	public default LocalVariableStatement createMinimalLVS(String lvName) {
-		var init = new LocalVariableInitialiser();
-		var res = init.instantiate();
-		init.setName(res, lvName);
-		return this.createMinimalLVS(res);
+		return this.createMinimalLVS(this.createMinimalLV(lvName));
 	}
 
 	/**
