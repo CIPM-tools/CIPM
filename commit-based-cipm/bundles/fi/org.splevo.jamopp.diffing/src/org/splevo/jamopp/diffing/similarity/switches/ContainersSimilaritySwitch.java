@@ -1,6 +1,7 @@
 package org.splevo.jamopp.diffing.similarity.switches;
 
 import org.emftext.language.java.containers.CompilationUnit;
+import org.emftext.language.java.containers.EmptyModel;
 import org.emftext.language.java.containers.Package;
 import org.emftext.language.java.containers.util.ContainersSwitch;
 import org.splevo.jamopp.diffing.similarity.IJavaSimilaritySwitch;
@@ -109,5 +110,23 @@ public class ContainersSimilaritySwitch extends ContainersSwitch<Boolean>
 				.getCompareElement();
 
 		return JaMoPPNameComparisonUtil.namesEqual(module1, module2);
+	}
+
+	/**
+	 * TODO Review this method to make sure it is correct.
+	 * 
+	 * <i><b>This method was added later, because comparing improperly
+	 * initialised empty models could result in null otherwise.</b></i>
+	 * <br><br>
+	 * Empty models are considered to be similar.
+	 * 
+	 * @param emptyModule1 the empty model to compare with the compare element
+	 * @return True
+	 */
+	@Override
+	public Boolean caseEmptyModel(EmptyModel emptyModule1) {
+		this.logInfoMessage("caseEmptyModel");
+
+		return Boolean.TRUE;
 	}
 }
