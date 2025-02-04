@@ -21,7 +21,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
  * @see {@link EcoreUtil}
  */
 public class EcoreUtilHelper {
-	private final Logger LOGGER = Logger.getLogger("cipm." + EcoreUtilHelper.class.getSimpleName());
+	private static final Logger LOGGER = Logger.getLogger("cipm." + EcoreUtilHelper.class.getSimpleName());
 
 	/**
 	 * Creates a clone copy of the given obj and its contents. <br>
