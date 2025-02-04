@@ -17,17 +17,6 @@ package cipm.consistency.fitests.similarity.params;
  */
 public interface ISimilarityValues {
 	/**
-	 * A variant of {@link #addSimilarityEntry(Class, Object, Boolean)}, where
-	 * objCls is extracted from attr.
-	 * 
-	 * @see {@link #getExpectedSimilarityResult(Class, Object)} for more information
-	 *      on expected similarity checking result.
-	 * 
-	 * @see {@link #addSimilarityEntry(Class, Object, Boolean)}
-	 */
-	public void addSimilarityEntry(Object attr, Boolean expectedSimResult);
-
-	/**
 	 * Adds the (objCls, attr) pair, along with their expected similarity checking
 	 * value to this instance.
 	 * 
@@ -38,7 +27,7 @@ public interface ISimilarityValues {
 	 * @see {@link #addSimilarityEntry(Class[], Object, Boolean)}
 	 * @see {@link #addSimilarityEntry(Class[], Object[], Boolean[])}
 	 */
-	public void addSimilarityEntry(Class<? extends Object> objCls, Object attr, Boolean expectedSimResult);
+	public void addSimilarityEntry(Class<?> objCls, Object attr, Boolean expectedSimResult);
 
 	/**
 	 * A variant of {@link #addSimilarityEntry(Class, Object, Boolean)} for an array
@@ -111,7 +100,7 @@ public interface ISimilarityValues {
 	 * 
 	 * @see {@link #addSimilarityEntry(Class, Object, Boolean)}
 	 */
-	public void removeSimilarityEntry(Class<? extends Object> objCls, Object attr);
+	public void removeSimilarityEntry(Class<?> objCls, Object attr);
 
 	/**
 	 * Clears all entries stored in this instance. <br>
@@ -119,6 +108,27 @@ public interface ISimilarityValues {
 	 * Resets this instance.
 	 */
 	public void clear();
+
+	/**
+	 * A variant of {@link #getStoredExpectedSimilarityResult(Class, Object)}, which
+	 * returns {@link #getDefaultSimilarityResult()} rather than null.
+	 */
+	public default Boolean getExpectedSimilarityResult(Class<?> objCls, Object attr) {
+		var result = this.getStoredExpectedSimilarityResult(objCls, attr);
+		return result != null ? result : this.getDefaultSimilarityResult();
+	}
+
+	/**
+	 * A variant of {@link #getStoredDirectExpectedSimilarityResult(Class, Object)},
+	 * which accounts for entries belonging to super types: <br>
+	 * <br>
+	 * If this instance does not have the entry for (objCls, attr), it checks
+	 * whether there is an entry for a parent class parObjCls (of objCls) and attr
+	 * (parObjCls, attr). If there is one such entry, the expected result of
+	 * similarity checking for (parObjCls, attr) is returned. If there are still no
+	 * matching entries, null is returned.
+	 */
+	public Boolean getStoredExpectedSimilarityResult(Class<?> objCls, Object attr);
 
 	/**
 	 * Returns the expected result of similarity checking 2 object instances of the
@@ -134,22 +144,10 @@ public interface ISimilarityValues {
 	 *         <li>Null: The result of similarity checking a and b is not defined,
 	 *         i.e. differences in attr play no decisive role.
 	 *         </ul>
-	 *         Note: If this instance does not have the entry for (objCls, attr), it
-	 *         checks whether there is an entry for a parent class parObjCls (of
-	 *         objCls) and attr (parObjCls, attr). If there is one such entry, the
-	 *         expected result of similarity checking for (parObjCls, attr) is
-	 *         returned. If there are still no matching entries,
-	 *         {@link #getDefaultSimilarityResult()} is returned.
+	 *         Note: If this instance does not have the entry for (objCls, attr),
+	 *         null is returned.
 	 */
-	public Boolean getExpectedSimilarityResult(Class<? extends Object> objCls, Object attr);
-
-	/**
-	 * A variant of {@link #getExpectedSimilarityResult(Class, Object)} that
-	 * extracts objCls from attr.
-	 * 
-	 * @see {@link #getExpectedSimilarityResult(Class, Object)}
-	 */
-	public Boolean getExpectedSimilarityResult(Object attr);
+	public Boolean getStoredDirectExpectedSimilarityResult(Class<?> objCls, Object attr);
 
 	/**
 	 * Sets the default return value for
@@ -162,6 +160,10 @@ public interface ISimilarityValues {
 	public void setDefaultSimilarityResult(Boolean defSimRes);
 
 	/**
+	 * Note: A default similarity result may not be present depending on the
+	 * concrete implementor, i.e. it might be null. In such cases, null will be
+	 * returned.
+	 * 
 	 * @return The default return value for
 	 *         {@link #getExpectedSimilarityResult(Class, Object)}
 	 */

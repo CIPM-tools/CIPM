@@ -105,23 +105,29 @@ public abstract class AbstractEObjectSimilarityTest extends AbstractResourceSimi
 	}
 
 	/**
-	 * The variant of
-	 * {@link #getExpectedSimilarityResult(Class, EStructuralFeature)} that uses the
-	 * type, which introduces attrKey to the {@link EObject} hierarchy first.
-	 */
-	public Boolean getExpectedSimilarityResult(EStructuralFeature attrKey) {
-		return this.getInitialiserTestSettingsProvider().getSimilarityValues().getExpectedSimilarityResult(attrKey);
-	}
-
-	/**
 	 * @param objCls  The type of the {@link EObject} instances being compared
 	 * @param attrKey The attribute, based on which the said instances are compared
 	 * @return The expected similarity value for cases, where 2 instances of objCls
 	 *         are compared, whose attribute (attrKey) is different.
 	 */
-	public Boolean getExpectedSimilarityResult(Class<? extends EObject> objCls, EStructuralFeature attrKey) {
+	public Boolean getExpectedSimilarityResult(Class<? extends EObject> objCls, Object attrKey) {
 		return this.getInitialiserTestSettingsProvider().getSimilarityValues().getExpectedSimilarityResult(objCls,
 				attrKey);
+	}
+
+	@SuppressWarnings("unchecked")
+	public Boolean getExpectedSimilarityResult(EObject obj, Object attrKey) {
+		return this.getExpectedSimilarityResult((Class<? extends EObject>) obj.eClass().getInstanceClass(), attrKey);
+	}
+
+	/**
+	 * The variant of
+	 * {@link #getExpectedSimilarityResult(Class, EStructuralFeature)} that uses the
+	 * type, which introduces attrKey to the {@link EObject} hierarchy first.
+	 */
+	public Boolean getExpectedSimilarityResult(EStructuralFeature attrKey) {
+		return this.getInitialiserTestSettingsProvider().getSimilarityValues()
+				.getExpectedSimilarityResult(attrKey.getContainerClass(), attrKey);
 	}
 
 	/**
@@ -225,24 +231,21 @@ public abstract class AbstractEObjectSimilarityTest extends AbstractResourceSimi
 	 * A variant of {@link #testSimilarity(EObject, EObject, Boolean)}, where the
 	 * last parameter is computed using the given attrKey.
 	 * 
-	 * @see {@link #getExpectedSimilarityResult(Class, EStructuralFeature)} for
-	 *      objCls and attrKey.
+	 * @see {@link #getExpectedSimilarityResult(Class, Object)} for objCls and
+	 *      attrKey.
 	 */
-	public void testSimilarity(EObject elem1, EObject elem2, Class<? extends EObject> objCls,
-			EStructuralFeature attrKey) {
-		this.testSimilarity(elem1, elem2, this.getExpectedSimilarityResult(objCls, (EStructuralFeature) attrKey));
+	public void testSimilarity(EObject elem1, EObject elem2, Class<? extends EObject> objCls, Object attrKey) {
+		this.testSimilarity(elem1, elem2, this.getExpectedSimilarityResult(objCls, attrKey));
 	}
 
 	/**
-	 * The variant of
-	 * {@link #testSimilarity(EObject, EObject, Class, EStructuralFeature)} that
+	 * The variant of {@link #testSimilarity(EObject, EObject, Class, Object)} that
 	 * uses the same class as the given elems.
 	 * 
-	 * @see {@link #getExpectedSimilarityResult(Class, EStructuralFeature)} for
-	 *      attrKey.
+	 * @see {@link #getExpectedSimilarityResult(Class, Object)} for attrKey.
 	 */
 	@SuppressWarnings("unchecked")
-	public void testSimilarity(EObject elem1, EObject elem2, EStructuralFeature attrKey) {
+	public void testSimilarity(EObject elem1, EObject elem2, Object attrKey) {
 		this.testSimilarity(elem1, elem2, (Class<? extends EObject>) elem1.eClass().getInstanceClass(), attrKey);
 	}
 
@@ -279,26 +282,25 @@ public abstract class AbstractEObjectSimilarityTest extends AbstractResourceSimi
 	 * {@link #testSimilarityNullCheck(EObject, IEObjectInitialiser, boolean, Boolean)},
 	 * where the last parameter is computed using the given attrKey.
 	 * 
-	 * @see {@link #getExpectedSimilarityResult(Class, EStructuralFeature)} for
-	 *      objCls and attrKey.
+	 * @see {@link #getExpectedSimilarityResult(Class, Object)} for objCls and
+	 *      attrKey.
 	 */
 	public void testSimilarityNullCheck(EObject elem, IEObjectInitialiser init, boolean initialiseSecondElement,
-			Class<? extends EObject> objCls, EStructuralFeature attrKey) {
+			Class<? extends EObject> objCls, Object attrKey) {
 		this.testSimilarityNullCheck(elem, init, initialiseSecondElement,
-				this.getExpectedSimilarityResult(objCls, (EStructuralFeature) attrKey));
+				this.getExpectedSimilarityResult(objCls, (Object) attrKey));
 	}
 
 	/**
 	 * A variant of
-	 * {@link #testSimilarityNullCheck(EObject, IEObjectInitialiser, boolean, Class, EStructuralFeature)}
+	 * {@link #testSimilarityNullCheck(EObject, IEObjectInitialiser, boolean, Class, Object)}
 	 * that computes the {@code objCls} parameter from the {@code elem} parameter.
 	 * 
-	 * @see {@link #getExpectedSimilarityResult(Class, EStructuralFeature)} for
-	 *      attrKey.
+	 * @see {@link #getExpectedSimilarityResult(Class, Object)} for attrKey.
 	 */
 	@SuppressWarnings("unchecked")
 	public void testSimilarityNullCheck(EObject elem, IEObjectInitialiser init, boolean initialiseSecondElement,
-			EStructuralFeature attrKey) {
+			Object attrKey) {
 		this.testSimilarityNullCheck(elem, init, initialiseSecondElement,
 				(Class<? extends EObject>) elem.eClass().getInstanceClass(), attrKey);
 	}

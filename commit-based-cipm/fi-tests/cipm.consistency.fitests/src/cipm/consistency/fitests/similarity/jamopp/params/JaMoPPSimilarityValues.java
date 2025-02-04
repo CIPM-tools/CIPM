@@ -280,17 +280,15 @@ public class JaMoPPSimilarityValues extends AbstractSimilarityValues {
 	/**
 	 * @return The type of the class that has the attribute attr.
 	 */
-	protected Class<? extends Object> getClassFromStructuralFeature(Object attr) {
-		return (Class<? extends Object>) ((EStructuralFeature) attr).getContainerClass();
+	protected Class<?> getClassFromStructuralFeature(EStructuralFeature attr) {
+		return attr.getContainerClass();
 	}
 
-	@Override
-	public void addSimilarityEntry(Object attr, Boolean expectedSimResult) {
+	/**
+	 * A variant of {@link #addSimilarityEntry(Class, Object, Boolean)}, where
+	 * the second parameter is attr and the first parameter is derived from attr.
+	 */
+	public void addSimilarityEntry(EStructuralFeature attr, Boolean expectedSimResult) {
 		this.addSimilarityEntry(this.getClassFromStructuralFeature(attr), attr, expectedSimResult);
-	}
-
-	@Override
-	public Boolean getExpectedSimilarityResult(Object attr) {
-		return this.getExpectedSimilarityResult(this.getClassFromStructuralFeature(attr), attr);
 	}
 }
