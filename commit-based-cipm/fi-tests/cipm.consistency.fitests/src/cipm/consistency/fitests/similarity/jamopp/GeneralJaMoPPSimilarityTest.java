@@ -123,8 +123,13 @@ public class GeneralJaMoPPSimilarityTest extends AbstractJaMoPPSimilarityTest {
 	 * </ul>
 	 */
 	private void assertAreSimilar(List<? extends EObject> eos1, List<? extends EObject> eos2, Boolean expectedResult) {
-		Assertions.assertEquals(expectedResult, this.areSimilar(eos1, eos2));
-		Assertions.assertEquals(expectedResult, this.areSimilar(eos2, eos1), "areSimilar is not symmetric");
+		var listSim1 = this.areSimilar(eos1, eos2);
+		var listSim2 = this.areSimilar(eos2, eos1);
+
+		Assertions.assertEquals(expectedResult, listSim1);
+		Assertions.assertEquals(expectedResult, listSim2, "areSimilar is not symmetric");
+
+		this.reportIfSimCheckResultNull(listSim1, listSim2);
 
 		if (eos1 != null && eos2 != null) {
 			int size = eos1.size() == eos2.size() ? eos1.size() : -1;
@@ -172,13 +177,15 @@ public class GeneralJaMoPPSimilarityTest extends AbstractJaMoPPSimilarityTest {
 		var res1 = this.isSimilar(obj1, obj2);
 		var res2 = this.isSimilar(obj2, obj1);
 
-		// FIXME: Remove the null check and deal with the cause of the issues
+		Assertions.assertEquals(expectedResult, res1);
+		Assertions.assertEquals(expectedResult, res2, "isSimilar is not symmetric");
 
-		if (expectedResult == null || (res1 != null && res2 != null)) {
-			Assertions.assertEquals(expectedResult, res1);
-			Assertions.assertEquals(expectedResult, res2, "isSimilar is not symmetric");
-		} else {
-			this.getLogger().warn("isSimilar returned null");
+		this.reportIfSimCheckResultNull(res1, res2);
+	}
+
+	private void reportIfSimCheckResultNull(Boolean res1, Boolean res2) {
+		if (res1 == null || res2 == null) {
+			this.getLogger().warn("Similarity checking returned null");
 		}
 	}
 
