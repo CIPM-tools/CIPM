@@ -9,16 +9,14 @@ import org.junit.jupiter.api.Test;
 
 import cipm.consistency.fitests.similarity.jamopp.AbstractJaMoPPSimilarityTest;
 import cipm.consistency.fitests.similarity.jamopp.unittests.UsesModuleDirectives;
-import cipm.consistency.fitests.similarity.jamopp.unittests.UsesNames;
 import cipm.consistency.initialisers.jamopp.containers.ModuleInitialiser;
 import cipm.consistency.initialisers.jamopp.modifiers.OpenInitialiser;
 
-public class ModuleTest extends AbstractJaMoPPSimilarityTest implements UsesModuleDirectives, UsesNames {
+public class ModuleTest extends AbstractJaMoPPSimilarityTest implements UsesModuleDirectives {
 	protected Module initElement(Package[] pacs, ModuleDirective[] targets, boolean isOpen) {
 		var initialiser = new ModuleInitialiser();
 		Module result = initialiser.instantiate();
 
-		Assertions.assertTrue(initialiser.setName(result, this.getDefaultName()));
 		Assertions.assertTrue(initialiser.addPackages(result, pacs));
 		Assertions.assertTrue(initialiser.addTargets(result, targets));
 

@@ -8,14 +8,12 @@ import org.junit.jupiter.api.Test;
 
 import cipm.consistency.fitests.similarity.jamopp.AbstractJaMoPPSimilarityTest;
 import cipm.consistency.fitests.similarity.jamopp.unittests.UsesAnnotationValues;
-import cipm.consistency.fitests.similarity.jamopp.unittests.UsesNames;
 import cipm.consistency.initialisers.jamopp.members.InterfaceMethodInitialiser;
 
-public class InterfaceMethodTest extends AbstractJaMoPPSimilarityTest implements UsesAnnotationValues, UsesNames {
+public class InterfaceMethodTest extends AbstractJaMoPPSimilarityTest implements UsesAnnotationValues {
 	protected InterfaceMethod initElement(AnnotationValue defVal) {
 		var imInit = new InterfaceMethodInitialiser();
 		var im = imInit.instantiate();
-		Assertions.assertTrue(imInit.setName(im, this.getDefaultName()));
 		Assertions.assertTrue(imInit.setDefaultValue(im, defVal));
 		return im;
 	}

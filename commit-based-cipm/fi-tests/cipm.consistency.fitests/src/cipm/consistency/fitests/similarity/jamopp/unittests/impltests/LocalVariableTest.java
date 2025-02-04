@@ -8,14 +8,12 @@ import org.junit.jupiter.api.Test;
 
 import cipm.consistency.fitests.similarity.jamopp.AbstractJaMoPPSimilarityTest;
 import cipm.consistency.fitests.similarity.jamopp.unittests.UsesAdditionalLocalVariables;
-import cipm.consistency.fitests.similarity.jamopp.unittests.UsesNames;
 import cipm.consistency.initialisers.jamopp.variables.LocalVariableInitialiser;
 
-public class LocalVariableTest extends AbstractJaMoPPSimilarityTest implements UsesAdditionalLocalVariables, UsesNames {
+public class LocalVariableTest extends AbstractJaMoPPSimilarityTest implements UsesAdditionalLocalVariables {
 	protected LocalVariable initElement(AdditionalLocalVariable[] alvs) {
 		var lvInit = new LocalVariableInitialiser();
 		var lv = lvInit.instantiate();
-		Assertions.assertTrue(lvInit.setName(lv, this.getDefaultName()));
 		Assertions.assertTrue(lvInit.addAdditionalLocalVariables(lv, alvs));
 		return lv;
 	}
