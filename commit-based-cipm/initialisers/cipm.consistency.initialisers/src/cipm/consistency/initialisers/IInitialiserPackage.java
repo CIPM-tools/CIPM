@@ -18,10 +18,11 @@ import java.util.Collection;
  */
 public interface IInitialiserPackage {
 	/**
-	 * @return {@link IInitialiser} instances that are contained in this instance.
+	 * @return A freshly created instance of each {@link IInitialiser} sub-type,
+	 *         which this encompasses.
 	 * 
 	 * @see {@link #getAllInitialiserInstances()} for all such initialisers that are
-	 *      accessible from this.
+	 *      accessible from sub-packages as well as this.
 	 */
 	public default Collection<IInitialiser> getInitialiserInstances() {
 		return this.initCol();
@@ -29,7 +30,8 @@ public interface IInitialiserPackage {
 
 	/**
 	 * @return Class objects of {@link IInitialiser} types that are contained in
-	 *         this instance.
+	 *         this instance. Note that the returned types are not necessarily
+	 *         concrete, i.e. they can be interfaces and/or abstract classes.
 	 * 
 	 * @see {@link #getAllInitialiserInterfaceTypes()} for all such initialiser
 	 *      types that are accessible from this.
@@ -39,13 +41,16 @@ public interface IInitialiserPackage {
 	}
 
 	/**
-	 * @return All {@link IInitialiserPackage} instances nested in this.
+	 * @return All {@link IInitialiserPackage} instances nested in this, i.e. the
+	 *         sub-packages of this.
 	 */
 	public default Collection<IInitialiserPackage> getSubPackages() {
 		return this.initCol();
 	}
 
 	/**
+	 * Meant to be used only by {@link IInitialiserPackage} implementors.
+	 * 
 	 * @return An empty collection that will be used to store objects of type T.
 	 */
 	public default <T extends Object> Collection<T> initCol() {
@@ -53,6 +58,8 @@ public interface IInitialiserPackage {
 	}
 
 	/**
+	 * Meant to be used only by {@link IInitialiserPackage} implementors. <br>
+	 * <br>
 	 * A variant of {@link #initCol()} that also adds the given elems to the created
 	 * collection.
 	 * 
@@ -75,7 +82,7 @@ public interface IInitialiserPackage {
 	 * @return All {@link IInitialiserPackage} instances accessible from this.
 	 * 
 	 * @see {@link #getSubPackages()} for initialiser packages that are contained in
-	 *      this.
+	 *      this directly.
 	 */
 	public default Collection<IInitialiserPackage> getAllSubPackages() {
 		var result = this.getSubPackages();
@@ -91,10 +98,11 @@ public interface IInitialiserPackage {
 	 * Recursively discovers all nested {@link IInitialiserPackage} instances
 	 * reachable from this instance.
 	 * 
-	 * @return All {@link IInitialiser} instances accessible from this.
+	 * @return Freshly created {@link IInitialiser} instances for each initialiser
+	 *         accessible from this.
 	 * 
 	 * @see {@link #getInitialiserInstances()} for initialiser instances that are
-	 *      contained in this.
+	 *      contained in this directly.
 	 */
 	public default Collection<IInitialiser> getAllInitialiserInstances() {
 		var result = this.getInitialiserInstances();
@@ -113,7 +121,7 @@ public interface IInitialiserPackage {
 	 * @return All initialiser types that are accessible from this.
 	 * 
 	 * @see {@link #getInitialiserInterfaceTypes()} for initialiser types that are
-	 *      contained in this.
+	 *      contained in this directly.
 	 */
 	public default Collection<Class<? extends IInitialiser>> getAllInitialiserInterfaceTypes() {
 		var result = this.getInitialiserInterfaceTypes();

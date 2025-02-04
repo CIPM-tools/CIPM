@@ -12,7 +12,7 @@ import java.util.Collection;
 public interface IInitialiserBase extends IInitialiser {
 	/**
 	 * Adds the given {@link IInitialiserAdapterStrategy} to this instance. Does not
-	 * add null, if {@code strat == null}.
+	 * add, if {@code strat == null}.
 	 */
 	public void addAdaptingStrategy(IInitialiserAdapterStrategy strat);
 
@@ -69,6 +69,12 @@ public interface IInitialiserBase extends IInitialiser {
 	 * are meant to be used.</b> <br>
 	 * <br>
 	 * {@inheritDoc}
+	 * 
+	 * @return Whether all initialiser adaptation strategies in this were applied
+	 *         successfully. If there are no such strategies; returns true, since no
+	 *         strategy was attempted to be applied and failed.
+	 * 
+	 * @see {@link IInitialiserAdapterStrategy}
 	 */
 	@Override
 	public default boolean initialise(Object obj) {

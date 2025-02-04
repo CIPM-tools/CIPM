@@ -38,7 +38,9 @@ import java.util.function.BiFunction;
  * overriding behaviour easier, since default methods can be overridden in
  * interfaces. If initialisation of the designated objects is complex, consider
  * realising it in form of initialiser adaptation strategies (see the links
- * below). <br>
+ * below). <b>Note that calling {@link #initialise(Object)} in addition to
+ * {@link #instantiate()} is necessary for the said initialiser strategies to be
+ * used. </b> <br>
  * <br>
  * This interface also contains some static utility methods.
  * 
@@ -48,16 +50,27 @@ import java.util.function.BiFunction;
  */
 public interface IInitialiser {
 	/**
-	 * Can be used to create a (deep) copy of this.
+	 * Can be used to create a copy of this. <br>
+	 * <br>
+	 * <b>Note that the returned initialiser will not have the initialiser
+	 * adaptation strategies this initialiser has.</b>
 	 * 
 	 * @return A fresh instance of this initialiser's class.
+	 * 
+	 * @see {@link IInitialiserBase}
+	 * @see {@link IInitialiserAdapterStrategy}
 	 */
 	public IInitialiser newInitialiser();
 
 	/**
 	 * Attempts to instantiate the class this {@link IInitialiser} is designated
-	 * for. Depending on the returned object, additional initialisation may be
-	 * necessary.
+	 * for. Depending on the returned object, additional initialisation via
+	 * {@link #initialise(Object)} may be necessary. Note that the said method must
+	 * be called upon the return value, in order for the initialiser adaptation
+	 * strategies to take effect.
+	 * 
+	 * @see {@link IInitialiserBase}
+	 * @see {@link IInitialiserAdapterStrategy}
 	 */
 	public Object instantiate();
 
@@ -65,9 +78,17 @@ public interface IInitialiser {
 	 * Attempts to initialise obj, so that it is "valid". <br>
 	 * <br>
 	 * <b>It is recommended to only use this method where necessary, as it may
-	 * introduce additional modifications that are not obvious from outside.</b>
+	 * introduce additional modifications that are not obvious from outside.</b> The
+	 * said modifications originate from initialiser adaptation strategies and they
+	 * will not take effect, unless this method is called upon the object created
+	 * via {@link #instantiate()}.
 	 * 
 	 * @param obj The object that will be made valid
+	 * 
+	 * @return Whether the initialisation of obj was successful.
+	 * 
+	 * @see {@link IInitialiserBase}
+	 * @see {@link IInitialiserAdapterStrategy}
 	 */
 	public boolean initialise(Object obj);
 
@@ -165,8 +186,12 @@ public interface IInitialiser {
 	}
 
 	/**
-	 * A variant of {@link #isInitialiserFor(Class, Class)}, where initCls is
-	 * extracted from init. Returns false, if any parameter is null.
+	 * Returns whether the given initialiser init instantiates objects of type
+	 * objClass. <br>
+	 * <br>
+	 * For the result to be true, init has to be able to instantiate
+	 * <i><b>exactly</b></i> objClass, i.e. the return type of the instantiation
+	 * method has to be <i><b>exactly</b></i> objClass.
 	 */
 	public static boolean isInitialiserFor(IInitialiser init, Class<?> objClass) {
 		return init != null && init.getInstanceClassOfInitialiser().equals(objClass);
