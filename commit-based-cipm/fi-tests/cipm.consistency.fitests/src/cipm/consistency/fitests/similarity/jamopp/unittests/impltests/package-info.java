@@ -11,6 +11,12 @@
  * for one of them. This way, one can pinpoint basic similarity checking errors
  * regarding certain attributes of certain {@link EObject} implementors.<br>
  * <br>
+ * In cases where attributes X have {@link EObject} instances eo as values, Xs'
+ * values should not be similar, in order for the tests to fulfill their
+ * functionality. To maintain consistency, one can re-use the construction in
+ * tests made for eo, since said constructions are explicitly considered to
+ * yield different elements. <br>
+ * <br>
  * It is highly recommended to make the construction of the "main"
  * {@link EObject} instances as obvious and visible as possible, as their
  * construction can get complicated and not knowing all the construction steps

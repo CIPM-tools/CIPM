@@ -9,8 +9,7 @@ import cipm.consistency.initialisers.jamopp.arrays.ArrayDimensionInitialiser;
  * An interface that can be implemented by tests, which work with
  * {@link ArrayDimension} instances. <br>
  * <br>
- * Contains methods that can be used to create {@link ArrayDimension}
- * instances.
+ * Contains methods that can be used to create {@link ArrayDimension} instances.
  */
 public interface UsesArrayDimensions extends UsesAnnotationInstances {
 	/**
@@ -23,7 +22,8 @@ public interface UsesArrayDimensions extends UsesAnnotationInstances {
 	}
 
 	/**
-	 * @return An {@link ArrayDimension} instance with the given {@link AnnotationInstance} array.
+	 * @return An {@link ArrayDimension} instance with the given
+	 *         {@link AnnotationInstance} array.
 	 */
 	public default ArrayDimension createArrayDimension(AnnotationInstance[] ais) {
 		var result = this.createMinimalArrayDimension();
@@ -33,8 +33,9 @@ public interface UsesArrayDimensions extends UsesAnnotationInstances {
 	}
 
 	/**
-	 * @return An {@link ArrayDimension} instance that has an {@link AnnotationInstance} with
-	 * the given namespace and instance name.
+	 * @return An {@link ArrayDimension} instance that has an
+	 *         {@link AnnotationInstance} with the given namespace and instance
+	 *         name.
 	 */
 	public default ArrayDimension createArrayDimension(String[] annotationInstanceNamespaces,
 			String annotationInstanceName) {

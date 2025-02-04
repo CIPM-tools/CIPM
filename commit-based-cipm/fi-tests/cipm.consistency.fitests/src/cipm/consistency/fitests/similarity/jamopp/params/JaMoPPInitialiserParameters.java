@@ -6,7 +6,8 @@ import cipm.consistency.fitests.similarity.params.IInitialiserParameterAdaptatio
 import cipm.consistency.fitests.similarity.params.IInitialiserParameters;
 
 /**
- * A class that provides central access to concrete initialiser instances.
+ * A class that provides central access to concrete initialiser instances, which
+ * construct model elements used in JaMoPP.
  * 
  * @author Alp Torac Genc
  */

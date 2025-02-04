@@ -28,6 +28,8 @@ import cipm.consistency.fitests.similarity.params.IInitialiserParameterAdaptatio
  * Adapts the given {@link IInitialiserBase} instances in a way that interface
  * tests can run without exceptions being thrown, due to objects they
  * instantiate missing certain components.
+ * 
+ * @author Alp Torac Genc
  */
 public class JaMoPPInitialiserParameterAdaptationStrategy implements IInitialiserParameterAdaptationStrategy {
 	@Override
