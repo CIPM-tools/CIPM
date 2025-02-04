@@ -18,4 +18,5 @@ Require-Bundle: junit-jupiter-api,
  jamopp.parser.jdt.singlefile,
  jamopp.parser,
  cipm.consistency.commitintegration.diff.util,
- cipm.consistency.initialisers
+ cipm.consistency.initialisers,
+ org.mockito
