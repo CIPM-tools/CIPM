@@ -6,7 +6,6 @@ import org.emftext.language.java.classifiers.util.ClassifiersSwitch;
 import org.splevo.jamopp.diffing.similarity.IJavaSimilaritySwitch;
 import org.splevo.jamopp.diffing.similarity.ILoggableJavaSwitch;
 import org.splevo.jamopp.diffing.similarity.base.ISimilarityRequestHandler;
-import com.google.common.base.Strings;
 import org.splevo.jamopp.diffing.util.JaMoPPStringUtil;
 
 /**
@@ -50,9 +49,8 @@ public class ClassifiersSimilaritySwitch extends ClassifiersSwitch<Boolean> impl
     	
         ConcreteClassifier classifier2 = (ConcreteClassifier) this.getCompareElement();
 
-        String name1 = Strings.nullToEmpty(classifier1.getQualifiedName());
-        name1 = Strings.nullToEmpty(this.normalizeClassifier(name1));
-        String name2 = Strings.nullToEmpty(classifier2.getQualifiedName());
+        String name1 = this.normalizeClassifier(classifier1.getQualifiedName());
+        String name2 = this.normalizeClassifier(classifier2.getQualifiedName());
 
         return JaMoPPStringUtil.stringsEqual(name1, name2);
     }
