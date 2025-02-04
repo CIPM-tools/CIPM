@@ -256,9 +256,13 @@ public class JaMoPPSimilarityValues extends AbstractSimilarityValues {
 		this.setDefaultSimilarityResult(Boolean.FALSE);
 	}
 
-	public JaMoPPSimilarityValues() {
-		this.setDefaultSimilarityResult();
-
+	/**
+	 * Adds similarity entries, which have a one-to-one connection
+	 * to certain attributes of certain object types. This means that the results
+	 * contained within these similarity entries are tied to only one attribute
+	 * of an object type per entry.
+	 */
+	public void addFixedSimilarityEntries() {
 		this.addAnnotationsSimilarityEntries();
 		this.addArraysSimilarityEntries();
 		this.addContainersSimilarityEntries();
@@ -276,6 +280,11 @@ public class JaMoPPSimilarityValues extends AbstractSimilarityValues {
 		this.addReferencesSimilarityEntries();
 		this.addTypesSimilarityEntries();
 		this.addVariablesSimilarityEntries();
+	}
+
+	public JaMoPPSimilarityValues() {
+		this.setDefaultSimilarityResult();
+		this.addFixedSimilarityEntries();
 	}
 
 	/**
