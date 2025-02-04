@@ -1,6 +1,7 @@
 package org.splevo.jamopp.diffing.similarity.switches;
 
 import org.emftext.language.java.imports.ClassifierImport;
+import org.emftext.language.java.imports.PackageImport;
 import org.emftext.language.java.imports.StaticMemberImport;
 import org.emftext.language.java.imports.util.ImportsSwitch;
 import org.splevo.jamopp.diffing.similarity.IJavaSimilaritySwitch;
@@ -64,6 +65,30 @@ public class ImportsSimilaritySwitch extends ImportsSwitch<Boolean>
 			return Boolean.FALSE;
 		}
 
+		return JaMoPPNamespaceUtil.compareNamespacesAsString(import1, import2);
+	}
+
+	/**
+	 * TODO Review this method to make sure it is correct.
+	 * 
+	 * <i><b>This method was added later, because comparing improperly
+	 * initialised package imports could result in null otherwise.</b></i>
+	 * <br><br>
+	 * 
+	 * Package imports are considered similar, if their namespaces
+	 * ({@link PackageImport#getNamespacesAsString()} are equal.
+	 * 
+	 * @param import1 the package import to compare with the compare element
+	 * @return True if namespaces are equal, false otherwise.
+	 * 
+	 * @see {@link #getCompareElement()}
+	 */
+	@Override
+	public Boolean casePackageImport(PackageImport import1) {
+		this.logInfoMessage("casePackageImport");
+		
+		PackageImport import2 = (PackageImport) this.getCompareElement();
+		
 		return JaMoPPNamespaceUtil.compareNamespacesAsString(import1, import2);
 	}
 }
