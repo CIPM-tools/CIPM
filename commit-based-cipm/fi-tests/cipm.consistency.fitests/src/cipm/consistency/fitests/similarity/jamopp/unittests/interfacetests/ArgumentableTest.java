@@ -30,18 +30,18 @@ public class ArgumentableTest extends AbstractJaMoPPSimilarityTest
 		return result;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testArguments(IArgumentableInitialiser init) {
+	public void testArguments(IArgumentableInitialiser init, String displayName) {
 		var objOne = this.initElement(init, new Expression[] { this.createDecimalIntegerLiteral(1) });
 		var objTwo = this.initElement(init, new Expression[] { this.createDecimalIntegerLiteral(0) });
 
 		this.testSimilarity(objOne, objTwo, ReferencesPackage.Literals.ARGUMENTABLE__ARGUMENTS);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testArgumentsSize(IArgumentableInitialiser init) {
+	public void testArgumentsSize(IArgumentableInitialiser init, String displayName) {
 		var objOne = this.initElement(init,
 				new Expression[] { this.createDecimalIntegerLiteral(1), this.createDecimalIntegerLiteral(2) });
 		var objTwo = this.initElement(init, new Expression[] { this.createDecimalIntegerLiteral(1) });
@@ -49,9 +49,9 @@ public class ArgumentableTest extends AbstractJaMoPPSimilarityTest
 		this.testSimilarity(objOne, objTwo, ReferencesPackage.Literals.ARGUMENTABLE__ARGUMENTS);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testArgumentsNullCheck(IArgumentableInitialiser init) {
+	public void testArgumentsNullCheck(IArgumentableInitialiser init, String displayName) {
 		this.testSimilarityNullCheck(this.initElement(init, new Expression[] { this.createDecimalIntegerLiteral(1) }),
 				init, true, ReferencesPackage.Literals.ARGUMENTABLE__ARGUMENTS);
 	}

@@ -30,18 +30,18 @@ public class ConcreteClassifierTest extends AbstractJaMoPPSimilarityTest impleme
 		return result;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testPackage(IConcreteClassifierInitialiser init) {
+	public void testPackage(IConcreteClassifierInitialiser init, String displayName) {
 		var objOne = this.initElement(init, this.createMinimalPackage("pOneNS", 2));
 		var objTwo = this.initElement(init, this.createMinimalPackage("pTwoNS", 2));
 
 		this.testSimilarity(objOne, objTwo, ClassifiersPackage.Literals.CONCRETE_CLASSIFIER__PACKAGE);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testPackageNullCheck(IConcreteClassifierInitialiser init) {
+	public void testPackageNullCheck(IConcreteClassifierInitialiser init, String displayName) {
 		this.testSimilarityNullCheck(this.initElement(init, this.createMinimalPackage("pOneNS", 2)), init, true,
 				ClassifiersPackage.Literals.CONCRETE_CLASSIFIER__PACKAGE);
 	}

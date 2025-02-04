@@ -40,9 +40,9 @@ public class ClassifierTest extends AbstractJaMoPPSimilarityTest implements Uses
 		return result;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testImports(IClassifierInitialiser init) {
+	public void testImports(IClassifierInitialiser init, String displayName) {
 		var objOne = this.initElement(init, new Import[] { this.createMinimalClsImport("cls1") }, null);
 		var objTwo = this.initElement(init, new Import[] { this.createMinimalClsImport("cls2") }, null);
 
@@ -51,9 +51,9 @@ public class ClassifierTest extends AbstractJaMoPPSimilarityTest implements Uses
 						|| (!init.canAddImports(objOne) && !init.canAddImports(objTwo)));
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testImportsSize(IClassifierInitialiser init) {
+	public void testImportsSize(IClassifierInitialiser init, String displayName) {
 		var objOne = this.initElement(init,
 				new Import[] { this.createMinimalClsImport("cls1"), this.createMinimalClsImport("cls2") }, null);
 		var objTwo = this.initElement(init, new Import[] { this.createMinimalClsImport("cls1") }, null);
@@ -63,9 +63,9 @@ public class ClassifierTest extends AbstractJaMoPPSimilarityTest implements Uses
 						|| (!init.canAddImports(objOne) && !init.canAddImports(objTwo)));
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testImportsNullCheck(IClassifierInitialiser init) {
+	public void testImportsNullCheck(IClassifierInitialiser init, String displayName) {
 		var objOne = this.initElement(init, new Import[] { this.createMinimalClsImport("cls1") }, null);
 
 		this.testSimilarityNullCheck(objOne, init, true,
@@ -76,9 +76,9 @@ public class ClassifierTest extends AbstractJaMoPPSimilarityTest implements Uses
 	/**
 	 * Package import differences do not break similarity
 	 */
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testPackageImports(IClassifierInitialiser init) {
+	public void testPackageImports(IClassifierInitialiser init, String displayName) {
 		var objOne = this.initElement(init, null,
 				new PackageImport[] { this.createMinimalPackageImport(new String[] { "ns1", "ns2" }) });
 		var objTwo = this.initElement(init, null,
@@ -89,9 +89,9 @@ public class ClassifierTest extends AbstractJaMoPPSimilarityTest implements Uses
 						|| (!init.canAddImports(objOne) && !init.canAddImports(objTwo)));
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testPackageImportsSize(IClassifierInitialiser init) {
+	public void testPackageImportsSize(IClassifierInitialiser init, String displayName) {
 		var objOne = this.initElement(init, null,
 				new PackageImport[] { this.createMinimalPackageImport(new String[] { "ns1", "ns2" }),
 						this.createMinimalPackageImport(new String[] { "ns3", "ns4" }) });
@@ -103,9 +103,9 @@ public class ClassifierTest extends AbstractJaMoPPSimilarityTest implements Uses
 						|| (!init.canAddImports(objOne) && !init.canAddImports(objTwo)));
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testPackageImportsNullCheck(IClassifierInitialiser init) {
+	public void testPackageImportsNullCheck(IClassifierInitialiser init, String displayName) {
 		var objOne = this.initElement(init, null,
 				new PackageImport[] { this.createMinimalPackageImport(new String[] { "ns1", "ns2" }) });
 

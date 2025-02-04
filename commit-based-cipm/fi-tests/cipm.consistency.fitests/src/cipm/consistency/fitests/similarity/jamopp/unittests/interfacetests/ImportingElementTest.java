@@ -28,18 +28,18 @@ public class ImportingElementTest extends AbstractJaMoPPSimilarityTest implement
 		return result;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testImports(IImportingElementInitialiser init) {
+	public void testImports(IImportingElementInitialiser init, String displayName) {
 		var objOne = this.initElement(init, new Import[] { this.createMinimalClsImport("cls1") });
 		var objTwo = this.initElement(init, new Import[] { this.createMinimalClsImport("cls2") });
 
 		this.testSimilarity(objOne, objTwo, ImportsPackage.Literals.IMPORTING_ELEMENT__IMPORTS);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testImportsSize(IImportingElementInitialiser init) {
+	public void testImportsSize(IImportingElementInitialiser init, String displayName) {
 		var objOne = this.initElement(init,
 				new Import[] { this.createMinimalClsImport("cls1"), this.createMinimalClsImport("cls2") });
 		var objTwo = this.initElement(init, new Import[] { this.createMinimalClsImport("cls1") });
@@ -47,9 +47,9 @@ public class ImportingElementTest extends AbstractJaMoPPSimilarityTest implement
 		this.testSimilarity(objOne, objTwo, ImportsPackage.Literals.IMPORTING_ELEMENT__IMPORTS);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testImportsNullCheck(IImportingElementInitialiser init) {
+	public void testImportsNullCheck(IImportingElementInitialiser init, String displayName) {
 		this.testSimilarityNullCheck(this.initElement(init, new Import[] { this.createMinimalClsImport("cls1") }), init,
 				true, ImportsPackage.Literals.IMPORTING_ELEMENT__IMPORTS);
 	}

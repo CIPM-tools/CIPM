@@ -26,9 +26,9 @@ public class TypeReferenceTest extends AbstractJaMoPPSimilarityTest implements U
 		return res;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testTargetNullCheck(ITypeReferenceInitialiser init) {
+	public void testTargetNullCheck(ITypeReferenceInitialiser init, String displayName) {
 		var objOne = this.initElement(init, this.createMinimalClass("cls"));
 		var objTwo = init.instantiate();
 		Assertions.assertTrue(init.initialise(objTwo));

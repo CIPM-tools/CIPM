@@ -27,18 +27,18 @@ public class JumpTest extends AbstractJaMoPPSimilarityTest implements UsesStatem
 		return result;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testTarget(IJumpInitialiser init) {
+	public void testTarget(IJumpInitialiser init, String displayName) {
 		var objOne = this.initElement(init, this.createMinimalJLToNullReturn("jl1"));
 		var objTwo = this.initElement(init, this.createMinimalJLToTrivialAssert("jl2"));
 
 		this.testSimilarity(objOne, objTwo, StatementsPackage.Literals.JUMP__TARGET);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testTargetNullCheck(IJumpInitialiser init) {
+	public void testTargetNullCheck(IJumpInitialiser init, String displayName) {
 		this.testSimilarityNullCheck(this.initElement(init, this.createMinimalJLToNullReturn("jl1")), init, true,
 				StatementsPackage.Literals.JUMP__TARGET);
 	}

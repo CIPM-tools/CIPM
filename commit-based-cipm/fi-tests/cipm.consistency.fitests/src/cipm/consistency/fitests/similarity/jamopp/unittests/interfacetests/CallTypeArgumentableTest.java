@@ -27,18 +27,18 @@ public class CallTypeArgumentableTest extends AbstractJaMoPPSimilarityTest imple
 		return result;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testCallTypeArguments(ICallTypeArgumentableInitialiser init) {
+	public void testCallTypeArguments(ICallTypeArgumentableInitialiser init, String displayName) {
 		var objOne = this.initElement(init, new TypeArgument[] { this.createMinimalExtendsTAWithCls("cls1") });
 		var objTwo = this.initElement(init, new TypeArgument[] { this.createMinimalSuperTAWithCls("cls2") });
 
 		this.testSimilarity(objOne, objTwo, GenericsPackage.Literals.CALL_TYPE_ARGUMENTABLE__CALL_TYPE_ARGUMENTS);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testCallTypeArgumentsSize(ICallTypeArgumentableInitialiser init) {
+	public void testCallTypeArgumentsSize(ICallTypeArgumentableInitialiser init, String displayName) {
 		var objOne = this.initElement(init, new TypeArgument[] { this.createMinimalExtendsTAWithCls("cls1"),
 				this.createMinimalExtendsTAWithCls("cls2") });
 		var objTwo = this.initElement(init, new TypeArgument[] { this.createMinimalExtendsTAWithCls("cls1") });
@@ -46,9 +46,9 @@ public class CallTypeArgumentableTest extends AbstractJaMoPPSimilarityTest imple
 		this.testSimilarity(objOne, objTwo, GenericsPackage.Literals.CALL_TYPE_ARGUMENTABLE__CALL_TYPE_ARGUMENTS);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testCallTypeArgumentsNullCheck(ICallTypeArgumentableInitialiser init) {
+	public void testCallTypeArgumentsNullCheck(ICallTypeArgumentableInitialiser init, String displayName) {
 		this.testSimilarityNullCheck(
 				this.initElement(init, new TypeArgument[] { this.createMinimalExtendsTAWithCls("cls1") }), init, true,
 				GenericsPackage.Literals.CALL_TYPE_ARGUMENTABLE__CALL_TYPE_ARGUMENTS);

@@ -27,18 +27,18 @@ public class TypedElementExtensionTest extends AbstractJaMoPPSimilarityTest impl
 		return result;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testActualTarget(ITypedElementExtensionInitialiser init) {
+	public void testActualTarget(ITypedElementExtensionInitialiser init, String displayName) {
 		var objOne = this.initElement(init, new TypeReference[] { this.createMinimalClsRef("cls1") });
 		var objTwo = this.initElement(init, new TypeReference[] { this.createMinimalClsRef("cls2") });
 
 		this.testSimilarity(objOne, objTwo, TypesPackage.Literals.TYPED_ELEMENT_EXTENSION__ACTUAL_TARGETS);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testActualTargets(ITypedElementExtensionInitialiser init) {
+	public void testActualTargets(ITypedElementExtensionInitialiser init, String displayName) {
 		var objOne = this.initElement(init,
 				new TypeReference[] { this.createMinimalClsRef("cls1"), this.createMinimalClsRef("cls2") });
 		var objTwo = this.initElement(init, new TypeReference[] { this.createMinimalClsRef("cls1") });
@@ -46,9 +46,9 @@ public class TypedElementExtensionTest extends AbstractJaMoPPSimilarityTest impl
 		this.testSimilarity(objOne, objTwo, TypesPackage.Literals.TYPED_ELEMENT_EXTENSION__ACTUAL_TARGETS);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testActualTargetNullCheck(ITypedElementExtensionInitialiser init) {
+	public void testActualTargetNullCheck(ITypedElementExtensionInitialiser init, String displayName) {
 		this.testSimilarityNullCheck(this.initElement(init, new TypeReference[] { this.createMinimalClsRef("cls1") }),
 				init, true, TypesPackage.Literals.TYPED_ELEMENT_EXTENSION__ACTUAL_TARGETS);
 	}

@@ -27,9 +27,9 @@ public class AnnotableTest extends AbstractJaMoPPSimilarityTest implements UsesA
 		return result;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testAnnotation(IAnnotableInitialiser init) {
+	public void testAnnotation(IAnnotableInitialiser init, String displayName) {
 		var objOne = this.initElement(init,
 				new AnnotationInstance[] { this.createMinimalAI(new String[] { "ns1" }, "anno1") });
 		var objTwo = this.initElement(init,
@@ -38,9 +38,9 @@ public class AnnotableTest extends AbstractJaMoPPSimilarityTest implements UsesA
 		this.testSimilarity(objOne, objTwo, AnnotationsPackage.Literals.ANNOTABLE__ANNOTATIONS);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testAnnotationSize(IAnnotableInitialiser init) {
+	public void testAnnotationSize(IAnnotableInitialiser init, String displayName) {
 		var objOne = this.initElement(init,
 				new AnnotationInstance[] { this.createMinimalAI(new String[] { "ns1" }, "anno1"),
 						this.createMinimalAI(new String[] { "ns2" }, "anno2") });
@@ -50,9 +50,9 @@ public class AnnotableTest extends AbstractJaMoPPSimilarityTest implements UsesA
 		this.testSimilarity(objOne, objTwo, AnnotationsPackage.Literals.ANNOTABLE__ANNOTATIONS);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testAnnotationNullCheck(IAnnotableInitialiser init) {
+	public void testAnnotationNullCheck(IAnnotableInitialiser init, String displayName) {
 		this.testSimilarityNullCheck(
 				this.initElement(init,
 						new AnnotationInstance[] { this.createMinimalAI(new String[] { "ns1" }, "anno1") }),

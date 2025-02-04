@@ -27,18 +27,18 @@ public class StatementContainerTest extends AbstractJaMoPPSimilarityTest impleme
 		return result;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testStatement(IStatementContainerInitialiser init) {
+	public void testStatement(IStatementContainerInitialiser init, String displayName) {
 		var objOne = this.initElement(init, this.createMinimalNullReturn());
 		var objTwo = this.initElement(init, this.createMinimalTrivialAssert());
 
 		this.testSimilarity(objOne, objTwo, StatementsPackage.Literals.STATEMENT_CONTAINER__STATEMENT);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testStatementNullCheck(IStatementContainerInitialiser init) {
+	public void testStatementNullCheck(IStatementContainerInitialiser init, String displayName) {
 		this.testSimilarityNullCheck(this.initElement(init, this.createMinimalNullReturn()), init, true,
 				StatementsPackage.Literals.STATEMENT_CONTAINER__STATEMENT);
 	}

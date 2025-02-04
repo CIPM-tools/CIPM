@@ -26,18 +26,18 @@ public class JavaRootTest extends AbstractJaMoPPSimilarityTest {
 		return result;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testOrigin(IJavaRootInitialiser init) {
+	public void testOrigin(IJavaRootInitialiser init, String displayName) {
 		var objOne = this.initElement(init, Origin.BINDING);
 		var objTwo = this.initElement(init, Origin.CLASS);
 
 		this.testSimilarity(objOne, objTwo, ContainersPackage.Literals.JAVA_ROOT__ORIGIN);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testOriginNullCheck(IJavaRootInitialiser init) {
+	public void testOriginNullCheck(IJavaRootInitialiser init, String displayName) {
 		this.testSimilarityNullCheck(this.initElement(init, Origin.BINDING), init, true,
 				ContainersPackage.Literals.JAVA_ROOT__ORIGIN);
 	}

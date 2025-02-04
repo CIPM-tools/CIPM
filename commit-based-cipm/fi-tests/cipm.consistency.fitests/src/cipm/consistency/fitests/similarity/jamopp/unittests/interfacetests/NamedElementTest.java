@@ -25,18 +25,18 @@ public class NamedElementTest extends AbstractJaMoPPSimilarityTest {
 		return result;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testName(INamedElementInitialiser init) {
+	public void testName(INamedElementInitialiser init, String displayName) {
 		var objOne = this.initElement(init, "name11");
 		var objTwo = this.initElement(init, "name22");
 
 		this.testSimilarity(objOne, objTwo, CommonsPackage.Literals.NAMED_ELEMENT__NAME);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testNameNullCheck(INamedElementInitialiser init) {
+	public void testNameNullCheck(INamedElementInitialiser init, String displayName) {
 		this.testSimilarityNullCheck(this.initElement(init, "name11"), init, true,
 				CommonsPackage.Literals.NAMED_ELEMENT__NAME);
 	}

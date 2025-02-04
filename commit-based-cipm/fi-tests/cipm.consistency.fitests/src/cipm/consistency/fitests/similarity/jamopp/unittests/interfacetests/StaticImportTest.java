@@ -28,18 +28,18 @@ public class StaticImportTest extends AbstractJaMoPPSimilarityTest implements Us
 		return result;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testStatic(IStaticImportInitialiser init) {
+	public void testStatic(IStaticImportInitialiser init, String displayName) {
 		var objOne = this.initElement(init, this.createStatic());
 		var objTwo = this.initElement(init, null);
 
 		this.testSimilarity(objOne, objTwo, ImportsPackage.Literals.STATIC_IMPORT__STATIC);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testStaticNullCheck(IStaticImportInitialiser init) {
+	public void testStaticNullCheck(IStaticImportInitialiser init, String displayName) {
 		this.testSimilarityNullCheck(this.initElement(init, this.createStatic()), init, true,
 				ImportsPackage.Literals.STATIC_IMPORT__STATIC);
 	}

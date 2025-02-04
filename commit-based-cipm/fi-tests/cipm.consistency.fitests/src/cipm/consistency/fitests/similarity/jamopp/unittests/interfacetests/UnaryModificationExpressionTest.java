@@ -30,32 +30,32 @@ public class UnaryModificationExpressionTest extends AbstractJaMoPPSimilarityTes
 		return result;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testChild(IUnaryModificationExpressionInitialiser init) {
+	public void testChild(IUnaryModificationExpressionInitialiser init, String displayName) {
 		this.testSimilarity(this.initElement(init, this.createDecimalIntegerLiteral(1), null),
 				this.initElement(init, this.createDecimalIntegerLiteral(2), null),
 				ExpressionsPackage.Literals.UNARY_MODIFICATION_EXPRESSION__CHILD);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testChildNullCheck(IUnaryModificationExpressionInitialiser init) {
+	public void testChildNullCheck(IUnaryModificationExpressionInitialiser init, String displayName) {
 		this.testSimilarityNullCheck(this.initElement(init, this.createDecimalIntegerLiteral(1), null), init, true,
 				ExpressionsPackage.Literals.UNARY_MODIFICATION_EXPRESSION__CHILD);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testOperator(IUnaryModificationExpressionInitialiser init) {
+	public void testOperator(IUnaryModificationExpressionInitialiser init, String displayName) {
 		this.testSimilarity(this.initElement(init, null, this.createPlusPlusOperator()),
 				this.initElement(init, null, this.createMinusMinusOperator()),
 				ExpressionsPackage.Literals.UNARY_MODIFICATION_EXPRESSION__OPERATOR);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testOperatorNullCheck(IUnaryModificationExpressionInitialiser init) {
+	public void testOperatorNullCheck(IUnaryModificationExpressionInitialiser init, String displayName) {
 		this.testSimilarityNullCheck(this.initElement(init, null, this.createPlusPlusOperator()), init, true,
 				ExpressionsPackage.Literals.UNARY_MODIFICATION_EXPRESSION__OPERATOR);
 	}

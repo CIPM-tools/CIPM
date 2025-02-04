@@ -27,18 +27,18 @@ public class PrimitiveTypeTest extends AbstractJaMoPPSimilarityTest implements U
 		return res;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testTarget(IPrimitiveTypeInitialiser init) {
+	public void testTarget(IPrimitiveTypeInitialiser init, String displayName) {
 		var objOne = this.initElement(init, this.createMinimalClass("cls"));
 		var objTwo = init.instantiate();
 
 		this.testSimilarity(objOne, objTwo, PrimitiveType.class, TypesPackage.Literals.CLASSIFIER_REFERENCE__TARGET);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testTargetNullCheck(IPrimitiveTypeInitialiser init) {
+	public void testTargetNullCheck(IPrimitiveTypeInitialiser init, String displayName) {
 		this.testSimilarityNullCheck(this.initElement(init, this.createMinimalClass("cls1")), init, true,
 				PrimitiveType.class, TypesPackage.Literals.CLASSIFIER_REFERENCE__TARGET);
 	}

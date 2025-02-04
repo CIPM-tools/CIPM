@@ -27,18 +27,18 @@ public class InitializableTest extends AbstractJaMoPPSimilarityTest implements U
 		return result;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testInitialValue(IInitializableInitialiser init) {
+	public void testInitialValue(IInitializableInitialiser init, String displayName) {
 		var objOne = this.initElement(init, this.createDecimalIntegerLiteral(5));
 		var objTwo = this.initElement(init, this.createBooleanLiteral(false));
 
 		this.testSimilarity(objOne, objTwo, InstantiationsPackage.Literals.INITIALIZABLE__INITIAL_VALUE);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testInitialValueNullCheck(IInitializableInitialiser init) {
+	public void testInitialValueNullCheck(IInitializableInitialiser init, String displayName) {
 		this.testSimilarityNullCheck(this.initElement(init, this.createDecimalIntegerLiteral(5)), init, true,
 				InstantiationsPackage.Literals.INITIALIZABLE__INITIAL_VALUE);
 	}

@@ -34,9 +34,9 @@ public class StatementListContainerTest extends AbstractJaMoPPSimilarityTest imp
 		return result;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testStatements(IStatementListContainerInitialiser init) {
+	public void testStatements(IStatementListContainerInitialiser init, String displayName) {
 		var objOne = this.initElement(init, new Statement[] { this.createMinimalNullReturn() });
 		var objTwo = this.initElement(init, new Statement[] { this.createMinimalTrivialAssert() });
 
@@ -45,9 +45,9 @@ public class StatementListContainerTest extends AbstractJaMoPPSimilarityTest imp
 						|| (!init.canContainStatements(objOne) && !init.canContainStatements(objTwo)));
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testStatementsSize(IStatementListContainerInitialiser init) {
+	public void testStatementsSize(IStatementListContainerInitialiser init, String displayName) {
 		var objOne = this.initElement(init,
 				new Statement[] { this.createMinimalTrivialAssert(), this.createMinimalNullReturn() });
 		var objTwo = this.initElement(init, new Statement[] { this.createMinimalTrivialAssert() });
@@ -57,9 +57,9 @@ public class StatementListContainerTest extends AbstractJaMoPPSimilarityTest imp
 						|| (!init.canContainStatements(objOne) && !init.canContainStatements(objTwo)));
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testStatementsNullCheck(IStatementListContainerInitialiser init) {
+	public void testStatementsNullCheck(IStatementListContainerInitialiser init, String displayName) {
 		var objOne = this.initElement(init, new Statement[] { this.createMinimalNullReturn() });
 
 		this.testSimilarityNullCheck(objOne, init, true,

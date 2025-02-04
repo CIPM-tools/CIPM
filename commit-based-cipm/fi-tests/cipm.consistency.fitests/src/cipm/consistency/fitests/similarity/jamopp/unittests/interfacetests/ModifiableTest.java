@@ -27,27 +27,27 @@ public class ModifiableTest extends AbstractJaMoPPSimilarityTest implements Uses
 		return result;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testModifier(IModifiableInitialiser init) {
+	public void testModifier(IModifiableInitialiser init, String displayName) {
 		var objOne = this.initElement(init, new Modifier[] { this.createFinal() });
 		var objTwo = this.initElement(init, new Modifier[] { this.createAbstract() });
 
 		this.testSimilarity(objOne, objTwo, ModifiersPackage.Literals.MODIFIABLE__MODIFIERS);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testModifierSize(IModifiableInitialiser init) {
+	public void testModifierSize(IModifiableInitialiser init, String displayName) {
 		var objOne = this.initElement(init, new Modifier[] { this.createFinal(), this.createAbstract() });
 		var objTwo = this.initElement(init, new Modifier[] { this.createFinal() });
 
 		this.testSimilarity(objOne, objTwo, ModifiersPackage.Literals.MODIFIABLE__MODIFIERS);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testModifierNullCheck(IModifiableInitialiser init) {
+	public void testModifierNullCheck(IModifiableInitialiser init, String displayName) {
 		var objOne = this.initElement(init, new Modifier[] { this.createFinal() });
 		var objTwo = init.instantiate();
 		Assertions.assertTrue(init.initialise(objTwo));

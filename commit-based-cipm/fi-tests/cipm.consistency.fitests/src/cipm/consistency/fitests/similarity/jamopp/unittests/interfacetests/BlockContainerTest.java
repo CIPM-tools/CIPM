@@ -27,18 +27,18 @@ public class BlockContainerTest extends AbstractJaMoPPSimilarityTest implements 
 		return result;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testBlock(IBlockContainerInitialiser init) {
+	public void testBlock(IBlockContainerInitialiser init, String displayName) {
 		var objOne = this.initElement(init, this.createMinimalBlockWithNullReturn());
 		var objTwo = this.initElement(init, this.createMinimalBlockWithTrivialAssert());
 
 		this.testSimilarity(objOne, objTwo, StatementsPackage.Literals.BLOCK_CONTAINER__BLOCK);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testBlockNullCheck(IBlockContainerInitialiser init) {
+	public void testBlockNullCheck(IBlockContainerInitialiser init, String displayName) {
 		this.testSimilarityNullCheck(this.initElement(init, this.createMinimalBlockWithNullReturn()), init, true,
 				StatementsPackage.Literals.BLOCK_CONTAINER__BLOCK);
 	}

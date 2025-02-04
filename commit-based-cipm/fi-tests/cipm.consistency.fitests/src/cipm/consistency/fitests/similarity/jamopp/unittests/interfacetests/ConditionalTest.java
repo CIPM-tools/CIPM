@@ -27,18 +27,18 @@ public class ConditionalTest extends AbstractJaMoPPSimilarityTest implements Use
 		return result;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testCondition(IConditionalInitialiser init) {
+	public void testCondition(IConditionalInitialiser init, String displayName) {
 		var objOne = this.initElement(init, this.createMinimalTrueEE());
 		var objTwo = this.initElement(init, this.createMinimalTrueNEE());
 
 		this.testSimilarity(objOne, objTwo, StatementsPackage.Literals.CONDITIONAL__CONDITION);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testConditionNullCheck(IConditionalInitialiser init) {
+	public void testConditionNullCheck(IConditionalInitialiser init, String displayName) {
 		this.testSimilarityNullCheck(this.initElement(init, this.createMinimalTrueEE()), init, true,
 				StatementsPackage.Literals.CONDITIONAL__CONDITION);
 	}

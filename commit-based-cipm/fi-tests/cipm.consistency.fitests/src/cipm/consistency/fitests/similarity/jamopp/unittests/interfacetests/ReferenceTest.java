@@ -29,34 +29,34 @@ public class ReferenceTest extends AbstractJaMoPPSimilarityTest implements UsesR
 		return ref;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testNext(IReferenceInitialiser init) {
+	public void testNext(IReferenceInitialiser init, String displayName) {
 		var objOne = this.initElement(init, this.createMinimalSR("str1"), null);
 		var objTwo = this.initElement(init, this.createMinimalSR("str2"), null);
 
 		this.testSimilarity(objOne, objTwo, ReferencesPackage.Literals.REFERENCE__NEXT);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testNextNullCheck(IReferenceInitialiser init) {
+	public void testNextNullCheck(IReferenceInitialiser init, String displayName) {
 		this.testSimilarityNullCheck(this.initElement(init, this.createMinimalSR("str1"), null), init, true,
 				ReferencesPackage.Literals.REFERENCE__NEXT);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testArraySelector(IReferenceInitialiser init) {
+	public void testArraySelector(IReferenceInitialiser init, String displayName) {
 		var objOne = this.initElement(init, null, new ArraySelector[] { this.createMinimalAS(0) });
 		var objTwo = this.initElement(init, null, new ArraySelector[] { this.createMinimalAS(1) });
 
 		this.testSimilarity(objOne, objTwo, ReferencesPackage.Literals.REFERENCE__ARRAY_SELECTORS);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testArraySelectorSize(IReferenceInitialiser init) {
+	public void testArraySelectorSize(IReferenceInitialiser init, String displayName) {
 		var objOne = this.initElement(init, null,
 				new ArraySelector[] { this.createMinimalAS(0), this.createMinimalAS(1) });
 		var objTwo = this.initElement(init, null, new ArraySelector[] { this.createMinimalAS(0) });
@@ -64,9 +64,9 @@ public class ReferenceTest extends AbstractJaMoPPSimilarityTest implements UsesR
 		this.testSimilarity(objOne, objTwo, ReferencesPackage.Literals.REFERENCE__ARRAY_SELECTORS);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testArraySelectorNullCheck(IReferenceInitialiser init) {
+	public void testArraySelectorNullCheck(IReferenceInitialiser init, String displayName) {
 		this.testSimilarityNullCheck(this.initElement(init, null, new ArraySelector[] { this.createMinimalAS(0) }),
 				init, true, ReferencesPackage.Literals.REFERENCE__ARRAY_SELECTORS);
 	}

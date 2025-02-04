@@ -28,9 +28,9 @@ public class NamespaceAwareElementTest extends AbstractJaMoPPSimilarityTest {
 		return result;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testNamespace(INamespaceAwareElementInitialiser init) {
+	public void testNamespace(INamespaceAwareElementInitialiser init, String displayName) {
 		var objOne = this.initElement(init, nss1);
 		var objTwo = this.initElement(init, nss2);
 
@@ -40,9 +40,9 @@ public class NamespaceAwareElementTest extends AbstractJaMoPPSimilarityTest {
 	/**
 	 * Tests whether longer namespaces with the same prefix are different.
 	 */
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testNamespaceScope(INamespaceAwareElementInitialiser init) {
+	public void testNamespaceScope(INamespaceAwareElementInitialiser init, String displayName) {
 		for (int i = 0; i < nss1.length; i++) {
 			var newNss = new String[i];
 
@@ -57,9 +57,9 @@ public class NamespaceAwareElementTest extends AbstractJaMoPPSimilarityTest {
 		}
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testNamespaceNullCheck(INamespaceAwareElementInitialiser init) {
+	public void testNamespaceNullCheck(INamespaceAwareElementInitialiser init, String displayName) {
 		this.testSimilarityNullCheck(this.initElement(init, nss1), init, true,
 				CommonsPackage.Literals.NAMESPACE_AWARE_ELEMENT__NAMESPACES);
 	}

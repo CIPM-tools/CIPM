@@ -27,18 +27,18 @@ public class TypeArgumentableTest extends AbstractJaMoPPSimilarityTest implement
 		return result;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testTypeArgument(ITypeArgumentableInitialiser init) {
+	public void testTypeArgument(ITypeArgumentableInitialiser init, String displayName) {
 		var objOne = this.initElement(init, new TypeArgument[] { this.createMinimalExtendsTAWithCls("cls1") });
 		var objTwo = this.initElement(init, new TypeArgument[] { this.createMinimalSuperTAWithCls("cls2") });
 
 		this.testSimilarity(objOne, objTwo, GenericsPackage.Literals.TYPE_ARGUMENTABLE__TYPE_ARGUMENTS);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testTypeArgumentSize(ITypeArgumentableInitialiser init) {
+	public void testTypeArgumentSize(ITypeArgumentableInitialiser init, String displayName) {
 		var objOne = this.initElement(init, new TypeArgument[] { this.createMinimalExtendsTAWithCls("cls1"),
 				this.createMinimalSuperTAWithCls("cls2") });
 		var objTwo = this.initElement(init, new TypeArgument[] { this.createMinimalExtendsTAWithCls("cls1") });
@@ -46,9 +46,9 @@ public class TypeArgumentableTest extends AbstractJaMoPPSimilarityTest implement
 		this.testSimilarity(objOne, objTwo, GenericsPackage.Literals.TYPE_ARGUMENTABLE__TYPE_ARGUMENTS);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testTypeArgumentNullCheck(ITypeArgumentableInitialiser init) {
+	public void testTypeArgumentNullCheck(ITypeArgumentableInitialiser init, String displayName) {
 		this.testSimilarityNullCheck(
 				this.initElement(init, new TypeArgument[] { this.createMinimalExtendsTAWithCls("cls1") }), init, true,
 				GenericsPackage.Literals.TYPE_ARGUMENTABLE__TYPE_ARGUMENTS);

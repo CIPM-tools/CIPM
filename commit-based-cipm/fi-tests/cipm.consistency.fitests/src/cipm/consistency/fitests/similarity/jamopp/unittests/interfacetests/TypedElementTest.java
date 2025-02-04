@@ -27,18 +27,18 @@ public class TypedElementTest extends AbstractJaMoPPSimilarityTest implements Us
 		return result;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testTypeReference(ITypedElementInitialiser init) {
+	public void testTypeReference(ITypedElementInitialiser init, String displayName) {
 		var objOne = this.initElement(init, this.createMinimalClsRef("cls1"));
 		var objTwo = this.initElement(init, this.createMinimalClsRef("cls2"));
 
 		this.testSimilarity(objOne, objTwo, TypesPackage.Literals.TYPED_ELEMENT__TYPE_REFERENCE);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{1}")
 	@MethodSource("provideArguments")
-	public void testTypeReferenceNullCheck(ITypedElementInitialiser init) {
+	public void testTypeReferenceNullCheck(ITypedElementInitialiser init, String displayName) {
 		this.testSimilarityNullCheck(this.initElement(init, this.createMinimalClsRef("cls1")), init, true,
 				TypesPackage.Literals.TYPED_ELEMENT__TYPE_REFERENCE);
 	}
