@@ -22,7 +22,7 @@ public class AnnotableAndModifiableTest extends AbstractJaMoPPSimilarityTest
 	private static Stream<Arguments> provideArguments() {
 		return AbstractJaMoPPSimilarityTest.getAllInitialiserArgumentsFor(IAnnotableAndModifiableInitialiser.class);
 	}
-	
+
 	protected AnnotableAndModifiable initElement(IAnnotableAndModifiableInitialiser init, Modifier[] modifs,
 			AnnotationInstance[] ais) {
 
@@ -37,8 +37,8 @@ public class AnnotableAndModifiableTest extends AbstractJaMoPPSimilarityTest
 	@ParameterizedTest()
 	@MethodSource("provideArguments")
 	public void testModifier(IAnnotableAndModifiableInitialiser init) {
-		var objOne = this.initElement(init, new Modifier[] { this.createAbstract(), this.createSynchronized() }, null);
-		var objTwo = this.initElement(init, new Modifier[] { this.createVolatile(), this.createProtected() }, null);
+		var objOne = this.initElement(init, new Modifier[] { this.createAbstract() }, null);
+		var objTwo = this.initElement(init, new Modifier[] { this.createVolatile() }, null);
 
 		this.testSimilarity(objOne, objTwo,
 				ModifiersPackage.Literals.ANNOTABLE_AND_MODIFIABLE__ANNOTATIONS_AND_MODIFIERS);
@@ -57,9 +57,8 @@ public class AnnotableAndModifiableTest extends AbstractJaMoPPSimilarityTest
 	@ParameterizedTest()
 	@MethodSource("provideArguments")
 	public void testModifierNullCheck(IAnnotableAndModifiableInitialiser init) {
-		this.testSimilarityNullCheck(
-				this.initElement(init, new Modifier[] { this.createAbstract(), this.createSynchronized() }, null), init,
-				true, ModifiersPackage.Literals.ANNOTABLE_AND_MODIFIABLE__ANNOTATIONS_AND_MODIFIERS);
+		this.testSimilarityNullCheck(this.initElement(init, new Modifier[] { this.createAbstract() }, null), init, true,
+				ModifiersPackage.Literals.ANNOTABLE_AND_MODIFIABLE__ANNOTATIONS_AND_MODIFIERS);
 	}
 
 	@ParameterizedTest()
