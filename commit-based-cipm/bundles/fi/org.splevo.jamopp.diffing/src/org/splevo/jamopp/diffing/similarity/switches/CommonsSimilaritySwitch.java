@@ -35,13 +35,14 @@ public class CommonsSimilaritySwitch extends CommonsSwitch<Boolean> implements I
 	}
 
 	/**
-     * Check named element
-     * 
-     * Similarity is defined by the names of the elements.
+     * Check named element. Similarity is defined by the names
+     * of the elements ({@link NamedElement#getName()}).
      * 
      * @param element1
-     *            The method call to compare with the compare element.
-     * @return True As null always means null.
+     *            The named element to compare with the compare element.
+     * @return True if names are similar, false if not.
+	 * 
+	 * @see {@link #getCompareElement()}
      */
     @Override
     public Boolean caseNamedElement(NamedElement element1) {

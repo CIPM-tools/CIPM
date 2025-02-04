@@ -17,7 +17,8 @@ package org.splevo.jamopp.diffing.similarity.base;
  */
 public interface ISimilarityRequestHandler {
 	/**
-	 * Processes the given {@link ISimilarityRequest} and returns the result. <br>
+	 * Processes the given {@link ISimilarityRequest} and returns the result. Check
+	 * the matching request type for more information. <br>
 	 * <br>
 	 * It is recommended to not override the return type, especially if the concrete
 	 * {@link ISimilarityRequestHandler} instances are planned to be extended.

@@ -46,6 +46,15 @@ public class ReferencesSimilaritySwitch extends ReferencesSwitch<Boolean>
 		this.checkStatementPosition = checkStatementPosition;
 	}
 
+	/**
+	 * Checks the similarity of 2 string references. Similarity is checked by comparing
+	 * their values ({@link StringReference#getValue()}).
+	 * 
+	 * @param ref1 The string reference to compare with compareElement
+	 * @return True if the values are similar, false if not.
+	 * 
+	 * @see {@link #getCompareElement()}
+	 */
 	@Override
 	public Boolean caseStringReference(StringReference ref1) {
 		this.logInfoMessage("caseStringReference");
@@ -54,6 +63,21 @@ public class ReferencesSimilaritySwitch extends ReferencesSwitch<Boolean>
 		return JaMoPPStringUtil.stringsEqual(ref1.getValue(), ref2.getValue());
 	}
 
+	/**
+	 * Checks the similarity of 2 identifier references. Similarity is checked by comparing:
+	 * <ol>
+	 * <li> Target ({@link IdentifierReference#getTarget()})
+	 * <li> Container of target ({@code target.eContainer()}), if it does not contain the
+	 * identifier reference and thus cause cyclic containment
+	 * <li> Array selectors ({@link IdentifierReference#getArraySelectors()})
+	 * <li> Next ({@link IdentifierReference#getNext()}
+	 * </ol>
+	 * 
+	 * @param ref1 The identifier reference to compare with compareElement
+	 * @return False if a step fails, true otherwise.
+	 * 
+	 * @see {@link #getCompareElement()}
+	 */
 	@Override
 	public Boolean caseIdentifierReference(IdentifierReference ref1) {
 		this.logInfoMessage("caseIdentifierReference");
@@ -119,11 +143,13 @@ public class ReferencesSimilaritySwitch extends ReferencesSwitch<Boolean>
 	/**
 	 * Check element reference similarity.<br>
 	 * 
-	 * Is checked by the target (the method called). Everything else are containment
+	 * Similarity is checked by the target (the method called). Everything else are containment
 	 * references checked indirectly.
 	 * 
-	 * @param ref1 The method call to compare with the compare element.
-	 * @return True As null always means null.
+	 * @param ref1 The element reference to compare with the compare element.
+	 * @return False if targets are not similar, true otherwise.
+	 * 
+	 * @see {@link #getCompareElement()}
 	 */
 	@Override
 	public Boolean caseElementReference(ElementReference ref1) {
@@ -136,13 +162,17 @@ public class ReferencesSimilaritySwitch extends ReferencesSwitch<Boolean>
 	}
 
 	/**
-	 * Proof method call similarity.
+	 * Checks the similarity of 2 method calls. Similarity is checked by comparing:
+	 * <ol>
+	 * <li> Target ({@link MethodCall#getTarget()})
+	 * <li> Arguments ({@link MethodCall#getArguments()})
+	 * <li> Next ({@link MethodCall#getNext()})
+	 * </ol>
 	 * 
-	 * Similarity is decided by the method referenced and the arguments passed by.
+	 * @param call1 The method call to compare with compareElement
+	 * @return False if a step fails, true otherwise.
 	 * 
-	 * @param call1 The left / modified method call to compare with the original
-	 *              one.
-	 * @return True/False if the method calls are similar or not.
+	 * @see {@link #getCompareElement()}
 	 */
 	@Override
 	public Boolean caseMethodCall(MethodCall call1) {

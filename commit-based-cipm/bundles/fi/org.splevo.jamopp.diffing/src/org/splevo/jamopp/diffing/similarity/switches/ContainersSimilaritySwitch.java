@@ -43,14 +43,16 @@ public class ContainersSimilaritySwitch extends ContainersSwitch<Boolean>
 	 * Check the similarity of two CompilationUnits.<br>
 	 * Similarity is checked by
 	 * <ul>
-	 * <li>Comparing their names (including renamings)</li>
-	 * <li>Comparing their namespaces' values (including renamings)</li>
+	 * <li>Comparing their names including renamings ({@link CompilationUnit#getName()})</li>
+	 * <li>Comparing their namespaces' values including renamings ({@link CompilationUnit#getNamespacesAsString()})</li>
 	 * </ul>
 	 * Note: CompilationUnit names are full qualified. So it is important to apply
-	 * classifier as well as package renaming normalizations to them.
+	 * classifier as well as package renaming normalizations to unit1.
 	 * 
 	 * @param unit1 The compilation unit to compare with the compareElement.
-	 * @return True/False whether they are similar or not.
+	 * @return False if not similar, true otherwise.
+	 * 
+	 * @see {@link #getCompareElement()}
 	 */
 	@Override
 	public Boolean caseCompilationUnit(CompilationUnit unit1) {
@@ -75,11 +77,16 @@ public class ContainersSimilaritySwitch extends ContainersSwitch<Boolean>
 	 * Check package similarity.<br>
 	 * Similarity is checked by
 	 * <ul>
-	 * <li>full qualified package path</li>
+	 * <li>full qualified package path </li>
 	 * </ul>
+	 * Note: Normalizations are applied to the full qualified package path of package1.
 	 * 
 	 * @param package1 The package to compare with the compare element.
-	 * @return True/False if the packages are similar or not.
+	 * @return False if not similar, true otherwise.
+	 * 
+	 * @see {@link #getCompareElement()}
+	 * @see {@link JaMoPPModelUtil#buildNamespacePath(org.eclipse.emf.ecore.EObject)}
+	 * for more information on full qualified package path.
 	 */
 	@Override
 	public Boolean casePackage(Package package1) {
@@ -96,11 +103,13 @@ public class ContainersSimilaritySwitch extends ContainersSwitch<Boolean>
 	 * Check module similarity.<br>
 	 * Similarity is checked by
 	 * <ul>
-	 * <li>module names</li>
+	 * <li>module names {@link org.emftext.language.java.containers.Module#getName()} </li>
 	 * </ul>
 	 * 
 	 * @param module1 The module to compare with the compare element.
-	 * @return True/False if the modules are similar or not.
+	 * @return False if names are not similar, true otherwise.
+	 * 
+	 * @see {@link #getCompareElement()}
 	 */
 	@Override
 	public Boolean caseModule(org.emftext.language.java.containers.Module module1) {

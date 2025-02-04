@@ -18,7 +18,7 @@ public abstract class AbstractSimilarityComparer implements ISimilarityComparer 
 	private ISimilarityToolbox st;
 
 	/**
-	 * Constructs an instance with a given {@link ISimilarityToolbox}
+	 * Constructs an instance with a given {@link ISimilarityToolbox} parameter.
 	 * 
 	 * @param st The {@link ISimilarityToolbox}, to which all incoming
 	 *           {@link ISimilarityRequest} instances should be delegated to.

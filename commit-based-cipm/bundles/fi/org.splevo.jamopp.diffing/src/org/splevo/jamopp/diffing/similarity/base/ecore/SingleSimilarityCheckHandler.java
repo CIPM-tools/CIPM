@@ -16,10 +16,15 @@ public class SingleSimilarityCheckHandler implements ISimilarityRequestHandler {
 	/**
 	 * Uses the given switch to compute the similarity of the given elements.
 	 * 
-	 * @param element1 The first element to check.
-	 * @param element2 The second element to check.
+	 * @param element1 The first parameter, which will be passed to the underlying
+	 *                 {@link org.eclipse.emf.ecore.util.Switch#doSwitch(EObject)}
+	 *                 method.
+	 * @param element2 The compare element (check ss parameter for more
+	 *                 information).
 	 * @param ss       The switch that will be used during the similarity checking
 	 * @return TRUE, if they are similar; FALSE if not, NULL if it can't be decided.
+	 * 
+	 * @see {@link IComposedSwitchAdapter#getCompareElement()}
 	 */
 	public Boolean isSimilar(EObject element1, EObject element2, IComposedSwitchAdapter ss) {
 		// If no switch is given, similarity cannot be computed
@@ -61,9 +66,7 @@ public class SingleSimilarityCheckHandler implements ISimilarityRequestHandler {
 	 * {@inheritDoc} <br>
 	 * <br>
 	 * Check two objects if they are similar.
-	 *
-	 * @param element1 The first element to check.
-	 * @param element2 The second element to check.
+	 * 
 	 * @return TRUE, if they are similar; FALSE if not, NULL if it can't be decided.
 	 */
 	@Override

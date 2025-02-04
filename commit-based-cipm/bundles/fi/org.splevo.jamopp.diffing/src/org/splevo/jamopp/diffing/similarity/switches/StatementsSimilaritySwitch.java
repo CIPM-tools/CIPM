@@ -52,16 +52,17 @@ public class StatementsSimilaritySwitch extends StatementsSwitch<Boolean> implem
 		this.checkStatementPosition = checkStatementPosition;
 	}
 
-    /**
-     * Check expression statement similarity.<br>
-     * Similarity is checked by
-     * <ul>
-     * <li>similarity statements expressions</li>
-     * </ul>
+	/**
+	 * Checks the similarity of 2 expression statements. Similarity is checked by comparing
+	 * their expressions ({@link ExpressionStatement#getExpression()}).
+     * <br><br>
+     * Note: Positions of the statements are checked as well.
      * 
      * @param statement1
      *            The expression statement to compare with the compare element.
-     * @return True/False if the expression statements are similar or not.
+     * @return False if expressions are not similar or their positions are not similar, true otherwise.
+	 * 
+	 * @see {@link #getCompareElement()}
      */
     @Override
     public Boolean caseExpressionStatement(ExpressionStatement statement1) {
@@ -88,14 +89,18 @@ public class StatementsSimilaritySwitch extends StatementsSwitch<Boolean> implem
     }
 
     /**
-     * Check the similarity of a variable declaration.
+     * Checks the similarity of 2 local variable statements. Similarity is checked by comparing:
+     * <ol>
+     * <li> Variable ({@link LocalVariableStatement#getVariable()})
+     * <li> Container ({@code varStmt.eContainer()})
+     * </ol>
      * 
-     * The similarity is decided by the declared variables name only. A changed variable type or
-     * value initialization should lead to a changed statement not a new one.
+     * Note: Positions of the local variable statements are also checked.
      * 
-     * @param varStmt1
-     *            The variable to compare with the original / right-side one
-     * @return True/False if they are similar or not.
+     * @param varStmt1 The local variable statement to compare with compareElement
+     * @return False if not similar or positions are not similar, true otherwise.
+	 * 
+	 * @see {@link #getCompareElement()}
      */
     @Override
     public Boolean caseLocalVariableStatement(LocalVariableStatement varStmt1) {
@@ -126,15 +131,14 @@ public class StatementsSimilaritySwitch extends StatementsSwitch<Boolean> implem
     }
 
     /**
-     * Check return statement similarity.<br>
-     * Similarity is checked by
-     * <ul>
-     * <li>expressions similarity</li>
-     * </ul>
+     * Checks the similarity of 2 return statements. Similarity is checked by comparing their
+     * return values ({@link Return#getReturnValue()}).
      * 
      * @param returnStatement1
      *            The return statement to compare with the compare element.
-     * @return True/False if the return statements are similar or not.
+     * @return Result of similarity checking the return values.
+	 * 
+	 * @see {@link #getCompareElement()}
      */
     @Override
     public Boolean caseReturn(Return returnStatement1) {
@@ -149,15 +153,16 @@ public class StatementsSimilaritySwitch extends StatementsSwitch<Boolean> implem
     }
 
     /**
-     * Check synchronized statement similarity.<br>
-     * Similarity is checked by
-     * <ul>
-     * <li>expression similarity</li>
-     * </ul>
+     * Checks the similarity of 2 synchronized blocks. Similarity is checked by comparing
+     * their lock providers ({@link SynchronizedBlock#getLockProvider()}).
+     * <br><br>
+     * Note: Positions of the synchronized blocks are checked as well.
      * 
      * @param statement1
      *            The synchronized statement to compare with the compare element.
-     * @return True/False if the synchronized statements are similar or not.
+     * @return False if not similar or positions are not similar, true otherwise.
+	 * 
+	 * @see {@link #getCompareElement()}
      */
     @Override
     public Boolean caseSynchronizedBlock(SynchronizedBlock statement1) {
@@ -188,7 +193,9 @@ public class StatementsSimilaritySwitch extends StatementsSwitch<Boolean> implem
      * 
      * @param throwStatement1
      *            The throw statement to compare with the compare element.
-     * @return True/False if the throw statements are similar or not.
+     * @return True
+	 * 
+	 * @see {@link #getCompareElement()}
      */
     @Override
     public Boolean caseThrow(Throw throwStatement1) {
@@ -197,6 +204,15 @@ public class StatementsSimilaritySwitch extends StatementsSwitch<Boolean> implem
         return Boolean.TRUE;
     }
 
+    /**
+     * Checks the similarity of 2 catch blocks. Similarity is checked by comparing
+     * their parameters ({@link CatchBlock#getParameter()}).
+     * 
+     * @param catchBlock1 The catch block to compare with compareElement
+     * @return False if not similar, true otherwise.
+	 * 
+	 * @see {@link #getCompareElement()}
+     */
     @Override
     public Boolean caseCatchBlock(CatchBlock catchBlock1) {
     	this.logInfoMessage("caseCatchBlock");
@@ -215,7 +231,7 @@ public class StatementsSimilaritySwitch extends StatementsSwitch<Boolean> implem
      * 
      * Similarity is checked by:
      * <ul>
-     * <li>similarity of the expressions</li>
+     * <li> Conditions ({@link Conditional#getCondition()}) </li>
      * </ul>
      * 
      * The then and else statements are not checked as part of the condition statement check
@@ -224,8 +240,10 @@ public class StatementsSimilaritySwitch extends StatementsSwitch<Boolean> implem
      * condition statement matches.
      * 
      * @param conditional1
-     *            The statement to compare with the compare element.
-     * @return True/False whether they are similar or not.
+     *            The conditional to compare with the compare element.
+     * @return False if not similar, true otherwise.
+	 * 
+	 * @see {@link #getCompareElement()}
      */
     @Override
     public Boolean caseConditional(Conditional conditional1) {
@@ -239,6 +257,15 @@ public class StatementsSimilaritySwitch extends StatementsSwitch<Boolean> implem
         return JaMoPPBooleanUtil.isNotFalse(expressionSimilarity);
     }
 
+    /**
+     * Checks the similarity of 2 jumps. Similarity is checked by comparing
+     * their target ({@link Jump#getTarget()}).
+     * 
+     * @param jump1 The jump to compare with compareElement
+     * @return False if not similar, true otherwise.
+	 * 
+	 * @see {@link #getCompareElement()}
+     */
     @Override
     public Boolean caseJump(Jump jump1) {
     	this.logInfoMessage("caseJump");
@@ -249,6 +276,15 @@ public class StatementsSimilaritySwitch extends StatementsSwitch<Boolean> implem
         return JaMoPPBooleanUtil.isNotFalse(targetSimilarity);
     }
 
+    /**
+     * Checks the similarity of 2 jump labels. Similarity is checked by comparing
+     * their names ({@link JumpLabel#getName()}).
+     * 
+     * @param label1 The jump label to compare with compareElement
+     * @return True if names are similar, false otherwise.
+	 * 
+	 * @see {@link #getCompareElement()}
+     */
     @Override
     public Boolean caseJumpLabel(JumpLabel label1) {
     	this.logInfoMessage("caseJumpLabel");
@@ -256,7 +292,16 @@ public class StatementsSimilaritySwitch extends StatementsSwitch<Boolean> implem
         JumpLabel label2 = (JumpLabel) this.getCompareElement();
         return JaMoPPNameComparisonUtil.namesEqual(label1, label2);
     }
-    
+
+    /**
+     * Checks the similarity of 2 switch statements. Similarity is checked by comparing
+     * their variables ({@link Switch#getVariable()}).
+     * 
+     * @param switch1 The switch statement to compare with compareElement
+     * @return Result of similarity checking their variables.
+	 * 
+	 * @see {@link #getCompareElement()}
+     */
     @Override
     public Boolean caseSwitch(Switch switch1) {
     	this.logInfoMessage("caseSwitch");
@@ -274,13 +319,13 @@ public class StatementsSimilaritySwitch extends StatementsSwitch<Boolean> implem
     }
 
     /**
-     * Decide of two statements differ from each other or not.
+     * Check if two statements have differing predecessor statements.
      * 
      * @param statement1
-     *            The first statement to compare
+     *            The first statement to check the predecessor of.
      * @param statement2
-     *            The second statement to compare.
-     * @return True if they differ, null if not.
+     *            The second statement to check the predecessor of.
+     * @return True if their predecessors differ, false otherwise.
      */
     private boolean differentPredecessor(Statement statement1, Statement statement2) {
         Statement pred1 = getPredecessor(statement1);
@@ -293,10 +338,10 @@ public class StatementsSimilaritySwitch extends StatementsSwitch<Boolean> implem
      * Check if two statements have differing successor statements.
      * 
      * @param statement1
-     *            The first statement to check.
+     *            The first statement to check the successor of.
      * @param statement2
-     *            The second statement to check.
-     * @return True if their successor differ, false if not.
+     *            The second statement to check the successor of.
+     * @return True if their successors differ, false otherwise.
      */
     private boolean differentSuccessor(Statement statement1, Statement statement2) {
         Statement succ1 = getSuccessor(statement1);
@@ -312,7 +357,7 @@ public class StatementsSimilaritySwitch extends StatementsSwitch<Boolean> implem
      * 
      * @param statement
      *            The statement to get the predecessor for.
-     * @return The predecessor or null if non exists.
+     * @return The predecessor or null if no predecessor exists.
      */
     private Statement getPredecessor(Statement statement) {
 
@@ -333,8 +378,8 @@ public class StatementsSimilaritySwitch extends StatementsSwitch<Boolean> implem
      * {@link StatementListContainer}, no successor exists, null will be returned.
      * 
      * @param statement
-     *            The statement to get the predecessor for.
-     * @return The predecessor or null if non exists.
+     *            The statement to get the successor for.
+     * @return The successor or null if no successor exists.
      */
     private Statement getSuccessor(Statement statement) {
 

@@ -49,26 +49,28 @@ public class MembersSimilaritySwitch extends MembersSwitch<Boolean>
 
 	/**
 	 * Check abstract method declaration similarity. Similarity is checked by
-	 * <ul>
-	 * <li>name</li>
-	 * <li>parameter list size</li>
-	 * <li>parameter types</li>
-	 * <li>name</li>
-	 * <li>container for
-	 * <ul>
-	 * <li>AbstractTypeDeclaration</li>
-	 * <li>AnonymousClassDeclaration</li>
-	 * <li>Model</li>
-	 * </ul>
-	 * </li>
-	 * </ul>
+	 * <ol>
+	 * <li> The name of the method ({@link Method#getName()})</li>
+	 * <li> The input parameters of the method ({@link Method#getParameters()})</li>
+	 * <ol>
+	 * <li> Type reference of input parameters ({@code typeRef = param.getTypeReference()})
+	 * <ol>
+	 * <li> Target of the type reference ({@code typeRef.getTarget()})
+	 * <li> Array dimension of the type reference ({@code typeRef.getArrayDimension()})
+	 * </ol>
+	 * </ol>
+	 * <li> {@link Method#getContainingConcreteClassifier()} (if existent and then returns)
+	 * <li> {@link Method#getContainingAnonymousClass()} (if existent and then returns)
+	 * </ol>
 	 * 
 	 * The container must be checked to check similarity for referenced methods.
 	 * 
-	 * 
 	 * @param method1 The abstract method declaration to compare with the compare
 	 *                element.
-	 * @return True/False if the abstract method declarations are similar or not.
+	 * @return False if a step fails, true if method1 has a container as specified
+	 * in last steps and all steps succeed, null otherwise.
+	 * 
+	 * @see {@link #getCompareElement()}
 	 */
 	@Override
 	public Boolean caseMethod(Method method1) {
@@ -131,27 +133,22 @@ public class MembersSimilaritySwitch extends MembersSwitch<Boolean>
 	}
 
 	/**
-	 * Check constuctor declaration similarity. Similarity is checked by
-	 * <ul>
-	 * <li>name</li>
-	 * <li>parameter list size</li>
-	 * <li>parameter types</li>
-	 * <li>name</li>
-	 * <li>container for
-	 * <ul>
-	 * <li>AbstractTypeDeclaration</li>
-	 * <li>AnonymousClassDeclaration</li>
-	 * <li>Model</li>
-	 * </ul>
-	 * </li>
-	 * </ul>
+	 * Check constructor declaration similarity. Similarity is checked by
+	 * <ol>
+	 * <li> The constructor name ({@link Constructor#getName()})
+	 * <li> The constructor parameters ({@link Constructor#getParameters()})
+	 * <li> {@link Constructor#getContainingConcreteClassifier()} (if existent and then returns)
+	 * <li> {@link Constructor#getContainingAnonymousClass()} (if existent and then returns)
+	 * </ol>
 	 * 
 	 * The container must be checked to check similarity for referenced methods.
 	 * 
-	 * 
 	 * @param constructor1 The abstract method declaration to compare with the
 	 *                     compare element.
-	 * @return True/False if the abstract method declarations are similar or not.
+	 * @return False if a step fails, true if constructor1 has a container as specified
+	 * in last steps and all steps succeed, null otherwise.
+	 * 
+	 * @see {@link #getCompareElement()}
 	 */
 	@Override
 	public Boolean caseConstructor(Constructor constructor1) {
@@ -186,6 +183,15 @@ public class MembersSimilaritySwitch extends MembersSwitch<Boolean>
 		return this.isSimilar(constructor1Container, constructor2Container);
 	}
 
+	/**
+	 * Checks the similarity of 2 enum constants. Similarity is checked by comparing
+	 * their names ({@link EnumConstant#getName()}).
+	 * 
+	 * @param const1 The enum constant to compare with compareElement
+	 * @return True if the names are similar, false if not.
+	 * 
+	 * @see {@link #getCompareElement()}
+	 */
 	@Override
 	public Boolean caseEnumConstant(EnumConstant const1) {
 		this.logInfoMessage("caseEnumConstant");
@@ -194,6 +200,15 @@ public class MembersSimilaritySwitch extends MembersSwitch<Boolean>
 		return JaMoPPNameComparisonUtil.namesEqual(const1, const2);
 	}
 
+	/**
+	 * Checks the similarity of 2 members. Similarity is checked by comparing
+	 * their names ({@link Member#getName()}).
+	 * 
+	 * @param member1 The member to compare with compareElement
+	 * @return True if the names are similar, false if not.
+	 * 
+	 * @see {@link #getCompareElement()}
+	 */
 	@Override
 	public Boolean caseMember(Member member1) {
 		this.logInfoMessage("caseMember");

@@ -13,6 +13,9 @@ package org.splevo.jamopp.diffing.similarity.base;
  */
 public interface ISimilarityRequest {
 	/**
+	 * See the constructor of the complete implementor for more information on the
+	 * returned parameters.
+	 * 
 	 * @return All parameters encapsulated by this instance. Unless specified
 	 *         otherwise, the return type is an Object array of all parameters
 	 *         passed to the constructor of the concrete implementation in the same

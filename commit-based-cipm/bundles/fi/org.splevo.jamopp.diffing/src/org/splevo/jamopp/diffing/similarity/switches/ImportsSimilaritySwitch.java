@@ -39,6 +39,18 @@ public class ImportsSimilaritySwitch extends ImportsSwitch<Boolean>
 		this.checkStatementPosition = checkStatementPosition;
 	}
 
+	/**
+	 * Checks the similarity of 2 classifier imports. Similarity is checked by comparing:
+	 * <ol>
+	 * <li> The classifier ({@link ClassifierImport#getClassifier()})
+	 * <li> The namespaces ({@link ClassifierImport#getNamespacesAsString()})
+	 * </ol>
+	 * 
+	 * @param import1 The classifier import to compare with compareElement
+	 * @return False if not similar, true otherwise.
+	 * 
+	 * @see {@link #getCompareElement()}
+	 */
 	@Override
 	public Boolean caseClassifierImport(ClassifierImport import1) {
 		this.logInfoMessage("caseClassifierImport");
@@ -53,6 +65,18 @@ public class ImportsSimilaritySwitch extends ImportsSwitch<Boolean>
 		return JaMoPPNamespaceUtil.compareNamespacesAsString(import1, import2);
 	}
 
+	/**
+	 * Checks the similarity of 2 static member imports. Similarity is checked by comparing:
+	 * <ol>
+	 * <li> The static members ({@link StaticMemberImport#getStaticMembers()})
+	 * <li> The namespace ({@link StaticMemberImport#getNamespacesAsString()})
+	 * </ol>
+	 * 
+	 * @param import1 The static member import to compare with compareElement
+	 * @return False if not similar, true otherwise.
+	 * 
+	 * @see {@link #getCompareElement()}
+	 */
 	@Override
 	public Boolean caseStaticMemberImport(StaticMemberImport import1) {
 		this.logInfoMessage("caseStaticMemberImport");

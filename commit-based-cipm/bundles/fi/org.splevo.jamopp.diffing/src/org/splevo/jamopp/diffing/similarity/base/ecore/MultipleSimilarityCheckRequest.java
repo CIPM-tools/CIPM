@@ -20,8 +20,9 @@ public class MultipleSimilarityCheckRequest implements ISimilarityRequest {
 	 * Constructs a request that encapsulates 2 {@link EObject} collections and a
 	 * collection of switches.
 	 * 
-	 * @param elements1 The first element collection.
-	 * @param elements2 The second element collection.
+	 * @param elements1 The first element collection, which will be passed to
+	 *                  {@link org.eclipse.emf.ecore.util.Switch#doSwitch(EObject)}.
+	 * @param elements2 The compare element collection.
 	 * @param sss       Collection of switches that will be used for comparing the
 	 *                  elements. i-th switch in the collection will be used in the
 	 *                  similarity checking of i-th elements from respective

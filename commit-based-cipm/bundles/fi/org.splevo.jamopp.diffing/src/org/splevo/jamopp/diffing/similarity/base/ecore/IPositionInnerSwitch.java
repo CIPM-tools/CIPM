@@ -16,14 +16,18 @@ import org.splevo.jamopp.diffing.util.JaMoPPNullCheckUtil;
  */
 public interface IPositionInnerSwitch extends IInnerSwitch {
 	/**
-	 * @return Whether this switch should take statement positions in
-	 *         {@link EObject} instances it compares into account while comparing
-	 *         them.
+	 * @return Whether this switch should account for statement positions of
+	 *         {@link EObject} instances it compares.
 	 */
 	public boolean shouldCheckStatementPosition();
 
 	/**
-	 * @return Whether the {@link EObject} instances are similar.
+	 * @param eo1 The first parameter, which will be passed to the underlying
+	 *            {@link org.eclipse.emf.ecore.util.Switch#doSwitch(EObject)}
+	 *            method.
+	 * @param eo2 The compare element {@link #getCompareElement()}
+	 * 
+	 * @return Whether the given {@link EObject} instances are similar.
 	 * @see {@link ISimilarityChecker}
 	 */
 	public default Boolean isSimilar(EObject eo1, EObject eo2) {
@@ -32,6 +36,13 @@ public interface IPositionInnerSwitch extends IInnerSwitch {
 
 	/**
 	 * @param checkStatementPosition See {@link #shouldCheckStatementPosition()}
+	 * @param eo1                    The first parameter, which will be passed to
+	 *                               the underlying
+	 *                               {@link org.eclipse.emf.ecore.util.Switch#doSwitch(EObject)}
+	 *                               method.
+	 * @param eo2                    The compare element
+	 *                               {@link #getCompareElement()}
+	 * 
 	 * @return Whether the {@link EObject} instances are similar, given the
 	 *         checkStatementPosition flag.
 	 * @see {@link ISimilarityChecker}
@@ -42,9 +53,12 @@ public interface IPositionInnerSwitch extends IInnerSwitch {
 	}
 
 	/**
+	 * @param eo1 The first parameter list
+	 * @param eo2 The compare element list
+	 * 
 	 * @return Whether the given lists are pairwise similar, using the given list of
 	 *         {@link IComposedSwitchAdapter}.
-	 * @see {@link ISimilarityChecker}
+	 * @see {@link ISimilarityChecker}, {@link #isSimilar(EObject, EObject)}
 	 */
 	public default Boolean areSimilar(Collection<? extends EObject> eos1, Collection<? extends EObject> eos2,
 			Collection<? extends IComposedSwitchAdapter> sss) {
@@ -55,6 +69,8 @@ public interface IPositionInnerSwitch extends IInnerSwitch {
 	 * A version of {@link #areSimilar(Collection, Collection, Collection)} that
 	 * first constructs new switches with the given csps.
 	 * 
+	 * @param eo1  The first parameter list
+	 * @param eo2  The compare element list
 	 * @param csps A collection of checkStatementPosition flags (see
 	 *             {@link #isSimilar(EObject, EObject, boolean)}). i-th flag in the
 	 *             collection meant to be used for similarity checking i-th elements
@@ -62,7 +78,8 @@ public interface IPositionInnerSwitch extends IInnerSwitch {
 	 * @return Whether the given collections are pairwise similar, using the given
 	 *         collection of checkStatementPosition flags.
 	 * 
-	 * @see {@link ISimilarityChecker}
+	 * @see {@link ISimilarityChecker},
+	 *      {@link #isSimilar(EObject, EObject, boolean)}
 	 */
 	public default Boolean areSimilar(Collection<? extends EObject> eos1, Collection<? extends EObject> eos2,
 			List<Boolean> csps) {
@@ -75,9 +92,12 @@ public interface IPositionInnerSwitch extends IInnerSwitch {
 	}
 
 	/**
+	 * @param eo1 The first parameter list
+	 * @param eo2 The compare element list
+	 * 
 	 * @return Whether the given collections are pairwise similar, so whether i-th
 	 *         element of both collections are similar for {@code i = 0, 1, ...}
-	 * @see {@link ISimilarityChecker}
+	 * @see {@link ISimilarityChecker}, {@link #isSimilar(EObject, EObject)}
 	 */
 	public default Boolean areSimilar(Collection<? extends EObject> eos1, Collection<? extends EObject> eos2) {
 

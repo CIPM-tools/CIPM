@@ -37,11 +37,17 @@ public class ClassifiersSimilaritySwitch extends ClassifiersSwitch<Boolean> impl
 
     /**
      * Concrete classifiers such as classes and interface are identified by their location and
-     * name. The location is considered implicitly.
+     * name. The location is considered implicitly. Precisely, similarity is checked by comparing
+     * the qualified names ({@link ConcreteClassifier#getQualifiedName()})
+     * <br><br>
+     * Note: Classifier normalizations are applied to the qualified name of
+     * classifier1 before comparing.
      * 
      * @param classifier1
-     *            the classifier to compare with the compareelement
+     *            the classifier to compare with the compareElement
      * @return True or false whether they are similar or not.
+     * 
+     * @see {@link #getCompareElement()}
      */
     @Override
     public Boolean caseConcreteClassifier(ConcreteClassifier classifier1) {
@@ -60,6 +66,8 @@ public class ClassifiersSimilaritySwitch extends ClassifiersSwitch<Boolean> impl
      * 
      * @param anon the anonymous class to compare with the compare element.
      * @return true.
+     * 
+     * @see {@link #getCompareElement()}
      */
     @Override
     public Boolean caseAnonymousClass(AnonymousClass anon) {

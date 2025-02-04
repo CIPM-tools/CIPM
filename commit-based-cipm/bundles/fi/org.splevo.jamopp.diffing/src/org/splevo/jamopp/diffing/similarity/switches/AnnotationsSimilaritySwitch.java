@@ -39,6 +39,18 @@ public class AnnotationsSimilaritySwitch extends AnnotationsSwitch<Boolean>
 		this.checkStatementPosition = checkStatementPosition;
 	}
 
+	/**
+	 * Checks the similarity of 2 annotation instances. Similarity is checked by comparing:
+	 * <ol>
+	 * <li> The used annotation ({@link AnnotationInstance#getAnnotation()})
+	 * <li> Namespace of the used annotation ({@link AnnotationInstance#getNamespacesAsString()})
+	 * </ol>
+	 * 
+	 * @param instance1 The annotation instance to compare with compareElement.
+	 * @return False if not similar, true otherwise.
+	 * 
+	 * @see {@link #getCompareElement()}
+	 */
 	@Override
 	public Boolean caseAnnotationInstance(AnnotationInstance instance1) {
 		this.logInfoMessage("caseAnnotationInstance");

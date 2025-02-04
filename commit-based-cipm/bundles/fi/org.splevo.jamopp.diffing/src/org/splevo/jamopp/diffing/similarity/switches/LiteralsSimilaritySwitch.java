@@ -43,6 +43,15 @@ public class LiteralsSimilaritySwitch extends LiteralsSwitch<Boolean>
 		this.similaritySwitch = similaritySwitch;
 	}
 
+	/**
+	 * Checks the similarity of 2 boolean literals. Similarity is checked by comparing
+	 * their values ({@link BooleanLiteral#isValue()}).
+	 * 
+	 * @param boolean1 The boolean literal to compare with compareElement
+	 * @return True if values are equal, false otherwise.
+	 * 
+	 * @see {@link #getCompareElement()}
+	 */
 	@Override
 	public Boolean caseBooleanLiteral(BooleanLiteral boolean1) {
 		this.logInfoMessage("caseBooleanLiteral");
@@ -51,6 +60,15 @@ public class LiteralsSimilaritySwitch extends LiteralsSwitch<Boolean>
 		return (boolean1.isValue() == boolean2.isValue());
 	}
 
+	/**
+	 * Checks the similarity of 2 character literals. Similarity is checked by comparing
+	 * their values ({@link CharacterLiteral#getValue()}).
+	 * 
+	 * @param char1 The character literal to compare with compareElement
+	 * @return True if values are equal, false otherwise.
+	 * 
+	 * @see {@link #getCompareElement()}
+	 */
 	@Override
 	public Boolean caseCharacterLiteral(CharacterLiteral char1) {
 		this.logInfoMessage("caseCharacterLiteral");
@@ -59,6 +77,15 @@ public class LiteralsSimilaritySwitch extends LiteralsSwitch<Boolean>
 		return JaMoPPStringUtil.stringsEqual(char1.getValue(), char2.getValue());
 	}
 
+	/**
+	 * Checks the similarity of 2 decimal float literals. Similarity is checked by comparing
+	 * their values ({@link DecimalFloatLiteral#getDecimalValue()}).
+	 * 
+	 * @param float1 The decimal float literal to compare with compareElement
+	 * @return True if values are similar, false if not.
+	 * 
+	 * @see {@link #getCompareElement()}
+	 */
 	@Override
 	public Boolean caseDecimalFloatLiteral(DecimalFloatLiteral float1) {
 		this.logInfoMessage("caseDecimalFloatLiteral");
@@ -67,6 +94,15 @@ public class LiteralsSimilaritySwitch extends LiteralsSwitch<Boolean>
 		return compareFloat(float1.getDecimalValue(), float2.getDecimalValue());
 	}
 
+	/**
+	 * Checks the similarity of 2 hex float literals. Similarity is checked by comparing
+	 * their values ({@link HexFloatLiteral#getHexValue()}).
+	 * 
+	 * @param float1 The hex float literal to compare with compareElement
+	 * @return True if values are similar, false if not.
+	 * 
+	 * @see {@link #getCompareElement()}
+	 */
 	@Override
 	public Boolean caseHexFloatLiteral(HexFloatLiteral float1) {
 		this.logInfoMessage("caseHexFloatLiteral");
@@ -75,6 +111,15 @@ public class LiteralsSimilaritySwitch extends LiteralsSwitch<Boolean>
 		return compareFloat(float1.getHexValue(), float2.getHexValue());
 	}
 
+	/**
+	 * Checks the similarity of 2 decimal double literals. Similarity is checked by comparing
+	 * their values ({@link DecimalDoubleLiteral#getDecimalValue()}).
+	 * 
+	 * @param double1 The decimal double literal to compare with compareElement
+	 * @return True if values are similar, false if not.
+	 * 
+	 * @see {@link #getCompareElement()}
+	 */
 	@Override
 	public Boolean caseDecimalDoubleLiteral(DecimalDoubleLiteral double1) {
 		this.logInfoMessage("caseDecimalDoubleLiteral");
@@ -83,6 +128,15 @@ public class LiteralsSimilaritySwitch extends LiteralsSwitch<Boolean>
 		return compareDouble(double1.getDecimalValue(), double2.getDecimalValue());
 	}
 
+	/**
+	 * Checks the similarity of 2 hex double literals. Similarity is checked by comparing
+	 * their values ({@link HexDoubleLiteral#getHexValue()}).
+	 * 
+	 * @param double1 The hex double literal to compare with compareElement
+	 * @return True if values are similar, false if not.
+	 * 
+	 * @see {@link #getCompareElement()}
+	 */
 	@Override
 	public Boolean caseHexDoubleLiteral(HexDoubleLiteral double1) {
 		this.logInfoMessage("caseHexDoubleLiteral");
@@ -91,6 +145,9 @@ public class LiteralsSimilaritySwitch extends LiteralsSwitch<Boolean>
 		return compareDouble(double1.getHexValue(), double2.getHexValue());
 	}
 
+	/**
+	 * @return True if the given double values are equal or if they are both NaN. False otherwise.
+	 */
 	private boolean compareDouble(double d1, double d2) {
 		return d1 == d2 || Double.isNaN(d1) && Double.isNaN(d2);
 	}
@@ -102,6 +159,15 @@ public class LiteralsSimilaritySwitch extends LiteralsSwitch<Boolean>
 		return f1 == f2 || Float.isNaN(f1) && Float.isNaN(f2);
 	}
 
+	/**
+	 * Checks the similarity of 2 decimal integer literals. Similarity is checked by comparing
+	 * their values ({@link DecimalIntegerLiteral#getDecimalValue()}).
+	 * 
+	 * @param int1 The decimal integer literal to compare to compareElement
+	 * @return True if values are similar, false if not.
+	 * 
+	 * @see {@link #getCompareElement()}
+	 */
 	@Override
 	public Boolean caseDecimalIntegerLiteral(DecimalIntegerLiteral int1) {
 		this.logInfoMessage("caseDecimalIntegerLiteral");
@@ -113,6 +179,15 @@ public class LiteralsSimilaritySwitch extends LiteralsSwitch<Boolean>
 		return JaMoPPNullCheckUtil.bothNullOrEqual(val1, val2);
 	}
 
+	/**
+	 * Checks the similarity of 2 hex integer literals. Similarity is checked by comparing
+	 * their values ({@link HexIntegerLiteral#getHexValue()}).
+	 * 
+	 * @param int1 The hex integer literal to compare to compareElement
+	 * @return True if values are similar, false if not.
+	 * 
+	 * @see {@link #getCompareElement()}
+	 */
 	@Override
 	public Boolean caseHexIntegerLiteral(HexIntegerLiteral int1) {
 		this.logInfoMessage("caseHexIntegerLiteral");
@@ -124,6 +199,15 @@ public class LiteralsSimilaritySwitch extends LiteralsSwitch<Boolean>
 		return JaMoPPNullCheckUtil.bothNullOrEqual(val1, val2);
 	}
 
+	/**
+	 * Checks the similarity of 2 octal integer literals. Similarity is checked by comparing
+	 * their values ({@link OctalIntegerLiteral#getOctalValue()}).
+	 * 
+	 * @param int1 The octal integer literal to compare with compareElement
+	 * @return True if values are similar, false if not.
+	 * 
+	 * @see {@link #getCompareElement()}
+	 */
 	@Override
 	public Boolean caseOctalIntegerLiteral(OctalIntegerLiteral int1) {
 		this.logInfoMessage("caseOctalIntegerLiteral");
@@ -135,6 +219,15 @@ public class LiteralsSimilaritySwitch extends LiteralsSwitch<Boolean>
 		return JaMoPPNullCheckUtil.bothNullOrEqual(val1, val2);
 	}
 
+	/**
+	 * Checks the similarity of 2 decimal long literals. Similarity is checked by comparing
+	 * their values ({@link DecimalLongLiteral#getDecimalValue()}).
+	 * 
+	 * @param long1 The decimal long literal to compare with compareElement
+	 * @return True if values are similar, false if not.
+	 * 
+	 * @see {@link #getCompareElement()}
+	 */
 	@Override
 	public Boolean caseDecimalLongLiteral(DecimalLongLiteral long1) {
 		this.logInfoMessage("caseDecimalLongLiteral");
@@ -146,6 +239,15 @@ public class LiteralsSimilaritySwitch extends LiteralsSwitch<Boolean>
 		return JaMoPPNullCheckUtil.bothNullOrEqual(val1, val2);
 	}
 
+	/**
+	 * Checks the similarity of 2 hex long literals. Similarity is checked by comparing
+	 * their values ({@link HexLongLiteral#getHexValue()}).
+	 * 
+	 * @param long1 The hex long literal to compare with compareElement
+	 * @return True if values are similar, false if not.
+	 * 
+	 * @see {@link #getCompareElement()}
+	 */
 	@Override
 	public Boolean caseHexLongLiteral(HexLongLiteral long1) {
 		this.logInfoMessage("caseHexLongLiteral");
@@ -157,6 +259,15 @@ public class LiteralsSimilaritySwitch extends LiteralsSwitch<Boolean>
 		return JaMoPPNullCheckUtil.bothNullOrEqual(val1, val2);
 	}
 
+	/**
+	 * Checks the similarity of 2 octal long literals. Similarity is checked by comparing
+	 * their values ({@link OctalLongLiteral#getOctalValue()}).
+	 * 
+	 * @param long1 The octal long literal to compare with compareElement
+	 * @return True if values are similar, false if not.
+	 * 
+	 * @see {@link #getCompareElement()}
+	 */
 	@Override
 	public Boolean caseOctalLongLiteral(OctalLongLiteral long1) {
 		this.logInfoMessage("caseOctalLongLiteral");
@@ -168,6 +279,15 @@ public class LiteralsSimilaritySwitch extends LiteralsSwitch<Boolean>
 		return JaMoPPNullCheckUtil.bothNullOrEqual(val1, val2);
 	}
 
+	/**
+	 * Checks the similarity of 2 binary long literals. Similarity is checked by comparing
+	 * their values ({@link BinaryLongLiteral#getBinaryValue()}).
+	 * 
+	 * @param long1 The binary long literal to compare with compareElement
+	 * @return True if values are similar, false if not.
+	 * 
+	 * @see {@link #getCompareElement()}
+	 */
 	@Override
 	public Boolean caseBinaryLongLiteral(BinaryLongLiteral long1) {
 		this.logInfoMessage("caseBinaryLongLiteral");
@@ -179,6 +299,15 @@ public class LiteralsSimilaritySwitch extends LiteralsSwitch<Boolean>
 		return JaMoPPNullCheckUtil.bothNullOrEqual(val1, val2);
 	}
 
+	/**
+	 * Checks the similarity of 2 binary integer literals. Similarity is checked by comparing
+	 * their values ({@link BinaryIntegerLiteral#getBinaryValue()}).
+	 * 
+	 * @param int1 The binary integer literal to compare with compareElement
+	 * @return True if values are similar, false if not.
+	 * 
+	 * @see {@link #getCompareElement()}
+	 */
 	@Override
 	public Boolean caseBinaryIntegerLiteral(BinaryIntegerLiteral int1) {
 		this.logInfoMessage("caseBinaryIntegerLiteral");
@@ -197,6 +326,8 @@ public class LiteralsSimilaritySwitch extends LiteralsSwitch<Boolean>
 	 * 
 	 * @param object The literal to compare with the compare element.
 	 * @return True As null always means null.
+	 * 
+	 * @see {@link #getCompareElement()}
 	 */
 	@Override
 	public Boolean defaultCase(EObject object) {

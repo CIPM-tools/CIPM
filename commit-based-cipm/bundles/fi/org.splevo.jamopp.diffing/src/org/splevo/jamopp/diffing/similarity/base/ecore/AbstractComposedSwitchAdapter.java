@@ -36,6 +36,8 @@ public abstract class AbstractComposedSwitchAdapter extends ComposedSwitch<Boole
 	 * 
 	 * @param object The object to compare with the compare element.
 	 * @return null
+	 * 
+	 * @see {@link ComposedSwitch#defaultCase(EObject)}
 	 */
 	@Override
 	public Boolean defaultCase(EObject object) {

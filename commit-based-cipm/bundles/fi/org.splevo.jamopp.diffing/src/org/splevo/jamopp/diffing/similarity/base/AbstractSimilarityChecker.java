@@ -23,7 +23,7 @@ public abstract class AbstractSimilarityChecker implements ISimilarityChecker {
 	/**
 	 * Constructs an {@link AbstractSimilarityChecker} instance with an
 	 * {@link ISimilarityComparer}, which delegates all incoming
-	 * {@link ISimilarityRequest} to the given parameter.
+	 * {@link ISimilarityRequest} to the given parameter {@code st}.
 	 * 
 	 * @param st {@link ISimilarityToolbox} to which all incoming
 	 *           {@link ISimilarityRequest} instances will be delegated to.
