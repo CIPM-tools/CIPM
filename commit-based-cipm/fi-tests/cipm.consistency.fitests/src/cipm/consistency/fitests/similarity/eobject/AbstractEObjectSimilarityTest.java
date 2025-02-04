@@ -41,12 +41,16 @@ public abstract class AbstractEObjectSimilarityTest extends AbstractResourceSimi
 		this.setEcoreUtilHelper(new EcoreUtilHelper());
 	}
 
+	/**
+	 * {@inheritDoc} <br>
+	 * <br>
+	 * <b>Note: Does not reset the used {@link InitialiserTestSettingsProvider},
+	 * since initialising it can be very expensive.</b>
+	 */
 	@AfterEach
 	@Override
 	public void tearDown() {
 		this.cleanUpEcoreUtilHelper();
-
-		this.resetInitialiserTestSettingsProvider();
 
 		super.tearDown();
 	}
@@ -86,7 +90,7 @@ public abstract class AbstractEObjectSimilarityTest extends AbstractResourceSimi
 	}
 
 	/**
-	 * Resets {@link #getInitialiserTestSettingsProvider()} after individual tests.
+	 * Resets the used instance from {@link #getInitialiserTestSettingsProvider()}.
 	 */
 	protected void resetInitialiserTestSettingsProvider() {
 		this.getInitialiserTestSettingsProvider().reset();
