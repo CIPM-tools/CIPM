@@ -60,6 +60,25 @@ public class UtilityTests implements IJaMoPPUtilityTest {
 	}
 
 	/**
+	 * The expected amount of concrete initialiser types. <br>
+	 * <br>
+	 * Note: Must be adapted, if new initialisers are added, which have concrete
+	 * implementations.
+	 */
+	private int getExpectedConcreteInitialiserCount() {
+		return 181;
+	}
+
+	/**
+	 * The expected amount of initialiser types (abstract or concrete).<br>
+	 * <br>
+	 * Note: Must be adapted, if new initialisers are added.
+	 */
+	private int getExpectedInitialiserCount() {
+		return 274;
+	}
+
+	/**
 	 * Prints all interface types from {@link #getAllPossibleJaMoPPEObjectTypes()}.
 	 * <br>
 	 * <br>
@@ -81,7 +100,9 @@ public class UtilityTests implements IJaMoPPUtilityTest {
 	@Test
 	public void testAllConcreteInitialisersRegistered() {
 		var clss = this.getAllConcreteInitialiserCandidates();
+		Assertions.assertEquals(this.getExpectedConcreteInitialiserCount(), clss.size());
 		var registeredInits = this.getAllInitialiserInstances();
+		Assertions.assertEquals(this.getExpectedConcreteInitialiserCount(), registeredInits.size());
 
 		var matches = List.of(
 				clss.stream().filter((cls) -> registeredInits.stream().anyMatch((init) -> init.isInitialiserFor(cls)))
@@ -105,7 +126,9 @@ public class UtilityTests implements IJaMoPPUtilityTest {
 	@Test
 	public void testAllInitialiserInterfacesRegistered() {
 		var clss = this.getAllInitialiserCandidates();
+		Assertions.assertEquals(this.getExpectedInitialiserCount(), clss.size());
 		var registeredInits = this.getAllInitialiserInterfaceTypes();
+		Assertions.assertEquals(this.getExpectedInitialiserCount(), registeredInits.size());
 
 		var matches = List.of(clss.stream()
 				.filter((cls) -> registeredInits.stream()
@@ -133,6 +156,7 @@ public class UtilityTests implements IJaMoPPUtilityTest {
 	@Test
 	public void testAllConcreteInitialisersPresent() {
 		var intfcs = this.getAllConcreteInitialiserCandidates();
+		Assertions.assertEquals(this.getExpectedConcreteInitialiserCount(), intfcs.size());
 		var files = this.getAllFiles();
 
 		var matches = List.of(intfcs.stream().filter(
@@ -161,6 +185,7 @@ public class UtilityTests implements IJaMoPPUtilityTest {
 	@Test
 	public void testAllInitialiserInterfacesPresent() {
 		var intfcs = this.getAllInitialiserCandidates();
+		Assertions.assertEquals(this.getExpectedInitialiserCount(), intfcs.size());
 		var files = this.getAllFiles();
 
 		var matches = List.of(intfcs.stream().filter(
