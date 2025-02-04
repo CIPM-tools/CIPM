@@ -26,4 +26,17 @@ public interface IEObjectInitialiser extends IInitialiser {
 
 	@Override
 	public IEObjectInitialiser newInitialiser();
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return The instance class associated with the EClass of the return value of
+	 *         {@link #instantiate()}, or null if the said method returns null.
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public default Class<? extends EObject> getInstanceClassOfInitialiser() {
+		var obj = this.instantiate();
+		return obj != null ? (Class<? extends EObject>) obj.eClass().getInstanceClass() : null;
+	}
 }

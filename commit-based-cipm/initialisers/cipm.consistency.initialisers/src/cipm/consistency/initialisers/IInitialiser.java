@@ -169,7 +169,20 @@ public interface IInitialiser {
 	 * extracted from init. Returns false, if any parameter is null.
 	 */
 	public static boolean isInitialiserFor(IInitialiser init, Class<?> objClass) {
-		return init != null && objClass != null && isInitialiserFor(init.getClass(), objClass);
+		return init != null && init.getInstanceClassOfInitialiser().equals(objClass);
+	}
+
+	/**
+	 * Uses the return value of {@link #instantiate()} to determine the outcome.
+	 * This method should not return null, as long as {@link #instantiate()} does
+	 * not return null.
+	 * 
+	 * @return The {@link Class} object of the type this initialiser instantiates,
+	 *         or null if {@link #instantiate()} returns null.
+	 */
+	public default Class<?> getInstanceClassOfInitialiser() {
+		var obj = this.instantiate();
+		return obj != null ? obj.getClass() : null;
 	}
 
 	/**
