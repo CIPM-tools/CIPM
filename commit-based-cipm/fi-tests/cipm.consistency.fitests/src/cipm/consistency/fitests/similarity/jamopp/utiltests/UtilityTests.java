@@ -35,14 +35,14 @@ public class UtilityTests extends AbstractJaMoPPSimilarityTest implements IJaMoP
 	/**
 	 * @return The name of the test corresponding to cls.
 	 */
-	public String getTestName(Class<?> cls) {
+	private String getTestName(Class<?> cls) {
 		return cls.getSimpleName() + testSuffix;
 	}
 
 	/**
 	 * @return A list of all files under {@link #root}.
 	 */
-	public Collection<File> getAllFiles() {
+	private Collection<File> getAllFiles() {
 		return this.getAllFiles(root);
 	}
 
