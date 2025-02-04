@@ -1,20 +1,17 @@
 package cipm.consistency.fitests.similarity.jamopp.unittests.complextests;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Stream;
 
-import org.emftext.language.java.statements.ExpressionStatement;
-import org.emftext.language.java.statements.LocalVariableStatement;
 import org.emftext.language.java.statements.Statement;
-import org.emftext.language.java.statements.SynchronizedBlock;
+import org.emftext.language.java.statements.StatementListContainer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import cipm.consistency.fitests.similarity.jamopp.AbstractJaMoPPSimilarityTest;
-import cipm.consistency.fitests.similarity.jamopp.params.JaMoPPInitialiserParameters;
+import cipm.consistency.fitests.similarity.jamopp.unittests.IStatementPositionTest;
 import cipm.consistency.fitests.similarity.jamopp.unittests.UsesStatements;
 import cipm.consistency.initialisers.jamopp.statements.IStatementInitialiser;
 import cipm.consistency.initialisers.jamopp.statements.IStatementListContainerInitialiser;
@@ -30,45 +27,8 @@ import cipm.consistency.initialisers.jamopp.statements.IStatementListContainerIn
  * 
  * @author Alp Torac Genc
  */
-public class StatementPositionTest extends AbstractJaMoPPSimilarityTest implements UsesStatements {
-	/**
-	 * @return A list of all initialisers that implement
-	 *         {@link IStatementListContainerInitialiser}. If an initialiser is
-	 *         adaptable, it will be adapted. Non-adaptable initialisers will be
-	 *         unaffected.
-	 */
-	private static List<IStatementListContainerInitialiser> getAllSLCInitInstances() {
-		var res = new ArrayList<IStatementListContainerInitialiser>();
-		var inits = new JaMoPPInitialiserParameters()
-				.getEachInitialiserOnceBySuper(IStatementListContainerInitialiser.class);
-		inits.forEach((i) -> res.add(((IStatementListContainerInitialiser) i)));
-		return res;
-	}
-
-	/**
-	 * @return A list of all initialisers that implement
-	 *         {@link IStatementInitialiser}. If an initialiser is adaptable, it
-	 *         will be adapted. Non-adaptable initialisers will be unaffected.
-	 */
-	private static List<IStatementInitialiser> getAllStatementInitInstances() {
-		var res = new ArrayList<IStatementInitialiser>();
-		var inits = new JaMoPPInitialiserParameters().getEachInitialiserOnceBySuper(IStatementInitialiser.class);
-		inits.forEach((i) -> res.add(((IStatementInitialiser) i)));
-		return res;
-	}
-
-	/**
-	 * The return value of this method was derived from the implementation of the
-	 * current similarity checker.
-	 * 
-	 * @return Whether the position of an instance of the given class within its
-	 *         container matters.
-	 */
-	private static Boolean doesStatementPositionMatter(Class<? extends Statement> cls) {
-		return ExpressionStatement.class.isAssignableFrom(cls) || LocalVariableStatement.class.isAssignableFrom(cls)
-				|| SynchronizedBlock.class.isAssignableFrom(cls);
-	}
-
+public class StatementPositionTest extends AbstractJaMoPPSimilarityTest
+		implements UsesStatements, IStatementPositionTest {
 	/**
 	 * @return Parameters for the test methods in this test class. Refer to their
 	 *         documentation for more information.
@@ -76,11 +36,11 @@ public class StatementPositionTest extends AbstractJaMoPPSimilarityTest implemen
 	private static Stream<Arguments> genTestParams() {
 		var res = new ArrayList<Arguments>();
 
-		for (var stInit : getAllStatementInitInstances()) {
-			for (var slcInit : getAllSLCInitInstances()) {
-				var displayName = stInit.getClass().getSimpleName() + " in " + slcInit.getClass().getSimpleName();
-
-				res.add(Arguments.of(displayName, slcInit, stInit));
+		for (var stInit : getEachInitialiserOnceFor(IStatementInitialiser.class)) {
+			for (var slcInit : getEachInitialiserOnceFor(IStatementListContainerInitialiser.class)) {
+				res.add(Arguments.of(stInit, slcInit,
+						String.format("%s inside %s", stInit.getInstanceClassOfInitialiser().getSimpleName(),
+								slcInit.getInstanceClassOfInitialiser().getSimpleName())));
 			}
 		}
 
@@ -88,7 +48,7 @@ public class StatementPositionTest extends AbstractJaMoPPSimilarityTest implemen
 	}
 
 	/**
-	 * Tests if similar {@link Statement} instances contained by their respective
+	 * Tests if {@link Statement} instances contained by their respective
 	 * {@link StatementListContainer} instance are similar, provided they are
 	 * contained in the same order.
 	 * 
@@ -99,54 +59,172 @@ public class StatementPositionTest extends AbstractJaMoPPSimilarityTest implemen
 	 *                      statement that will be added to the constructed
 	 *                      container
 	 */
-	@ParameterizedTest(name = "{0}")
+	@ParameterizedTest(name = "Statement in middle: {2}")
 	@MethodSource("genTestParams")
-	public void testSameStatementPosition(String displayName, IStatementListContainerInitialiser containerInit,
-			IStatementInitialiser containeeInit) {
+	public void test_SamePredecessor_SameSuccessor(IStatementInitialiser containeeInit,
+			IStatementListContainerInitialiser containerInit, String displayName) {
 		var slc1 = containerInit.instantiate();
 		Assertions.assertTrue(containerInit.initialise(slc1));
 		var slc2 = containerInit.instantiate();
 		Assertions.assertTrue(containerInit.initialise(slc2));
 
-		var lv1name = "lv1";
-		var lv2name = "lv2";
-
 		// Use 3 statements to make sure that there is always a predecessor and a
 		// successor for the statement generated by containeeInit
 
-		var st11 = this.createMinimalLVS(lv1name);
-		var st12 = containeeInit.instantiate();
-		var st13 = this.createMinimalLVS(lv2name);
+		var pred1 = this.createMinimalLVS("lv1");
+		var st1 = containeeInit.instantiate();
+		var succ1 = this.createMinimalLVS("lv2");
 
 		// Make sure that the surrounding statements are not similar
-		this.assertSimilarityResult(st11, st13, false);
-		var sts1 = new Statement[] { st11, st12, st13 };
+		this.assertSimilarityResult(pred1, succ1, false);
+		var sts1 = new Statement[] { pred1, st1, succ1 };
 
-		var st21 = this.cloneEObj(st11);
-		var st22 = this.cloneEObj(st12);
-		var st23 = this.cloneEObj(st13);
+		var pred2 = this.cloneEObj(pred1);
+		var st2 = this.cloneEObj(st1);
+		var succ2 = this.cloneEObj(succ1);
 
 		// Make sure that clones of surrounding statements are not similar
-		this.assertSimilarityResult(st21, st23, false);
-		var sts2 = new Statement[] { st21, st22, st23 };
+		this.assertSimilarityResult(pred2, succ2, false);
+		var sts2 = new Statement[] { pred2, st2, succ2 };
 
 		Assertions.assertTrue(containerInit.addStatements(slc1, sts1));
 		Assertions.assertTrue(containerInit.addStatements(slc2, sts2));
 
-		// Since similar statements are added in the same order, they are similar, if
-		// their position within the respective arrays is the same
-		for (int i = 0; i < sts1.length; i++) {
-			for (int j = 0; j < sts2.length; j++) {
-				var st1 = sts1[i];
-				var st2 = sts2[j];
+		this.assertSimilarityResult(pred1, pred2, true);
+		this.assertSimilarityResult(pred1, st2, false);
+		this.assertSimilarityResult(pred1, succ2, false);
 
-				this.assertSimilarityResult(st1, st2, i == j);
-			}
-		}
+		this.assertSimilarityResult(st1, pred2, false);
+		this.assertSimilarityResult(st1, st2, true);
+		this.assertSimilarityResult(st1, succ2, false);
+
+		this.assertSimilarityResult(succ1, pred2, false);
+		this.assertSimilarityResult(succ1, st2, false);
+		this.assertSimilarityResult(succ1, succ2, true);
 	}
 
 	/**
-	 * Tests if similar {@link Statement} instances contained by their respective
+	 * Tests whether {@link Statement} instances contained by their respective
+	 * {@link StatementListContainer} instance are not similar, if they have
+	 * different predecessors and same successors.
+	 * 
+	 * @param displayName   The display name of the test
+	 * @param containerInit The initialiser that will be used to instantiate the
+	 *                      statement list container
+	 * @param containeeInit The initialiser that will be used to instantiate the
+	 *                      statement that will be added to the constructed
+	 *                      container
+	 */
+	@ParameterizedTest(name = "Statement in middle: {2}")
+	@MethodSource("genTestParams")
+	public void test_DifferentPredecessor_SameSuccessor(IStatementInitialiser containeeInit,
+			IStatementListContainerInitialiser containerInit, String displayName) {
+		var slc1 = containerInit.instantiate();
+		Assertions.assertTrue(containerInit.initialise(slc1));
+		var slc2 = containerInit.instantiate();
+		Assertions.assertTrue(containerInit.initialise(slc2));
+
+		// Use 3 statements to make sure that there is always a predecessor and a
+		// successor for the statement generated by containeeInit
+
+		var pred1 = this.createMinimalLVS("lv1");
+		var st1 = containeeInit.instantiate();
+		var succ1 = this.createMinimalLVS("lv2");
+
+		// Make sure that the surrounding statements are not similar
+		this.assertSimilarityResult(pred1, succ1, false);
+		var sts1 = new Statement[] { pred1, st1, succ1 };
+
+		// Use a new LVS to make sure pred2 and succ2 are not similar
+		var pred2 = this.createMinimalLVS("lv3");
+		var st2 = this.cloneEObj(st1);
+		var succ2 = this.cloneEObj(succ1);
+
+		// Make sure that clones of surrounding statements are not similar
+		this.assertSimilarityResult(pred2, succ2, false);
+		// Make sure that predecessors are not similar
+		this.assertSimilarityResult(pred2, pred1, false);
+
+		var sts2 = new Statement[] { pred2, st2, succ2 };
+
+		Assertions.assertTrue(containerInit.addStatements(slc1, sts1));
+		Assertions.assertTrue(containerInit.addStatements(slc2, sts2));
+
+		this.assertSimilarityResult(pred1, pred2, false);
+		this.assertSimilarityResult(pred1, st2, false);
+		this.assertSimilarityResult(pred1, succ2, false);
+
+		this.assertSimilarityResult(st1, pred2, false);
+		this.assertSimilarityResult(st1, st2, true);
+		this.assertSimilarityResult(st1, succ2, false);
+
+		this.assertSimilarityResult(succ1, pred2, false);
+		this.assertSimilarityResult(succ1, st2, false);
+		this.assertSimilarityResult(succ1, succ2, true);
+	}
+
+	/**
+	 * Tests whether {@link Statement} instances contained by their respective
+	 * {@link StatementListContainer} instance are not similar, if they have same
+	 * predecessors and different successors.
+	 * 
+	 * @param displayName   The display name of the test
+	 * @param containerInit The initialiser that will be used to instantiate the
+	 *                      statement list container
+	 * @param containeeInit The initialiser that will be used to instantiate the
+	 *                      statement that will be added to the constructed
+	 *                      container
+	 */
+	@ParameterizedTest(name = "Statement in middle: {2}")
+	@MethodSource("genTestParams")
+	public void test_SamePredecessor_DifferentSuccessor(IStatementInitialiser containeeInit,
+			IStatementListContainerInitialiser containerInit, String displayName) {
+		var slc1 = containerInit.instantiate();
+		Assertions.assertTrue(containerInit.initialise(slc1));
+		var slc2 = containerInit.instantiate();
+		Assertions.assertTrue(containerInit.initialise(slc2));
+
+		// Use 3 statements to make sure that there is always a predecessor and a
+		// successor for the statement generated by containeeInit
+
+		var pred1 = this.createMinimalLVS("lv1");
+		var st1 = containeeInit.instantiate();
+		var succ1 = this.createMinimalLVS("lv2");
+
+		// Make sure that the surrounding statements are not similar
+		this.assertSimilarityResult(pred1, succ1, false);
+		var sts1 = new Statement[] { pred1, st1, succ1 };
+
+		// Use a new LVS to make sure pred2 and succ2 are not similar
+		var pred2 = this.cloneEObj(pred1);
+		var st2 = this.cloneEObj(st1);
+		var succ2 = this.createMinimalLVS("lv3");
+
+		// Make sure that clones of surrounding statements are not similar
+		this.assertSimilarityResult(pred2, succ2, false);
+		// Make sure that successors are not similar
+		this.assertSimilarityResult(succ2, succ1, false);
+
+		var sts2 = new Statement[] { pred2, st2, succ2 };
+
+		Assertions.assertTrue(containerInit.addStatements(slc1, sts1));
+		Assertions.assertTrue(containerInit.addStatements(slc2, sts2));
+
+		this.assertSimilarityResult(pred1, pred2, true);
+		this.assertSimilarityResult(pred1, st2, false);
+		this.assertSimilarityResult(pred1, succ2, false);
+
+		this.assertSimilarityResult(st1, pred2, false);
+		this.assertSimilarityResult(st1, st2, true);
+		this.assertSimilarityResult(st1, succ2, false);
+
+		this.assertSimilarityResult(succ1, pred2, false);
+		this.assertSimilarityResult(succ1, st2, false);
+		this.assertSimilarityResult(succ1, succ2, false);
+	}
+
+	/**
+	 * Tests if {@link Statement} instances contained by their respective
 	 * {@link StatementListContainer} instance are not similar, provided their order
 	 * within their container differ.
 	 * 
@@ -157,53 +235,54 @@ public class StatementPositionTest extends AbstractJaMoPPSimilarityTest implemen
 	 *                      statement that will be added to the constructed
 	 *                      container
 	 */
-	@ParameterizedTest
+	@ParameterizedTest(name = "Statement in middle: {2}")
 	@MethodSource("genTestParams")
-	public void testDifferentStatementPosition(String displayName, IStatementListContainerInitialiser containerInit,
-			IStatementInitialiser containeeInit) {
-		var containeeCls = containeeInit.instantiate().getClass();
+	public void test_DifferentPredecessor_DifferentSuccessor(IStatementInitialiser containeeInit,
+			IStatementListContainerInitialiser containerInit, String displayName) {
+		var containeeCls = containeeInit.getInstanceClassOfInitialiser();
 
 		var slc1 = containerInit.instantiate();
 		Assertions.assertTrue(containerInit.initialise(slc1));
 		var slc2 = containerInit.instantiate();
 		Assertions.assertTrue(containerInit.initialise(slc2));
 
-		var lv1name = "lv1";
-		var lv2name = "lv2";
-
 		// Use 3 statements to make sure that there is always a predecessor and a
 		// successor for the statement generated by containeeInit
 
-		var st11 = this.createMinimalLVS(lv1name);
-		var st12 = containeeInit.instantiate();
-		var st13 = this.createMinimalLVS(lv2name);
+		var pred1 = this.createMinimalLVS("lv1");
+		var st1 = containeeInit.instantiate();
+		var succ1 = this.createMinimalLVS("lv2");
 
 		// Make sure that the surrounding statements are not similar
-		this.assertSimilarityResult(st11, st13, false);
-		var sts1 = new Statement[] { st11, st12, st13 };
+		this.assertSimilarityResult(pred1, succ1, false);
+		var sts1 = new Statement[] { pred1, st1, succ1 };
 
-		var st21 = this.cloneEObj(st11);
-		var st22 = this.cloneEObj(st12);
-		var st23 = this.cloneEObj(st13);
+		// PREDECESSOR AND SUCCESSOR ARE INVERTED !!!
+		var pred2 = this.cloneEObj(succ1);
+		var st2 = this.cloneEObj(st1);
+		var succ2 = this.cloneEObj(pred1);
 
 		// Make sure that clones of surrounding statements are not similar
-		this.assertSimilarityResult(st21, st23, false);
-		var sts2 = new Statement[] { st23, st22, st21 };
+		this.assertSimilarityResult(pred2, succ2, false);
+		var sts2 = new Statement[] { pred2, st2, succ2 };
 
 		Assertions.assertTrue(containerInit.addStatements(slc1, sts1));
 		Assertions.assertTrue(containerInit.addStatements(slc2, sts2));
 
-		// Since similar statements are added in the reverse order, only the statements
-		// generated by containeeInit are similar, if similarity checking ignores their
-		// positioning within their container. The order of the surrounding st variables
-		// never match and they are not similar, as asserted above.
+		/*
+		 * Since similar statements are added in the reverse order, only the statements
+		 * generated by containeeInit are similar, if similarity checking ignores their
+		 * positioning within their container. The order of the surrounding st variables
+		 * never match and they are not similar, as asserted above.
+		 */
 		for (int i = 0; i < sts1.length; i++) {
 			for (int j = 0; j < sts2.length; j++) {
-				var st1 = sts1[i];
-				var st2 = sts2[j];
+				var cSt1 = sts1[i];
+				var cSt2 = sts2[j];
 
-				this.assertSimilarityResult(st1, st2, containeeCls.isAssignableFrom(st1.getClass())
-						&& containeeCls.isAssignableFrom(st2.getClass()) && !doesStatementPositionMatter(containeeCls));
+				this.assertSimilarityResult(cSt1, cSt2,
+						containeeCls.isAssignableFrom(cSt1.getClass()) && containeeCls.isAssignableFrom(cSt2.getClass())
+								&& !this.doesStatementPositionMatter(containeeCls));
 			}
 		}
 	}
