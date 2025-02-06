@@ -138,8 +138,14 @@ public abstract class AbstractSimilarityTest {
 	 * Java memory issues.</b>
 	 */
 	protected void setUpLogger() {
-		Logger logger = Logger.getLogger("cipm");
-		logger.setLevel(Level.ALL);
+		/*
+		 * Order of precedence in logging levels:
+		 * 
+		 * OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL
+		 */
+
+		// Logger logger = Logger.getLogger("cipm");
+		// logger.setLevel(Level.DEBUG);
 
 		// Enable to receive log messages from similarity switches
 		// logger = Logger.getLogger("javaswitch");
@@ -147,7 +153,11 @@ public abstract class AbstractSimilarityTest {
 
 		// logger = Logger.getLogger("jamopp");
 		// logger.setLevel(Level.ALL);
-		logger = Logger.getRootLogger();
+
+		// TODO Re-think how logging should work
+
+		Logger logger = Logger.getRootLogger();
+		logger.setLevel(Level.OFF);
 		logger.removeAllAppenders();
 		ConsoleAppender ap = new ConsoleAppender(new PatternLayout("[%d{DATE}] %-5p: %c - %m%n"),
 				ConsoleAppender.SYSTEM_OUT);
