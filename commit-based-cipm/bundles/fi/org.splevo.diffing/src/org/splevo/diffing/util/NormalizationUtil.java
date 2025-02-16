@@ -64,7 +64,7 @@ public final class NormalizationUtil {
      *            The list of normalizations to apply.
      * @return The normalized name space string.
      */
-    public static String normalizeNamespace(String namespace, LinkedHashMap<Pattern, String> normalizations) {
+    public static String normalizeNamespace(String namespace, Map<Pattern, String> normalizations) {
         namespace = Strings.nullToEmpty(namespace);
 
         for (Pattern pattern : normalizations.keySet()) {
