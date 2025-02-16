@@ -22,7 +22,10 @@ import org.somox.gast2seff.visitors.InterfaceOfExternalCallFindingFactory;
 import org.somox.gast2seff.visitors.ResourceDemandingBehaviourForClassMethodFinding;
 import org.somox.gast2seff.visitors.VisitorUtils;
 import org.somox.sourcecodedecorator.SeffElementSourceCodeLink;
-import org.splevo.jamopp.diffing.similarity.SimilarityChecker;
+import org.splevo.jamopp.diffing.similarity.base.ISimilarityChecker;
+import org.splevo.jamopp.diffing.similarity.base.MapSimilarityToolboxFactory;
+import org.splevo.jamopp.diffing.similarity.JavaSimilarityToolboxBuilder;
+import org.splevo.jamopp.diffing.similarity.JavaSimilarityChecker;
 
 import de.uka.ipd.sdq.identifier.Identifier;
 import tools.vitruv.applications.pcmjava.seffstatements.code2seff.BasicComponentFinding;
@@ -45,7 +48,7 @@ public class FineGrainedClassMethodBodyChangedTransformation extends ExtendedCla
 	private final Method newMethod;
 	private final BasicComponentFinding basicComponentFinder;
 	private ResourceDemandingBehaviourDiff rdbDifference;
-	private final SimilarityChecker similarityChecker;
+	private final ISimilarityChecker similarityChecker;
 
 	public FineGrainedClassMethodBodyChangedTransformation(final Method newMethod,
 			final BasicComponentFinding basicComponentFinder,
@@ -56,7 +59,17 @@ public class FineGrainedClassMethodBodyChangedTransformation extends ExtendedCla
 				resourceDemandingBehaviourForClassMethodFinding);
 		this.newMethod = newMethod;
 		this.basicComponentFinder = basicComponentFinder;
-		this.similarityChecker = new SimilarityChecker();
+		
+        var builder = new JavaSimilarityToolboxBuilder();
+        builder.setSimilarityToolboxFactory(new MapSimilarityToolboxFactory());
+        
+        var toolbox = builder.instantiate()
+        	.buildNewSimilaritySwitchHandler()
+        	.buildNormalizationHandlers()
+        	.buildComparisonHandlers()
+        	.build();
+		
+		this.similarityChecker = new JavaSimilarityChecker(toolbox);
 	}
 
 	/**
