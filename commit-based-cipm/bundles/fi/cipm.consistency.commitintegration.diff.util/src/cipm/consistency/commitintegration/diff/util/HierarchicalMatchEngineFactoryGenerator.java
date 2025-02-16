@@ -12,7 +12,7 @@ import org.splevo.diffing.match.HierarchicalStrategyResourceMatcher;
 import org.splevo.jamopp.diffing.match.JaMoPPEqualityStrategy;
 import org.splevo.jamopp.diffing.match.JaMoPPIgnoreStrategy;
 import org.splevo.jamopp.diffing.scope.PackageIgnoreChecker;
-import org.splevo.jamopp.diffing.similarity.SimilarityChecker;
+import org.splevo.jamopp.diffing.similarity.base.ISimilarityChecker;
 
 import com.google.common.cache.CacheBuilder;
 
@@ -32,7 +32,7 @@ public final class HierarchicalMatchEngineFactoryGenerator {
 	 * @param key a key to identify the compared models.
 	 * @return the generated factory.
 	 */
-	public static HierarchicalMatchEngineFactory generateMatchEngineFactory(SimilarityChecker simChecker, String key) {
+	public static HierarchicalMatchEngineFactory generateMatchEngineFactory(ISimilarityChecker simChecker, String key) {
 		EqualityHelperExtensionProvider.Descriptor.Registry descRegistryImpl =
 				EqualityHelperExtensionProviderDescriptorRegistryImpl.createStandaloneInstance();
 		descRegistryImpl.put(key, new SimilarityCheckerBasedEqualityHelperExtensionProviderDescriptor(simChecker));

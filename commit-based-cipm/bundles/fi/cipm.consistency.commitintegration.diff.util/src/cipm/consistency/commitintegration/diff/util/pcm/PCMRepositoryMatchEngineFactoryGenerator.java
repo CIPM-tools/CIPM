@@ -1,6 +1,7 @@
 package cipm.consistency.commitintegration.diff.util.pcm;
 
 import org.splevo.diffing.match.HierarchicalMatchEngineFactory;
+import org.splevo.jamopp.diffing.similarity.base.MapSimilarityToolboxFactory;
 
 import cipm.consistency.commitintegration.diff.util.HierarchicalMatchEngineFactoryGenerator;
 
@@ -21,7 +22,14 @@ public final class PCMRepositoryMatchEngineFactoryGenerator {
 	 * @return the generated factory.
 	 */
 	public static HierarchicalMatchEngineFactory generateMatchEngineFactory() {
-		return HierarchicalMatchEngineFactoryGenerator.generateMatchEngineFactory(new PCMRepositorySimilarityChecker(),
+		var builder = new PCMRepositorySimilarityToolboxBuilder();
+		builder.setSimilarityToolboxFactory(new MapSimilarityToolboxFactory());
+		
+		var toolbox = builder.instantiate()
+			.buildComparisonPairs()
+			.build();
+		
+		return HierarchicalMatchEngineFactoryGenerator.generateMatchEngineFactory(new PCMRepositorySimilarityChecker(toolbox),
 				"repository");
 	}
 
@@ -32,7 +40,14 @@ public final class PCMRepositoryMatchEngineFactoryGenerator {
 	 * @return the generated factory.
 	 */
 	public static HierarchicalMatchEngineFactory generateIDBasedMatchEngineFactory() {
+		var builder = new PCMRepositorySimilarityToolboxBuilder();
+		builder.setSimilarityToolboxFactory(new MapSimilarityToolboxFactory());
+		
+		var toolbox = builder.instantiate()
+			.buildIDBasedComparisonPairs()
+			.build();
+		
 		return HierarchicalMatchEngineFactoryGenerator
-				.generateMatchEngineFactory(new PCMRepositoryIDBasedSimilarityChecker(), "repository");
+				.generateMatchEngineFactory(new PCMRepositorySimilarityChecker(toolbox), "repository");
 	}
 }

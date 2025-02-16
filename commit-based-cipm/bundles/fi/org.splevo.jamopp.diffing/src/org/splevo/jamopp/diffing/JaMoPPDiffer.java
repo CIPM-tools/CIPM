@@ -63,7 +63,10 @@ import org.splevo.jamopp.diffing.match.JaMoPPIgnoreStrategy;
 import org.splevo.jamopp.diffing.postprocessor.JaMoPPPostProcessor;
 import org.splevo.jamopp.diffing.scope.JavaModelMatchScope;
 import org.splevo.jamopp.diffing.scope.PackageIgnoreChecker;
-import org.splevo.jamopp.diffing.similarity.SimilarityChecker;
+import org.splevo.jamopp.diffing.similarity.JavaSimilarityChecker;
+import org.splevo.jamopp.diffing.similarity.JavaSimilarityToolboxBuilder;
+import org.splevo.jamopp.diffing.similarity.base.ISimilarityChecker;
+import org.splevo.jamopp.diffing.similarity.base.MapSimilarityToolboxFactory;
 import org.splevo.jamopp.extraction.JaMoPPSoftwareModelExtractor;
 
 import com.google.common.cache.CacheBuilder;
@@ -405,7 +408,7 @@ public class JaMoPPDiffer implements Differ {
     private IMatchEngine.Factory.Registry initMatchEngine(PackageIgnoreChecker packageIgnoreChecker,
             Map<String, String> diffingOptions) {
 
-        SimilarityChecker similarityChecker = initSimilarityChecker(diffingOptions);
+        ISimilarityChecker similarityChecker = initSimilarityChecker(diffingOptions);
         IEqualityHelper equalityHelper = initEqualityHelper(similarityChecker);
         EqualityStrategy equalityStrategy = new JaMoPPEqualityStrategy(similarityChecker);
         IgnoreStrategy ignoreStrategy = new JaMoPPIgnoreStrategy(packageIgnoreChecker);
@@ -428,7 +431,7 @@ public class JaMoPPDiffer implements Differ {
      *            The map of configurations.
      * @return The prepared checker.
      */
-    private SimilarityChecker initSimilarityChecker(Map<String, String> diffingOptions) {
+    private ISimilarityChecker initSimilarityChecker(Map<String, String> diffingOptions) {
         String configString = diffingOptions.get(OPTION_JAVA_CLASSIFIER_NORMALIZATION);
         LinkedHashMap<Pattern, String> classifierNorms = NormalizationUtil.loadRemoveNormalizations(configString, null);
         LinkedHashMap<Pattern, String> compUnitNorms = NormalizationUtil
@@ -437,7 +440,16 @@ public class JaMoPPDiffer implements Differ {
         String configStringPackage = diffingOptions.get(OPTION_JAVA_PACKAGE_NORMALIZATION);
         LinkedHashMap<Pattern, String> packageNorms = NormalizationUtil.loadReplaceNormalizations(configStringPackage);
 
-        return new SimilarityChecker(classifierNorms, compUnitNorms, packageNorms);
+        var builder = new JavaSimilarityToolboxBuilder();
+        builder.setSimilarityToolboxFactory(new MapSimilarityToolboxFactory());
+        
+        var toolbox = builder.instantiate()
+        	.buildNewSimilaritySwitchHandler()
+        	.buildNormalizationHandlers(classifierNorms, compUnitNorms, packageNorms)
+        	.buildComparisonHandlers()
+        	.build();
+        
+        return new JavaSimilarityChecker(toolbox);
     }
 
     /**
@@ -447,7 +459,7 @@ public class JaMoPPDiffer implements Differ {
      *            The similarity checker to use.
      * @return The prepared equality helper.
      */
-    private IEqualityHelper initEqualityHelper(SimilarityChecker similarityChecker) {
+    private IEqualityHelper initEqualityHelper(ISimilarityChecker similarityChecker) {
         final LoadingCache<EObject, org.eclipse.emf.common.util.URI> cache = initEqualityCache();
         IEqualityHelper equalityHelper = new JaMoPPEqualityHelper(cache, similarityChecker);
         return equalityHelper;
