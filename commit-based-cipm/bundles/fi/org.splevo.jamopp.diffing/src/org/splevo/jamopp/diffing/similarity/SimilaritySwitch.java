@@ -63,6 +63,7 @@ import org.emftext.language.java.generics.TypeParameter;
 import org.emftext.language.java.generics.UnknownTypeArgument;
 import org.emftext.language.java.generics.util.GenericsSwitch;
 import org.emftext.language.java.imports.ClassifierImport;
+import org.emftext.language.java.imports.PackageImport;
 import org.emftext.language.java.imports.StaticMemberImport;
 import org.emftext.language.java.imports.util.ImportsSwitch;
 import org.emftext.language.java.instantiations.ExplicitConstructorCall;
@@ -700,6 +701,12 @@ public class SimilaritySwitch extends ComposedSwitch<Boolean> {
             String namespace1 = Strings.nullToEmpty(import1.getNamespacesAsString());
             String namespace2 = Strings.nullToEmpty(import2.getNamespacesAsString());
             return (namespace1.equals(namespace2));
+        }
+        
+        @Override
+        public Boolean casePackageImport(PackageImport import1) {
+        	PackageImport import2 = (PackageImport) compareElement;
+        	return import1.getNamespacesAsString().equals(import2.getNamespacesAsString());
         }
 
         @Override
