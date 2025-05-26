@@ -1,0 +1,57 @@
+import org.palladiosimulator.pcm.repository.RepositoryPackage
+import cipm.consistency.cpr.util.InternalUtils
+import tools.vitruv.framework.userinteraction.UserInteractionFactory
+import java.util.List
+
+import "http://www.emftext.org/java" as java
+import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
+
+
+reactions: component
+in reaction to changes in PCMExtended
+execute actions in AdjustedJava
+
+
+/**
+ * TODO: Account for a basic component potentially consisting of multiple packages/modules
+ */
+reaction AddedBasicComponent {
+	after element pcm::BasicComponent inserted in pcm::Repository[components__Repository]
+	call {
+		// type = 1: Component corresponds to a package
+		// type = 2: Component corresponds to a module
+		val type = UserInteractionFactory.instance.createDialogUserInteractor().getSingleSelectionDialogBuilder()
+					.message("New component added to the system. What kind of a JavaRoot is it?")
+					.choices(List.^of("Package", "Module"))
+					.startInteraction();
+		if (type == 1) {
+			createCorrespondingPackage(newValue)
+		} else if (type == 2) {
+			createCorrespondingModule(newValue)
+		}
+	}
+}
+
+routine createCorrespondingPackage(pcm::BasicComponent cmp) {
+	match {
+		require absence of java::Package corresponding to cmp
+	}
+	action {
+		val pkg = create java::Package and initialize {
+			pkg.namespaces.^add(cmp.entityName)
+		}
+		add correspondence between cmp and pkg
+	}
+}
+
+routine createCorrespondingModule(pcm::BasicComponent cmp) {
+	match {
+		require absence of java::Module corresponding to cmp
+	}
+	action {
+		val mod = create java::Module and initialize {
+			mod.name = cmp.entityName
+		}
+		add correspondence between cmp and mod
+	}
+}
