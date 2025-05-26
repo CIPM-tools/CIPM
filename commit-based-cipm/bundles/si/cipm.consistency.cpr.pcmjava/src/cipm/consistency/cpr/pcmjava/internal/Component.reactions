@@ -1,4 +1,5 @@
 import org.palladiosimulator.pcm.repository.RepositoryPackage
+import org.emftext.language.java.containers.Package
 import cipm.consistency.cpr.util.InternalUtils
 import tools.vitruv.framework.userinteraction.UserInteractionFactory
 import java.util.List
@@ -12,15 +13,23 @@ in reaction to changes in PCMExtended
 execute actions in AdjustedJava
 
 
+import common
+
 /**
+ * Assumptions:
+ * 1) Component's name = Namespaces.CmpName
+ * 2) Components' Java correspondents have Packages or Modules (can mix both (?))
+ * 
  * TODO: Account for a basic component potentially consisting of multiple packages/modules
+ * TODO: Consider user interaction window for populating JavaRoot instances
  */
 reaction AddedBasicComponent {
 	after element pcm::BasicComponent inserted in pcm::Repository[components__Repository]
 	call {
 		// type = 1: Component corresponds to a package
 		// type = 2: Component corresponds to a module
-		val type = UserInteractionFactory.instance.createDialogUserInteractor().getSingleSelectionDialogBuilder()
+		val type = UserInteractionFactory.instance.createDialogUserInteractor()
+					.getSingleSelectionDialogBuilder()
 					.message("New component added to the system. What kind of a JavaRoot is it?")
 					.choices(List.^of("Package", "Module"))
 					.startInteraction();
@@ -32,13 +41,29 @@ reaction AddedBasicComponent {
 	}
 }
 
+reaction RemovedBasicComponent {
+	after element pcm::BasicComponent removed from pcm::Repository[components__Repository]
+	call {
+		removeBasicComponent(oldValue);
+	}
+}
+
+reaction RenamedBasicComponent {
+	after attribute replaced at pcm::BasicComponent[entityName]
+	call {
+		if (!oldValue.equals(newValue))
+			setCorrespondingJavaRootNamespaces(affectedEObject)
+	}
+}
+
 routine createCorrespondingPackage(pcm::BasicComponent cmp) {
 	match {
 		require absence of java::Package corresponding to cmp
 	}
 	action {
-		val pkg = create java::Package and initialize {
-			pkg.namespaces.^add(cmp.entityName)
+		val pkg = create java::Package and initialize {}
+		call {
+			updateNamespaces(cmp, pkg);
 		}
 		add correspondence between cmp and pkg
 	}
@@ -53,5 +78,33 @@ routine createCorrespondingModule(pcm::BasicComponent cmp) {
 			mod.name = cmp.entityName
 		}
 		add correspondence between cmp and mod
+	}
+}
+
+routine removeBasicComponent(pcm::BasicComponent cmp) {
+	match {
+		val correspondent = retrieve java::JavaRoot corresponding to cmp
+	}
+	action {
+		delete correspondent
+	}
+}
+
+routine renameBasicComponent(pcm::BasicComponent cmp) {
+	action {
+		call {
+			setCorrespondingJavaRootNamespaces(cmp)
+		}
+	}
+}
+
+routine setCorrespondingJavaRootNamespaces(pcm::RepositoryComponent cmp) {
+	match {
+		val correspondent = retrieve java::JavaRoot corresponding to cmp
+	}
+	action {
+		call {
+			updateNamespaces(cmp, correspondent);
+		}
 	}
 }
