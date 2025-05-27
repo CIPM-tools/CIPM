@@ -16,10 +16,10 @@ import commonComponent
  * 
  * About name (entityName):
  * 
- * - BasicComponent's name = Namespaces of JavaRoot
- * - BasicComponents' Java correspondents have Packages or Modules (can mix both (?))
- * - BasicComponents' name is affected by CompositeComponents' name, not the other way around
- * - BasicComponents' name contains all of the names of its parent (i.e. if basic component A is in composite component B, A[entityName] = B[entityName].A)
+ * - BasicComponent's name = Namespaces of JavaRoot (DO NOT ASSUME THIS)
+ * - BasicComponents' Java correspondents have Packages or Modules (can mix both (in general yes))
+ * - BasicComponents' name is affected by CompositeComponents' name (NOT THE CASE IN GENERAL)
+ * - BasicComponents' name contains all of the names of its parent (NOT THE CASE IN GENERAL)
  * 
  * About correspondences:
  * 
