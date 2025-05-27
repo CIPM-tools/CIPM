@@ -5,11 +5,8 @@ reactions: common
 in reaction to changes in PCMExtended
 execute actions in AdjustedJava
 
-routine updateNamespaces(pcm::RepositoryComponent cmp, java::NamespaceAwareElement nae) {
+routine removeJavaRoot(java::JavaRoot jr) {
 	action {
-		call {
-			val nss = cmp.entityName.split("\\.");
-			nae.namespaces.^addAll(nss);
-		}
+		delete jr
 	}
 }
