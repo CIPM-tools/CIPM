@@ -31,19 +31,27 @@ public class FunctionClassificationStrategyForCommitIntegration
 	@Override
 	protected boolean isExternalCall(Method method) {
 		boolean superResult = super.isExternalCall(method);
+		
 		if (!superResult) {
 			String[] packages = CommitIntegrationSettingsContainer.getSettingsContainer()
 					.getProperty(SettingKeys.REST_CLIENT_API_PACKAGES).split(";");
+			
 			String namespaces = method.getContainingCompilationUnit().getNamespacesAsString();
+			if (namespaces == null || namespaces.isBlank()) {
+				return false;
+			}
+			
 			if (namespaces.endsWith(LogicalJavaURIGenerator.CLASSIFIER_SEPARATOR)
 					|| namespaces.endsWith(LogicalJavaURIGenerator.PACKAGE_SEPARATOR)) {
 				namespaces = namespaces.substring(0, namespaces.length() - 1);
 			}
+			
 			for (String p : packages) {
 				if (p.equals(namespaces)) {
 					return true;
 				}
 			}
+			
 			return false;
 		}
 		return superResult;
