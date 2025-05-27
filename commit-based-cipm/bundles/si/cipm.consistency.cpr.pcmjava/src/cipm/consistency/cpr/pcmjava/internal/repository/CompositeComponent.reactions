@@ -1,6 +1,8 @@
 import java.util.List
 import tools.vitruv.framework.userinteraction.UserInteractionFactory
 import org.apache.commons.lang.StringUtils
+import com.google.common.collect.Lists
+import org.palladiosimulator.pcm.repository.CompositeComponent
 
 import "http://www.emftext.org/java" as java
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
@@ -60,6 +62,39 @@ reaction RenamedCompositeComponent {
 	}
 }
 
+reaction AddedBasicComponentIntoCompositeComponent {
+	after element pcm::AssemblyContext inserted in pcm::CompositeComponent[assemblyContexts__ComposedStructure]
+	call {
+		val cmp = newValue.encapsulatedComponent__AssemblyContext;
+		adaptNamespaceOfNestedComponent(affectedEObject.entityName, cmp)
+	}
+}
+
+reaction RemovedComponentFromCompositeComponent {
+	after element pcm::AssemblyContext removed from pcm::CompositeComponent[assemblyContexts__ComposedStructure]
+	call {
+		val choices = Lists.newArrayList()
+		choices += "Move it into the repository"
+		choices += "Remove it from repository"
+		val cmp = oldValue.encapsulatedComponent__AssemblyContext
+		if (cmp instanceof CompositeComponent) {
+			if (!cmp.assemblyContexts__ComposedStructure.isEmpty) {
+				choices += "Remove it from the repository, but move its nested components into repository"
+			}
+		}
+		val choice = UserInteractionFactory.instance.createDialogUserInteractor().getSingleSelectionDialogBuilder().message("A component is being removed from a composite component. What to do with it?").choices(choices).startInteraction();
+		for (ac:affectedEObject.assemblyContexts__ComposedStructure) {
+			if (choice == 1) {
+				moveComponentToRepository(cmp)
+			} else if (choice == 2) {
+				removeComponentFromRepository(cmp)
+			} else if (choice == 3) {
+				
+			}
+		}
+	}
+}
+
 routine renameNestedComponents(String oldParentName, String newParentName, pcm::CompositeComponent parentCmp) {
 	action {
 		call {
@@ -77,6 +112,14 @@ routine updateNamespaceOfNestedComponent(String oldParentName, String newParentN
 			val oldNamespaces = StringUtils.getCommonPrefix(List.^of(oldName, oldParentName))
 			val newName = newParentName + oldName.substring(oldNamespaces.length())
 			nestedCmp.entityName = newName
+		}
+	}
+}
+
+routine adaptNamespaceOfNestedComponent(String newParentName, pcm::RepositoryComponent nestedCmp) {
+	action {
+		call {
+			nestedCmp.entityName = newParentName + nestedCmp.entityName
 		}
 	}
 }
