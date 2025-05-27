@@ -42,12 +42,15 @@ routine checkClassifierForImportedRequiredRoles(java::ConcreteClassifier classif
 routine createOrFindRequiredRoleForImport(java::Import importSt, java::ConcreteClassifier importingClassifier) {
 	match {
 		val opInterface = retrieve pcm::OperationInterface corresponding to importSt.classifier
-		val opInterfaceCom = retrieve pcm::RepositoryComponent corresponding to importSt.classifier
+		val opInterfaceCom = retrieve optional pcm::RepositoryComponent corresponding to importSt.classifier
 		val containingCom = retrieve pcm::RepositoryComponent corresponding to importingClassifier
 	}
 	action {
 		call {
-			if (opInterfaceCom !== containingCom) {
+			if (opInterfaceCom.empty
+				|| opInterfaceCom.get !== containingCom
+				|| importSt.classifier.annotationInstances.findFirst[it.annotation.name.equals("FeignClient")] !== null
+			) {
 				var reqRole = findRequiredRole(containingCom, opInterface)
 				if (reqRole !== null) {
 					addCorrespondenceForImportAndRequiredRole(importSt, reqRole)

@@ -50,7 +50,7 @@ routine createOrFindOperationProvidedRole(java::Classifier classifierInterface, 
 		call {
 			val role = provRoles.findFirst[it.providedInterface__OperationProvidedRole === opInterface
 				&& it.providingEntity_ProvidedRole === basicComponent]
-			if (role === null) {
+			if (role === null || javaClass.annotationInstances.findFirst[it.annotation.name.equals("FeignClient")] === null) {
 				createOperationProvidedRole(opInterface, basicComponent, javaClass)
 			}
 		}
