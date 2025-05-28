@@ -9,16 +9,16 @@ import java.util.List;
  * @author Martin Armbruster
  */
 public class IMEvaluationData {
-    private int numberMatchedIP;
-    private int numberAllIP;
-    private int numberSIP;
-    private int numberAIP;
-    private int numberDeactivatedAIP;
-    private int numberActivatedAIP;
-    private double deactivatedIPAllIPRatio;
-    private double deactivatedAIPAllAIPRatio;
+    private int numberMatchedIP = -1;
+    private int numberAllIP = -1;
+    private int numberSIP = -1;
+    private int numberAIP = -1;
+    private int numberDeactivatedAIP = -1;
+    private int numberActivatedAIP = -1;
+    private double deactivatedIPAllIPRatio = -1;
+    private double deactivatedAIPAllAIPRatio = -1;
     private List<String> unmatchedSEFFElements = new ArrayList<>();
-    private int differenceChangedActionsActivatedAIP;
+    private int differenceChangedActionsActivatedAIP = -1;
 
     public int getNumberMatchedIP() {
         return numberMatchedIP;

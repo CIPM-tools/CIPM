@@ -1,15 +1,15 @@
-package tools.vitruv.applications.pcmjava.seffstatements.code2seff.extended
+package tools.cipm.seff.extended;
 
 import org.emftext.language.java.members.Method
 import org.somox.gast2seff.visitors.InterfaceOfExternalCallFindingFactory
 import org.somox.gast2seff.visitors.ResourceDemandingBehaviourForClassMethodFinding
 import org.somox.gast2seff.visitors.AbstractFunctionClassificationStrategy
-import tools.vitruv.applications.pcmjava.seffstatements.code2seff.Java2PcmMethodBodyChangePreprocessor
-import tools.vitruv.applications.pcmjava.seffstatements.code2seff.ClassMethodBodyChangedTransformation
-import tools.vitruv.applications.pcmjava.seffstatements.code2seff.BasicComponentFinding
+import tools.cipm.seff.Java2PcmMethodBodyChangePreprocessor
+import tools.cipm.seff.ClassMethodBodyChangedTransformation
+import tools.cipm.seff.BasicComponentFinding
 import tools.vitruv.domains.provider.java.AdjustedJavaDomainProvider
 import tools.vitruv.domains.provider.pcm.ExtendedPcmDomainProvider
-import tools.vitruv.applications.pcmjava.seffstatements.code2seff.Code2SeffFactory
+import tools.cipm.seff.Code2SeffFactory
 
 class ExtendedJava2PcmMethodBodyChangePreprocessor extends Java2PcmMethodBodyChangePreprocessor {
 	boolean shouldGenerateInternalCallActions;

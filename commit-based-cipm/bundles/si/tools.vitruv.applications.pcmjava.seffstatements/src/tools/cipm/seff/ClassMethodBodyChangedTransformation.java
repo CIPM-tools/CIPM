@@ -1,4 +1,4 @@
-package tools.vitruv.applications.pcmjava.seffstatements.code2seff;
+package tools.cipm.seff;
 
 import java.util.Set;
 

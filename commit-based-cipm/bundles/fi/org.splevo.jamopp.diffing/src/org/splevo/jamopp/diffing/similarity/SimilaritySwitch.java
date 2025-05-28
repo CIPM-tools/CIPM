@@ -63,6 +63,7 @@ import org.emftext.language.java.generics.TypeParameter;
 import org.emftext.language.java.generics.UnknownTypeArgument;
 import org.emftext.language.java.generics.util.GenericsSwitch;
 import org.emftext.language.java.imports.ClassifierImport;
+import org.emftext.language.java.imports.PackageImport;
 import org.emftext.language.java.imports.StaticMemberImport;
 import org.emftext.language.java.imports.util.ImportsSwitch;
 import org.emftext.language.java.instantiations.ExplicitConstructorCall;
@@ -119,6 +120,7 @@ import org.emftext.language.java.statements.LocalVariableStatement;
 import org.emftext.language.java.statements.Return;
 import org.emftext.language.java.statements.Statement;
 import org.emftext.language.java.statements.StatementListContainer;
+import org.emftext.language.java.statements.StatementsPackage;
 import org.emftext.language.java.statements.Switch;
 import org.emftext.language.java.statements.SynchronizedBlock;
 import org.emftext.language.java.statements.Throw;
@@ -705,6 +707,12 @@ public class SimilaritySwitch extends ComposedSwitch<Boolean> {
             String namespace1 = Strings.nullToEmpty(import1.getNamespacesAsString());
             String namespace2 = Strings.nullToEmpty(import2.getNamespacesAsString());
             return (namespace1.equals(namespace2));
+        }
+        
+        @Override
+        public Boolean casePackageImport(PackageImport import1) {
+        	PackageImport import2 = (PackageImport) compareElement;
+        	return import1.getNamespacesAsString().equals(import2.getNamespacesAsString());
         }
 
         @Override
@@ -1388,7 +1396,7 @@ public class SimilaritySwitch extends ComposedSwitch<Boolean> {
             }
 
             if (checkStatementPosition) {
-                varSimilarity = similarityChecker.isSimilar(varStmt1.eContainer(), varStmt2.eContainer(), false);
+                varSimilarity = similarityChecker.isSimilar(varStmt1.getParentByEType(StatementsPackage.Literals.BLOCK), varStmt2.getParentByEType(StatementsPackage.Literals.BLOCK), false);
                 if (!varSimilarity) {
                     return Boolean.FALSE;
                 }

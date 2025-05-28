@@ -19,6 +19,10 @@ reaction AddedClass {
 	call {
 		createOrFindArchitecturalElement(newValue)
 		decideInterfaceCreation(newValue)
+		springBasedInterfaceDetection(newValue)
+		if (newValue.name.equals("S3Client")) {
+			createInterface(newValue);
+		}
 		createOrFindOperationProvidedRole(newValue, newValue)
 		checkClassifierForImportedRequiredRoles(newValue)
 	}
@@ -30,6 +34,10 @@ reaction AddedInterface {
 	call {
 		createOrFindArchitecturalElement(newValue)
 		decideInterfaceCreation(newValue)
+		springBasedInterfaceDetection(newValue)
+		if (newValue.name.equals("S3Client")) {
+			createInterface(newValue)
+		}
 		checkClassifierForImportedRequiredRoles(newValue)
 	}
 }
@@ -50,6 +58,23 @@ routine decideInterfaceCreation(java::ConcreteClassifier javaInterface) {
 			} else if (mod.origin == Origin.ARCHIVE) {
 				if (javaInterface.public) {
 					createInterface(javaInterface)
+				}
+			}
+		}
+	}
+}
+
+routine springBasedInterfaceDetection(java::ConcreteClassifier javaInterface) {
+	match {
+		require absence of pcm::OperationInterface corresponding to javaInterface
+	}
+	action {
+		call {
+			for (annot : javaInterface.annotationInstances) {
+				if (annot.annotation.name.equals("RestController")
+					|| annot.annotation.name.equals("FeignClient")
+				) {
+					createInterface(javaInterface);
 				}
 			}
 		}

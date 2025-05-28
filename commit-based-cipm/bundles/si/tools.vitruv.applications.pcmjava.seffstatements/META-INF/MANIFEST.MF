@@ -23,5 +23,5 @@ Require-Bundle: com.google.guava,
  tools.vitruv.domains.java,
  tools.vitruv.domains.pcm,
  tools.vitruv.framework.propagation
-Export-Package: tools.vitruv.applications.pcmjava.seffstatements.code2seff
+Export-Package: tools.cipm.seff
 Automatic-Module-Name: tools.vitruv.applications.pcmjava.seffstatements

@@ -6,13 +6,13 @@ package cipm.consistency.tools.evaluation.data;
  * @author Martin Armbruster
  */
 public class ChangeStatistic {
-    private String oldCommit;
-    private String newCommit;
-    private int numberCommits;
-    private int numberChangedJavaFiles;
-    private int numberAddedLines;
-    private int numberRemovedLines;
-    private int numberVitruvChanges;
+    private String oldCommit = "";
+    private String newCommit = "";
+    private int numberCommits = -1;
+    private int numberChangedJavaFiles = -1;
+    private int numberAddedLines = -1;
+    private int numberRemovedLines = -1;
+    private int numberVitruvChanges = -1;
 
     public String getOldCommit() {
         return oldCommit;

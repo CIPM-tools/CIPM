@@ -6,9 +6,9 @@ package cipm.consistency.tools.evaluation.data;
  * @author Martin Armbruster
  */
 public class ExecutionTimeData {
-    private long changePropagationTime;
-    private long instrumentationTime;
-    private long overallTime;
+    private long changePropagationTime = -1;
+    private long instrumentationTime = -1;
+    private long overallTime = -1;
 
     public long getChangePropagationTime() {
         return changePropagationTime;

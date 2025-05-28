@@ -18,8 +18,8 @@ import org.palladiosimulator.pcm.seff.ResourceDemandingBehaviour;
 import org.palladiosimulator.pcm.seff.ResourceDemandingInternalBehaviour;
 import org.palladiosimulator.pcm.seff.ResourceDemandingSEFF;
 
-import tools.vitruv.applications.pcmjava.seffstatements.code2seff.extended.CommitIntegrationCodeToSeffFactory;
-import tools.vitruv.applications.pcmjava.seffstatements.pojotransformations.code2seff.FunctionClassificationStrategyForPackageMapping;
+import tools.cipm.seff.extended.CommitIntegrationCodeToSeffFactory;
+import tools.cipm.seff.pojotransformations.code2seff.FunctionClassificationStrategyForPackageMapping;
 import tools.vitruv.framework.correspondence.CorrespondenceModel;
 
 /**

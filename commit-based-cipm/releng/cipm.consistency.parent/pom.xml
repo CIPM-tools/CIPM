@@ -53,12 +53,12 @@
 		<repository>
 			<id>JaMoPP</id>
 			<layout>p2</layout>
-			<url>http://localhost:8081/jamopp/</url>
+			<url>https://cipm-tools.github.io/updatesite/release/jamopp-5.1.0-cipm/</url>
 		</repository>
 		<repository>
 			<id>SoMoX</id>
 			<layout>p2</layout>
-			<url>http://localhost:8081/somox/</url>
+			<url>https://cipm-tools.github.io/updatesite/release/somox-0.0.0-cipm/</url>
 		</repository>
 	</repositories>
 
