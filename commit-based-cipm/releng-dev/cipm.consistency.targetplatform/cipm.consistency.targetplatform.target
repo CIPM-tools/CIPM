@@ -78,5 +78,9 @@
             <repository location="https://cipm-tools.github.io/updatesite/release/somox-0.0.0-cipm/"/>
 			<unit id="org.somox.seff.feature.feature.group" version="5.1.0.202412232058"/>
 		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+            <repository location="https://cipm-tools.github.io/updatesite/archive/cipm-0.1.1/"/>
+			<unit id="cipm.consistency.models.instrumentation" version="0.0.0"/>
+		</location>
 	</locations>
 </target>
