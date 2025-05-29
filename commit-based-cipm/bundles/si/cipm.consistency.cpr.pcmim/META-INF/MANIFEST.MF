@@ -14,11 +14,6 @@ Require-Bundle: org.palladiosimulator.pcm,
  tools.vitruv.change.interaction,
  tools.vitruv.dsls.reactions.runtime,
  cipm.consistency.models.instrumentation,
- org.eclipse.xtext,
- cipm.consistency.domains.im,
- tools.vitruv.framework.domains,
- tools.vitruv.domains.pcm,
- cipm.consistency.domains.pcm,
- cipm.consistency.cpr.util
+ org.eclipse.xtext
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Automatic-Module-Name: cipm.consistency.cpr.pcmim

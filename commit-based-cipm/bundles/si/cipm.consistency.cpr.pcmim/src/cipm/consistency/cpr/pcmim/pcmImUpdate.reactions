@@ -98,12 +98,10 @@ routine createOrFindActionInstrumentationPoint(pcm::ResourceDemandingSEFF seff, 
 
 reaction ActionRemoved {
 	after element pcm::AbstractAction removed from pcm::ResourceDemandingBehaviour[steps_Behaviour]
-//	after element pcm::AbstractAction deleted
 	call {
 		var seff = InternalUtils.getParentSEFFNotForInternalBehaviour(affectedEObject)
 		if (seff !== null) {
 			checkRemovalOfActionInstrumentationPoint(oldValue, seff)
-//			return
 		}
 
 		if (!checkRemovalOfNonProxyActionInstrumentationPoint(oldValue)) {
