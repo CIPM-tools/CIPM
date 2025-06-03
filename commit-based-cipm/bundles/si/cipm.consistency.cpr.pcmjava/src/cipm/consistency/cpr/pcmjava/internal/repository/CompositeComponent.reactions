@@ -1,9 +1,3 @@
-import java.util.List
-import com.google.common.collect.Lists
-import org.palladiosimulator.pcm.repository.CompositeComponent
-import tools.vitruv.change.interaction.UserInteractionFactory
-import org.apache.commons.lang.StringUtils
-
 import "http://www.emftext.org/java" as java
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
 
@@ -30,10 +24,7 @@ import basicComponent
 reaction AddedCompositeComponentToRepository {
 	after element pcm::CompositeComponent inserted in pcm::Repository[components__Repository]
 	call {
-		val newParentName = newValue.entityName
-		for (ac : newValue.assemblyContexts__ComposedStructure) {
-			updateNamespaceOfNestedComponent("", newParentName, ac.encapsulatedComponent__AssemblyContext)
-		}
+		// TODO Re-implement
 	}
 }
 
@@ -43,82 +34,27 @@ reaction AddedCompositeComponentToRepository {
 reaction RemovedCompositeComponentInRepository {
 	after element pcm::CompositeComponent deleted
 	call {
-		val choice = UserInteractionFactory.instance.createDialogUserInteractor().getSingleSelectionDialogBuilder().
-			message(
-				"A composite component is being removed from the repository. What to do with its nested components?").
-			choices(List.^of("Move them into the repository", "Remove them from the repository too")).
-			startInteraction();
-		for (ac : affectedEObject.assemblyContexts__ComposedStructure) {
-			val cmp = ac.encapsulatedComponent__AssemblyContext;
-			if (choice == 1) {
-				moveComponentToRepository(cmp)
-			} else if (choice == 2) {
-				removeComponentFromRepository(cmp)
-			}
-		}
+		// TODO Re-implement
 	}
 }
 
 reaction RenamedCompositeComponent {
 	after attribute replaced at pcm::CompositeComponent[entityName]
 	call {
-		renameNestedComponents(oldValue, newValue, affectedEObject)
+		// TODO Re-implement
 	}
 }
 
 reaction AddedBasicComponentIntoCompositeComponent {
 	after element pcm::AssemblyContext inserted in pcm::CompositeComponent[assemblyContexts__ComposedStructure]
 	call {
-		val cmp = newValue.encapsulatedComponent__AssemblyContext;
-		adaptNamespaceOfNestedComponent(affectedEObject.entityName, cmp)
+		// TODO Re-implement
 	}
 }
 
 reaction RemovedComponentFromCompositeComponent {
 	after element pcm::AssemblyContext removed from pcm::CompositeComponent[assemblyContexts__ComposedStructure]
 	call {
-		val choices = Lists.newArrayList()
-		choices += "Move it into the repository"
-		choices += "Remove it from repository"
-		val cmp = oldValue.encapsulatedComponent__AssemblyContext
-		if (cmp instanceof CompositeComponent) {
-			if (!cmp.assemblyContexts__ComposedStructure.isEmpty) {
-				choices += "Remove it from the repository, but move its nested components into repository"
-			}
-		}
-		val choice = UserInteractionFactory.instance.createDialogUserInteractor().getSingleSelectionDialogBuilder().
-			message("A component is being removed from a composite component. What to do with it?").choices(choices).
-			startInteraction();
-		for (ac : affectedEObject.assemblyContexts__ComposedStructure) {
-			if (choice == 1) {
-				moveComponentToRepository(cmp)
-			} else if (choice == 2) {
-				removeComponentFromRepository(cmp)
-			} else if (choice == 3) {
-			}
-		}
-	}
-}
-
-routine renameNestedComponents(String oldParentName, String newParentName, pcm::CompositeComponent parentCmp) {
-	update {
-		for (ac : parentCmp.assemblyContexts__ComposedStructure) {
-			updateNamespaceOfNestedComponent(oldParentName, newParentName, ac.encapsulatedComponent__AssemblyContext)
-		}
-	}
-}
-
-routine updateNamespaceOfNestedComponent(String oldParentName, String newParentName, pcm::RepositoryComponent nestedCmp) {
-	update {
-		val oldName = nestedCmp.entityName
-		val oldNamespaces = StringUtils.getCommonPrefix(List.^of(oldName, oldParentName))
-		val newName = newParentName + oldName.substring(oldNamespaces.length())
-		nestedCmp.entityName = newName
-	}
-}
-
-routine adaptNamespaceOfNestedComponent(String newParentName, pcm::RepositoryComponent nestedCmp) {
-	update {
-		nestedCmp.entityName = newParentName + nestedCmp.entityName
+		// TODO Re-implement
 	}
 }

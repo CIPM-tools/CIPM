@@ -15,23 +15,22 @@ import commonComponent
  * 
  * About name (entityName):
  * 
- * - BasicComponent's name = Namespaces of JavaRoot (DO NOT ASSUME THIS)
- * - BasicComponents' Java correspondents have Packages or Modules (can mix both (in general yes))
- * - BasicComponents' name is affected by CompositeComponents' name (NOT THE CASE IN GENERAL)
- * - BasicComponents' name contains all of the names of its parent (NOT THE CASE IN GENERAL)
+ * - BasicComponent's name =/= name or namespaces of corresponding Java elements
+ * - BasicComponents' Java correspondents are JavaRoot instances (different types possible: ex 1 Package, 1 Module)
+ * ---- In general, atomic correspondents is Classifier
+ * ---- Here, atomic correspondent is CompilationUnit
+ * - BasicComponents' name is NOT affected by potential CompositeComponents' name
+ * - BasicComponents' name is INDEPENDENT of the names of its parent components
  * 
  * About correspondences:
  * 
- * - A JavaRoot can be assigned to a maximum of one BasicComponent (parent CompositeComponent then has an implicit correspondence)
- * 
- * To clarify:
- * 
- * TODO: Account for a basic component potentially consisting of multiple packages/modules
- * TODO: Consider user interaction window for populating BasicComponent instances with JavaRoot instances
+ * - A Classifier can be assigned to a maximum of one component
+ * - If a CompilationUnit corresponds to a component, ALL its contents correspond to it. This is NOT the case for other JavaRoot types
  */
 reaction AddedBasicComponentToRepository {
 	after element pcm::BasicComponent inserted in pcm::Repository[components__Repository]
 	call {
+		// TODO Ask if corresponding Java elements should be created
 		addBasicComponentToRepository(newValue)
 	}
 }
@@ -39,6 +38,7 @@ reaction AddedBasicComponentToRepository {
 reaction RemovedBasicComponentFromRepository {
 	after element pcm::BasicComponent removed from pcm::Repository[components__Repository]
 	call {
+		// TODO Ask if corresponding Java elements should exist
 		removeComponentFromRepository(oldValue);
 	}
 }
@@ -46,8 +46,7 @@ reaction RemovedBasicComponentFromRepository {
 reaction RenamedBasicComponent {
 	after attribute replaced at pcm::BasicComponent[entityName]
 	call {
-		if (!oldValue.equals(newValue))
-			setCorrespondingJavaRootNamespacesForBasicComponent(affectedEObject)
+		// TODO Re-implement
 	}
 }
 
@@ -59,7 +58,9 @@ routine createCorrespondingPackageForBasicComponent(pcm::BasicComponent cmp) {
 		val pkg = new java::Package
 	}
 	update {
-		updateNamespaceOfCorrespondentJavaRoot(cmp, pkg);
+		updateNamespaceOfJavaCorrespondent(null, pkg)
+		updateNameOfJavaCorrespondent(null, pkg)
+
 		addCorrespondenceBetween(cmp, pkg)
 	}
 }
@@ -72,19 +73,10 @@ routine createCorrespondingModuleForBasicComponent(pcm::BasicComponent cmp) {
 		val mod = new java::Module
 	}
 	update {
-		mod.name = cmp.entityName
-		addCorrespondenceBetween(cmp, mod)
-	}
-}
+		updateNamespaceOfJavaCorrespondent(null, mod)
+		updateNameOfJavaCorrespondent(null, mod)
 
-routine setCorrespondingJavaRootNamespacesForBasicComponent(pcm::BasicComponent cmp) {
-	match {
-		val correspondingJRs = retrieve many java::JavaRoot corresponding to cmp
-	}
-	update {
-		for (c : correspondingJRs) {
-			updateNamespaceOfCorrespondentJavaRoot(cmp, c);
-		}
+		addCorrespondenceBetween(cmp, mod)
 	}
 }
 
@@ -94,25 +86,58 @@ routine addBasicComponentToRepository(pcm::BasicComponent cmp) {
 		// type = 2: Component corresponds to a module
 		val type = UserInteractionFactory.instance.createDialogUserInteractor().getSingleSelectionDialogBuilder().
 			message("New component added to the system. What kind of a JavaRoot is its Java correspondent?").choices(
-				List.^of("Package", "Module")).startInteraction();
+				List.^of("Package", "Module", "Compilation Unit")).startInteraction()
+
 		if (type == 1) {
 			createCorrespondingPackageForBasicComponent(cmp)
 		} else if (type == 2) {
 			createCorrespondingModuleForBasicComponent(cmp)
+		} else if (type == 3) {
+			createCorrespondingCUForBasicComponent(cmp)
 		}
 	}
 }
 
-routine renameBasicComponent(pcm::BasicComponent cmp) {
+routine createCorrespondingCUForBasicComponent(pcm::BasicComponent cmp) {
+	create {
+		val cu = new java::CompilationUnit
+	}
 	update {
-		setCorrespondingJavaRootNamespacesForBasicComponent(cmp)
+
+		updateNamespaceOfJavaCorrespondent(null, cu)
+		updateNameOfJavaCorrespondent(null, cu)
+
+		val type = UserInteractionFactory.instance.createDialogUserInteractor().getSingleSelectionDialogBuilder().
+			message("What classifier should the compilation unit declare?").choices(
+				List.^of("Class", "Interface", "Leave empty")).startInteraction()
+
+		if (type == 1) {
+			createCorrespondingClassForBasicComponent(cmp)
+		} else if (type == 2) {
+			createCorrespondingInterfaceForBasicComponent(cmp)
+		} else {
+		}
+
+		addCorrespondenceBetween(cu, cmp)
 	}
 }
 
-routine updateNamespaceOfCorrespondentJavaRoot(pcm::BasicComponent cmp, java::NamespaceAwareElement nae) {
+routine createCorrespondingClassForBasicComponent(pcm::BasicComponent cmp) {
+	create {
+		val cls = new java::Class
+	}
 	update {
-		val nss = cmp.entityName.split("\\.");
-		nae.namespaces.clear
-		nae.namespaces.^addAll(nss);
+		updateNameOfJavaCorrespondent(null, cls)
+		addCorrespondenceBetween(cmp, cls)
+	}
+}
+
+routine createCorrespondingInterfaceForBasicComponent(pcm::BasicComponent cmp) {
+	create {
+		val ifc = new java::Interface
+	}
+	update {
+		updateNameOfJavaCorrespondent(null, ifc)
+		addCorrespondenceBetween(cmp, ifc)
 	}
 }
