@@ -1,17 +1,16 @@
-import tools.vitruv.framework.userinteraction.UserInteractionFactory
 import java.util.List
+import tools.vitruv.change.interaction.UserInteractionFactory
 
 import "http://www.emftext.org/java" as java
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
 
-
 reactions: basicComponent
-in reaction to changes in PCMExtended
-execute actions in AdjustedJava
+in reaction to changes in pcm
+execute actions in java
 
 import commonComponent
- 
- /**
+
+/**
  * Assumptions:
  * 
  * About name (entityName):
@@ -30,7 +29,6 @@ import commonComponent
  * TODO: Account for a basic component potentially consisting of multiple packages/modules
  * TODO: Consider user interaction window for populating BasicComponent instances with JavaRoot instances
  */
- 
 reaction AddedBasicComponentToRepository {
 	after element pcm::BasicComponent inserted in pcm::Repository[components__Repository]
 	call {
@@ -57,12 +55,12 @@ routine createCorrespondingPackageForBasicComponent(pcm::BasicComponent cmp) {
 	match {
 		require absence of java::Package corresponding to cmp
 	}
-	action {
-		val pkg = create java::Package and initialize {}
-		call {
-			updateNamespaceOfCorrespondentJavaRoot(cmp, pkg);
-		}
-		add correspondence between cmp and pkg
+	create {
+		val pkg = new java::Package
+	}
+	update {
+		updateNamespaceOfCorrespondentJavaRoot(cmp, pkg);
+		addCorrespondenceBetween(cmp, pkg)
 	}
 }
 
@@ -70,11 +68,12 @@ routine createCorrespondingModuleForBasicComponent(pcm::BasicComponent cmp) {
 	match {
 		require absence of java::Module corresponding to cmp
 	}
-	action {
-		val mod = create java::Module and initialize {
-			mod.name = cmp.entityName
-		}
-		add correspondence between cmp and mod
+	create {
+		val mod = new java::Module
+	}
+	update {
+		mod.name = cmp.entityName
+		addCorrespondenceBetween(cmp, mod)
 	}
 }
 
@@ -82,48 +81,38 @@ routine setCorrespondingJavaRootNamespacesForBasicComponent(pcm::BasicComponent 
 	match {
 		val correspondingJRs = retrieve many java::JavaRoot corresponding to cmp
 	}
-	action {
-		call {
-			for (c:correspondingJRs) {
-				updateNamespaceOfCorrespondentJavaRoot(cmp, c);
-			}
+	update {
+		for (c : correspondingJRs) {
+			updateNamespaceOfCorrespondentJavaRoot(cmp, c);
 		}
 	}
 }
 
 routine addBasicComponentToRepository(pcm::BasicComponent cmp) {
-	action {
-		call {
-			// type = 1: Component corresponds to a package
-			// type = 2: Component corresponds to a module
-			val type = UserInteractionFactory.instance.createDialogUserInteractor()
-						.getSingleSelectionDialogBuilder()
-						.message("New component added to the system. What kind of a JavaRoot is its Java correspondent?")
-						.choices(List.^of("Package", "Module"))
-						.startInteraction();
-			if (type == 1) {
-				createCorrespondingPackageForBasicComponent(cmp)
-			} else if (type == 2) {
-				createCorrespondingModuleForBasicComponent(cmp)
-			}
+	update {
+		// type = 1: Component corresponds to a package
+		// type = 2: Component corresponds to a module
+		val type = UserInteractionFactory.instance.createDialogUserInteractor().getSingleSelectionDialogBuilder().
+			message("New component added to the system. What kind of a JavaRoot is its Java correspondent?").choices(
+				List.^of("Package", "Module")).startInteraction();
+		if (type == 1) {
+			createCorrespondingPackageForBasicComponent(cmp)
+		} else if (type == 2) {
+			createCorrespondingModuleForBasicComponent(cmp)
 		}
 	}
 }
 
 routine renameBasicComponent(pcm::BasicComponent cmp) {
-	action {
-		call {
-			setCorrespondingJavaRootNamespacesForBasicComponent(cmp)
-		}
+	update {
+		setCorrespondingJavaRootNamespacesForBasicComponent(cmp)
 	}
 }
 
 routine updateNamespaceOfCorrespondentJavaRoot(pcm::BasicComponent cmp, java::NamespaceAwareElement nae) {
-	action {
-		call {
-			val nss = cmp.entityName.split("\\.");
-			nae.namespaces.clear
-			nae.namespaces.^addAll(nss);
-		}
+	update {
+		val nss = cmp.entityName.split("\\.");
+		nae.namespaces.clear
+		nae.namespaces.^addAll(nss);
 	}
 }
