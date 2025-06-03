@@ -3,41 +3,18 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Consistency Preservation Rules for PCM to Java
 Bundle-SymbolicName: cipm.consistency.cpr.pcmjava
 Bundle-Version: 0.2.0.qualifier
-Automatic-Module-Name: cipm.consistency.cpr.pcmjava
-Bundle-RequiredExecutionEnvironment: JavaSE-11
 Export-Package: cipm.consistency.cpr.pcmjava,
  cipm.consistency.cpr.pcmjava.internal
-Require-Bundle: org.apache.log4j,
- org.eclipse.core.resources,
- org.eclipse.equinox.registry,
- org.eclipse.jdt.core,
- org.eclipse.jgit,
- org.eclipse.text,
- org.emftext.language.java,
- tools.vitruv.framework.util,
- tools.vitruv.framework.vsum,
- org.apache.commons.lang;bundle-version="2.6.0",
- org.palladiosimulator.pcm,
- tools.vitruv.framework.correspondence,
- tools.vitruv.applications.pcmjava.util,
- tools.vitruv.framework.userinteraction,
- tools.vitruv.extensions.dslsruntime.reactions,
- com.google.guava,
+Require-Bundle: org.palladiosimulator.pcm,
+ org.apache.log4j,
  org.eclipse.emf.ecore,
- org.eclipse.xtend.lib,
- org.eclipse.xtend.lib.macro,
- tools.vitruv.framework.change,
- tools.vitruv.applications.pcmjava.seffstatements.pojotransformations,
- tools.vitruv.applications.pcmjava.seffstatements,
- org.eclipse.emf.compare,
- tools.vitruv.domains.java,
- tools.vitruv.domains.pcm,
- edu.kit.ipd.sdq.commons.util.pcm,
- tools.vitruv.applications.pcmjava.seffstatements.extended,
- cipm.consistency.domains.java,
- tools.vitruv.applications.pcmjava.seffstatements.finegrained,
- cipm.consistency.commitintegration.settings,
- cipm.consistency.domains.pcm,
- cipm.consistency.cpr.javaim,
- cipm.consistency.cpr.util
-
+ org.eclipse.core.resources,
+ tools.vitruv.change.correspondence,
+ tools.vitruv.change.interaction,
+ tools.vitruv.dsls.reactions.runtime,
+ cipm.consistency.models.instrumentation,
+ org.eclipse.xtext,
+ org.emftext.language.java,
+ org.apache.commons.lang
+Automatic-Module-Name: cipm.consistency.cpr.pcmjava
+Bundle-RequiredExecutionEnvironment: JavaSE-11
