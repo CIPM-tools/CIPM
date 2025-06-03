@@ -12,7 +12,7 @@ Require-Bundle: org.apache.log4j,
  org.eclipse.emf.compare;visibility:=reexport,
  com.google.guava,
  org.eclipse.core.runtime,
- org.eclipse.emf.ecore,
+ org.eclipse.emf.ecore;visibility:=reexport,
  org.splevo.commons,
  cipm.consistency.workflow;resolution:=optional
 Export-Package: org.splevo.diffing,
