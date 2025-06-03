@@ -4,7 +4,7 @@ Bundle-Name: cipm.consistency.base.shared
 Bundle-SymbolicName: cipm.consistency.base.shared;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Automatic-Module-Name: cipm.consistency.base.shared
-Bundle-RequiredExecutionEnvironment: JavaSE-13
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Require-Bundle: tools.vitruv.framework.vsum,
  org.eclipse.emf.ecore.xmi,
  com.google.guava,

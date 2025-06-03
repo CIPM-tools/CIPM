@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>cipm</groupId>
+    <artifactId>dep-generator</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+
+    <name>dep-generator</name>
+    <description>A Maven module which copies or generates relevant dependencies.</description>
+
+    <properties>
+        <java.version>11</java.version>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.release>11</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    
+    <repositories>
+        <repository>
+            <id>cipm-mvn</id>
+            <name>CIPM's Maven Repository</name>
+            <url>https://CIPM-tools.github.io/updatesite/mvn</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.cache2k</groupId>
+            <artifactId>cache2k-core</artifactId>
+            <version>1.2.4.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.pcm.headless</groupId>
+            <artifactId>api</artifactId>
+            <version>0.6.3</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.8.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>../../commit-based-cipm/bundles/fi/cipm.consistency.base.shared/dep-gen</outputDirectory>
+                            <prependGroupId>true</prependGroupId>
+                        </configuration>        
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
