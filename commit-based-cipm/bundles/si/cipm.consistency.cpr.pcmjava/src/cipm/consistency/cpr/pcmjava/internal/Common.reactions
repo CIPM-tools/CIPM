@@ -1,4 +1,8 @@
 import tools.vitruv.change.interaction.UserInteractionFactory
+import java.util.ArrayList
+import org.eclipse.emf.ecore.EObject
+import java.util.List
+import cipm.consistency.cpr.pcmjava.PCMSettings
 
 import "http://www.emftext.org/java" as java
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
@@ -7,10 +11,38 @@ reactions: common
 in reaction to changes in pcm
 execute actions in java
 
-routine removeJavaRoot(java::JavaRoot jr) {
+/**
+ * Assumptions:
+ * 
+ * - All Java elements implement the Commentable interface
+ * - All PCM elements implement the NamedElement interface
+ */
+routine removeAllJavaCorrespondents(java::Commentable toRemove, pcm::NamedElement toRemoveFrom, String correspondenceTag) {
 	update {
-		jr.removeObject
+		val correspondents = new ArrayList<EObject>()
+		correspondents.^addAll(correspondenceModel.getCorrespondingEObjects(toRemove))
+
+		for (c : correspondents) {
+			// Remove if there are no
+			if (correspondenceModel.getCorrespondingEObjects(c).stream().noneMatch [
+				it instanceof org.palladiosimulator.pcm.core.entity.NamedElement && it !== toRemoveFrom
+			]) {
+				correspondenceModel.removeCorrespondencesBetween(c, toRemove, correspondenceTag)
+				c.removeObject
+			}
+		}
 	}
+}
+
+routine removeJavaElement(java::Commentable toRemove, pcm::NamedElement toRemoveFrom) {
+	update {
+		removeAllJavaCorrespondents(toRemove, toRemoveFrom, null)
+		toRemove.removeObject
+	}
+}
+
+routine removeClassifier() {
+	// TODO implement
 }
 
 routine updateNamespaceOfJavaCorrespondent(String nssAsString, java::NamespaceAwareElement nae) {
@@ -36,13 +68,49 @@ routine addNamespaces(String nssAsString, java::NamespaceAwareElement nae) {
 	update {
 		if (nssAsString === null || nssAsString.blank) {
 			return
-		} else if (nssAsString.^contains("\\.")) {
-			for (ns : nssAsString.split("\\.")) {
+		} else if (nssAsString.^contains(PCMSettings.getNamespaceSeparator())) {
+			for (ns : nssAsString.split(PCMSettings.getNamespaceSeparatorAsRegex())) {
 				nae.namespaces.add(ns)
 			}
 		} else {
 			nae.namespaces.add(nssAsString)
 		}
+	}
+}
+
+routine setNamespaces(String nssAsString, java::NamespaceAwareElement nae) {
+	update {
+		nae.namespaces.clear
+		addNamespaces(nssAsString, nae)
+	}
+}
+
+routine setName(String name, java::NamedElement ne) {
+	update {
+		if (name !== null) {
+			ne.name = name
+		} else {
+			ne.name = ""
+		}
+	}
+}
+
+routine setFullyQualifiedName(String nssAndNameAsString, java::NamespaceAwareElement nae) {
+	match {
+		check nae instanceof org.emftext.language.java.commons.NamedElement
+	}
+	update {
+		val asNamedElement = nae as org.emftext.language.java.commons.NamedElement
+
+		setNamespaces(nssAndNameAsString, nae)
+
+		// Last namespace will be the name, find it, remove it from namespaces and set it as name
+		val name = nae.namespaces.findLast[]
+		if (name !== null) {
+			nae.namespaces.remove(name)
+		}
+
+		setName(name, asNamedElement)
 	}
 }
 
@@ -60,5 +128,79 @@ routine updateNameOfJavaCorrespondent(String name, java::NamedElement ne) {
 		} else {
 			ne.name = name
 		}
+	}
+}
+
+routine createCorrespondingPackageFor(pcm::NamedElement ne) {
+	match {
+		require absence of java::Package corresponding to ne
+	}
+	create {
+		val pkg = new java::Package
+	}
+	update {
+		updateNamespaceOfJavaCorrespondent(null, pkg)
+		updateNameOfJavaCorrespondent(null, pkg)
+
+		addCorrespondenceBetween(ne, pkg)
+	}
+}
+
+routine createCorrespondingModuleFor(pcm::NamedElement ne) {
+	match {
+		require absence of java::Module corresponding to ne
+	}
+	create {
+		val mod = new java::Module
+	}
+	update {
+		updateNamespaceOfJavaCorrespondent(null, mod)
+		updateNameOfJavaCorrespondent(null, mod)
+
+		addCorrespondenceBetween(ne, mod)
+	}
+}
+
+routine createCorrespondingCUFor(pcm::NamedElement ne) {
+	create {
+		val cu = new java::CompilationUnit
+	}
+	update {
+
+		updateNamespaceOfJavaCorrespondent(null, cu)
+		updateNameOfJavaCorrespondent(null, cu)
+
+		val type = UserInteractionFactory.instance.createDialogUserInteractor().getSingleSelectionDialogBuilder().
+			message("What classifier should the compilation unit declare?").choices(
+				List.^of("Class", "Interface", "Leave empty")).startInteraction()
+
+		if (type == 1) {
+			createCorrespondingClassFor(ne)
+		} else if (type == 2) {
+			createCorrespondingInterfaceFor(ne)
+		} else {
+		}
+
+		addCorrespondenceBetween(cu, ne)
+	}
+}
+
+routine createCorrespondingClassFor(pcm::NamedElement ne) {
+	create {
+		val cls = new java::Class
+	}
+	update {
+		updateNameOfJavaCorrespondent(null, cls)
+		addCorrespondenceBetween(ne, cls)
+	}
+}
+
+routine createCorrespondingInterfaceFor(pcm::NamedElement ne) {
+	create {
+		val ifc = new java::Interface
+	}
+	update {
+		updateNameOfJavaCorrespondent(null, ifc)
+		addCorrespondenceBetween(ne, ifc)
 	}
 }

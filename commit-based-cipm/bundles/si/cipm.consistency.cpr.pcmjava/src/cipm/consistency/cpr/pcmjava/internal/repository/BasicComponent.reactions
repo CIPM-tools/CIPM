@@ -1,6 +1,3 @@
-import java.util.List
-import tools.vitruv.change.interaction.UserInteractionFactory
-
 import "http://www.emftext.org/java" as java
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
 
@@ -8,7 +5,7 @@ reactions: basicComponent
 in reaction to changes in pcm
 execute actions in java
 
-import commonComponent
+import common
 
 /**
  * Assumptions:
@@ -27,117 +24,55 @@ import commonComponent
  * - A Classifier can be assigned to a maximum of one component
  * - If a CompilationUnit corresponds to a component, ALL its contents correspond to it. This is NOT the case for other JavaRoot types
  */
-reaction AddedBasicComponentToRepository {
-	after element pcm::BasicComponent inserted in pcm::Repository[components__Repository]
-	call {
-		// TODO Ask if corresponding Java elements should be created
-		addBasicComponentToRepository(newValue)
-	}
-}
-
-reaction RemovedBasicComponentFromRepository {
-	after element pcm::BasicComponent removed from pcm::Repository[components__Repository]
-	call {
-		// TODO Ask if corresponding Java elements should exist
-		removeComponentFromRepository(oldValue);
-	}
-}
-
 reaction RenamedBasicComponent {
 	after attribute replaced at pcm::BasicComponent[entityName]
 	call {
-		// TODO Re-implement
+		// TODO implement
+		// TODO Ask if any correspondent's name should change
 	}
 }
 
-routine createCorrespondingPackageForBasicComponent(pcm::BasicComponent cmp) {
-	match {
-		require absence of java::Package corresponding to cmp
-	}
-	create {
-		val pkg = new java::Package
-	}
-	update {
-		updateNamespaceOfJavaCorrespondent(null, pkg)
-		updateNameOfJavaCorrespondent(null, pkg)
-
-		addCorrespondenceBetween(cmp, pkg)
+reaction AddedSEFFToBasicComponent {
+	after element pcm::ServiceEffectSpecification inserted in pcm::BasicComponent[serviceEffectSpecifications__BasicComponent]
+	call {
+		// TODO implement
+		// TODO check Constraint: NoSEFFTypeUsedTwice
 	}
 }
 
-routine createCorrespondingModuleForBasicComponent(pcm::BasicComponent cmp) {
-	match {
-		require absence of java::Module corresponding to cmp
-	}
-	create {
-		val mod = new java::Module
-	}
-	update {
-		updateNamespaceOfJavaCorrespondent(null, mod)
-		updateNameOfJavaCorrespondent(null, mod)
-
-		addCorrespondenceBetween(cmp, mod)
+reaction RemovedSEFFFromBasicComponent {
+	after element pcm::ServiceEffectSpecification removed from pcm::BasicComponent[serviceEffectSpecifications__BasicComponent]
+	call {
+		// TODO implement
+		// TODO Check for dependencies
 	}
 }
 
-routine addBasicComponentToRepository(pcm::BasicComponent cmp) {
-	update {
-		// type = 1: Component corresponds to a package
-		// type = 2: Component corresponds to a module
-		val type = UserInteractionFactory.instance.createDialogUserInteractor().getSingleSelectionDialogBuilder().
-			message("New component added to the system. What kind of a JavaRoot is its Java correspondent?").choices(
-				List.^of("Package", "Module", "Compilation Unit")).startInteraction()
-
-		if (type == 1) {
-			createCorrespondingPackageForBasicComponent(cmp)
-		} else if (type == 2) {
-			createCorrespondingModuleForBasicComponent(cmp)
-		} else if (type == 3) {
-			createCorrespondingCUForBasicComponent(cmp)
-		}
+reaction ChangedSEFFInBasicComponent {
+	after element pcm::ServiceEffectSpecification replaced at pcm::BasicComponent[serviceEffectSpecifications__BasicComponent]
+	call {
+		// TODO implement
+		// TODO Check for dependencies
 	}
 }
 
-routine createCorrespondingCUForBasicComponent(pcm::BasicComponent cmp) {
-	create {
-		val cu = new java::CompilationUnit
-	}
-	update {
-
-		updateNamespaceOfJavaCorrespondent(null, cu)
-		updateNameOfJavaCorrespondent(null, cu)
-
-		val type = UserInteractionFactory.instance.createDialogUserInteractor().getSingleSelectionDialogBuilder().
-			message("What classifier should the compilation unit declare?").choices(
-				List.^of("Class", "Interface", "Leave empty")).startInteraction()
-
-		if (type == 1) {
-			createCorrespondingClassForBasicComponent(cmp)
-		} else if (type == 2) {
-			createCorrespondingInterfaceForBasicComponent(cmp)
-		} else {
-		}
-
-		addCorrespondenceBetween(cu, cmp)
+reaction AddedPassiveResourceToBasicComponent {
+	after element pcm::PassiveResource inserted in pcm::BasicComponent[passiveResource_BasicComponent]
+	call {
+		// TODO implement
 	}
 }
 
-routine createCorrespondingClassForBasicComponent(pcm::BasicComponent cmp) {
-	create {
-		val cls = new java::Class
-	}
-	update {
-		updateNameOfJavaCorrespondent(null, cls)
-		addCorrespondenceBetween(cmp, cls)
+reaction RemovedPassiveResourceFromBasicComponent {
+	after element pcm::PassiveResource removed from pcm::BasicComponent[passiveResource_BasicComponent]
+	call {
+		// TODO implement
 	}
 }
 
-routine createCorrespondingInterfaceForBasicComponent(pcm::BasicComponent cmp) {
-	create {
-		val ifc = new java::Interface
-	}
-	update {
-		updateNameOfJavaCorrespondent(null, ifc)
-		addCorrespondenceBetween(cmp, ifc)
+reaction ChangedPassiveResourceInBasicComponent {
+	after element pcm::PassiveResource replaced at pcm::BasicComponent[passiveResource_BasicComponent]
+	call {
+		// TODO implement
 	}
 }

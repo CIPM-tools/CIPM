@@ -1,0 +1,143 @@
+import tools.vitruv.change.interaction.UserInteractionFactory
+import java.util.List
+
+import "http://www.emftext.org/java" as java
+import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
+
+reactions: repository
+in reaction to changes in pcm
+execute actions in java
+
+import basicComponent
+
+reaction AddedProvidesComponentTypeToRepository {
+	after element pcm::ProvidesComponentType inserted in pcm::Repository[components__Repository]
+	call {
+		// TODO implement
+	}
+}
+
+reaction RemovedProvidesComponentTypeFromRepository {
+	after element pcm::ProvidesComponentType removed from pcm::Repository[components__Repository]
+	call {
+		// TODO implement
+	}
+}
+
+reaction AddedCompleteComponentTypeToRepository {
+	after element pcm::CompleteComponentType inserted in pcm::Repository[components__Repository]
+	call {
+		// TODO implement
+	}
+}
+
+reaction RemovedCompleteComponentTypeFromRepository {
+	after element pcm::CompleteComponentType removed from pcm::Repository[components__Repository]
+	call {
+		// TODO implement
+	}
+}
+
+reaction AddedImplementationComponentTypeToRepository {
+	after element pcm::ImplementationComponentType inserted in pcm::Repository[components__Repository]
+	call {
+		// TODO implement
+	}
+}
+
+reaction RemovedImplementationComponentTypeFromRepository {
+	after element pcm::ImplementationComponentType removed from pcm::Repository[components__Repository]
+	call {
+		// TODO implement
+	}
+}
+
+reaction AddedBasicComponentToRepository {
+	after element pcm::BasicComponent inserted in pcm::Repository[components__Repository]
+	call {
+		// TODO Ask if corresponding Java elements should be created
+		addBasicComponentToRepository(newValue)
+	}
+}
+
+reaction RemovedBasicComponentFromRepository {
+	after element pcm::BasicComponent removed from pcm::Repository[components__Repository]
+	call {
+		// TODO Ask if corresponding Java elements should be removed
+		removeComponentFromRepository(oldValue);
+	}
+}
+
+reaction AddedCompositeComponentToRepository {
+	after element pcm::CompositeComponent inserted in pcm::Repository[components__Repository]
+	call {
+		// TODO Re-implement
+	}
+}
+
+reaction RemovedCompositeComponentFromRepository {
+	after element pcm::CompositeComponent removed from pcm::Repository[components__Repository]
+	call {
+		// TODO Re-implement
+		// TODO Check whether individual components are used elsewhere
+	}
+}
+
+reaction AddedDataType {
+	after element pcm::DataType inserted in pcm::Repository[dataTypes__Repository]
+	call {
+		// TODO implement
+	}
+}
+
+reaction RemovedDataType {
+	after element pcm::DataType removed from pcm::Repository[dataTypes__Repository]
+	call {
+		// TODO implement
+		// TODO Check for dependencies
+	}
+}
+
+reaction AddedInterface {
+	after element pcm::Interface inserted in pcm::Repository[interfaces__Repository]
+	call {
+		// TODO implement
+	}
+}
+
+reaction RemovedInterface {
+	after element pcm::Interface removed from pcm::Repository[interfaces__Repository]
+	call {
+		// TODO implement
+		// TODO Check for dependencies
+	}
+}
+
+routine addBasicComponentToRepository(pcm::BasicComponent cmp) {
+	update {
+		// type = 1: Component corresponds to a package
+		// type = 2: Component corresponds to a module
+		val type = UserInteractionFactory.instance.createDialogUserInteractor().getSingleSelectionDialogBuilder().
+			message("New component added to the system. What kind of a JavaRoot is its Java correspondent?").choices(
+				List.^of("Package", "Module", "Compilation Unit")).startInteraction()
+
+		if (type == 1) {
+			createCorrespondingPackageFor(cmp)
+		} else if (type == 2) {
+			createCorrespondingModuleFor(cmp)
+		} else if (type == 3) {
+			createCorrespondingCUFor(cmp)
+		}
+	}
+}
+
+routine removeComponentFromRepository(pcm::RepositoryComponent cmp) {
+	match {
+		val correspondents = retrieve many java::Commentable corresponding to cmp
+	}
+	update {
+		for (c : correspondents) {
+			removeJavaElement(c, cmp)
+		}
+	}
+}

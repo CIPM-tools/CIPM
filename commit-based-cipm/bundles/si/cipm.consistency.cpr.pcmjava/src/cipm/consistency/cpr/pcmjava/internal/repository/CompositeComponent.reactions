@@ -12,32 +12,9 @@ import basicComponent
   * 
   * About structure:
   * - Further components can be nested in CompositeComponent via their assembly context (under attribute cc.assemblyContexts__ComposedStructure.encapsulatedComponent__AssemblyContext)
-  * - If a CompositeComponent CC with nested Components is removed, those components are moved to CC's parents (or to repository, if CC has no parent)
+  * - CompositeComponents can have direct correspondences (i.e. without indirections via nested BasicComponents)?
   * 
-  * To clarify:
-  * 
-  * - Can CompositeComponents correspond to JavaRoot instances directly (i.e. without indirections via nested BasicComponents)?
-  * 
-  * 
-  * TODO: Consider user interaction window for populating JavaRoot instances
   */
-reaction AddedCompositeComponentToRepository {
-	after element pcm::CompositeComponent inserted in pcm::Repository[components__Repository]
-	call {
-		// TODO Re-implement
-	}
-}
-
-/**
- * TODO: Check whether individual components are used elsewhere
- */
-reaction RemovedCompositeComponentInRepository {
-	after element pcm::CompositeComponent deleted
-	call {
-		// TODO Re-implement
-	}
-}
-
 reaction RenamedCompositeComponent {
 	after attribute replaced at pcm::CompositeComponent[entityName]
 	call {
@@ -45,7 +22,7 @@ reaction RenamedCompositeComponent {
 	}
 }
 
-reaction AddedBasicComponentIntoCompositeComponent {
+reaction AddedComponentToCompositeComponent {
 	after element pcm::AssemblyContext inserted in pcm::CompositeComponent[assemblyContexts__ComposedStructure]
 	call {
 		// TODO Re-implement
@@ -56,5 +33,13 @@ reaction RemovedComponentFromCompositeComponent {
 	after element pcm::AssemblyContext removed from pcm::CompositeComponent[assemblyContexts__ComposedStructure]
 	call {
 		// TODO Re-implement
+	}
+}
+
+reaction ChangedCompositeComponentInRepository {
+	after element pcm::CompositeComponent replaced at pcm::Repository[components__Repository]
+	call {
+		// TODO Re-implement
+		// TODO Check whether individual components are used elsewhere
 	}
 }
