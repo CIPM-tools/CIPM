@@ -1,0 +1,26 @@
+import "http://www.emftext.org/java" as java
+import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
+
+reactions: seff
+in reaction to changes in pcm
+execute actions in java
+
+reaction AddedDescribedService {
+	after element pcm::OperationSignature inserted in pcm::ServiceEffectSpecification[describedService__SEFF]
+	call {
+		// TODO Implement
+		// Check if there is a corresponding method in Java
+		// If yes, set its method body accordingly.
+		// Otherwise, ask the user to create a method with the same signature in Java
+	}
+}
+
+reaction RemovedDescribedService {
+	after element pcm::OperationSignature removed from pcm::ServiceEffectSpecification[describedService__SEFF]
+	call {
+		// TODO Implement
+		// Check if there is a matching method in Java
+		// If yes, set its method body accordingly.
+		// Otherwise, ask the user to create a method in Java
+	}
+}

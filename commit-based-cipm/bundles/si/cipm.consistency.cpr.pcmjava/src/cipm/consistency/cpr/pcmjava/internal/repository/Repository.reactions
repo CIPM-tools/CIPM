@@ -83,15 +83,41 @@ reaction RemovedCompositeComponentFromRepository {
 	}
 }
 
+reaction ChangedCompositeComponentInRepository {
+	after element pcm::CompositeComponent replaced at pcm::Repository[components__Repository]
+	call {
+		// TODO Re-implement
+		// TODO Check whether individual components are used elsewhere
+	}
+}
+
 reaction AddedDataType {
 	after element pcm::DataType inserted in pcm::Repository[dataTypes__Repository]
 	call {
-		// TODO implement
+		// TODO Implement re-using the code from InterfaceProvidingEntity
+		// Check if there is a corresponding Java element to be found in one of the components.
+		// If yes, establish a correspondence. Otherwise prompt the user to create it.
+		// Ask whether it is Composite/CollectionDataType
 	}
 }
 
 reaction RemovedDataType {
 	after element pcm::DataType removed from pcm::Repository[dataTypes__Repository]
+	call {
+		// TODO Implement re-using the code from InterfaceProvidingEntity
+		// Check for dependencies and ask the user what to do:
+		// 1) Remove PCM DataType:
+		// 1.1) Leave Java counterpart
+		// 1.2) Set all references (Java/PCM) to Object, but leave the corresponding classifier in Java
+		// 1.3) Set all references (Java/PCM) to Object, remove the corresponding classifier in Java
+		// 2) "Clean" PCM DataType: Delete its contents, but leave it as a placeholder (so that we know where it was used previously)
+		// 2.1) Remove all potentially nested stuff to their own DataType
+		// 2.2) Extract all potentially nested stuff to their own DataType
+	}
+}
+
+reaction ChangedDataType {
+	after element pcm::DataType replaced at pcm::Repository[dataTypes__Repository]
 	call {
 		// TODO implement
 		// TODO Check for dependencies
@@ -101,12 +127,30 @@ reaction RemovedDataType {
 reaction AddedInterface {
 	after element pcm::Interface inserted in pcm::Repository[interfaces__Repository]
 	call {
-		// TODO implement
+		// TODO Implement re-using the code from InterfaceProvidingEntity
+		// Check for corresponding Java Interfaces / Methods.
+		// If there is a correspondent in one of the components, establish correspondence.
+		// Otherwise create Java correspondent asking the user
 	}
 }
 
 reaction RemovedInterface {
 	after element pcm::Interface removed from pcm::Repository[interfaces__Repository]
+	call {
+		// TODO Implement re-using the code from InterfaceProvidingEntity
+		// Check for dependencies and ask user what to do
+		// 1) Remove PCM Interface:
+		// 1.1) Leave Java counterpart
+		// 1.2) Set all references (Java/PCM) to Object, but leave the correspondent in Java
+		// 1.3) Set all references (Java/PCM) to Object, remove the correspondent in Java
+		// 2) "Clean" PCM DataType: Delete its contents, but leave it as a placeholder (so that we know where it was used previously)
+		// 2.1) Remove all potentially nested stuff to their own DataType
+		// 2.2) Extract all potentially nested stuff to their own DataType
+	}
+}
+
+reaction ChangedInterface {
+	after element pcm::Interface replaced at pcm::Repository[interfaces__Repository]
 	call {
 		// TODO implement
 		// TODO Check for dependencies

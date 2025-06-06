@@ -15,13 +15,6 @@ import basicComponent
   * - CompositeComponents can have direct correspondences (i.e. without indirections via nested BasicComponents)?
   * 
   */
-reaction RenamedCompositeComponent {
-	after attribute replaced at pcm::CompositeComponent[entityName]
-	call {
-		// TODO Re-implement
-	}
-}
-
 reaction AddedComponentToCompositeComponent {
 	after element pcm::AssemblyContext inserted in pcm::CompositeComponent[assemblyContexts__ComposedStructure]
 	call {
@@ -33,13 +26,5 @@ reaction RemovedComponentFromCompositeComponent {
 	after element pcm::AssemblyContext removed from pcm::CompositeComponent[assemblyContexts__ComposedStructure]
 	call {
 		// TODO Re-implement
-	}
-}
-
-reaction ChangedCompositeComponentInRepository {
-	after element pcm::CompositeComponent replaced at pcm::Repository[components__Repository]
-	call {
-		// TODO Re-implement
-		// TODO Check whether individual components are used elsewhere
 	}
 }

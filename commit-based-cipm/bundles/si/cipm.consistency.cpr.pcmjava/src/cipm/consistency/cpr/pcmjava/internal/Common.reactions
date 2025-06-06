@@ -23,7 +23,6 @@ routine removeAllJavaCorrespondents(java::Commentable toRemove, pcm::NamedElemen
 		correspondents.^addAll(correspondenceModel.getCorrespondingEObjects(toRemove))
 
 		for (c : correspondents) {
-			// Remove if there are no
 			if (correspondenceModel.getCorrespondingEObjects(c).stream().noneMatch [
 				it instanceof org.palladiosimulator.pcm.core.entity.NamedElement && it !== toRemoveFrom
 			]) {

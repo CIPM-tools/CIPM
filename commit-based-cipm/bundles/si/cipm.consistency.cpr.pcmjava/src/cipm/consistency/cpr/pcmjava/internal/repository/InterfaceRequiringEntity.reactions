@@ -31,7 +31,6 @@ reaction ChangedRequiredRole {
 
 routine checkForRequiredDependencies(pcm::OperationRequiredRole role) {
 	update {
-		// TODO Check if any correspondent of the required component is imported
 		val requiringEntity = role.requiringEntity_RequiredRole
 		val requiredIfc = role.requiredInterface__OperationRequiredRole
 

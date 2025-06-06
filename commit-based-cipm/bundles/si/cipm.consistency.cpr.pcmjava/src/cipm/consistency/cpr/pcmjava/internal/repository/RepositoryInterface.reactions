@@ -4,11 +4,3 @@ import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
 reactions: repositoryInterface
 in reaction to changes in pcm
 execute actions in java
-
-reaction ChangedInterface {
-	after element pcm::Interface replaced at pcm::Repository[interfaces__Repository]
-	call {
-		// TODO implement
-		// TODO Check for dependencies
-	}
-}

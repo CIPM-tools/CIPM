@@ -24,14 +24,6 @@ import common
  * - A Classifier can be assigned to a maximum of one component
  * - If a CompilationUnit corresponds to a component, ALL its contents correspond to it. This is NOT the case for other JavaRoot types
  */
-reaction RenamedBasicComponent {
-	after attribute replaced at pcm::BasicComponent[entityName]
-	call {
-		// TODO implement
-		// TODO Ask if any correspondent's name should change
-	}
-}
-
 reaction AddedSEFFToBasicComponent {
 	after element pcm::ServiceEffectSpecification inserted in pcm::BasicComponent[serviceEffectSpecifications__BasicComponent]
 	call {
