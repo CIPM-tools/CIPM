@@ -1,10 +1,5 @@
 import org.emftext.language.java.containers.JavaRoot
-import org.emftext.language.java.commons.Commentable
-import org.emftext.language.java.modifiers.Public
-import org.emftext.language.java.classifiers.ConcreteClassifier
-import org.palladiosimulator.pcm.repository.PrimitiveDataType
-import org.palladiosimulator.pcm.repository.CompositeDataType
-import org.palladiosimulator.pcm.repository.CollectionDataType
+import cipm.consistency.cpr.pcmjava.PCMElementUtil
 
 import "http://www.emftext.org/java" as java
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
@@ -41,109 +36,10 @@ routine checkForProvidedDependencies(pcm::OperationProvidedRole role) {
 
 		val correspondents = entity.getCorrespondingElements(JavaRoot, null, null)
 
-		// Set of all public ConcreteClassifiers under correspondents
-		val classifierSet = newHashSet
-		correspondents.forEach [
-			val iter = it.eAllContents
-			while (iter.hasNext) {
-				val next = iter.next
-				if (next instanceof ConcreteClassifier) {
-					if ((it as ConcreteClassifier).modifiers.findFirst [
-						it instanceof Public
-					] !== null) {
-						classifierSet.add(next)
-					} else {
-						// Not public, skip current ConcreteClassifier
-						iter.prune
-					}
-				}
-			}
-		]
-
-		// Set of all public Methods under correspondents
-		val publicMethodsSet = newHashSet
-		classifierSet.forEach [
-			it.getAllMembers(it.eContainer as Commentable).forEach [
-				if (it instanceof org.emftext.language.java.members.Method &&
-					(it as org.emftext.language.java.members.Method).modifiers.findFirst [
-						it instanceof Public
-					] !== null) {
-					publicMethodsSet.add(it)
-				}
-			]
-		]
-
 		// Look for any missing dependencies
-		val missingDependencies = newHashSet
-		providedIfc.signatures__OperationInterface.forEach [
-			val pcmSignature = it
-
-			val matchingJavaMet = publicMethodsSet.findFirst [
-				val met = (it as org.emftext.language.java.members.Method)
-
-				// Check names
-				if (!pcmSignature.entityName.equals(met.name)) {
-					return false
-				}
-
-				// Check return types
-				val returnType = pcmSignature.returnType__OperationSignature
-				val returnTypeEquality = switch (returnType) {
-					case typeof(PrimitiveDataType):
-						[
-							val casted = (returnType as PrimitiveDataType)
-							if (!casted.type.toString.equals(met.typeReference.target.parentConcreteClassifier.name)) {
-								return false
-							}
-							return true
-						]
-					case typeof(CompositeDataType):
-						[
-							val casted = (returnType as CompositeDataType)
-							if (!casted.entityName.equals(met.typeReference.target.parentConcreteClassifier.name)) {
-								return false
-							}
-							return true
-						]
-					case typeof(CollectionDataType):
-						[
-							val casted = (returnType as CollectionDataType)
-							if (!casted.entityName.equals(met.typeReference.target.parentConcreteClassifier.name)) {
-								return false
-							}
-							return true
-						]
-					default:
-						return true
-				}
-
-				if (!returnTypeEquality.apply(returnType)) {
-					return false
-				}
-
-				// Check Exceptions, look for matching names
-				if (!pcmSignature.exceptions__Signature.forall [
-					val pcmExc = it
-					met.exceptions.findFirst[it.classifierAtNamespaces.name.equals(pcmExc.exceptionName)] !== null
-				]) {
-					return false
-				}
-
-				// Check parameter types
-				if (!pcmSignature.parameters__OperationSignature.forall [
-					val pcmParam = it
-					met.parameters.exists[returnTypeEquality.apply(pcmParam.dataType__Parameter)]
-				]) {
-					return false
-				}
-
-				return true
-			]
-
-			if (matchingJavaMet === null) {
-				missingDependencies.add(pcmSignature)
-			}
-		]
+		val missingDependencies = PCMElementUtil.getPCMMethodsWithoutJavaCorrespondences(
+			providedIfc.signatures__OperationInterface, PCMElementUtil.getAllPublicMethodsInJavaRoots(correspondents),
+			true)
 
 		for (md : missingDependencies) {
 			addMissingDependencyToProvidingEntity(entity, md)

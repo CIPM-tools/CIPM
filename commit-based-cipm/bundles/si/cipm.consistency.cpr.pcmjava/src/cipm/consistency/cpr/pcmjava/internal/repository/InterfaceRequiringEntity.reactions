@@ -1,5 +1,5 @@
 import org.emftext.language.java.containers.JavaRoot
-import org.emftext.language.java.classifiers.ConcreteClassifier
+import cipm.consistency.cpr.pcmjava.PCMElementUtil
 
 import "http://www.emftext.org/java" as java
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
@@ -36,27 +36,7 @@ routine checkForRequiredDependencies(pcm::OperationRequiredRole role) {
 
 		val correspondents = requiringEntity.getCorrespondingElements(JavaRoot, null, null)
 
-		// Set of all public ConcreteClassifiers under correspondents
-		val requiringClassifierSet = newHashSet
-		correspondents.forEach [
-			val iter = it.eAllContents
-			while (iter.hasNext) {
-				val next = iter.next
-				if (next instanceof ConcreteClassifier) {
-					// Include all classifiers, not just public ones
-					requiringClassifierSet.add(next)
-				}
-			}
-		]
-
-		val dependencyExists = requiringClassifierSet.exists [
-			it.containingCompilationUnit.imports.exists [
-				requiredIfc.entityName.equals(it.classifier.name) ||
-					requiredIfc.entityName.equals(it.namespacesAsString)
-			]
-		]
-
-		if (!dependencyExists) {
+		if (!PCMElementUtil.isRequiredRoleNecessary(role, correspondents)) {
 			addMissingDependencyToRequiringEntity(requiringEntity, requiredIfc)
 		}
 	}
