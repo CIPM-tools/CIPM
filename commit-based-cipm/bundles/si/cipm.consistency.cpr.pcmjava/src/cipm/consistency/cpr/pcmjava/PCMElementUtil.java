@@ -36,7 +36,7 @@ public final class PCMElementUtil {
 	 * @return All Java ConcreteClassifiers, which can be found under obj,
 	 *         regardless of their visibility.
 	 */
-	public static Set<ConcreteClassifier> getAllConcreteClassifiers(EObject obj) {
+	public static <T extends EObject> Set<ConcreteClassifier> getAllConcreteClassifiers(T obj) {
 		Set<ConcreteClassifier> classifiers = Sets.newHashSet();
 
 		var it = obj.eAllContents();
@@ -62,7 +62,7 @@ public final class PCMElementUtil {
 	 * @return All Java ConcreteClassifiers, which can be found under objs,
 	 *         regardless of their visibility.
 	 */
-	public static Set<ConcreteClassifier> getAllConcreteClassifiers(Iterable<EObject> objs) {
+	public static Set<ConcreteClassifier> getAllConcreteClassifiers(Iterable<? extends EObject> objs) {
 		Set<ConcreteClassifier> classifiers = Sets.newHashSet();
 
 		for (var obj : objs) {
@@ -75,7 +75,7 @@ public final class PCMElementUtil {
 	/**
 	 * @return All public ConcreteClassifier instances to be found under jr.
 	 */
-	public static Set<ConcreteClassifier> getAllPublicConcreteClassifiers(EObject obj) {
+	public static <T extends EObject> Set<ConcreteClassifier> getAllPublicConcreteClassifiers(T obj) {
 		Set<ConcreteClassifier> classifiers = getAllConcreteClassifiers(obj);
 
 		var clss = classifiers.toArray(ConcreteClassifier[]::new);
@@ -93,7 +93,7 @@ public final class PCMElementUtil {
 	 * @return All public ConcreteClassifier instances to be found under the given
 	 *         jrs.
 	 */
-	public static Set<ConcreteClassifier> getAllPublicConcreteClassifiers(Iterable<EObject> obj) {
+	public static Set<ConcreteClassifier> getAllPublicConcreteClassifiers(Iterable<? extends EObject> obj) {
 		Set<ConcreteClassifier> classifiers = Sets.newHashSet();
 
 		for (var jr : obj) {
@@ -233,6 +233,25 @@ public final class PCMElementUtil {
 	}
 
 	/**
+	 * @param checkExceptions Whether exceptions should match as well
+	 * @return A set of PCM OperationSignatures, which do not have a corresponding
+	 *         Java Method in javaMets
+	 * @see {@link #doMethodSignaturesMatch(OperationSignature, Method, boolean)}
+	 */
+	public static Set<OperationSignature> getPCMMethodsWithoutJavaCorrespondences(Iterable<OperationSignature> pcmSigs,
+			Iterable<Method> javaMets, boolean checkExceptions) {
+		var matches = getPCMMethodsWithJavaCorrespondences(pcmSigs, javaMets, checkExceptions);
+
+		var nonMatches = new HashSet<OperationSignature>();
+		pcmSigs.forEach((sig) -> {
+			if (!matches.containsKey(sig))
+				nonMatches.add(sig);
+		});
+
+		return nonMatches;
+	}
+
+	/**
 	 * @return Whether the given Java ImportingElement imports the given PCM
 	 *         OperationInterface
 	 */
@@ -263,11 +282,11 @@ public final class PCMElementUtil {
 	 * @param requiredInterfaceCorrespondents Java elements that correspond to the
 	 *                                        required interface denoted by
 	 *                                        RequiredRole
-	 * @return Whether the given PCM RequiredRole is redundant. This is the case, if
-	 *         the required interface is not imported.
+	 * @return Whether the given PCM RequiredRole is necessary. This is the case, if
+	 *         the required interface is imported.
 	 */
-	public static boolean isRequiredRoleRedundant(OperationRequiredRole reqRole,
-			Iterable<EObject> requiredInterfaceCorrespondents) {
+	public static boolean isRequiredRoleNecessary(OperationRequiredRole reqRole,
+			Iterable<? extends EObject> requiredInterfaceCorrespondents) {
 		var requiredIfc = reqRole.getRequiredInterface__OperationRequiredRole();
 		var requiringClassifierSet = getAllConcreteClassifiers(requiredInterfaceCorrespondents);
 
@@ -284,7 +303,7 @@ public final class PCMElementUtil {
 	 *         OperationInterface.
 	 */
 	public static Set<Import> getRequiredInterfaceImports(OperationInterface pcmIFC,
-			Iterable<EObject> requiredInterfaceCorrespondents) {
+			Iterable<? extends EObject> requiredInterfaceCorrespondents) {
 		var requiringClassifierSet = getAllConcreteClassifiers(requiredInterfaceCorrespondents);
 
 		var matches = new HashSet<Import>();
@@ -305,7 +324,7 @@ public final class PCMElementUtil {
 	 *         necessary (i.e. not redundant)
 	 */
 	public static Set<Import> getRequiredRoleImports(OperationRequiredRole reqRole,
-			Iterable<EObject> requiredInterfaceCorrespondents) {
+			Iterable<? extends EObject> requiredInterfaceCorrespondents) {
 		return getRequiredInterfaceImports(reqRole.getRequiredInterface__OperationRequiredRole(),
 				requiredInterfaceCorrespondents);
 	}
