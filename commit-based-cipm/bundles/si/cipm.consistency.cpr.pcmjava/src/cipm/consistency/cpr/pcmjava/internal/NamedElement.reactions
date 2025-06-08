@@ -14,7 +14,7 @@ reaction RenamedEntity {
 	call {
 		updateNamesOfCorrespondents(affectedEObject)
 		updateNamespacesOfCorrespondents(affectedEObject)
-		updateNamesOfCorrespondents(affectedEObject)
+		updateFullyQualifiedNamesOfCorrespondents(affectedEObject)
 	}
 }
 

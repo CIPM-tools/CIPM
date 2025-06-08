@@ -169,6 +169,8 @@ routine createCorrespondingCUFor(pcm::NamedElement ne) {
 		updateNamespaceOfJavaCorrespondent(null, cu)
 		updateNameOfJavaCorrespondent(null, cu)
 
+		// TODO Multiple classifiers should be possible here
+
 		val type = UserInteractionFactory.instance.createDialogUserInteractor().getSingleSelectionDialogBuilder().
 			message("What classifier should the compilation unit declare?").choices(
 				List.^of("Class", "Interface", "Leave empty")).startInteraction()

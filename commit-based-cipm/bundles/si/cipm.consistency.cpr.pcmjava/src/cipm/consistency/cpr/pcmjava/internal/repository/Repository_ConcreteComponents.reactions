@@ -53,6 +53,9 @@ reaction ChangedCompositeComponentInRepository {
 
 routine addBasicComponentToRepository(pcm::BasicComponent cmp) {
 	update {
+		
+		// TODO Multiple JavaRoots possible here
+		
 		// type = 1: Component corresponds to a package
 		// type = 2: Component corresponds to a module
 		val type = UserInteractionFactory.instance.createDialogUserInteractor().getSingleSelectionDialogBuilder().

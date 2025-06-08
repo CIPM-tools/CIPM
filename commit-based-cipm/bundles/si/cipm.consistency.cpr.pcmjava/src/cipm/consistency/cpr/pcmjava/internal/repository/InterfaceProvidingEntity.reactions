@@ -49,6 +49,8 @@ routine checkForProvidedDependencies(pcm::OperationProvidedRole role) {
 
 routine addMissingDependencyToProvidingEntity(pcm::InterfaceProvidingEntity entity, pcm::OperationSignature missingMetSign) {
 	update {
-		// TODO Add the missing Java method stub (ask user)
+		// TODO Add the missing Java method stub
+		// Ask whether a new classifier is necessary for the stub
+		// Ask where to put the stub (in terms of classifiers)
 	}
 }

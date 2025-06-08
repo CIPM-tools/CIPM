@@ -44,6 +44,7 @@ routine checkForRequiredDependencies(pcm::OperationRequiredRole role) {
 
 routine addMissingDependencyToRequiringEntity(pcm::InterfaceRequiringEntity entity, pcm::OperationInterface requiringInterface) {
 	update {
-		// TODO Add import(s) to required interfaces (ask user)
+		// TODO Add import(s) to required interfaces
+		// Ask where to add import(s) (in terms of CompilationUnits / NamespaceClassifierReferences (?))
 	}
 }

@@ -1,3 +1,6 @@
+import cipm.consistency.cpr.pcmjava.PCMElementUtil
+import org.emftext.language.java.commons.Commentable
+
 import "http://www.emftext.org/java" as java
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
 
@@ -8,17 +11,66 @@ execute actions in java
 reaction AddedDataType {
 	after element pcm::DataType inserted in pcm::Repository[dataTypes__Repository]
 	call {
-		// TODO Implement re-using the code from InterfaceProvidingEntity
-		// Check if there is a corresponding Java element to be found in one of the components.
-		// If yes, establish a correspondence. Otherwise prompt the user to create it.
-		// Ask whether it is Composite/CollectionDataType
+		val components = affectedEObject.components__Repository
+
+		val correspondents = newHashSet
+		components.forEach [
+			correspondents.addAll(it.getCorrespondingElements(Commentable, null, null))
+		]
+
+		val classifiers = PCMElementUtil.getAllConcreteClassifiers(correspondents)
+
+		val correspondingClassifier = classifiers.findFirst [
+			PCMElementUtil.doTypesMatch(newValue, it)
+		]
+
+		if (correspondingClassifier !== null) {
+			addCorrespondenceBetween(newValue, correspondingClassifier)
+		} else {
+			createOrLocateJavaClassifierForDataType(newValue)
+		}
 	}
 }
 
 reaction RemovedDataType {
 	after element pcm::DataType removed from pcm::Repository[dataTypes__Repository]
 	call {
-		// TODO Implement re-using the code from InterfaceProvidingEntity
+		val components = affectedEObject.components__Repository
+
+		val correspondents = newHashSet
+		components.forEach [
+			correspondents.addAll(it.getCorrespondingElements(Commentable, null, null))
+		]
+
+		val classifiers = PCMElementUtil.getAllConcreteClassifiers(correspondents)
+
+		val correspondingClassifiers = newHashSet
+		classifiers.filter [
+			PCMElementUtil.doTypesMatch(oldValue, it)
+		].forEach[correspondingClassifiers.add(it)]
+
+		correspondingClassifiers.forEach [
+			removeDataTypeCorrespondents(oldValue, it)
+		]
+	}
+}
+
+routine createOrLocateJavaClassifierForDataType(pcm::DataType type) {
+	update {
+		// TODO Implement
+		// About native types:
+		// Ask/determine whether the type corresponds to a native type (java.lang, java.util, etc.)
+		// Ask the user to locate it, if it cannot be found
+		// About user-defined classes:
+		// Ask what type of classifier it should be
+		// Ask whether it is an inner classifier
+		// Ask about the modifiers of the classifier too (abstract, final, static, etc.)
+	}
+}
+
+routine removeDataTypeCorrespondents(pcm::DataType type, java::Commentable javaElem) {
+	update {
+		// TODO Implement
 		// Check for dependencies and ask the user what to do:
 		// 1) Remove PCM DataType:
 		// 1.1) Leave Java counterpart
@@ -27,13 +79,5 @@ reaction RemovedDataType {
 		// 2) "Clean" PCM DataType: Delete its contents, but leave it as a placeholder (so that we know where it was used previously)
 		// 2.1) Remove all potentially nested stuff to their own DataType
 		// 2.2) Extract all potentially nested stuff to their own DataType
-	}
-}
-
-reaction ChangedDataType {
-	after element pcm::DataType replaced at pcm::Repository[dataTypes__Repository]
-	call {
-		// TODO implement
-		// TODO Check for dependencies
 	}
 }

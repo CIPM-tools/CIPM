@@ -4,3 +4,33 @@ import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
 reactions: dataType
 in reaction to changes in pcm
 execute actions in java
+
+import common
+
+// entityName CPRs are already covered by NamedElement.reactions
+reaction SetPrimitiveDataType_Type {
+	after attribute replaced at pcm::PrimitiveDataType[type]
+	call {
+		val newName = newValue.toString()
+		for (c : affectedEObject.getCorrespondingElements(org.emftext.language.java.commons.NamedElement, null, null)) {
+			setName(newName, c)
+		}
+	}
+}
+
+reaction SetCollectionDataType_InnerType {
+	after element pcm::DataType replaced at pcm::CollectionDataType[innerType_CollectionDataType]
+	call {
+		// TODO Determine what to do in this case
+		// Adapt TypeArguments in signatures/references in Java
+	}
+}
+
+reaction SetCompositeDataType_Name {
+	after element pcm::InnerDeclaration replaced at pcm::CompositeDataType[innerDeclaration_CompositeDataType]
+	call {
+		// TODO Determine what to do in this case
+		// Adapt TypeArguments in signatures/references in Java
+		// Adapt member references (since composite data type has inner element)
+	}
+}
