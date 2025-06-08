@@ -18,14 +18,8 @@ reaction AddedProvidedRole {
 reaction RemovedProvidedRole {
 	after element pcm::OperationProvidedRole removed from pcm::InterfaceProvidingEntity[providedRoles_InterfaceProvidingEntity]
 	call {
-		// TODO implement
-	}
-}
-
-reaction ChangedProvidedRole {
-	after element pcm::OperationProvidedRole replaced at pcm::InterfaceProvidingEntity[providedRoles_InterfaceProvidingEntity]
-	call {
-		// TODO implement
+		// TODO Implement
+		// Ask the user whether the provided Java methods should be deleted / their visibilities lowered
 	}
 }
 
@@ -36,20 +30,33 @@ routine checkForProvidedDependencies(pcm::OperationProvidedRole role) {
 
 		val correspondents = entity.getCorrespondingElements(JavaRoot, null, null)
 
-		// Look for any missing dependencies
-		val missingDependencies = PCMElementUtil.getPCMMethodsWithoutJavaCorrespondences(
-			providedIfc.signatures__OperationInterface, PCMElementUtil.getAllPublicMethodsInJavaRoots(correspondents),
-			true)
+		val publicMets = PCMElementUtil.getAllPublicMethodsInJavaRoots(correspondents)
 
-		for (md : missingDependencies) {
-			addMissingDependencyToProvidingEntity(entity, md)
+		val presentSignatures = PCMElementUtil.getPCMMethodsWithJavaCorrespondences(
+			providedIfc.signatures__OperationInterface, publicMets, true)
+
+		// Add correspondences between PCM and Java methods
+		for (e : presentSignatures.entrySet) {
+			val sig = e.key
+			val met = e.value
+			if (!getCorrespondingElements(sig, org.emftext.language.java.members.Method, null, null).contains(met)) {
+				sig.addCorrespondenceBetween(met)
+			}
+		}
+
+		// Look for any missing dependencies
+		val missingSignatures = PCMElementUtil.getPCMMethodsWithoutJavaCorrespondences(
+			providedIfc.signatures__OperationInterface, publicMets, true)
+
+		for (md : missingSignatures) {
+			addMissingSignaturesToJavaCode(entity, md)
 		}
 	}
 }
 
-routine addMissingDependencyToProvidingEntity(pcm::InterfaceProvidingEntity entity, pcm::OperationSignature missingMetSign) {
+routine addMissingSignaturesToJavaCode(pcm::InterfaceProvidingEntity entity, pcm::OperationSignature missingMetSign) {
 	update {
-		// TODO Add the missing Java method stub
+		// TODO Add the missing Java method stub (use common.createCorrespondingJavaMethodFor(...) )
 		// Ask whether a new classifier is necessary for the stub
 		// Ask where to put the stub (in terms of classifiers)
 	}

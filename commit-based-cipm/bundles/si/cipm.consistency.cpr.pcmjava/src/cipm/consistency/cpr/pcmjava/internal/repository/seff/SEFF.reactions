@@ -5,13 +5,19 @@ reactions: seff
 in reaction to changes in pcm
 execute actions in java
 
+import common
+
 reaction AddedDescribedService {
 	after element pcm::OperationSignature inserted in pcm::ServiceEffectSpecification[describedService__SEFF]
 	call {
-		// TODO Implement
-		// Check if there is a corresponding method in Java
-		// If yes, set its method body accordingly.
-		// Otherwise, ask the user to create a method with the same signature in Java
+		val correspondingJavaMet = newValue.getCorrespondingElement(org.emftext.language.java.members.Method, null,
+			null, false)
+
+		if (correspondingJavaMet !== null) {
+			checkCorrespondingJavaMethod(affectedEObject, correspondingJavaMet)
+		} else {
+			createMatchingCorrespondingJavaMethodForSEFF(affectedEObject)
+		}
 	}
 }
 
@@ -22,5 +28,50 @@ reaction RemovedDescribedService {
 		// Check if there is a matching method in Java
 		// If yes, set its method body accordingly.
 		// Otherwise, ask the user to create a method in Java
+	}
+}
+
+reaction ChangedDescribedService {
+	after element pcm::OperationSignature replaced at pcm::ServiceEffectSpecification[describedService__SEFF]
+	call {
+		// TODO Implement
+		// Check the corresponding Java Method via (checkCorrespondingJavaMethod(...))
+		// Reconstruct it, if necessary
+	}
+}
+
+routine checkCorrespondingJavaMethod(pcm::ServiceEffectSpecification pcmSEFF, java::Method javaMet) {
+	update {
+		// TODO Implement method reconstruction / structure check
+		//
+		// CollectionIteratorAction
+		// LoopAction
+		//
+		// AcquireAction
+		// BranchAction
+		// ForkAction
+		// InternalAction
+		// InternalCallAction
+		// RecoveryAction
+		// ReleaseAction
+		// SetVariableAction
+		// StartAction
+		// StopAction
+		//
+		// ExternalCallAction
+	}
+}
+
+routine createMatchingCorrespondingJavaMethodForSEFF(pcm::ServiceEffectSpecification pcmSEFF) {
+	update {
+		// TODO Implement
+		// Ask where the method stub should be added to
+		// (Maybe) Open a step-wise, recursive method construction screen (over SEFF elements)
+	}
+}
+
+routine adaptMatchingCorrespondingJavaMethodForSEFF(pcm::ServiceEffectSpecification pcmSEFF) {
+	update {
+		// TODO Implement
 	}
 }

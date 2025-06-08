@@ -5,25 +5,22 @@ reactions: compositeComponent
 in reaction to changes in pcm
 execute actions in java
 
-import basicComponent
-
 /**
   * Assumptions:
   * 
   * About structure:
   * - Further components can be nested in CompositeComponent via their assembly context (under attribute cc.assemblyContexts__ComposedStructure.encapsulatedComponent__AssemblyContext)
   * - CompositeComponents can have direct correspondences (i.e. without indirections via nested BasicComponents)?
-  * 
   */
 reaction AddedComponentToCompositeComponent {
-	after element pcm::AssemblyContext inserted in pcm::CompositeComponent[assemblyContexts__ComposedStructure]
+	after element pcm::AssemblyConnector inserted in pcm::CompositeComponent[connectors__ComposedStructure]
 	call {
 		// TODO Re-implement
 	}
 }
 
 reaction RemovedComponentFromCompositeComponent {
-	after element pcm::AssemblyContext removed from pcm::CompositeComponent[assemblyContexts__ComposedStructure]
+	after element pcm::AssemblyConnector removed from pcm::CompositeComponent[connectors__ComposedStructure]
 	call {
 		// TODO Re-implement
 	}

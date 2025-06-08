@@ -43,14 +43,6 @@ reaction RemovedCompositeComponentFromRepository {
 	}
 }
 
-reaction ChangedCompositeComponentInRepository {
-	after element pcm::CompositeComponent replaced at pcm::Repository[components__Repository]
-	call {
-		// TODO Re-implement
-		// TODO Check whether individual components are used elsewhere
-	}
-}
-
 routine addBasicComponentToRepository(pcm::BasicComponent cmp) {
 	update {
 		

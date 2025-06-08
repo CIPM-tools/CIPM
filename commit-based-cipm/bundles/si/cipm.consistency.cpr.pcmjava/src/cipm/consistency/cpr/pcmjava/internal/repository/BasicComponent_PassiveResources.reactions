@@ -1,0 +1,27 @@
+import "http://www.emftext.org/java" as java
+import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
+
+reactions: basicComponentPassiveResources
+in reaction to changes in pcm
+execute actions in java
+
+reaction AddedPassiveResourceToBasicComponent {
+	after element pcm::PassiveResource inserted in pcm::BasicComponent[passiveResource_BasicComponent]
+	call {
+		// TODO implement
+	}
+}
+
+reaction RemovedPassiveResourceFromBasicComponent {
+	after element pcm::PassiveResource removed from pcm::BasicComponent[passiveResource_BasicComponent]
+	call {
+		// TODO implement
+	}
+}
+
+reaction ChangedPassiveResourceInBasicComponent {
+	after element pcm::PassiveResource replaced at pcm::BasicComponent[passiveResource_BasicComponent]
+	call {
+		// TODO implement
+	}
+}

@@ -11,8 +11,9 @@ import common
 reaction SetPrimitiveDataType_Type {
 	after attribute replaced at pcm::PrimitiveDataType[type]
 	call {
+		val dataType = affectedEObject
 		val newName = newValue.toString()
-		for (c : affectedEObject.getCorrespondingElements(org.emftext.language.java.commons.NamedElement, null, null)) {
+		for (c : dataType.getCorrespondingElements(org.emftext.language.java.commons.NamedElement, null, null)) {
 			setName(newName, c)
 		}
 	}

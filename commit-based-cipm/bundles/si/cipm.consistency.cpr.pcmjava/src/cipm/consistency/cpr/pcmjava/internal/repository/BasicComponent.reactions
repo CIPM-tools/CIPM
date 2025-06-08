@@ -5,66 +5,6 @@ reactions: basicComponent
 in reaction to changes in pcm
 execute actions in java
 
-import common
+import basicComponentSEFFs
+import basicComponentPassiveResources
 
-/**
- * Assumptions:
- * 
- * About name (entityName):
- * 
- * - BasicComponent's name =/= name or namespaces of corresponding Java elements
- * - BasicComponents' Java correspondents are JavaRoot instances (different types possible: ex 1 Package, 1 Module)
- * ---- In general, atomic correspondents is Classifier
- * ---- Here, atomic correspondent is CompilationUnit
- * - BasicComponents' name is NOT affected by potential CompositeComponents' name
- * - BasicComponents' name is INDEPENDENT of the names of its parent components
- * 
- * About correspondences:
- * 
- * - A Classifier can be assigned to a maximum of one component
- * - If a CompilationUnit corresponds to a component, ALL its contents correspond to it. This is NOT the case for other JavaRoot types
- */
-reaction AddedSEFFToBasicComponent {
-	after element pcm::ServiceEffectSpecification inserted in pcm::BasicComponent[serviceEffectSpecifications__BasicComponent]
-	call {
-		// TODO implement
-		// TODO check Constraint: NoSEFFTypeUsedTwice
-	}
-}
-
-reaction RemovedSEFFFromBasicComponent {
-	after element pcm::ServiceEffectSpecification removed from pcm::BasicComponent[serviceEffectSpecifications__BasicComponent]
-	call {
-		// TODO implement
-		// TODO Check for dependencies
-	}
-}
-
-reaction ChangedSEFFInBasicComponent {
-	after element pcm::ServiceEffectSpecification replaced at pcm::BasicComponent[serviceEffectSpecifications__BasicComponent]
-	call {
-		// TODO implement
-		// TODO Check for dependencies
-	}
-}
-
-reaction AddedPassiveResourceToBasicComponent {
-	after element pcm::PassiveResource inserted in pcm::BasicComponent[passiveResource_BasicComponent]
-	call {
-		// TODO implement
-	}
-}
-
-reaction RemovedPassiveResourceFromBasicComponent {
-	after element pcm::PassiveResource removed from pcm::BasicComponent[passiveResource_BasicComponent]
-	call {
-		// TODO implement
-	}
-}
-
-reaction ChangedPassiveResourceInBasicComponent {
-	after element pcm::PassiveResource replaced at pcm::BasicComponent[passiveResource_BasicComponent]
-	call {
-		// TODO implement
-	}
-}

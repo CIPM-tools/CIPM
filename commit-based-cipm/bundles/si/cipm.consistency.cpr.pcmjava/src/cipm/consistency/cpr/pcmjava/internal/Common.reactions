@@ -170,7 +170,6 @@ routine createCorrespondingCUFor(pcm::NamedElement ne) {
 		updateNameOfJavaCorrespondent(null, cu)
 
 		// TODO Multiple classifiers should be possible here
-
 		val type = UserInteractionFactory.instance.createDialogUserInteractor().getSingleSelectionDialogBuilder().
 			message("What classifier should the compilation unit declare?").choices(
 				List.^of("Class", "Interface", "Leave empty")).startInteraction()
@@ -203,5 +202,21 @@ routine createCorrespondingInterfaceFor(pcm::NamedElement ne) {
 	update {
 		updateNameOfJavaCorrespondent(null, ifc)
 		addCorrespondenceBetween(ne, ifc)
+	}
+}
+
+routine createCorrespondingJavaMethodForSignature(pcm::OperationSignature pcmSig) {
+	update {
+		// TODO Implement
+		// Ask where the method stub should be added to
+		// (Maybe) Open a step-wise, recursive method construction screen (over SEFF elements)
+	}
+}
+
+routine adaptCorrespondingJavaMethodForSignature(pcm::OperationSignature pcmSig) {
+	update {
+		// TODO Implement
+		// Ask where the method stub should be added to
+		// (Maybe) Open a step-wise, recursive method construction screen (over SEFF elements)
 	}
 }
