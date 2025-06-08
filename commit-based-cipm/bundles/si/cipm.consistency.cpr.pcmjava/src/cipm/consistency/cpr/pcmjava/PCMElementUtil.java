@@ -2,7 +2,6 @@ package cipm.consistency.cpr.pcmjava;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,9 +14,7 @@ import org.emftext.language.java.imports.ImportingElement;
 import org.emftext.language.java.members.MemberContainer;
 import org.emftext.language.java.members.Method;
 import org.emftext.language.java.modifiers.Public;
-import org.emftext.language.java.references.Reference;
 import org.emftext.language.java.types.TypeReference;
-import org.palladiosimulator.pcm.core.entity.NamedElement;
 import org.palladiosimulator.pcm.repository.CollectionDataType;
 import org.palladiosimulator.pcm.repository.CompositeDataType;
 import org.palladiosimulator.pcm.repository.DataType;
@@ -27,9 +24,6 @@ import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcm.repository.PrimitiveDataType;
 
 import com.google.common.collect.Sets;
-
-import tools.vitruv.change.correspondence.Correspondence;
-import tools.vitruv.change.correspondence.model.CorrespondenceModel;
 
 public final class PCMElementUtil {
 	private PCMElementUtil() {
