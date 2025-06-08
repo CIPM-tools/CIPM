@@ -2,10 +2,11 @@ package cipm.consistency.cpr.pcmjava;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.emf.ecore.EObject;
+import org.emftext.language.java.classifiers.Classifier;
 import org.emftext.language.java.classifiers.ConcreteClassifier;
 import org.emftext.language.java.commons.Commentable;
 import org.emftext.language.java.containers.JavaRoot;
@@ -14,7 +15,9 @@ import org.emftext.language.java.imports.ImportingElement;
 import org.emftext.language.java.members.MemberContainer;
 import org.emftext.language.java.members.Method;
 import org.emftext.language.java.modifiers.Public;
+import org.emftext.language.java.references.Reference;
 import org.emftext.language.java.types.TypeReference;
+import org.palladiosimulator.pcm.core.entity.NamedElement;
 import org.palladiosimulator.pcm.repository.CollectionDataType;
 import org.palladiosimulator.pcm.repository.CompositeDataType;
 import org.palladiosimulator.pcm.repository.DataType;
@@ -24,6 +27,9 @@ import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcm.repository.PrimitiveDataType;
 
 import com.google.common.collect.Sets;
+
+import tools.vitruv.change.correspondence.Correspondence;
+import tools.vitruv.change.correspondence.model.CorrespondenceModel;
 
 public final class PCMElementUtil {
 	private PCMElementUtil() {
@@ -36,7 +42,7 @@ public final class PCMElementUtil {
 	 * @return All Java ConcreteClassifiers, which can be found under obj,
 	 *         regardless of their visibility.
 	 */
-	public static <T extends EObject> Set<ConcreteClassifier> getAllConcreteClassifiers(T obj) {
+	public static <T extends Commentable> Set<ConcreteClassifier> getAllConcreteClassifiers(T obj) {
 		Set<ConcreteClassifier> classifiers = Sets.newHashSet();
 
 		var it = obj.eAllContents();
@@ -62,7 +68,7 @@ public final class PCMElementUtil {
 	 * @return All Java ConcreteClassifiers, which can be found under objs,
 	 *         regardless of their visibility.
 	 */
-	public static Set<ConcreteClassifier> getAllConcreteClassifiers(Iterable<? extends EObject> objs) {
+	public static Set<ConcreteClassifier> getAllConcreteClassifiers(Iterable<? extends Commentable> objs) {
 		Set<ConcreteClassifier> classifiers = Sets.newHashSet();
 
 		for (var obj : objs) {
@@ -75,7 +81,7 @@ public final class PCMElementUtil {
 	/**
 	 * @return All public ConcreteClassifier instances to be found under jr.
 	 */
-	public static <T extends EObject> Set<ConcreteClassifier> getAllPublicConcreteClassifiers(T obj) {
+	public static <T extends Commentable> Set<ConcreteClassifier> getAllPublicConcreteClassifiers(T obj) {
 		Set<ConcreteClassifier> classifiers = getAllConcreteClassifiers(obj);
 
 		var clss = classifiers.toArray(ConcreteClassifier[]::new);
@@ -93,7 +99,7 @@ public final class PCMElementUtil {
 	 * @return All public ConcreteClassifier instances to be found under the given
 	 *         jrs.
 	 */
-	public static Set<ConcreteClassifier> getAllPublicConcreteClassifiers(Iterable<? extends EObject> obj) {
+	public static Set<ConcreteClassifier> getAllPublicConcreteClassifiers(Iterable<? extends Commentable> obj) {
 		Set<ConcreteClassifier> classifiers = Sets.newHashSet();
 
 		for (var jr : obj) {
@@ -158,20 +164,34 @@ public final class PCMElementUtil {
 	 *                                  PrimitiveDataType, CompositeDataType or
 	 *                                  CollectionDataType
 	 */
-	public static boolean doTypesMatch(DataType pcmType, TypeReference javaType) {
+	public static boolean doTypesMatch(DataType pcmType, Classifier javaType) {
 		if (pcmType instanceof PrimitiveDataType) {
 			var castedPCMType = (PrimitiveDataType) pcmType;
-			return !castedPCMType.getType().getName().toString()
-					.equals(javaType.getTarget().getParentConcreteClassifier().getName());
+
+			return castedPCMType.getType().getName().toString().equals(javaType.getName());
 		} else if (pcmType instanceof CompositeDataType) {
 			var castedPCMType = (CompositeDataType) pcmType;
-			return !castedPCMType.getEntityName().equals(javaType.getTarget().getParentConcreteClassifier().getName());
+
+			return castedPCMType.getEntityName().equals(javaType.getName());
 		} else if (pcmType instanceof CollectionDataType) {
 			var castedPCMType = (CollectionDataType) pcmType;
-			return !castedPCMType.getEntityName().equals(javaType.getTarget().getParentConcreteClassifier().getName());
+
+			return castedPCMType.getEntityName().equals(javaType.getName());
 		} else {
 			throw new IllegalArgumentException("Unknown PCM DataType");
 		}
+	}
+
+	public static boolean doTypesMatch(DataType pcmType, TypeReference javaType) {
+		var javaClassifier = javaType.getPureClassifierReference();
+
+		// Check out-most types
+		if (!doTypesMatch(pcmType, javaClassifier))
+			return false;
+
+		// TODO Check inner types too
+
+		return true;
 	}
 
 	/**
@@ -286,7 +306,7 @@ public final class PCMElementUtil {
 	 *         the required interface is imported.
 	 */
 	public static boolean isRequiredRoleNecessary(OperationRequiredRole reqRole,
-			Iterable<? extends EObject> requiredInterfaceCorrespondents) {
+			Iterable<? extends Commentable> requiredInterfaceCorrespondents) {
 		var requiredIfc = reqRole.getRequiredInterface__OperationRequiredRole();
 		var requiringClassifierSet = getAllConcreteClassifiers(requiredInterfaceCorrespondents);
 
@@ -303,7 +323,7 @@ public final class PCMElementUtil {
 	 *         OperationInterface.
 	 */
 	public static Set<Import> getRequiredInterfaceImports(OperationInterface pcmIFC,
-			Iterable<? extends EObject> requiredInterfaceCorrespondents) {
+			Iterable<? extends Commentable> requiredInterfaceCorrespondents) {
 		var requiringClassifierSet = getAllConcreteClassifiers(requiredInterfaceCorrespondents);
 
 		var matches = new HashSet<Import>();
@@ -324,8 +344,76 @@ public final class PCMElementUtil {
 	 *         necessary (i.e. not redundant)
 	 */
 	public static Set<Import> getRequiredRoleImports(OperationRequiredRole reqRole,
-			Iterable<? extends EObject> requiredInterfaceCorrespondents) {
+			Iterable<? extends Commentable> requiredInterfaceCorrespondents) {
 		return getRequiredInterfaceImports(reqRole.getRequiredInterface__OperationRequiredRole(),
 				requiredInterfaceCorrespondents);
 	}
+
+	/**
+	 * @param pcmType            The PCM DataType
+	 * @param javaType           The Java Classifier corresponding to pcmType
+	 * @param toSearchForImports Java elements, which should be searched for imports
+	 *                           to javaType
+	 * @return A set of all direct, 1 to 1 imports to javaType (i.e. all imports,
+	 *         which only import javaType)
+	 */
+	public static Set<Import> getAllDataTypeImports(DataType pcmType, Classifier javaType,
+			Iterable<? extends Commentable> toSearchForImports) {
+		if (!doTypesMatch(pcmType, javaType)) {
+			return null;
+		}
+
+		// TODO Account for inner types too
+
+		var importSet = new HashSet<Import>();
+		for (var je : toSearchForImports) {
+			var it = je.eAllContents();
+			while (it.hasNext()) {
+				var next = it.next();
+				if (next instanceof ImportingElement) {
+					var castedJE = (ImportingElement) next;
+					castedJE.getImports().stream()
+							.filter((imp) -> imp.getClassifier().getName().equals(javaType.getName()))
+							.forEach((imp) -> importSet.add(imp));
+					it.prune();
+				}
+			}
+		}
+
+		return importSet;
+	}
+
+	/**
+	 * @param pcmType            The PCM DataType
+	 * @param javaType           The Java Classifier corresponding to pcmType
+	 * @param toSearchForImports Java elements, which should be searched for
+	 *                           references to javaType
+	 * @return A set of all direct java references to javaType
+	 */
+	public static Set<TypeReference> getAllDataTypeReferences(DataType pcmType, Classifier javaType,
+			Iterable<? extends Commentable> toSearchForReferences) {
+		if (!doTypesMatch(pcmType, javaType)) {
+			return null;
+		}
+
+		// TODO Account for inner types too
+
+		var typeReferenceSet = new HashSet<TypeReference>();
+		for (var je : toSearchForReferences) {
+			var it = je.eAllContents();
+			while (it.hasNext()) {
+				var next = it.next();
+				if (next instanceof TypeReference) {
+					var castedJE = (TypeReference) next;
+					if (doTypesMatch(pcmType, castedJE)) {
+						typeReferenceSet.add(castedJE);
+						it.prune();
+					}
+				}
+			}
+		}
+
+		return typeReferenceSet;
+	}
+
 }
