@@ -5,26 +5,19 @@ Bundle-SymbolicName: cipm.consistency.cpr.javapcm.teammates
 Bundle-Version: 0.2.0.qualifier
 Export-Package: cipm.consistency.cpr.javapcm.teammates
 Require-Bundle: org.emftext.language.java,
- tools.vitruv.framework.correspondence,
- tools.vitruv.framework.userinteraction,
- tools.vitruv.extensions.dslsruntime.reactions,
+ tools.vitruv.change.correspondence,
+ tools.vitruv.change.interaction,
+ tools.vitruv.dsls.reactions.runtime,
  org.eclipse.xtend.lib,
  org.eclipse.xtend.lib.macro,
- tools.vitruv.framework.change,
+ tools.vitruv.change.atomic,
  tools.vitruv.applications.pcmjava.seffstatements.pojotransformations,
  tools.vitruv.applications.pcmjava.seffstatements,
  tools.vitruv.applications.pcmjava.seffstatements.extended,
- cipm.consistency.domains.java,
  tools.vitruv.applications.pcmjava.seffstatements.finegrained,
  cipm.consistency.commitintegration.settings,
- cipm.consistency.domains.pcm,
- cipm.consistency.cpr.javaim,
  cipm.consistency.cpr.javapcm.msa,
- tools.vitruv.framework.domains,
  org.palladiosimulator.pcm,
- tools.vitruv.applications.pcmjava.util,
- tools.vitruv.domains.java,
- tools.vitruv.domains.pcm,
  cipm.consistency.cpr.util
 Automatic-Module-Name: cipm.consistency.cpr.javapcm.teammates
 Bundle-RequiredExecutionEnvironment: JavaSE-11

@@ -13,15 +13,12 @@ Require-Bundle: org.apache.log4j,
  org.emftext.language.java,
  org.palladiosimulator.pcm,
  org.somox.sourcecodedecorator,
- tools.vitruv.framework.util,
- tools.vitruv.framework.userinteraction,
- tools.vitruv.framework.correspondence,
- tools.vitruv.framework.change,
+ tools.vitruv.change.interaction,
+ tools.vitruv.change.correspondence,
+ tools.vitruv.change.atomic,
  tools.vitruv.applications.pcmjava.seffstatements,
- tools.vitruv.applications.pcmjava.util,
- tools.vitruv.framework.propagation,
- tools.vitruv.framework.domains,
- tools.vitruv.extensions.dslsruntime.reactions
+ tools.vitruv.change.propagation,
+ tools.vitruv.dsls.reactions.runtime
 Export-Package: tools.cipm.seff.pojotransformations,
  tools.cipm.seff.pojotransformations.code2seff
 Automatic-Module-Name: tools.vitruv.applications.pcmjava.seffstatements.pojotransformations

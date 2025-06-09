@@ -8,6 +8,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-11
 Require-Bundle: org.eclipse.jgit,
  org.apache.commons.io,
  com.google.gson,
- cipm.consistency.commitintegration.diff.util;bundle-version="1.0.0",
+ cipm.consistency.commitintegration.diff.util,
  org.eclipse.emf.ecore;bundle-version="2.28.0"
 Export-Package: cipm.consistency.tools.evaluation.data

@@ -6,7 +6,7 @@ Bundle-Version: 0.2.0.qualifier
 Export-Package: cipm.consistency.cpr.util
 Require-Bundle: org.emftext.language.java,
  org.palladiosimulator.pcm,
- tools.vitruv.framework.correspondence,
+ tools.vitruv.change.correspondence,
  tools.vitruv.applications.pcmjava.seffstatements.pojotransformations,
  tools.vitruv.applications.pcmjava.seffstatements.extended,
  tools.vitruv.applications.pcmjava.seffstatements,

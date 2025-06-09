@@ -5,8 +5,7 @@ Bundle-SymbolicName: cipm.consistency.vsum
 Bundle-Version: 0.2.0.qualifier
 Automatic-Module-Name: cipm.consistency.vsum
 Bundle-RequiredExecutionEnvironment: JavaSE-11
-Require-Bundle: cipm.consistency.commitintegration,
- tools.vitruv.framework.vsum,
+Require-Bundle: tools.vitruv.framework.vsum,
  tools.vitruv.dsls.reactions.runtime,
  cipm.consistency.base.shared,
  cipm.consistency.models.instrumentation,
@@ -15,10 +14,9 @@ Require-Bundle: cipm.consistency.commitintegration,
  org.eclipse.emf.compare;bundle-version="3.5.3",
  edu.kit.ipd.sdq.commons.util.emf;bundle-version="2.0.0",
  tools.vitruv.framework.views,
- org.splevo.diffing;bundle-version="1.0.0",
- org.splevo.jamopp.diffing;bundle-version="1.0.0",
- org.splevo.jamopp.extraction;bundle-version="1.0.0",
- org.splevo.extraction;bundle-version="1.0.0",
- org.splevo.commons;bundle-version="1.0.0",
- org.xtext.lua;bundle-version="1.0.0"
+ org.splevo.diffing,
+ org.splevo.jamopp.diffing,
+ org.splevo.jamopp.extraction,
+ org.splevo.extraction,
+ org.splevo.commons
 Export-Package: cipm.consistency.vsum
