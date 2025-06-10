@@ -11,7 +11,6 @@ execute actions in java
 import basicComponent
 
 // TODO Extract prompts into Java classes, since they are re-usable
-
 reaction AddedBasicComponentToRepository {
 	after element pcm::BasicComponent inserted in pcm::Repository[components__Repository]
 	call {
@@ -32,6 +31,8 @@ reaction AddedCompositeComponentToRepository {
 	after element pcm::CompositeComponent inserted in pcm::Repository[components__Repository]
 	call {
 		// TODO Re-implement
+		// Ask whether there should be a direct Java correspondent (i.e. a Java element that directly corresponds to this component)
+		// Check dependencies implied by the nested components
 	}
 }
 
@@ -39,15 +40,16 @@ reaction RemovedCompositeComponentFromRepository {
 	after element pcm::CompositeComponent removed from pcm::Repository[components__Repository]
 	call {
 		// TODO Re-implement
-		// TODO Check whether individual components are used elsewhere
+		// Check whether individual components are used elsewhere
+		// Ask how/whether the nested components should be distributed or if they should be removed
 	}
 }
 
 routine addBasicComponentToRepository(pcm::BasicComponent cmp) {
 	update {
-		
+
 		// TODO Multiple JavaRoots possible here
-		
+		// TODO Extract component creation to a Java class,as it is re-usable
 		// type = 1: Component corresponds to a package
 		// type = 2: Component corresponds to a module
 		val type = UserInteractionFactory.instance.createDialogUserInteractor().getSingleSelectionDialogBuilder().

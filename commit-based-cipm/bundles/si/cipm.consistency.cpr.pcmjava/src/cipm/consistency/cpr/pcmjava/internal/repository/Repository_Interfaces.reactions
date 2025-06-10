@@ -29,11 +29,3 @@ reaction RemovedInterface {
 		// 2.2) Extract all potentially nested stuff to their own DataType
 	}
 }
-
-reaction ChangedInterface {
-	after element pcm::Interface replaced at pcm::Repository[interfaces__Repository]
-	call {
-		// TODO implement
-		// TODO Check for dependencies
-	}
-}

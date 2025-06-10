@@ -1,0 +1,89 @@
+import "http://www.emftext.org/java" as java
+import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
+
+reactions: system
+in reaction to changes in pcm
+execute actions in java
+
+/**
+ * Assumptions:
+ * 
+ * - There is only one system model, which encompasses the whole software system
+ */
+reaction AddedAssemblyContext {
+	after element pcm::AssemblyContext inserted in pcm::System[assemblyContexts__ComposedStructure]
+	call {
+		// TODO Implement
+		// Encapsulated component (in AssemblyContext) must be instantiated somewhere in code
+		//
+		// If there is a single component instantiation / AssemblyContext, add a correspondence
+		//
+		// If there are multiple component instantiations / AssemblyContexts, either:
+		// 1) Ask the user to map them OR
+		// 2) Decide their mapping automatically (based on structure)
+		//
+		// If there is no instantiation, either:
+		// 1) Ask the user to pick a location for it OR
+		// 2) Create a task for developers OR
+		// 3) Look through the SEFFs of the components to compute where it should be (then instantiate and use it during SEFF construction in code)
+	}
+}
+
+reaction RemovedAssemblyContext {
+	after element pcm::AssemblyContext removed from pcm::System[assemblyContexts__ComposedStructure]
+	call {
+		// TODO Implement
+		//
+		// Corresponding component instantiation (and all its occurrences) should be removed from code,
+		// because the component cannot "exist" in code without being instantiated
+		//
+		// Ask the user:
+		// 1) Should all occurrences be removed (even though it will most likely break the code)?
+		// 2) Should occurrences be replaced (with provided replacement mappings)?
+		// 3) Should only a developer task be generated?
+	}
+}
+
+reaction AddedSystemProvidedRole {
+	after element pcm::ProvidedRole inserted in pcm::System[providedRoles_InterfaceProvidingEntity]
+	call {
+		// TODO Implement
+		// Determine the entry point to the code as a whole
+		// Check whether the services that have to be provided are actually accessible from entry point to outside
+	}
+}
+
+reaction RemovedSystemProvidedRole {
+	after element pcm::ProvidedRole removed from pcm::System[providedRoles_InterfaceProvidingEntity]
+	call {
+		// TODO Implement
+		// Check for dependencies to the removed service, warn if making the service inaccessible breaks the code
+		// Ask the user whether the service should just be ignored in the System model or should be completely removed from the code
+	}
+}
+
+reaction AddedSystemAssemblyConnector {
+	after element pcm::AssemblyConnector inserted in pcm::System[connectors__ComposedStructure]
+	call {
+		// TODO Implement
+		// Check whether the connection between providing and requiring entities exists in code
+		//
+		// Ask the user to add the connection by:
+		// 1) Connecting the providing and requiring entities (references/method calls/etc.)
+		// 2) Generating a developer task
+	}
+}
+
+reaction RemovedSystemAssemblyConnector {
+	after element pcm::AssemblyConnector removed from pcm::System[connectors__ComposedStructure]
+	call {
+		// TODO Implement
+		//
+		// Ask the user whether:
+		// 1) Connection should just be removed from the PCM System model
+		// 2) Connection should be removed from Java code altogether
+		// 3) Generate a developer task
+	}
+}
+
+// No DelegationConnectors, since there is only one System object ?
