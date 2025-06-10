@@ -57,8 +57,26 @@ reaction RemovedSystemProvidedRole {
 	after element pcm::ProvidedRole removed from pcm::System[providedRoles_InterfaceProvidingEntity]
 	call {
 		// TODO Implement
-		// Check for dependencies to the removed service, warn if making the service inaccessible breaks the code
-		// Ask the user whether the service should just be ignored in the System model or should be completely removed from the code
+		// Check for dependencies to the provided service, warn if making the service inaccessible breaks the code
+		// Ask the user whether the provided service should just be ignored in the System model or should be completely removed from the code
+	}
+}
+
+reaction AddedSystemRequiredRole {
+	after element pcm::RequiredRole inserted in pcm::System[requiredRoles_InterfaceRequiringEntity]
+	call {
+		// TODO Implement
+		// Determine the entry point to the code as a whole
+		// Check whether the required services are actually accessible
+	}
+}
+
+reaction RemovedSystemRequiredRole {
+	after element pcm::RequiredRole removed from pcm::System[requiredRoles_InterfaceRequiringEntity]
+	call {
+		// TODO Implement
+		// Check for dependencies to the required service, warn if removing its dependencies breaks the code
+		// Ask the user whether the required service should just be ignored in the System model or should be completely removed from the code
 	}
 }
 

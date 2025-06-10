@@ -9,6 +9,7 @@ reaction AddedRDInternalBehaviourInRDSEFF {
 	after element pcm::ResourceDemandingInternalBehaviour inserted in pcm::ResourceDemandingSEFF[resourceDemandingInternalBehaviours]
 	call {
 		// TODO Implement
+		// TODO Conceptualise
 	}
 }
 
@@ -16,5 +17,6 @@ reaction RemovedRDInternalBehaviourInRDSEFF {
 	after element pcm::ResourceDemandingInternalBehaviour removed from pcm::ResourceDemandingSEFF[resourceDemandingInternalBehaviours]
 	call {
 		// TODO Implement
+		// TODO Conceptualise
 	}
 }
