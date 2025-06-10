@@ -1,0 +1,22 @@
+import "http://www.emftext.org/java" as java
+import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
+
+reactions: allocationContext
+in reaction to changes in pcm
+execute actions in java
+
+reaction ChangedResourceContainer {
+	after element pcm::ResourceContainer inserted in pcm::AllocationContext[resourceContainer_AllocationContext]
+	call {
+		// TODO Implement
+		// TODO Conceptualise
+	}
+}
+
+reaction ChangedAssemblyContext {
+	after element pcm::AssemblyContext inserted in pcm::AllocationContext[assemblyContext_AllocationContext]
+	call {
+		// TODO Implement
+		// TODO Conceptualise
+	}
+}

@@ -1,0 +1,54 @@
+import "http://www.emftext.org/java" as java
+import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
+
+reactions: resourceContainer
+in reaction to changes in pcm
+execute actions in java
+
+reaction AddedActiveResourceSpecification {
+	after element pcm::ProcessingResourceSpecification inserted in pcm::ResourceContainer[activeResourceSpecifications_ResourceContainer]
+	call {
+		// TODO Implement
+		// TODO Conceptualise
+	}
+}
+
+reaction RemovedActiveResourceSpecification {
+	after element pcm::ProcessingResourceSpecification removed from pcm::ResourceContainer[activeResourceSpecifications_ResourceContainer]
+	call {
+		// TODO Implement
+		// TODO Conceptualise
+	}
+}
+
+reaction AddedNestedResourceContainer {
+	after element pcm::ResourceContainer inserted in pcm::ResourceContainer[nestedResourceContainers__ResourceContainer]
+	call {
+		// TODO Implement
+		// TODO Conceptualise
+	}
+}
+
+reaction RemovedNestedResourceContainer {
+	after element pcm::ResourceContainer removed from pcm::ResourceContainer[nestedResourceContainers__ResourceContainer]
+	call {
+		// TODO Implement
+		// TODO Conceptualise
+	}
+}
+
+reaction AddedHDDProcessingResourceSpecification {
+	after element pcm::HDDProcessingResourceSpecification inserted in pcm::ResourceContainer[hddResourceSpecifications]
+	call {
+		// TODO Implement
+		// TODO Conceptualise
+	}
+}
+
+reaction RemovedHDDProcessingResourceSpecification {
+	after element pcm::HDDProcessingResourceSpecification removed from pcm::ResourceContainer[hddResourceSpecifications]
+	call {
+		// TODO Implement
+		// TODO Conceptualise
+	}
+}
