@@ -1,18 +1,20 @@
 package cipm.consistency.cpr.pcmjava;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
+import org.eclipse.emf.ecore.EObject;
 import org.emftext.language.java.classifiers.Classifier;
 import org.emftext.language.java.classifiers.ConcreteClassifier;
 import org.emftext.language.java.commons.Commentable;
-import org.emftext.language.java.containers.JavaRoot;
 import org.emftext.language.java.imports.Import;
 import org.emftext.language.java.imports.ImportingElement;
-import org.emftext.language.java.members.MemberContainer;
 import org.emftext.language.java.members.Method;
+import org.emftext.language.java.modifiers.AnnotableAndModifiable;
 import org.emftext.language.java.modifiers.Public;
 import org.emftext.language.java.types.TypeReference;
 import org.palladiosimulator.pcm.repository.CollectionDataType;
@@ -25,131 +27,70 @@ import org.palladiosimulator.pcm.repository.PrimitiveDataType;
 
 import com.google.common.collect.Sets;
 
+import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
+
 public final class PCMElementUtil {
 	private PCMElementUtil() {
 	}
 
-	/**
-	 * Disregards the potential visibility modifiers of the found classifiers, so
-	 * that it is possible to check for dependencies (ex: over imports)
-	 * 
-	 * @return All Java ConcreteClassifiers, which can be found under obj,
-	 *         regardless of their visibility.
-	 */
-	public static <T extends Commentable> Set<ConcreteClassifier> getAllConcreteClassifiers(T obj) {
-		Set<ConcreteClassifier> classifiers = Sets.newHashSet();
+	@SuppressWarnings("unchecked")
+	public static <T extends Commentable> Set<T> getAllJavaCorrespondentsOfType(EObject obj,
+			EditableCorrespondenceModelView<?> cm, Class<T> cls, Predicate<T> filter) {
+		Set<T> correspondents = Sets.newHashSet();
 
-		var it = obj.eAllContents();
-		while (it.hasNext()) {
-			var next = it.next();
-			if (next instanceof ConcreteClassifier) {
-				var castedNext = (ConcreteClassifier) next;
-				classifiers.add(castedNext);
-				classifiers.addAll(castedNext.getAllInnerClassifiers());
-
-				// Got next as classifier and all its inner classifiers too, no need to look
-				// further
-				it.prune();
-			}
+		for (var javaCorrespondent : cm.getCorrespondingEObjects(obj)) {
+			if (cls.isAssignableFrom(javaCorrespondent.getClass())
+					&& (filter == null || filter.test((T) javaCorrespondent)))
+				correspondents.add((T) javaCorrespondent);
 		}
-		return classifiers;
+
+		for (var objContent : obj.eContents()) {
+			correspondents.addAll(getAllJavaCorrespondentsOfType(objContent, cm, cls, filter));
+		}
+
+		return correspondents;
 	}
 
-	/**
-	 * Disregards the potential visibility modifiers of the found classifiers, so
-	 * that it is possible to check for dependencies (ex: over imports)
-	 * 
-	 * @return All Java ConcreteClassifiers, which can be found under objs,
-	 *         regardless of their visibility.
-	 */
-	public static Set<ConcreteClassifier> getAllConcreteClassifiers(Iterable<? extends Commentable> objs) {
-		Set<ConcreteClassifier> classifiers = Sets.newHashSet();
+	public static <T extends Commentable> Set<T> getAllJavaCorrespondentsOfType(Collection<EObject> objs,
+			EditableCorrespondenceModelView<?> cm, Class<T> cls, Predicate<T> filter) {
+		Set<T> classifiers = Sets.newHashSet();
 
 		for (var obj : objs) {
-			classifiers.addAll(getAllConcreteClassifiers(obj));
+			classifiers.addAll(getAllJavaCorrespondentsOfType(obj, cm, cls, filter));
 		}
 
 		return classifiers;
 	}
 
-	/**
-	 * @return All public ConcreteClassifier instances to be found under jr.
-	 */
-	public static <T extends Commentable> Set<ConcreteClassifier> getAllPublicConcreteClassifiers(T obj) {
-		Set<ConcreteClassifier> classifiers = getAllConcreteClassifiers(obj);
+	@SuppressWarnings("unchecked")
+	public static <T extends Commentable> Set<T> getAllVisibleJavaCorrespondentsOfType(EObject obj,
+			EditableCorrespondenceModelView<?> cm, Class<T> cls, Predicate<T> filter) {
+		Set<T> correspondents = Sets.newHashSet();
 
-		var clss = classifiers.toArray(ConcreteClassifier[]::new);
-		for (var cls : clss) {
-			if (!cls.hasModifier(Public.class)) {
-				classifiers.remove(cls);
-				classifiers.removeAll(cls.getAllInnerClassifiers());
-			}
+		for (var javaCorrespondent : cm.getCorrespondingEObjects(obj)) {
+			if (cls.isAssignableFrom(javaCorrespondent.getClass())
+					&& (!(javaCorrespondent instanceof AnnotableAndModifiable)
+							|| ((AnnotableAndModifiable) javaCorrespondent).hasModifier(Public.class))
+					&& (filter == null || filter.test((T) javaCorrespondent)))
+				correspondents.add((T) javaCorrespondent);
+		}
+
+		for (var objContent : obj.eContents()) {
+			correspondents.addAll(getAllJavaCorrespondentsOfType(objContent, cm, cls, filter));
+		}
+
+		return correspondents;
+	}
+
+	public static <T extends Commentable> Set<T> getAllVisibleJavaCorrespondentsOfType(Collection<EObject> objs,
+			EditableCorrespondenceModelView<?> cm, Class<T> cls, Predicate<T> filter) {
+		Set<T> classifiers = Sets.newHashSet();
+
+		for (var obj : objs) {
+			classifiers.addAll(getAllVisibleJavaCorrespondentsOfType(obj, cm, cls, filter));
 		}
 
 		return classifiers;
-	}
-
-	/**
-	 * @return All public ConcreteClassifier instances to be found under the given
-	 *         jrs.
-	 */
-	public static Set<ConcreteClassifier> getAllPublicConcreteClassifiers(Iterable<? extends Commentable> obj) {
-		Set<ConcreteClassifier> classifiers = Sets.newHashSet();
-
-		for (var jr : obj) {
-			classifiers.addAll(getAllPublicConcreteClassifiers(jr));
-		}
-
-		return classifiers;
-	}
-
-	/**
-	 * @return All public methods from the given MemberContainer.
-	 */
-	public static Set<Method> getAllPublicMethods(MemberContainer mc) {
-		Set<Method> mets = Sets.newHashSet();
-
-		mc.getMethods().stream().filter((m) -> m.hasModifier(Public.class)).forEach((m) -> mets.add(m));
-
-		return mets;
-	}
-
-	/**
-	 * @return All public methods from the given MemberContainers.
-	 */
-	public static Set<Method> getAllPublicMethods(Iterable<MemberContainer> mcs) {
-		Set<Method> mets = Sets.newHashSet();
-
-		for (var mc : mcs) {
-			mets.addAll(getAllPublicMethods(mc));
-		}
-
-		return mets;
-	}
-
-	/**
-	 * @return All public methods from the given JavaRoot.
-	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static Set<Method> getAllPublicMethodsInJavaRoot(JavaRoot jr) {
-		Set<Method> mets = Sets.newHashSet();
-
-		mets.addAll(getAllPublicMethods((Iterable) getAllPublicConcreteClassifiers(jr)));
-
-		return mets;
-	}
-
-	/**
-	 * @return All public methods from the given JavaRoots.
-	 */
-	public static Set<Method> getAllPublicMethodsInJavaRoots(Iterable<JavaRoot> jrs) {
-		Set<Method> mets = Sets.newHashSet();
-
-		for (var jr : jrs) {
-			mets.addAll(getAllPublicMethodsInJavaRoot(jr));
-		}
-
-		return mets;
 	}
 
 	/**
@@ -292,33 +233,26 @@ public final class PCMElementUtil {
 	}
 
 	/**
-	 * @param reqRole                         A given PCM RequiredRole
-	 * @param requiredInterfaceCorrespondents Java elements that correspond to the
-	 *                                        required interface denoted by
-	 *                                        RequiredRole
 	 * @return Whether the given PCM RequiredRole is necessary. This is the case, if
 	 *         the required interface is imported.
 	 */
 	public static boolean isRequiredRoleNecessary(OperationRequiredRole reqRole,
-			Iterable<? extends Commentable> requiredInterfaceCorrespondents) {
+			EditableCorrespondenceModelView<?> cm) {
+		var entity = reqRole.getRequiringEntity_RequiredRole();
 		var requiredIfc = reqRole.getRequiredInterface__OperationRequiredRole();
-		var requiringClassifierSet = getAllConcreteClassifiers(requiredInterfaceCorrespondents);
+		var requiringClassifierSet = getAllJavaCorrespondentsOfType(entity, cm, ConcreteClassifier.class, null);
 
 		return requiringClassifierSet.stream().anyMatch((cls) -> importsOperationInterface(requiredIfc, cls));
 	}
 
 	/**
-	 * 
-	 * @param pcmIFC                          A given PCM OperationInterface
-	 * @param requiredInterfaceCorrespondents Java elements that correspond to the
-	 *                                        required interface denoted by
-	 *                                        RequiredRole
 	 * @return A set of Java Imports, which are used to import the given PCM
 	 *         OperationInterface.
 	 */
 	public static Set<Import> getRequiredInterfaceImports(OperationInterface pcmIFC,
-			Iterable<? extends Commentable> requiredInterfaceCorrespondents) {
-		var requiringClassifierSet = getAllConcreteClassifiers(requiredInterfaceCorrespondents);
+			EditableCorrespondenceModelView<?> cm) {
+		var entity = pcmIFC.getRepository__Interface();
+		var requiringClassifierSet = getAllJavaCorrespondentsOfType(entity, cm, ConcreteClassifier.class, null);
 
 		var matches = new HashSet<Import>();
 		requiringClassifierSet.forEach((cls) -> {
@@ -330,17 +264,12 @@ public final class PCMElementUtil {
 	}
 
 	/**
-	 * @param reqRole                         A given PCM RequiredRole
-	 * @param requiredInterfaceCorrespondents Java elements that correspond to the
-	 *                                        required interface denoted by
-	 *                                        RequiredRole
 	 * @return A set of Java Imports, which make the given PCM RequiredRole
 	 *         necessary (i.e. not redundant)
 	 */
 	public static Set<Import> getRequiredRoleImports(OperationRequiredRole reqRole,
-			Iterable<? extends Commentable> requiredInterfaceCorrespondents) {
-		return getRequiredInterfaceImports(reqRole.getRequiredInterface__OperationRequiredRole(),
-				requiredInterfaceCorrespondents);
+			EditableCorrespondenceModelView<?> cm) {
+		return getRequiredInterfaceImports(reqRole.getRequiredInterface__OperationRequiredRole(), cm);
 	}
 
 	/**
@@ -351,16 +280,17 @@ public final class PCMElementUtil {
 	 * @return A set of all direct, 1 to 1 imports to javaType (i.e. all imports,
 	 *         which only import javaType)
 	 */
-	public static Set<Import> getAllDataTypeImports(DataType pcmType, Classifier javaType,
-			Iterable<? extends Commentable> toSearchForImports) {
+	public static Set<Import> getAllDataTypeImports(DataType pcmType, EditableCorrespondenceModelView<?> cm) {
+		var javaType = (ConcreteClassifier) cm.getCorrespondingEObjects(pcmType).stream()
+				.filter((javaObj) -> (javaObj instanceof ConcreteClassifier)).findFirst().get();
 		if (!doTypesMatch(pcmType, javaType)) {
 			return null;
 		}
 
-		// TODO Account for inner types too
+		// TODO Account for DataType's inner types too
 
 		var importSet = new HashSet<Import>();
-		for (var je : toSearchForImports) {
+		for (var je : getAllJavaCorrespondentsOfType(pcmType.getRepository__DataType(), cm, Commentable.class, null)) {
 			var it = je.eAllContents();
 			while (it.hasNext()) {
 				var next = it.next();
@@ -384,16 +314,17 @@ public final class PCMElementUtil {
 	 *                           references to javaType
 	 * @return A set of all direct java references to javaType
 	 */
-	public static Set<TypeReference> getAllDataTypeReferences(DataType pcmType, Classifier javaType,
-			Iterable<? extends Commentable> toSearchForReferences) {
+	public static Set<TypeReference> getAllDataTypeReferences(DataType pcmType, EditableCorrespondenceModelView<?> cm) {
+		var javaType = (ConcreteClassifier) cm.getCorrespondingEObjects(pcmType).stream()
+				.filter((javaObj) -> (javaObj instanceof ConcreteClassifier)).findFirst().get();
 		if (!doTypesMatch(pcmType, javaType)) {
 			return null;
 		}
 
-		// TODO Account for inner types too
+		// TODO Account for DataType's inner types too
 
 		var typeReferenceSet = new HashSet<TypeReference>();
-		for (var je : toSearchForReferences) {
+		for (var je : getAllJavaCorrespondentsOfType(pcmType.getRepository__DataType(), cm, Commentable.class, null)) {
 			var it = je.eAllContents();
 			while (it.hasNext()) {
 				var next = it.next();

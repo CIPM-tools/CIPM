@@ -1,4 +1,3 @@
-import org.emftext.language.java.containers.JavaRoot
 import cipm.consistency.cpr.pcmjava.PCMElementUtil
 
 import "http://www.emftext.org/java" as java
@@ -34,9 +33,7 @@ routine checkForRequiredDependencies(pcm::OperationRequiredRole role) {
 		val requiringEntity = role.requiringEntity_RequiredRole
 		val requiredIfc = role.requiredInterface__OperationRequiredRole
 
-		val correspondents = requiringEntity.getCorrespondingElements(JavaRoot, null, null)
-
-		if (!PCMElementUtil.isRequiredRoleNecessary(role, correspondents)) {
+		if (!PCMElementUtil.isRequiredRoleNecessary(role, correspondenceModel)) {
 			addMissingDependencyToRequiringEntity(requiringEntity, requiredIfc)
 		}
 	}
