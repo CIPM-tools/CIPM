@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.xtext.lua.lua.ComponentSet;
+//import org.xtext.lua.lua.ComponentSet;
 
 import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationModel;
 import cipm.consistency.models.ModelFacade;
@@ -118,9 +118,9 @@ public class VsumFacadeImpl implements VsumFacade {
 
         viewSelector.getSelectableElements()
             .forEach(ele -> {
-                if (ele instanceof ComponentSet) {
+//                if (ele instanceof ComponentSet) {
                     viewSelector.setSelected(ele, true);
-                }
+//                }
             });
 
         var view = viewSelector.createView()

@@ -1,4 +1,4 @@
-import cipm.consistency.cpr.luapcm.Config
+//import cipm.consistency.cpr.luapcm.Config // TODO: Move somewhere else
 import org.palladiosimulator.pcm.repository.RepositoryPackage
 
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
@@ -11,30 +11,30 @@ reaction AddedPcmRepository {
 	after element pcm::Repository inserted as root
 	call {
 		createRepositoryCorrespondence(newValue)
-		createLuaAnyType(newValue)
+//		createLuaAnyType(newValue)
 	}
 }
 
 routine createRepositoryCorrespondence(pcm::Repository repo) {
 	update {
 		addCorrespondenceBetween(repo, RepositoryPackage.Literals.REPOSITORY)
-		if (Config.descriptiveNames) {
-			repo.entityName = "AppSpace Repository"
-		}
+//		if (Config.descriptiveNames) {
+//			repo.entityName = "AppSpace Repository"
+//		}
 	}
 }
 
-routine createLuaAnyType(pcm::Repository repo) {
-	create {
-		val anyType = new pcm::CompositeDataType
-	}
-	update {
-		if (Config.descriptiveNames) {
-			anyType.entityName = "LUA_ANY_TYPE"
-		}
-		anyType.repository__DataType = repo
-
-		repo.dataTypes__Repository += anyType
-		addCorrespondenceBetween(anyType, RepositoryPackage.Literals.REPOSITORY)
-	}
-}
+//routine createLuaAnyType(pcm::Repository repo) {
+//	create {
+//		val anyType = new pcm::CompositeDataType
+//	}
+//	update {
+//		if (Config.descriptiveNames) {
+//			anyType.entityName = "LUA_ANY_TYPE"
+//		}
+//		anyType.repository__DataType = repo
+//
+//		repo.dataTypes__Repository += anyType
+//		addCorrespondenceBetween(anyType, RepositoryPackage.Literals.REPOSITORY)
+//	}
+//}

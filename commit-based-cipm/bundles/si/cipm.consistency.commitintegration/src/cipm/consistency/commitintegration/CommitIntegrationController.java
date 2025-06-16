@@ -14,7 +14,7 @@ import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 
-import cipm.consistency.commitintegration.lang.lua.runtimedata.ChangedResources;
+// import cipm.consistency.commitintegration.lang.lua.runtimedata.ChangedResources; // TODO: Check if can be imported again after adding Lua model.
 import cipm.consistency.models.code.CodeModelFacade;
 import cipm.consistency.tools.evaluation.data.EvaluationDataContainer;
 import cipm.consistency.vsum.Propagation;
@@ -105,7 +105,7 @@ public abstract class CommitIntegrationController<CM extends CodeModelFacade> {
 
         // this informs the ComponentSetInfoRegistry singleton that we changed resources which it
         // had mapped infos for
-        ChangedResources.setResourcesWereChanged();
+        // ChangedResources.setResourcesWereChanged(); // TODO: Check if can be activated again after adding Lua model.
         
         // reset evaluation data regarding the im update
         EvaluationDataContainer.get().resetImUpdateEval();
