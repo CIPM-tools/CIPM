@@ -1,6 +1,6 @@
 package tools.cipm.seff.pojotransformations.code2seff;
 
-import java.util.Set;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.emftext.language.java.members.ClassMethod;
@@ -8,8 +8,9 @@ import org.palladiosimulator.pcm.seff.ResourceDemandingInternalBehaviour;
 import org.palladiosimulator.pcm.seff.ResourceDemandingSEFF;
 import org.somox.gast2seff.visitors.ResourceDemandingBehaviourForClassMethodFinding;
 
-import tools.vitruv.framework.correspondence.CorrespondenceModel;
-import tools.vitruv.framework.correspondence.CorrespondenceModelUtil;
+import tools.cipm.seff.CorrespondenceModelUtil;
+import tools.vitruv.change.correspondence.Correspondence;
+import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
 
 public class ResourceDemandingBehaviourForClassMethodFinderForPackageMapping
         implements ResourceDemandingBehaviourForClassMethodFinding {
@@ -17,10 +18,10 @@ public class ResourceDemandingBehaviourForClassMethodFinderForPackageMapping
     private static final Logger LOGGER = Logger
             .getLogger(ResourceDemandingBehaviourForClassMethodFinderForPackageMapping.class.getSimpleName());
 
-    private final CorrespondenceModel correspondenceModel;
+    private final EditableCorrespondenceModelView<Correspondence> correspondenceModel;
 
     public ResourceDemandingBehaviourForClassMethodFinderForPackageMapping(
-            final CorrespondenceModel correspondenceModel) {
+            final EditableCorrespondenceModelView<Correspondence> correspondenceModel) {
         this.correspondenceModel = correspondenceModel;
     }
 
@@ -30,7 +31,7 @@ public class ResourceDemandingBehaviourForClassMethodFinderForPackageMapping
     }
 
     private <T> T getFirstCorrespondingEObjectIfAny(final ClassMethod classMethod, final Class<T> correspondingClass) {
-        final Set<T> correspondingObjects = CorrespondenceModelUtil
+        final List<T> correspondingObjects = CorrespondenceModelUtil
                 .getCorrespondingEObjects(this.correspondenceModel, classMethod, correspondingClass);
         if (correspondingObjects == null || correspondingObjects.isEmpty()) {
             return null;

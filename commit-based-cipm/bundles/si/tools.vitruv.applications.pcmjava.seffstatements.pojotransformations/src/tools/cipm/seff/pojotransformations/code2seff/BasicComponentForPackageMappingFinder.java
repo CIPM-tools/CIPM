@@ -1,7 +1,6 @@
 package tools.cipm.seff.pojotransformations.code2seff;
 
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
@@ -15,9 +14,10 @@ import org.emftext.language.java.containers.Package;
 import org.emftext.language.java.members.Method;
 import org.palladiosimulator.pcm.repository.BasicComponent;
 
-import tools.vitruv.framework.correspondence.CorrespondenceModelUtil;
 import tools.cipm.seff.BasicComponentFinding;
-import tools.vitruv.framework.correspondence.CorrespondenceModel;
+import tools.cipm.seff.CorrespondenceModelUtil;
+import tools.vitruv.change.correspondence.Correspondence;
+import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
 
 /**
  * Finds the component for a method if the the simple package mapping structure is used.
@@ -41,7 +41,7 @@ public class BasicComponentForPackageMappingFinder implements BasicComponentFind
      * component by finding the BasicComponent of the parent component.
      */
     @Override
-    public BasicComponent findBasicComponentForMethod(final Method newMethod, final CorrespondenceModel ci) {
+    public BasicComponent findBasicComponentForMethod(final Method newMethod, final EditableCorrespondenceModelView<Correspondence> ci) {
         final CompilationUnit cu = newMethod.getContainingCompilationUnit();
         if (null == cu) {
             LOGGER.info("Could not find basic component for method " + newMethod
@@ -83,11 +83,11 @@ public class BasicComponentForPackageMappingFinder implements BasicComponentFind
      * @return the first matching basic component.
      */
     private BasicComponent findCorrespondingBasicComponentForPackage(final Package jaMoPPPackage,
-            final CorrespondenceModel ci) {
+            final EditableCorrespondenceModelView<Correspondence> ci) {
         if (0 == jaMoPPPackage.getNamespaces().size()) {
             return null;
-        }
-        final Set<BasicComponent> correspondingComponents = CorrespondenceModelUtil
+        };
+        final List<BasicComponent> correspondingComponents = CorrespondenceModelUtil
                 .getCorrespondingEObjects(ci, jaMoPPPackage, BasicComponent.class);
         if (null == correspondingComponents || correspondingComponents.isEmpty()) {
 

@@ -1,6 +1,6 @@
 package tools.cipm.seff.pojotransformations.code2seff;
 
-import java.util.Set;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.emftext.language.java.members.ClassMethod;
@@ -11,9 +11,9 @@ import org.somox.gast2seff.visitors.AbstractFunctionClassificationStrategy;
 import org.somox.gast2seff.visitors.MethodCallFinder;
 
 import tools.cipm.seff.BasicComponentFinding;
-import tools.vitruv.applications.util.temporary.other.UriUtil;
-import tools.vitruv.framework.correspondence.CorrespondenceModel;
-import tools.vitruv.framework.correspondence.CorrespondenceModelUtil;
+import tools.cipm.seff.CorrespondenceModelUtil;
+import tools.vitruv.change.correspondence.Correspondence;
+import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
 
 /**
  * FunctionClassificationStrategy for the simple package mapping Strategy.
@@ -27,11 +27,11 @@ public class FunctionClassificationStrategyForPackageMapping extends AbstractFun
             .getLogger(FunctionClassificationStrategyForPackageMapping.class.getSimpleName());
 
     private final BasicComponentFinding basicComponentFinding;
-    private final CorrespondenceModel correspondenceModel;
+    private final EditableCorrespondenceModelView<Correspondence> correspondenceModel;
     private final BasicComponent myBasicComponent;
 
     public FunctionClassificationStrategyForPackageMapping(final BasicComponentFinding basicComponentFinding,
-            final CorrespondenceModel ci, final BasicComponent myBasicComponent) {
+            final EditableCorrespondenceModelView<Correspondence> ci, final BasicComponent myBasicComponent) {
         super(new MethodCallFinder());
         this.basicComponentFinding = basicComponentFinding;
         this.correspondenceModel = ci;
@@ -44,12 +44,13 @@ public class FunctionClassificationStrategyForPackageMapping extends AbstractFun
      */
     @Override
     protected boolean isExternalCall(final Method method) {
-        if (!UriUtil.normalizeURI(method)) {
-            LOGGER.info("Could not normalize URI for method " + method
-                    + ". Method call is not considered as as external call");
-            return false;
-        }
-        final Set<OperationSignature> correspondingSignatures = CorrespondenceModelUtil
+//        if (!UriUtil.normalizeURI(method)) { // TODO: Check if still needed.
+        	// Uses: method.eResource().getResourceSet().getURIConverter().normalize(method.eResource().getURI()) to set the URI of the resource.
+//            LOGGER.info("Could not normalize URI for method " + method
+//                    + ". Method call is not considered as as external call");
+//            return false;
+//        }
+        final List<OperationSignature> correspondingSignatures = CorrespondenceModelUtil
                 .getCorrespondingEObjects(this.correspondenceModel, method, OperationSignature.class);
         if (null != correspondingSignatures && !correspondingSignatures.isEmpty()) {
             return true;

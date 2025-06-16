@@ -4,32 +4,32 @@ import org.emftext.language.java.members.Method
 import org.palladiosimulator.pcm.repository.BasicComponent
 import org.somox.gast2seff.visitors.InterfaceOfExternalCallFindingFactory
 import org.somox.gast2seff.visitors.ResourceDemandingBehaviourForClassMethodFinding
-import tools.vitruv.domains.pcm.PcmDomainProvider
-import tools.vitruv.framework.correspondence.CorrespondenceModel
-import tools.vitruv.framework.userinteraction.UserInteractor
-import tools.vitruv.framework.propagation.impl.AbstractChangePropagationSpecification
-import tools.vitruv.framework.propagation.ResourceAccess
-import tools.vitruv.framework.change.echange.EChange
+import tools.vitruv.change.interaction.UserInteractor
+import tools.vitruv.change.propagation.impl.AbstractChangePropagationSpecification
+import tools.vitruv.change.propagation.ResourceAccess
+import tools.vitruv.change.atomic.EChange
 import org.somox.gast2seff.visitors.AbstractFunctionClassificationStrategy
-import tools.vitruv.domains.java.JavaDomain
-import tools.vitruv.domains.java.JavaDomainProvider
-import tools.vitruv.framework.change.echange.feature.attribute.ReplaceSingleValuedEAttribute
+import tools.vitruv.change.atomic.feature.attribute.ReplaceSingleValuedEAttribute
 import org.emftext.language.java.commons.CommonsPackage
-import tools.vitruv.framework.domains.AbstractVitruvDomain
+import tools.vitruv.change.composite.MetamodelDescriptor
+import org.emftext.language.java.JavaPackage
+import org.palladiosimulator.pcm.PcmPackage
+import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView
+import tools.vitruv.change.correspondence.Correspondence
 
 class Java2PcmMethodBodyChangePreprocessor extends AbstractChangePropagationSpecification {
 	val Code2SeffFactory code2SeffFactory;
 	
 	new(Code2SeffFactory code2SEFFfactory) {
-		this(code2SEFFfactory, new JavaDomainProvider().domain, new PcmDomainProvider().domain);
+		this(code2SEFFfactory, MetamodelDescriptor.of(JavaPackage.eINSTANCE), MetamodelDescriptor.of(PcmPackage.eINSTANCE));
 	}
 	
-	new(Code2SeffFactory code2SEFFfactory, JavaDomain sourceDomain, AbstractVitruvDomain targetDomain) {
+	new(Code2SeffFactory code2SEFFfactory, MetamodelDescriptor sourceDomain, MetamodelDescriptor targetDomain) {
 		super(sourceDomain, targetDomain)
 		this.code2SeffFactory = code2SEFFfactory
 	}
 
-	override propagateChange(EChange change, CorrespondenceModel correspondenceModel, ResourceAccess resourceAccess) {
+	override propagateChange(EChange change, EditableCorrespondenceModelView<Correspondence> correspondenceModel, ResourceAccess resourceAccess) {
 		if (doesHandleChange(change, correspondenceModel)) {
 			val attrChange = change as ReplaceSingleValuedEAttribute<?, ?>;
 			val meth = attrChange.affectedEObject as Method;
@@ -37,7 +37,7 @@ class Java2PcmMethodBodyChangePreprocessor extends AbstractChangePropagationSpec
 		}
 	}
 
-	override doesHandleChange(EChange change, CorrespondenceModel correspondenceModel) {
+	override doesHandleChange(EChange change, EditableCorrespondenceModelView<Correspondence> correspondenceModel) {
 		if (!(change instanceof ReplaceSingleValuedEAttribute)) {
 			return false;
 		}
@@ -47,7 +47,7 @@ class Java2PcmMethodBodyChangePreprocessor extends AbstractChangePropagationSpec
 			&& !attrChange.newValue.equals("")
 	}
 
-	private def void executeClassMethodBodyChangeRefiner(CorrespondenceModel correspondenceModel,
+	private def void executeClassMethodBodyChangeRefiner(EditableCorrespondenceModelView<Correspondence> correspondenceModel,
 		UserInteractor userInteracting, Method newMethod) {
 		val basicComponentFinding = code2SeffFactory.createBasicComponentFinding
 		val BasicComponent myBasicComponent = basicComponentFinding.findBasicComponentForMethod(newMethod,

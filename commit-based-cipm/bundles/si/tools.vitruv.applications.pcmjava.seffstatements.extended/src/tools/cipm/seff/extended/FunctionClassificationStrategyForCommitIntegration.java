@@ -8,7 +8,8 @@ import cipm.consistency.commitintegration.settings.CommitIntegrationSettingsCont
 import cipm.consistency.commitintegration.settings.SettingKeys;
 import tools.cipm.seff.BasicComponentFinding;
 import tools.cipm.seff.pojotransformations.code2seff.FunctionClassificationStrategyForPackageMapping;
-import tools.vitruv.framework.correspondence.CorrespondenceModel;
+import tools.vitruv.change.correspondence.Correspondence;
+import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
 
 /**
  * A function classification strategy for the commit-based integration.
@@ -19,7 +20,7 @@ public class FunctionClassificationStrategyForCommitIntegration
 		extends FunctionClassificationStrategyForPackageMapping {
 
 	public FunctionClassificationStrategyForCommitIntegration(BasicComponentFinding basicComponentFinding,
-			CorrespondenceModel ci, BasicComponent myBasicComponent) {
+			EditableCorrespondenceModelView<Correspondence> ci, BasicComponent myBasicComponent) {
 		super(basicComponentFinding, ci, myBasicComponent);
 	}
 

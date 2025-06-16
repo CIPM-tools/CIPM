@@ -7,8 +7,6 @@ import org.somox.gast2seff.visitors.AbstractFunctionClassificationStrategy
 import tools.cipm.seff.Java2PcmMethodBodyChangePreprocessor
 import tools.cipm.seff.ClassMethodBodyChangedTransformation
 import tools.cipm.seff.BasicComponentFinding
-import tools.vitruv.domains.provider.java.AdjustedJavaDomainProvider
-import tools.vitruv.domains.provider.pcm.ExtendedPcmDomainProvider
 import tools.cipm.seff.Code2SeffFactory
 
 class ExtendedJava2PcmMethodBodyChangePreprocessor extends Java2PcmMethodBodyChangePreprocessor {
@@ -23,8 +21,7 @@ class ExtendedJava2PcmMethodBodyChangePreprocessor extends Java2PcmMethodBodyCha
 	}
 	
 	new(Code2SeffFactory factory, boolean generateInternalCallActions) {
-		super(factory,
-			new AdjustedJavaDomainProvider().domain, new ExtendedPcmDomainProvider().domain)
+		super(factory)
 		this.shouldGenerateInternalCallActions = generateInternalCallActions;		
 	}
 

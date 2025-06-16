@@ -18,8 +18,9 @@ import com.google.common.collect.Lists;
 
 import tools.cipm.seff.BasicComponentFinding;
 import tools.cipm.seff.ClassMethodBodyChangedTransformation;
-import tools.vitruv.framework.correspondence.CorrespondenceModel;
-import tools.vitruv.framework.userinteraction.UserInteractor;
+import tools.vitruv.change.correspondence.Correspondence;
+import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
+import tools.vitruv.change.interaction.UserInteractor;
 
 /**
  * Class that keeps changes within a class method body consistent with the
@@ -62,7 +63,7 @@ public class ExtendedClassMethodBodyChangedTransformation extends ClassMethodBod
 	 * during the instrumentation process.
 	 */
 	@Override
-	public void execute(final CorrespondenceModel correspondenceModel,
+	public void execute(final EditableCorrespondenceModelView<Correspondence> correspondenceModel,
 			final UserInteractor userInteracting) {
 		super.execute(correspondenceModel, userInteracting);
 		var decorator = super.getSourceCodeDecoratorRepository();
@@ -73,7 +74,7 @@ public class ExtendedClassMethodBodyChangedTransformation extends ClassMethodBod
 	}
 	
 	private void bindAbstractActionsAndStatements(SourceCodeDecoratorRepository sourceCodeDecorator,
-			CorrespondenceModel correspondenceModel) {
+			EditableCorrespondenceModelView<Correspondence> correspondenceModel) {
 		List<SeffElementSourceCodeLink> seffElementSourceCodeLinks =
 				sourceCodeDecorator.getSeffElementsSourceCodeLinks();
 
@@ -86,7 +87,7 @@ public class ExtendedClassMethodBodyChangedTransformation extends ClassMethodBod
             	}
             	List<EObject> actionList = Lists.newArrayList(ab);
 	            for (Statement statement : seffElementSourceCodeLink.getStatement()) {
-                    correspondenceModel.createAndAddCorrespondence(actionList, Lists.newArrayList(statement));
+                    correspondenceModel.addCorrespondenceBetween(actionList, Lists.newArrayList(statement), "");
 	            }
             }
         }

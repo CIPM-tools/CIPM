@@ -5,7 +5,8 @@ import org.somox.gast2seff.visitors.AbstractFunctionClassificationStrategy;
 
 import tools.cipm.seff.BasicComponentFinding;
 import tools.cipm.seff.pojotransformations.code2seff.PojoJava2PcmCodeToSeffFactory;
-import tools.vitruv.framework.correspondence.CorrespondenceModel;
+import tools.vitruv.change.correspondence.Correspondence;
+import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
 
 /**
  * Provides a CodeToSeffFactory implementation for the commit-based integration.
@@ -20,7 +21,7 @@ public class CommitIntegrationCodeToSeffFactory extends PojoJava2PcmCodeToSeffFa
 	
 	@Override
 	public AbstractFunctionClassificationStrategy createAbstractFunctionClassificationStrategy(
-			BasicComponentFinding componentFinding, CorrespondenceModel cm,
+			BasicComponentFinding componentFinding, EditableCorrespondenceModelView<Correspondence> cm,
 			BasicComponent com) {
 		return new FunctionClassificationStrategyForCommitIntegration(componentFinding, cm, com);
 	}

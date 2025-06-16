@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.emftext.language.java.members.Method;
@@ -26,10 +25,11 @@ import org.splevo.jamopp.diffing.similarity.SimilarityChecker;
 
 import de.uka.ipd.sdq.identifier.Identifier;
 import tools.cipm.seff.BasicComponentFinding;
+import tools.cipm.seff.CorrespondenceModelUtil;
 import tools.cipm.seff.extended.ExtendedClassMethodBodyChangedTransformation;
-import tools.vitruv.framework.correspondence.CorrespondenceModel;
-import tools.vitruv.framework.correspondence.CorrespondenceModelUtil;
-import tools.vitruv.framework.userinteraction.UserInteractor;
+import tools.vitruv.change.correspondence.Correspondence;
+import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
+import tools.vitruv.change.interaction.UserInteractor;
 
 /**
  * Extends the incremental SEFF reconstruction by a fine-grained reconstruction
@@ -65,7 +65,7 @@ public class FineGrainedClassMethodBodyChangedTransformation extends ExtendedCla
 	 * existing SEFF.
 	 */
 	@Override
-	public void execute(final CorrespondenceModel correspondenceModel, final UserInteractor userInteracting) {
+	public void execute(final EditableCorrespondenceModelView<Correspondence> correspondenceModel, final UserInteractor userInteracting) {
 		if (!this.isArchitectureRelevantChange(correspondenceModel)) {
 			LOGGER.debug("Change within the method " + this.newMethod + " is not an architecture-relevant change.");
 			return;
@@ -91,7 +91,7 @@ public class FineGrainedClassMethodBodyChangedTransformation extends ExtendedCla
 	}
 
 	private ResourceDemandingBehaviour createNewResourceDemandingBehaviour(
-			final CorrespondenceModel correspondenceModel) {
+			final EditableCorrespondenceModelView<Correspondence> correspondenceModel) {
 		ResourceDemandingBehaviour newSEFF = SeffFactory.eINSTANCE.createResourceDemandingBehaviour();
 		final BasicComponent basicComponent = this.basicComponentFinder.findBasicComponentForMethod(this.newMethod,
 				correspondenceModel);
@@ -102,7 +102,7 @@ public class FineGrainedClassMethodBodyChangedTransformation extends ExtendedCla
 	}
 
 	private void calculateResourceDemandingBehaviourDiff(ResourceDemandingBehaviour oldSEFF,
-			ResourceDemandingBehaviour newSEFF, CorrespondenceModel ci) {
+			ResourceDemandingBehaviour newSEFF, EditableCorrespondenceModelView<Correspondence> ci) {
 		rdbDifference = new ResourceDemandingBehaviourDiff();
 
 		List<AbstractAction> listOldAbstractActions = this.getRelevantAbstractActions(oldSEFF);
@@ -143,7 +143,7 @@ public class FineGrainedClassMethodBodyChangedTransformation extends ExtendedCla
 	}
 
 	private void matchNewAndOldSeff(ResourceDemandingBehaviour oldSEFF, ResourceDemandingBehaviour newSEFF,
-			CorrespondenceModel ci) {
+			EditableCorrespondenceModelView<Correspondence> ci) {
 
 		List<AbstractAction> oldAbstractActions = this.getRelevantAbstractActions(oldSEFF);
 		Map<AbstractAction, List<Statement>> newSeffStatements = this.getNewSeffElementStatements(newSEFF);
@@ -154,7 +154,7 @@ public class FineGrainedClassMethodBodyChangedTransformation extends ExtendedCla
 
 			for (AbstractAction oldAbstractAction : oldAbstractActions) {
 				// Get corresponding statements for old AbstractAction.
-				Set<Statement> oldAbstractActionStatements = CorrespondenceModelUtil.getCorrespondingEObjects(ci,
+				List<Statement> oldAbstractActionStatements = CorrespondenceModelUtil.getCorrespondingEObjects(ci,
 						oldAbstractAction, Statement.class);
 
 				int similarStatementsCount = this.compareAbstractActions(newAbstractAction, oldAbstractAction,
@@ -185,7 +185,7 @@ public class FineGrainedClassMethodBodyChangedTransformation extends ExtendedCla
 	}
 
 	private int compareAbstractActions(AbstractAction newAbstractAction, AbstractAction oldAbstractAction,
-			List<Statement> newAbstractActionStatements, Set<Statement> oldAbstractActionStatements) {
+			List<Statement> newAbstractActionStatements, List<Statement> oldAbstractActionStatements) {
 		if (oldAbstractAction.getClass() != newAbstractAction.getClass()) {
 			return 0;
 		} else {
@@ -201,7 +201,7 @@ public class FineGrainedClassMethodBodyChangedTransformation extends ExtendedCla
 	 * @param oldStatements statements of the old method.
 	 * @return the number of similar statements.
 	 */
-	private int compareStatements(List<Statement> newStatements, Set<Statement> oldStatements) {
+	private int compareStatements(List<Statement> newStatements, List<Statement> oldStatements) {
 		int similarStatementsCount = 0;
 		for (Statement newStatement : newStatements) {
 			for (Statement oldStatement : oldStatements) {
@@ -288,7 +288,7 @@ public class FineGrainedClassMethodBodyChangedTransformation extends ExtendedCla
 		}
 	}
 
-	private void createCorrespondencesForAbstractActionsAndStatements(CorrespondenceModel correspondenceModel,
+	private void createCorrespondencesForAbstractActionsAndStatements(EditableCorrespondenceModelView<Correspondence> correspondenceModel,
 			ResourceDemandingBehaviour oldSeff) {
 		List<SeffElementSourceCodeLink> seffElementSourceCodeLinks = this.getSourceCodeDecoratorRepository()
 				.getSeffElementsSourceCodeLinks();
@@ -296,13 +296,13 @@ public class FineGrainedClassMethodBodyChangedTransformation extends ExtendedCla
 			List<Statement> listStatements = seffElementSourceCodeLink.getStatement();
 			Identifier seffElement = seffElementSourceCodeLink.getSeffElement();
 			if (oldSeff.getSteps_Behaviour().contains(seffElement)) {
-				correspondenceModel.createAndAddCorrespondence(
-						List.of(seffElement), new ArrayList<>(listStatements));
+				correspondenceModel.addCorrespondenceBetween(
+						List.of(seffElement), new ArrayList<>(listStatements), "");
 			} else {
 				var matching = rdbDifference.getNewAbstractActionMatching((AbstractAction) seffElement);
 				if (matching != null) {
-					correspondenceModel.createAndAddCorrespondence(List.of(matching.getOldAbstractAction()),
-							new ArrayList<>(listStatements));
+					correspondenceModel.addCorrespondenceBetween(List.of(matching.getOldAbstractAction()),
+							new ArrayList<>(listStatements), "");
 				}
 			}
 		}

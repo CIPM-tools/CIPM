@@ -9,7 +9,8 @@ import org.somox.sourcecodedecorator.SourceCodeDecoratorRepository;
 
 import tools.cipm.seff.BasicComponentFinding;
 import tools.cipm.seff.Code2SeffFactory;
-import tools.vitruv.framework.correspondence.CorrespondenceModel;
+import tools.vitruv.change.correspondence.Correspondence;
+import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
 
 public class PojoJava2PcmCodeToSeffFactory implements Code2SeffFactory {
 
@@ -20,7 +21,7 @@ public class PojoJava2PcmCodeToSeffFactory implements Code2SeffFactory {
 
 	@Override
 	public InterfaceOfExternalCallFindingFactory createInterfaceOfExternalCallFindingFactory(
-			final CorrespondenceModel correspondenceModel, final BasicComponent basicComponent) {
+			final EditableCorrespondenceModelView<Correspondence> correspondenceModel, final BasicComponent basicComponent) {
 		return new InterfaceOfExternalCallFindingFactory() {
 			public InterfaceOfExternalCallFinding createInterfaceOfExternalCallFinding(
 					SourceCodeDecoratorRepository sourceCodeDecoratorRepository,
@@ -32,13 +33,13 @@ public class PojoJava2PcmCodeToSeffFactory implements Code2SeffFactory {
 
 	@Override
 	public ResourceDemandingBehaviourForClassMethodFinding createResourceDemandingBehaviourForClassMethodFinding(
-			final CorrespondenceModel correspondenceModel) {
+			final EditableCorrespondenceModelView<Correspondence> correspondenceModel) {
 		return new ResourceDemandingBehaviourForClassMethodFinderForPackageMapping(correspondenceModel);
 	}
 
 	@Override
 	public AbstractFunctionClassificationStrategy createAbstractFunctionClassificationStrategy(
-			final BasicComponentFinding basicComponentFinding, final CorrespondenceModel correspondenceModel,
+			final BasicComponentFinding basicComponentFinding, final EditableCorrespondenceModelView<Correspondence> correspondenceModel,
 			final BasicComponent basicComponent) {
 		return new FunctionClassificationStrategyForPackageMapping(basicComponentFinding, correspondenceModel,
 				basicComponent);
