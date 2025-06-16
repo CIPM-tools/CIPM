@@ -1,0 +1,75 @@
+import org.emftext.language.java.classifiers.Annotation
+import org.emftext.language.java.members.ClassMethod
+
+import "http://www.emftext.org/java" as java 
+import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
+
+
+reactions: JaxRS
+in reaction to changes in AdjustedJava
+execute actions in PCMExtended
+
+
+import common
+
+routine checkJaxRSPCMSignatureCreation(java::Method interfaceMethod) {
+	match {
+		require absence of pcm::OperationInterface corresponding to interfaceMethod.containingConcreteClassifier
+		require absence of pcm::OperationSignature corresponding to interfaceMethod
+	}
+	action {
+		call {
+			for (annot : interfaceMethod.annotationInstances) {
+				val usedAnnotation = annot.annotation as Annotation
+				var httpMethodAnnotation = false
+				for (annotationOnUsedAnnotation : usedAnnotation.annotationInstances) {
+					if (annotationOnUsedAnnotation.annotation.name.equals("HttpMethod")) {
+						httpMethodAnnotation = true
+					}
+				}
+				if (httpMethodAnnotation && usedAnnotation.name.equals("Path")) {
+					createInterface(interfaceMethod.containingConcreteClassifier)
+					checkJaxRSInterfaceInheritance(interfaceMethod.containingConcreteClassifier)
+					createPCMSignature(interfaceMethod)
+					return
+				}
+			}
+		}
+	}
+}
+
+routine checkJaxRSInterfaceCreation(java::ConcreteClassifier javaInterface) {
+	action {
+		call {
+			for (annot : javaInterface.annotationInstances) {
+				val annotName = annot.annotation.name
+				if (annotName.equals("Path") || annotName.equals("ApplicationPath")) {
+					createInterface(javaInterface)
+					checkJaxRSInterfaceInheritance(javaInterface)
+					return
+				}
+			}
+		}
+	}
+}
+
+routine checkJaxRSInterfaceInheritance(java::ConcreteClassifier classifier) {
+	action {
+		call {
+			if (classifier instanceof org.emftext.language.java.classifiers.Class) {
+				var superClassifier = classifier.superClass
+				if (superClassifier !== null && !superClassifier.isJavaLangObject(superClassifier)) {
+					checkJaxRSInterfaceCreation(superClassifier)
+					for (mem : superClassifier.members) {
+						if (mem instanceof ClassMethod) {
+							checkJaxRSPCMSignatureCreation(mem)
+						}
+					}
+					checkMembersForOperations(superClassifier)
+					connectInterfacesByInheritance(classifier, superClassifier)
+					checkJaxRSInterfaceInheritance(superClassifier)
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,136 @@
+import org.emftext.language.java.classifiers.ConcreteClassifier
+import static tools.vitruv.applications.util.temporary.java.JavaTypeUtil.*
+import org.emftext.language.java.members.Field
+
+import "http://www.emftext.org/java" as java 
+import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
+
+
+reactions: classifierBody
+in reaction to changes in AdjustedJava
+execute actions in PCMExtended
+
+
+import classifier
+
+// Created Interface Method.
+reaction AddedInterfaceMethod {
+	after element java::InterfaceMethod inserted in java::Interface[members] 
+	call {
+		createOrFindPCMSignature(newValue)
+	}
+}
+
+// Created Class Method.
+reaction AddedClassMethod {
+	after element java::ClassMethod inserted in java::Class[members]
+	call {
+		if (newValue.public) {
+			createOrFindPCMSignature(newValue)
+		}
+		createSeffFromImplementingInterfaces(newValue, affectedEObject)
+		createSeffFromClassInterface(newValue, affectedEObject)
+	}
+}
+
+reaction ChangedJavaReturnType {
+	after element java::TypeReference replaced at java::Method[typeReference]
+	call {
+		if (newValue !== null) {
+			updateReturnType(affectedEObject, newValue)
+		}
+	}
+}
+
+reaction RemovedPublicModifierFromClassMethod {
+	after element java::Public removed from java::ClassMethod[annotationsAndModifiers]
+	call {
+		checkRemovalOfSEFF(affectedEObject)
+		checkRemovalOfOperationSignature(affectedEObject)
+	}
+}
+
+// Removed Interface Method.
+reaction RemovedInterfaceMethod {
+	after element java::InterfaceMethod removed from java::Interface[members] 
+	call {
+		checkRemovalOfOperationSignature(oldValue)
+	}
+}
+
+// Removed Class Method.
+reaction RemovedClassMethod {
+	after element java::ClassMethod removed from java::Class[members]
+	call {
+		checkRemovalOfSEFF(oldValue)
+		checkRemovalOfOperationSignature(oldValue)
+	}
+}
+
+reaction RenamedMember {
+	after attribute replaced at java::Member[name]
+		with !(affectedEObject instanceof ConcreteClassifier) && !(affectedEObject instanceof Field)
+	call {
+		renameMember(affectedEObject)
+	}
+}
+
+routine renameMember(java::Member javaMember) {
+	match {
+		val pcmElement = retrieve pcm::NamedElement corresponding to javaMember}
+	action {
+		update pcmElement {
+			pcmElement.entityName = javaMember.name
+		}
+	}
+}
+
+reaction AddedParameter {
+	after element java::OrdinaryParameter inserted in java::Parametrizable[parameters]
+	call {
+		createParameter(newValue, affectedEObject)
+	}
+}
+
+reaction RemovedParameter {
+	after element java::OrdinaryParameter removed from java::Parametrizable[parameters]
+	call {
+		deleteParameter(oldValue)
+	}
+}
+
+/**
+ * Needs a special reaction because Parameter is not a NamedElement.
+ */
+reaction RenamedParameter {
+	after attribute replaced at java::Parameter[name]
+	call {
+		changeParameterName(newValue, affectedEObject)
+	}
+}
+
+reaction AddedField {
+	after element java::Field inserted in java::Class[members]
+	call {
+		val type = getNormalizedClassifierFromTypeReference(newValue.typeReference)
+		checkFieldForRequiredInterface(type, newValue)
+	}
+}
+
+reaction ChangedFieldType {
+	after element replaced at java::Field[typeReference]
+	call {
+		changeInnerDeclarationType(newValue, affectedEObject)
+		if (oldValue !== null) {
+			checkUpdatedFieldType(affectedEObject, oldValue, newValue)
+		}
+	}
+}
+
+reaction RemovedField {
+	after element java::Field removed from java::Class[members]
+	call {
+		checkInnerDeclarationRemoval(oldValue)
+		removeRequiredRoleForJavaElement(oldValue)
+	}
+}
