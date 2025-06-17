@@ -68,6 +68,8 @@
 			<unit id="tools.vitruv.dsls.reactions.runtime.feature.source.feature.group" version="3.0.0"/>
 			<unit id="tools.vitruv.framework.vsum.feature.feature.group" version="3.0.0"/>
 			<unit id="tools.vitruv.framework.vsum.feature.source.feature.group" version="3.0.0"/>
+			<unit id="tools.vitruv.applications.util.temporary.feature.feature.group" version="3.0.0"/>
+			<unit id="tools.vitruv.applications.pcmjava.feature.feature.group" version="3.0.0"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
             <repository location="https://cipm-tools.github.io/updatesite/release/jamopp-5.1.0-cipm/"/>

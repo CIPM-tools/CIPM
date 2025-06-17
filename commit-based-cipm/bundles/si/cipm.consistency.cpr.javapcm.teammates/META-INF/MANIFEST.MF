@@ -18,6 +18,7 @@ Require-Bundle: org.emftext.language.java,
  cipm.consistency.commitintegration.settings,
  cipm.consistency.cpr.javapcm.msa,
  org.palladiosimulator.pcm,
- cipm.consistency.cpr.util
+ cipm.consistency.cpr.util,
+ tools.vitruv.applications.util.temporary
 Automatic-Module-Name: cipm.consistency.cpr.javapcm.teammates
 Bundle-RequiredExecutionEnvironment: JavaSE-11

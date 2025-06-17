@@ -16,6 +16,7 @@ public class TeammatesJavaPCMChangePropagationSpecification extends AllTeammates
 	protected void setup() {
 		super.setup();
 		// Change propagation specification for changes on method bodies.
-		this.addChangeMainprocessor(new TeammatesJava2PcmMethodBodyChangePreprocessor());
+		// TODO: Needs to be added somewhere else
+		// this.addChangeMainprocessor(new TeammatesJava2PcmMethodBodyChangePreprocessor());
 	}
 }

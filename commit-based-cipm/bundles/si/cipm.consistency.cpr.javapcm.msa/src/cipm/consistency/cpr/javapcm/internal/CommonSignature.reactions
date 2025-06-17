@@ -1,8 +1,8 @@
-import static tools.vitruv.applications.pcmjava.util.java2pcm.TypeReferenceCorrespondenceHelper.*
+import static tools.vitruv.applications.pcmjava.java2pcm.TypeReferenceCorrespondenceHelper.*
 import static extension edu.kit.ipd.sdq.commons.util.org.palladiosimulator.pcm.repository.ParameterUtil.*
 import static extension tools.vitruv.applications.util.temporary.java.JavaMemberAndParameterUtil.hasSameSignature
 import static tools.vitruv.applications.util.temporary.java.JavaTypeUtil.*
-import tools.vitruv.applications.pcmjava.util.java2pcm.TypeReferenceCorrespondenceHelper
+import tools.vitruv.applications.pcmjava.java2pcm.TypeReferenceCorrespondenceHelper
 import org.emftext.language.java.parameters.OrdinaryParameter
 import org.emftext.language.java.members.Method
 import org.emftext.language.java.modifiers.Abstract
@@ -12,8 +12,8 @@ import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
 
 
 reactions: commonSignature
-in reaction to changes in AdjustedJava
-execute actions in PCMExtended
+in reaction to changes in java
+execute actions in pcm
 
 
 import commonDataType
@@ -23,10 +23,8 @@ routine createOrFindPCMSignature(java::Method interfaceMethod) {
 		val pcmInterface = retrieve pcm::OperationInterface corresponding to interfaceMethod.containingConcreteClassifier
 		require absence of pcm::OperationSignature corresponding to interfaceMethod
 	}
-	action {
-		call {
-			createPCMSignature(interfaceMethod)
-		}
+	update {
+		createPCMSignature(interfaceMethod)
 	}
 }
 
@@ -35,25 +33,20 @@ routine createPCMSignature(java::Method interfaceMethod) {
 		val pcmInterface = retrieve pcm::OperationInterface corresponding to interfaceMethod.containingConcreteClassifier
 		require absence of pcm::OperationSignature corresponding to interfaceMethod
 	}
-	action {
-		val operationSignature = create pcm::OperationSignature and initialize {
-			operationSignature.entityName = interfaceMethod.name
-			operationSignature.interface__OperationSignature = pcmInterface
-		}
-		
-		update pcmInterface {
-			pcmInterface.signatures__OperationInterface += operationSignature
-		}
-		
-		call {
-			addCorrespondenceBetweenMethodAndOperationSignature(interfaceMethod, operationSignature)
-		}
+	create {
+		val operationSignature = new pcm::OperationSignature
+	}
+	update {
+		operationSignature.entityName = interfaceMethod.name
+		operationSignature.interface__OperationSignature = pcmInterface
+		pcmInterface.signatures__OperationInterface += operationSignature
+		addCorrespondenceBetweenMethodAndOperationSignature(interfaceMethod, operationSignature)
 	}
 }
 
 routine addCorrespondenceBetweenMethodAndOperationSignature(java::Method method, pcm::OperationSignature sign) {
-	action {
-		add correspondence between sign and method
+	update {
+		addCorrespondenceBetween(sign, method)
 	}
 }
 
@@ -61,13 +54,11 @@ routine checkMembersForOperations(java::ConcreteClassifier classifier) {
 	match {
 		retrieve pcm::OperationInterface corresponding to classifier
 	}
-	action {
-		call {
-			for (mem : classifier.members) {
-				if (mem instanceof Method) {
-					if (mem.public) {
-						createOrFindPCMSignature(mem)
-					}
+	update {
+		for (mem : classifier.members) {
+			if (mem instanceof Method) {
+				if (mem.public) {
+					createOrFindPCMSignature(mem)
 				}
 			}
 		}
@@ -79,11 +70,9 @@ routine createSeffFromClassInterface(java::ClassMethod method, java::Class javaC
 		val opInterface = retrieve pcm::OperationInterface corresponding to javaClass
 		require absence of pcm::ResourceDemandingSEFF corresponding to method
 	}
-	action {
-		call {
-			if (method.public && method.modifiers.filter(Abstract).size === 0) {
-				createSEFF(method, javaClass, method)
-			}
+	update {
+		if (method.public && method.modifiers.filter(Abstract).size === 0) {
+			createSEFF(method, javaClass, method)
 		}
 	}
 }
@@ -92,15 +81,13 @@ routine createSeffFromImplementingInterfaces(java::ClassMethod classMethod, java
 	match {
 		require absence of pcm::ResourceDemandingSEFF corresponding to classMethod
 	}
-	action {
-		call {
-			if (classMethod.modifiers.filter(Abstract).size !== 0) {
-				return;
-			}
-			val implementingInterfaces = findImplementingInterfacesFromTypeRefs(javaClass.implements)
-			for (implementingInterface : implementingInterfaces) {
-				createSeffFromImplementingInterface(classMethod, javaClass, implementingInterface)
-			}
+	update {
+		if (classMethod.modifiers.filter(Abstract).size !== 0) {
+			return;
+		}
+		val implementingInterfaces = findImplementingInterfacesFromTypeRefs(javaClass.implements)
+		for (implementingInterface : implementingInterfaces) {
+			createSeffFromImplementingInterface(classMethod, javaClass, implementingInterface)
 		}
 	}
 }
@@ -109,12 +96,10 @@ routine createSeffFromImplementingInterface(java::ClassMethod classMethod, java:
 	match {
 		val operationInterface = retrieve pcm::OperationInterface corresponding to javaInterface
 	} 
-	action {
-		call {
-			val methods = javaInterface.methods.filter[hasSameSignature(classMethod)]
-			for (method : methods) {
-				createSEFF(method, javaClass, classMethod)
-			}
+	update {
+		val methods = javaInterface.methods.filter[hasSameSignature(classMethod)]
+		for (method : methods) {
+			createSEFF(method, javaClass, classMethod)
 		}
 	}
 }
@@ -124,16 +109,14 @@ routine createSEFF(java::Method javaMethod, java::Class javaClass, java::ClassMe
 		val operationSignature = retrieve pcm::OperationSignature corresponding to javaMethod
 		val basicComponent = retrieve pcm::BasicComponent corresponding to javaClass
 	}
-	action {
-		val rdseff = create pcm::ResourceDemandingSEFF and initialize {
-			rdseff.describedService__SEFF = operationSignature
-			rdseff.basicComponent_ServiceEffectSpecification = basicComponent
-		}
-		add correspondence between classMethod and rdseff
-		
-		update basicComponent {
-			basicComponent.serviceEffectSpecifications__BasicComponent += rdseff
-		}
+	create {
+		val rdseff = new pcm::ResourceDemandingSEFF
+	}
+	update {
+		rdseff.describedService__SEFF = operationSignature
+		rdseff.basicComponent_ServiceEffectSpecification = basicComponent
+		addCorrespondenceBetween(classMethod, rdseff)
+		basicComponent.serviceEffectSpecifications__BasicComponent += rdseff
 	}
 }
 
@@ -141,24 +124,21 @@ routine createParameter(java::OrdinaryParameter javaParameter, java::Parametriza
 	match {
 		val operationSignature = retrieve pcm::OperationSignature corresponding to javaMethod
 	}
-	action {
-		call {
-			checkCollectionDataTypeCreation(javaParameter.typeReference)
-		}
-		val pcmParameter = create pcm::Parameter and initialize {
-			pcmParameter.operationSignature__Parameter = operationSignature
-			pcmParameter.dataType__Parameter = TypeReferenceCorrespondenceHelper.
-				getDataTypeFromTypeReference(javaParameter.typeReference, correspondenceModel,
-				userInteractor, operationSignature.interface__OperationSignature.repository__Interface)
-			pcmParameter.name = javaParameter.name
-		}
-		add correspondence between javaParameter and pcmParameter
-		update operationSignature {
-			operationSignature.parameters__OperationSignature += pcmParameter
-		}
-		call {
-			checkInnerDeclarationsCreation(pcmParameter.dataType__Parameter, javaParameter.typeReference)
-		}
+	create {
+		val pcmParameter = new pcm::Parameter
+	}
+	update {
+		checkCollectionDataTypeCreation(javaParameter.typeReference)
+		
+		pcmParameter.operationSignature__Parameter = operationSignature
+		pcmParameter.dataType__Parameter = TypeReferenceCorrespondenceHelper.
+			getDataTypeFromTypeReference(javaParameter.typeReference, correspondenceModel,
+			userInteractor, operationSignature.interface__OperationSignature.repository__Interface)
+		pcmParameter.name = javaParameter.name
+		addCorrespondenceBetween(javaParameter, pcmParameter)
+		operationSignature.parameters__OperationSignature += pcmParameter
+		
+		checkInnerDeclarationsCreation(pcmParameter.dataType__Parameter, javaParameter.typeReference)
 	}
 }
 
@@ -166,10 +146,8 @@ routine changeParameterName(String newName, java::Parameter javaParameter) {
 	match {
 		val pcmParameter = retrieve pcm::Parameter corresponding to javaParameter
 	}
-	action {
-		update pcmParameter {
-			pcmParameter.name = newName
-		}
+	update {
+		pcmParameter.name = newName
 	}
 }
 
@@ -177,13 +155,11 @@ routine updateReturnType(java::Method javaMethod, java::TypeReference typeRefere
 	match {
 		val operationSignature = retrieve pcm::OperationSignature corresponding to javaMethod
 	}
-	action {
-		update operationSignature {
-			val repository = operationSignature.interface__OperationSignature.repository__Interface
-			operationSignature.returnType__OperationSignature = getCorrespondingPCMDataTypeForTypeReference(
-				typeReference, correspondenceModel, userInteractor,
-				repository, javaMethod.typeReference.arrayDimension)
-		}
+	update {
+		val repository = operationSignature.interface__OperationSignature.repository__Interface
+		operationSignature.returnType__OperationSignature = getCorrespondingPCMDataTypeForTypeReference(
+			typeReference, correspondenceModel, userInteractor,
+			repository, javaMethod.typeReference.arrayDimension)
 	}
 }
 
@@ -191,17 +167,15 @@ routine checkRemovalOfOperationSignature(java::Method interfaceMethod) {
 	match {
 		val operationSignature = retrieve pcm::OperationSignature corresponding to interfaceMethod
 	}
-	action {
-		call {
-			for (param : interfaceMethod.parameters) {
-				if (param instanceof OrdinaryParameter) {
-					deleteParameter(param)
-				}
+	update {
+		for (param : interfaceMethod.parameters) {
+			if (param instanceof OrdinaryParameter) {
+				deleteParameter(param)
 			}
 		}
 		// Should the corresponding SEFFs still exist?
 		// Should the references to the removed OperationSignature in all rdseff.describedService__SEFF also be removed?
-		delete operationSignature
+		removeObject(operationSignature)
 	}
 }
 
@@ -209,8 +183,8 @@ routine checkRemovalOfSEFF(java::ClassMethod classMethod) {
 	match {
 		val seff = retrieve pcm::ResourceDemandingSEFF corresponding to classMethod
 	}
-	action {
-		delete seff
+	update {
+		removeObject(seff)
 	}
 }
 
@@ -218,8 +192,8 @@ routine deleteParameter(java::OrdinaryParameter javaParameter) {
 	match {
 		val pcmParameter = retrieve pcm::Parameter corresponding to javaParameter
 	}
-	action {
-		remove correspondence between javaParameter and pcmParameter
-		delete pcmParameter
+	update {
+		removeCorrespondenceBetween(javaParameter, pcmParameter)
+		removeObject(pcmParameter)
 	}
 }

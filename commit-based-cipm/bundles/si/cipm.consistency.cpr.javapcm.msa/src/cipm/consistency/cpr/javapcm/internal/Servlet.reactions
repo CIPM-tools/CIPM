@@ -5,8 +5,8 @@ import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
 
 
 reactions: Servlet
-in reaction to changes in AdjustedJava
-execute actions in PCMExtended
+in reaction to changes in java
+execute actions in pcm
 
 
 import JaxRS
@@ -15,15 +15,13 @@ routine checkServletInterfaceCreation(java::ConcreteClassifier javaInterface) {
 	match {
 		val com = retrieve pcm::RepositoryComponent corresponding to javaInterface
 	}
-	action {
-		call {
-			for (cc : javaInterface.allSuperClassifiers) {
-				if (cc.name.equals("HttpServlet")) {
-					createInterface(javaInterface)
-					createServletHierarchy(cc)
-					connectInterfacesByInheritance(javaInterface, cc)
-					return
-				}
+	update {
+		for (cc : javaInterface.allSuperClassifiers) {
+			if (cc.name.equals("HttpServlet")) {
+				createInterface(javaInterface)
+				createServletHierarchy(cc)
+				connectInterfacesByInheritance(javaInterface, cc)
+				return
 			}
 		}
 	}
@@ -34,25 +32,21 @@ routine createServletHierarchy(java::ConcreteClassifier start) {
 		require absence of pcm::OperationInterface corresponding to start
 		val repository = retrieve pcm::Repository corresponding to RepositoryPackage.Literals.REPOSITORY
 	}
-	action {
-		val servletInterface = create pcm::OperationInterface and initialize {
-			servletInterface.entityName = "Servlet"
-		}
-		val genericServletInterface = create pcm::OperationInterface and initialize {
-			genericServletInterface.entityName = "GenericServlet"
-			genericServletInterface.parentInterfaces__Interface += servletInterface
-		}
-		val httpServletInterface = create pcm::OperationInterface and initialize {
-			httpServletInterface.entityName = start.name
-			httpServletInterface.parentInterfaces__Interface += genericServletInterface
-		}
-		update repository {
-			repository.interfaces__Repository += servletInterface
-			repository.interfaces__Repository += genericServletInterface
-			repository.interfaces__Repository += httpServletInterface
-		}
-		call {
-			addCorrespondenceBetweenClassifierAndInterface(start, httpServletInterface)
-		}
+	create {
+		val servletInterface = new pcm::OperationInterface
+		val genericServletInterface = new pcm::OperationInterface
+		val httpServletInterface = new pcm::OperationInterface
+	}
+	update {
+		servletInterface.entityName = "Servlet"
+		genericServletInterface.entityName = "GenericServlet"
+		genericServletInterface.parentInterfaces__Interface += servletInterface
+		httpServletInterface.entityName = start.name
+		httpServletInterface.parentInterfaces__Interface += genericServletInterface
+
+		repository.interfaces__Repository += servletInterface
+		repository.interfaces__Repository += genericServletInterface
+		repository.interfaces__Repository += httpServletInterface
+		addCorrespondenceBetweenClassifierAndInterface(start, httpServletInterface)
 	}
 }

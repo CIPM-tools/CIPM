@@ -7,8 +7,8 @@ import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
 
 
 reactions: classifierBody
-in reaction to changes in AdjustedJava
-execute actions in PCMExtended
+in reaction to changes in java
+execute actions in pcm
 
 
 import classifier
@@ -78,10 +78,8 @@ reaction RenamedMember {
 routine renameMember(java::Member javaMember) {
 	match {
 		val pcmElement = retrieve pcm::NamedElement corresponding to javaMember}
-	action {
-		update pcmElement {
-			pcmElement.entityName = javaMember.name
-		}
+	update {
+		pcmElement.entityName = javaMember.name
 	}
 }
 

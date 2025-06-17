@@ -56,6 +56,8 @@ Require-Bundle: org.apache.log4j,
  tools.vitruv.applications.pcmjava.seffstatements.extended,
  tools.vitruv.applications.pcmjava.seffstatements.finegrained,
  cipm.consistency.commitintegration.settings,
- cipm.consistency.cpr.util
+ cipm.consistency.cpr.util,
+ tools.vitruv.applications.util.temporary,
+ tools.vitruv.applications.pcmjava;bundle-version="3.0.0"
 Automatic-Module-Name: cipm.consistency.cpr.javapcm.msa
 Bundle-RequiredExecutionEnvironment: JavaSE-11

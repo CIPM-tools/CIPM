@@ -5,8 +5,8 @@ import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
 
 
 reactions: commonInterface
-in reaction to changes in AdjustedJava
-execute actions in PCMExtended
+in reaction to changes in java
+execute actions in pcm
 
 
 routine createInterface(java::ConcreteClassifier javaInterface) {
@@ -14,22 +14,19 @@ routine createInterface(java::ConcreteClassifier javaInterface) {
 		val pcmRepository = retrieve pcm::Repository corresponding to RepositoryPackage.Literals.REPOSITORY
 		require absence of pcm::OperationInterface corresponding to javaInterface
 	}
-	action {
-		val pcmInterface = create pcm::OperationInterface and initialize {
-			pcmInterface.entityName = javaInterface.name
-		}
-		update pcmRepository {
-			pcmRepository.interfaces__Repository += pcmInterface
-		}
-		call {
-			addCorrespondenceBetweenClassifierAndInterface(javaInterface, pcmInterface)
-		}
+	create {
+		val pcmInterface = new pcm::OperationInterface 
+	}
+	update {
+		pcmInterface.entityName = javaInterface.name
+		pcmRepository.interfaces__Repository += pcmInterface
+		addCorrespondenceBetweenClassifierAndInterface(javaInterface, pcmInterface)
 	}
 }
 
 routine addCorrespondenceBetweenClassifierAndInterface(java::ConcreteClassifier javaClassifier, pcm::Interface pcmInterface) {
-	action {
-		add correspondence between javaClassifier and pcmInterface
+	update {
+		addCorrespondenceBetween(javaClassifier, pcmInterface)
 	}
 }
 
@@ -38,10 +35,8 @@ routine connectInterfacesByInheritance(java::ConcreteClassifier subClassifier, j
 		val subInterface = retrieve pcm::OperationInterface corresponding to subClassifier
 		val superInterface = retrieve pcm::OperationInterface corresponding to superClassifier
 	}
-	action {
-		update subInterface {
-			subInterface.parentInterfaces__Interface += superInterface
-		}
+	update {
+		subInterface.parentInterfaces__Interface += superInterface
 	}
 }
 
@@ -49,7 +44,7 @@ routine removeInterface(java::Classifier classifier) {
 	match {
 		val opInterface = retrieve pcm::OperationInterface corresponding to classifier
 	}
-	action {
-		delete opInterface
+	update {
+		removeObject(opInterface)
 	}
 }

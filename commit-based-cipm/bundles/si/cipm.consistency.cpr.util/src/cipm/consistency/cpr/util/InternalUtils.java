@@ -20,7 +20,10 @@ import org.palladiosimulator.pcm.seff.ResourceDemandingSEFF;
 
 import tools.cipm.seff.extended.CommitIntegrationCodeToSeffFactory;
 import tools.cipm.seff.pojotransformations.code2seff.FunctionClassificationStrategyForPackageMapping;
-import tools.vitruv.framework.correspondence.CorrespondenceModel;
+import tools.vitruv.change.correspondence.Correspondence;
+import tools.vitruv.change.correspondence.view.CorrespondenceModelViewFactory;
+import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
+import tools.vitruv.dsls.reactions.runtime.correspondence.ReactionsCorrespondence;
 
 /**
  * An internal utility class.
@@ -55,20 +58,22 @@ public final class InternalUtils {
 	 * @param com basic component in which the call occurs.
 	 * @return true if a call to the method is an external call.
 	 */
-	public static boolean isExternalCall(Method method, CorrespondenceModel cm, BasicComponent com) {
-		var factory = new CommitIntegrationCodeToSeffFactory();
-		class LocalStrategy extends FunctionClassificationStrategyForPackageMapping {
-			public LocalStrategy() {
-				super(factory.createBasicComponentFinding(), cm, com);
-			}
-
-			@Override
-			public boolean isExternalCall(Method call) {
-				return super.isExternalCall(call);
-			}
-		}
-		var strategy = new LocalStrategy();
-		return strategy.isExternalCall(method);
+	public static boolean isExternalCall(Method method, EditableCorrespondenceModelView<ReactionsCorrespondence> cm, BasicComponent com) {
+		// FIXME / TODO
+//		var factory = new CommitIntegrationCodeToSeffFactory();
+//		class LocalStrategy extends FunctionClassificationStrategyForPackageMapping {
+//			public LocalStrategy() {
+//				super(factory.createBasicComponentFinding(), cm, com);
+//			}
+//
+//			@Override
+//			public boolean isExternalCall(Method call) {
+//				return super.isExternalCall(call);
+//			}
+//		}
+//		var strategy = new LocalStrategy();
+//		return strategy.isExternalCall(method);
+		return false;
 	}
 	
 	/**

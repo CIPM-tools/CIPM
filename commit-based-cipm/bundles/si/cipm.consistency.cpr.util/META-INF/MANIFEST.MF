@@ -13,3 +13,4 @@ Require-Bundle: org.emftext.language.java,
  org.eclipse.emf.ecore
 Automatic-Module-Name: cipm.consistency.cpr.util
 Bundle-RequiredExecutionEnvironment: JavaSE-11
+Import-Package: tools.vitruv.dsls.reactions.runtime.correspondence

@@ -5,12 +5,13 @@ import org.somox.gast2seff.visitors.AbstractFunctionClassificationStrategy;
 
 import tools.cipm.seff.BasicComponentFinding;
 import tools.cipm.seff.extended.CommitIntegrationCodeToSeffFactory;
-import tools.vitruv.framework.correspondence.CorrespondenceModel;
+import tools.vitruv.change.correspondence.Correspondence;
+import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
 
 public class TeammatesCodeToSeffFactory extends CommitIntegrationCodeToSeffFactory {
 	@Override
 	public AbstractFunctionClassificationStrategy createAbstractFunctionClassificationStrategy(
-			BasicComponentFinding componentFinding, CorrespondenceModel cm,
+			BasicComponentFinding componentFinding, EditableCorrespondenceModelView<Correspondence> cm,
 			BasicComponent com) {
 		return new TeammatesFunctionClassificationStrategy(componentFinding, cm, com);
 	}

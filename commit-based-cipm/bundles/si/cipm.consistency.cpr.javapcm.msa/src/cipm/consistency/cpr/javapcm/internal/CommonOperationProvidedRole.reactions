@@ -8,8 +8,8 @@ import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
 
 
 reactions: commonOperationProvidedRole
-in reaction to changes in AdjustedJava
-execute actions in PCMExtended
+in reaction to changes in java
+execute actions in pcm
 
 
 // Add 'implements'.
@@ -31,12 +31,10 @@ reaction RemovedTypeReference {
 }
 
 routine createOrFindOperationProvidedRoleFromTypeReference(java::TypeReference typeReference) {
-	action {
-		call {
-			val javaClass = typeReference.eContainer as Class
-			var javaInterfaceClassifier = getNormalizedClassifierFromTypeReference(typeReference)
-			createOrFindOperationProvidedRole(javaInterfaceClassifier, javaClass)
-		}
+	update {
+		val javaClass = typeReference.eContainer as Class
+		var javaInterfaceClassifier = getNormalizedClassifierFromTypeReference(typeReference)
+		createOrFindOperationProvidedRole(javaInterfaceClassifier, javaClass)
 	}
 }
 
@@ -46,26 +44,25 @@ routine createOrFindOperationProvidedRole(java::Classifier classifierInterface, 
 		val basicComponent = retrieve pcm::BasicComponent corresponding to javaClass
 		val provRoles = retrieve many pcm::OperationProvidedRole corresponding to javaClass
 	}
-	action {
-		call {
-			val role = provRoles.findFirst[it.providedInterface__OperationProvidedRole === opInterface
-				&& it.providingEntity_ProvidedRole === basicComponent]
-			if (role === null || javaClass.annotationInstances.findFirst[it.annotation.name.equals("FeignClient")] === null) {
-				createOperationProvidedRole(opInterface, basicComponent, javaClass)
-			}
+	update {
+		val role = provRoles.findFirst[it.providedInterface__OperationProvidedRole === opInterface
+			&& it.providingEntity_ProvidedRole === basicComponent]
+		if (role === null || javaClass.annotationInstances.findFirst[it.annotation.name.equals("FeignClient")] === null) {
+			createOperationProvidedRole(opInterface, basicComponent, javaClass)
 		}
 	}
 }
 
 routine createOperationProvidedRole(pcm::OperationInterface opInterface,
 	pcm::BasicComponent basicComponent, java::Class javaClass) {
-	action {
-		val operationProvidedRole = create pcm::OperationProvidedRole and initialize {
-			operationProvidedRole.providedInterface__OperationProvidedRole = opInterface
-			operationProvidedRole.providingEntity_ProvidedRole = basicComponent
-			operationProvidedRole.entityName = basicComponent.entityName + "_provides_" + opInterface.entityName
-		}
-		add correspondence between operationProvidedRole and javaClass 
+	create {
+		val operationProvidedRole = new pcm::OperationProvidedRole
+	}
+	update {
+		operationProvidedRole.providedInterface__OperationProvidedRole = opInterface
+		operationProvidedRole.providingEntity_ProvidedRole = basicComponent
+		operationProvidedRole.entityName = basicComponent.entityName + "_provides_" + opInterface.entityName
+		addCorrespondenceBetween(operationProvidedRole, javaClass) 
 	}
 }
 
@@ -75,13 +72,11 @@ routine checkRemovalOfOperationProvidedRole(java::Class clazz, java::Classifier 
 		val basicCom = retrieve pcm::BasicComponent corresponding to clazz
 		val opRoles = retrieve many pcm::OperationProvidedRole corresponding to clazz
 	}
-	action {
-		call {
-			val role = opRoles.findFirst[it.providedInterface__OperationProvidedRole == interfaze
-				&& it.providingEntity_ProvidedRole == basicCom]
-			if (role !== null) {
-				removeOperationProvidedRole(role)
-			}
+	update {
+		val role = opRoles.findFirst[it.providedInterface__OperationProvidedRole == interfaze
+			&& it.providingEntity_ProvidedRole == basicCom]
+		if (role !== null) {
+			removeOperationProvidedRole(role)
 		}
 	}
 }
@@ -90,17 +85,15 @@ routine removeOperationProvidedRolesForRemovedClass(java::Classifier classifier)
 	match {
 		val opRoles = retrieve many pcm::OperationProvidedRole corresponding to classifier
 	}
-	action {
-		call {
-			for (role : opRoles) {
-				removeOperationProvidedRole(role)
-			}
+	update {
+		for (role : opRoles) {
+			removeOperationProvidedRole(role)
 		}
 	}
 }
 
 routine removeOperationProvidedRole(pcm::OperationProvidedRole role) {
-	action {
-		delete role
+	update {
+		removeObject(role)
 	}
 }

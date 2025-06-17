@@ -6,22 +6,20 @@ import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
 
 
 reactions: component
-in reaction to changes in AdjustedJava
-execute actions in PCMExtended
+in reaction to changes in java
+execute actions in pcm
 
 
 routine createOrFindArchitecturalElement(java::ConcreteClassifier classifier) {
 	match {
 		require absence of pcm::RepositoryComponent corresponding to classifier
 	}
-	action {
-		call {
-			val module = InternalUtils.getModule(classifier)
-			if (module === null) {
-				return
-			}
-			createOrFindArchitecturalElementBasedOnModule(classifier, module)
+	update {
+		val module = InternalUtils.getModule(classifier)
+		if (module === null) {
+			return
 		}
+		createOrFindArchitecturalElementBasedOnModule(classifier, module)
 	}
 }
 
@@ -29,13 +27,11 @@ routine createOrFindArchitecturalElementBasedOnModule(java::ConcreteClassifier c
 	match {
 		val pcmComponent = retrieve optional pcm::RepositoryComponent corresponding to module
 	}
-	action {
-		call {
-			if (!pcmComponent.isPresent) {
-				createBasicComponent(module)
-			}
-			addCorrespondenceForPcmComponentAndClassifierBasedOnModule(classifier, module)
+	update {
+		if (!pcmComponent.isPresent) {
+			createBasicComponent(module)
 		}
+		addCorrespondenceForPcmComponentAndClassifierBasedOnModule(classifier, module)
 	}
 }
 
@@ -43,14 +39,13 @@ routine createBasicComponent(java::Module module) {
 	match {
 		val pcmRepository = retrieve pcm::Repository corresponding to RepositoryPackage.Literals.REPOSITORY
 	}
-	action {
-		val pcmBasicComponent = create pcm::BasicComponent and initialize {
-			pcmBasicComponent.entityName = module.name
-		}
-		update pcmRepository {
-			pcmRepository.components__Repository += pcmBasicComponent
-		}
-		add correspondence between pcmBasicComponent and module
+	create {
+		val pcmBasicComponent = new pcm::BasicComponent
+	}
+	update {
+		pcmBasicComponent.entityName = module.name
+		pcmRepository.components__Repository += pcmBasicComponent
+		addCorrespondenceBetween(pcmBasicComponent, module)
 	}
 }
 
@@ -58,8 +53,8 @@ routine addCorrespondenceForPcmComponentAndClassifierBasedOnModule(java::Concret
 	match {
 		val pcmComponent = retrieve pcm::RepositoryComponent corresponding to module
 	}
-	action {
-		add correspondence between pcmComponent and classifier
+	update {
+		addCorrespondenceBetween(pcmComponent, classifier)
 	}
 }
 
@@ -68,12 +63,10 @@ routine checkBasicComponentRemovalForClassifier(java::ConcreteClassifier clazz) 
 		val pcmComponent = retrieve pcm::RepositoryComponent corresponding to clazz
 		val otherClassifiers = retrieve many java::ConcreteClassifier corresponding to pcmComponent
 	}
-	action {
-		remove correspondence between clazz and pcmComponent
-		call {
-			if (otherClassifiers.size == 1) {
-				removeComponent(pcmComponent)
-			}
+	update {
+		removeCorrespondenceBetween(clazz, pcmComponent)
+		if (otherClassifiers.size == 1) {
+			removeComponent(pcmComponent)
 		}
 	}
 }
@@ -82,15 +75,13 @@ routine checkBasicComponentRemovalForModule(java::Module mod) {
 	match {
 		val pcmComponent = retrieve pcm::RepositoryComponent corresponding to mod
 	}
-	action {
-		call {
-			removeComponent(pcmComponent)
-		}
+	update {
+		removeComponent(pcmComponent)
 	}
 }
 
 routine removeComponent(pcm::RepositoryComponent com) {
-	action {
-		delete com
+	update {
+		removeObject(com)
 	}
 }
