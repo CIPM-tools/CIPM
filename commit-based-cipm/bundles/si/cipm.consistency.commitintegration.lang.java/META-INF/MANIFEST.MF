@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Commit Integration of Java Code
+Bundle-SymbolicName: cipm.consistency.commitintegration.lang.java
+Bundle-Version: 0.3.0.qualifier
+Automatic-Module-Name: cipm.consistency.commitintegration.lang.java
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Export-Package: cipm.consistency.commitintegration.lang.java
+Require-Bundle: tools.vitruv.change.composite,
+ tools.vitruv.framework.vsum,
+ org.apache.commons.io,
+ cipm.consistency.models,
+ org.apache.log4j,
+ edu.kit.ipd.sdq.commons.util.emf,
+ org.splevo.diffing,
+ edu.kit.ipd.sdq.activextendannotations,
+ org.eclipse.emf.edit,
+ cipm.consistency.commitintegration,
+ cipm.consistency.tools.evaluation.data
