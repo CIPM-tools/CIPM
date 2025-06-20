@@ -16,4 +16,9 @@ Require-Bundle: tools.vitruv.change.composite,
  edu.kit.ipd.sdq.activextendannotations,
  org.eclipse.emf.edit,
  cipm.consistency.commitintegration,
- cipm.consistency.tools.evaluation.data
+ cipm.consistency.tools.evaluation.data,
+ jamopp.parser.jdt.singlefile,
+ org.emftext.language.java,
+ jamopp.resolution,
+ jamopp.parser,
+ cipm.consistency.commitintegration.settings
