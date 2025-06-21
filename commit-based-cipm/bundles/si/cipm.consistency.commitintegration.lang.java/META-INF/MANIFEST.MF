@@ -21,4 +21,6 @@ Require-Bundle: tools.vitruv.change.composite,
  org.emftext.language.java,
  jamopp.resolution,
  jamopp.parser,
- cipm.consistency.commitintegration.settings
+ cipm.consistency.commitintegration.settings,
+ org.eclipse.xtext.xbase.lib,
+ cipm.consistency.commitintegration.diff.util
