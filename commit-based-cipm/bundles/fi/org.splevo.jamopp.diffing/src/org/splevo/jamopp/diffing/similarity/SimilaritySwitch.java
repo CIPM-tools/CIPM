@@ -111,6 +111,7 @@ import org.emftext.language.java.references.Reference;
 import org.emftext.language.java.references.ReferenceableElement;
 import org.emftext.language.java.references.StringReference;
 import org.emftext.language.java.references.util.ReferencesSwitch;
+import org.emftext.language.java.statements.Block;
 import org.emftext.language.java.statements.CatchBlock;
 import org.emftext.language.java.statements.Conditional;
 import org.emftext.language.java.statements.ExpressionStatement;
@@ -1352,7 +1353,9 @@ public class SimilaritySwitch extends ComposedSwitch<Boolean> {
             }
             
             if (checkStatementPosition) {
-            	varSimilarity = similarityChecker.isSimilar(varStmt1.getParentByEType(StatementsPackage.Literals.BLOCK), varStmt2.getParentByEType(StatementsPackage.Literals.BLOCK), false);
+                var con1 = JaMoPPElementUtil.getFirstContainerNotOfGivenType(varStmt1, Block.class);
+                var con2 = JaMoPPElementUtil.getFirstContainerNotOfGivenType(varStmt2, Block.class);
+                varSimilarity = similarityChecker.isSimilar(con1, con2, false);
             	if (!varSimilarity) {
             		return Boolean.FALSE;
             	}
