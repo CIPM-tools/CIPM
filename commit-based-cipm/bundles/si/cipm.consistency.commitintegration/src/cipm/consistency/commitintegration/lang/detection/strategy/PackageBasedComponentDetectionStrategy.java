@@ -1,10 +1,13 @@
-package cipm.consistency.commitintegration.detection;
+package cipm.consistency.commitintegration.lang.detection.strategy;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
 
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emftext.language.java.containers.CompilationUnit;
+
+import cipm.consistency.commitintegration.lang.detection.ComponentCandidates;
+import cipm.consistency.commitintegration.lang.detection.ComponentState;
 
 /**
  * A component detection strategy in which sets of packages are mapped to components.
@@ -15,9 +18,9 @@ public abstract class PackageBasedComponentDetectionStrategy implements Componen
 	private static final class PackageModuleMapping {
 		private String packageRegex;
 		private String moduleName;
-		private ModuleState moduleClassification;
+		private ComponentState moduleClassification;
 		
-		private PackageModuleMapping(String packageRegex, String moduleName, ModuleState moduleClassification) {
+		private PackageModuleMapping(String packageRegex, String moduleName, ComponentState moduleClassification) {
 			this.packageRegex = packageRegex;
 			this.moduleName = moduleName;
 			this.moduleClassification = moduleClassification;
@@ -42,12 +45,12 @@ public abstract class PackageBasedComponentDetectionStrategy implements Componen
 	 * @param moduleName the name of the module / component.
 	 * @param moduleClassification the type of the module / component.
 	 */
-	protected void addPackageModuleMapping(String packageRegex, String moduleName, ModuleState moduleClassification) {
+	protected void addPackageModuleMapping(String packageRegex, String moduleName, ComponentState moduleClassification) {
 		mappings.add(new PackageModuleMapping(packageRegex, moduleName, moduleClassification));
 	}
 	
 	@Override
-	public void detectComponent(Resource res, Path file, Path container, ModuleCandidates candidate) {
+	public void detectComponent(Resource res, Path container, ComponentCandidates candidate) {
 		if (!res.getContents().isEmpty()) {
 			if (res.getContents().get(0) instanceof CompilationUnit) {
 				var cu = (CompilationUnit) res.getContents().get(0);
