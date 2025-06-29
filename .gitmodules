@@ -1,3 +1,7 @@
 [submodule "Palladio-Build-CodingConventions"]
 	path = CodingConventions/Palladio-Build-CodingConventions
 	url = https://github.com/PalladioSimulator/Palladio-Build-CodingConventions
+[submodule "commit-based-cipm/bundles/Vitruv"]
+	path = commit-based-cipm/bundles/Vitruv
+	url = https://github.com/CIPM-tools/Vitruv-Domains-ComponentBasedSystems.git
+	branch = 3.0.0-cipm
