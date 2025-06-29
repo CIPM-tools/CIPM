@@ -1,16 +1,3 @@
 [submodule "Palladio-Build-CodingConventions"]
 	path = CodingConventions/Palladio-Build-CodingConventions
 	url = https://github.com/PalladioSimulator/Palladio-Build-CodingConventions
-[submodule "commit-based-cipm/bundles/si/cipm.consistency.vsum.test/ciTestRepos/caseStudy1"]
-	path = commit-based-cipm/bundles/si/cipm.consistency.vsum.test/ciTestRepos/caseStudy1
-	url = https://git.scc.kit.edu/luaCIPM/caseStudy1
-[submodule "commit-based-cipm/bundles/si/cipm.consistency.vsum.test/ciTestRepos/minimalCaseStudy"]
-	path = commit-based-cipm/bundles/si/cipm.consistency.vsum.test/ciTestRepos/minimalCaseStudy
-	url = https://git.scc.kit.edu/luaCIPM/MinimalCaseStudy
-[submodule "luaXtext"]
-	path = luaXtext
-	url = https://git.scc.kit.edu/luaCIPM/luaXtext
-	branch = dev
-[submodule "commit-based-cipm/bundles/Vitruv-Change"]
-	path = commit-based-cipm/bundles/Vitruv-Change
-	url = https://github.com/vitruv-tools/Vitruv-Change
