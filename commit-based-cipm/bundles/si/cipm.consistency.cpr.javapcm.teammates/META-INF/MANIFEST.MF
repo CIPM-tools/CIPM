@@ -3,7 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Consistency Preservation Rules for Java to PCM and TEAMMATES
 Bundle-SymbolicName: cipm.consistency.cpr.javapcm.teammates
 Bundle-Version: 0.2.0.qualifier
-Export-Package: cipm.consistency.cpr.javapcm.teammates
+Export-Package: cipm.consistency.cpr.javapcm.teammates,
+ cipm.consistency.cpr.javapcm.teammates.seff
 Require-Bundle: org.emftext.language.java,
  tools.vitruv.change.correspondence,
  tools.vitruv.change.interaction,
