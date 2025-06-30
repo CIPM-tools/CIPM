@@ -29,9 +29,9 @@ public class JavaModelFacade implements CodeModelFacade {
     @Override
     public void initialize(Path dirPath) {
         this.dirLayout.initialize(dirPath);
-//        if (existsOnDisk()) {
-//            loadParsedFile();
-//        }
+        if (existsOnDisk()) {
+            loadParsedFile();
+        }
     }
 
     public void setComponentDetectionStrategies(List<ComponentDetectionStrategy> strategies) {
@@ -48,13 +48,19 @@ public class JavaModelFacade implements CodeModelFacade {
         		sourceCodeDir, this.dirLayout.getParsedCodePath(), this.dirLayout.getModuleConfiguration(), this.componentDetector);
 
         // TODO: Add option to configure storing the Java model.
-        // javaResource.save(null);
+         try {
+			javaResource.save(null);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
         if (!validateResource(javaResource)) {
             LOGGER.error("Code model is invalid!");
             return null;
         }
-
+        
+        this.currentResource = javaResource;
         return javaResource;
     }
     
