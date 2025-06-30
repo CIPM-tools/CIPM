@@ -2,6 +2,8 @@ package cipm.consistency.commitintegration.lang.java;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
@@ -9,10 +11,15 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.emftext.language.java.JavaClasspath;
+import org.emftext.language.java.LogicalJavaURIGenerator;
+import org.emftext.language.java.classifiers.ConcreteClassifier;
+import org.emftext.language.java.containers.CompilationUnit;
 import org.emftext.language.java.containers.JavaRoot;
+import org.emftext.language.java.containers.Origin;
 import org.emftext.language.java.types.PrimitiveType;
 
 import cipm.consistency.commitintegration.lang.detection.ComponentDetector;
+import cipm.consistency.commitintegration.lang.detection.ComponentState;
 import cipm.consistency.commitintegration.settings.CommitIntegrationSettingsContainer;
 import cipm.consistency.commitintegration.settings.SettingKeys;
 import jamopp.options.ParserOptions;
@@ -75,7 +82,9 @@ public final class JavaParserAndPropagatorUtils {
 		LOGGER.debug("Parsed " + resourceSet.getResources().size() + " files.");
 
 		// 2. Filter the resources and create modules for components.
-		detector.detectModules(resourceSet, dir.toAbsolutePath(), modConfig);
+		var components = detector.detectModules(resourceSet, dir.toAbsolutePath(), modConfig);
+		createModules(components.getModulesInState(ComponentState.MICROSERVICE_COMPONENT), resourceSet, Origin.FILE);
+		createModules(components.getModulesInState(ComponentState.REGULAR_COMPONENT), resourceSet, Origin.ARCHIVE);
 
 		// 3. Create one resource with all Java models.
 		LOGGER.debug("Creating one resource with all Java models.");
@@ -86,6 +95,34 @@ public final class JavaParserAndPropagatorUtils {
 		}
 		all.getContents().forEach(content -> JavaClasspath.get().registerJavaRoot((JavaRoot) content, all.getURI()));
 		return all;
+	}
+	
+	/**
+	 * Creates modules for a component.
+	 * 
+	 * @param map          a map of the modules to its Resources within the module.
+	 * @param resourceSet  the ResourceSet which contains all Java models.
+	 * @param moduleOrigin the origin for the modules.
+	 */
+	private static void createModules(Map<String, Set<Resource>> map, ResourceSet resourceSet, Origin moduleOrigin) {
+		map.forEach((k, v) -> {
+			URI uri = LogicalJavaURIGenerator.getModuleURI(k);
+			Resource targetResource = resourceSet.getResource(uri, false);
+			if (targetResource == null) {
+				targetResource = resourceSet.createResource(uri);
+			}
+			org.emftext.language.java.containers.Module mod =
+					org.emftext.language.java.containers.ContainersFactory.eINSTANCE
+					.createModule();
+			mod.setName(k);
+			mod.setOrigin(moduleOrigin);
+			targetResource.getContents().add(mod);
+			// For every compilation unit in the module, the module of its package is set to
+			// the newly created module.
+			v.stream().map(resource -> resource.getContents().get(0)).map(obj -> (CompilationUnit) obj)
+					.map(cu -> cu.getChildrenByType(ConcreteClassifier.class)).flatMap(cc -> cc.stream())
+					.map(cc -> cc.getPackage()).filter(p -> p != null).forEach(p -> p.setModule(mod));
+		});
 	}
 	
 	/**
