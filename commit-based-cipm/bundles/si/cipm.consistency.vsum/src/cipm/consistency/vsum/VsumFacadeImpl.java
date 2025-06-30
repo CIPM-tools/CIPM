@@ -1,6 +1,7 @@
 package cipm.consistency.vsum;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,6 +10,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 //import org.xtext.lua.lua.ComponentSet;
+import org.emftext.language.java.containers.JavaRoot;
 
 import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationModel;
 import cipm.consistency.models.ModelFacade;
@@ -118,9 +120,9 @@ public class VsumFacadeImpl implements VsumFacade {
 
         viewSelector.getSelectableElements()
             .forEach(ele -> {
-//                if (ele instanceof ComponentSet) {
+                if (ele instanceof JavaRoot) {
                     viewSelector.setSelected(ele, true);
-//                }
+                }
             });
 
         var view = viewSelector.createView()
@@ -291,28 +293,35 @@ public class VsumFacadeImpl implements VsumFacade {
         }
 
         var view = getChangeDerivingView(vsum);
-        var newRootEobject = resource.getContents()
-            .get(0);
-
+//        var newRootEobject = resource.getContents()
+//            .get(0);
+//        
+//        var roots = view.getRootObjects();
+//        var possiblyExistingRoot = roots.stream()
+//            .filter(root -> root.eResource()
+//                .getURI() == actualtargetUri)
+//            .findAny();
+//        var replaceRootObject = possiblyExistingRoot.isPresent();
+//        if (replaceRootObject) {
+//            LOGGER.trace(String.format("Replacing old root object (%s) at %s", newRootEobject.getClass(), targetUri));
+//            // replace the existing root with the new one
+//            var existingContents = possiblyExistingRoot.get()
+//                .eResource()
+//                .getContents();
+//            existingContents.remove(0);
+//            existingContents.add(newRootEobject);
+//        } else {
+//            LOGGER.trace(String.format("Registering new root object (%s) at %s", newRootEobject.getClass(), targetUri));
+//            // or register the new root at the view
+//            view.registerRoot(newRootEobject, targetUri);
+//        }
+        
         var roots = view.getRootObjects();
-        var possiblyExistingRoot = roots.stream()
-            .filter(root -> root.eResource()
-                .getURI() == actualtargetUri)
-            .findAny();
-        var replaceRootObject = possiblyExistingRoot.isPresent();
-        if (replaceRootObject) {
-            LOGGER.trace(String.format("Replacing old root object (%s) at %s", newRootEobject.getClass(), targetUri));
-            // replace the existing root with the new one
-            var existingContents = possiblyExistingRoot.get()
-                .eResource()
-                .getContents();
-            existingContents.remove(0);
-            existingContents.add(newRootEobject);
-        } else {
-            LOGGER.trace(String.format("Registering new root object (%s) at %s", newRootEobject.getClass(), targetUri));
-            // or register the new root at the view
-            view.registerRoot(newRootEobject, targetUri);
+        if (!roots.isEmpty()) {
+        	var first = roots.iterator().next();
+        	first.eResource().getContents().clear();
         }
+        new ArrayList<>(resource.getContents()).forEach(ele -> view.registerRoot(ele, actualtargetUri));
 
         List<PropagatedChange> changeList = List.of();
         IllegalStateException exception = null;
