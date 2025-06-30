@@ -67,11 +67,11 @@ public class PcmFacade implements ModelFacade {
 
         // Bind the allocation
         // This needs to occur after pcm.saveToFile
-        allocationModel.setSystem_Allocation(systemModel);
-        allocationModel.setTargetResourceEnvironment_Allocation(resourceEnvModel);
-
-        // save again for the allocation model
-        saveToDisk();
+//        allocationModel.setSystem_Allocation(systemModel);
+//        allocationModel.setTargetResourceEnvironment_Allocation(resourceEnvModel);
+//
+//        // save again for the allocation model
+//        saveToDisk();
 //        try {
 //            allocationModel.eResource()
 //                .save(null);

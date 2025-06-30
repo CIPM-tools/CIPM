@@ -86,7 +86,7 @@ public class CommitIntegrationState<CM extends CodeModelFacade> {
         }
 
         // the settings container needs to be initialized before everything else
-        CommitIntegrationSettingsContainer.initialize(dirLayout.getSettingsFilePath());
+        // CommitIntegrationSettingsContainer.initialize(dirLayout.getSettingsFilePath());
         gitRepositoryWrapper = commitIntegration.getGitRepositoryWrapper();
 
         // initialize models

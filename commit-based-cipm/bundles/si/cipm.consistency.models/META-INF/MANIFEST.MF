@@ -4,7 +4,7 @@ Bundle-Name: cipm.consistency.models
 Bundle-SymbolicName: cipm.consistency.models
 Bundle-Version: 1.0.0.qualifier
 Automatic-Module-Name: cipm.consistency.models
-Bundle-RequiredExecutionEnvironment: JavaSE-13
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Export-Package: cipm.consistency.models,
  cipm.consistency.models.im,
  cipm.consistency.models.pcm,
