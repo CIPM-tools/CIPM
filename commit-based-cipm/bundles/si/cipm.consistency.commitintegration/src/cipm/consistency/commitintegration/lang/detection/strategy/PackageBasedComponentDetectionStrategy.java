@@ -51,16 +51,20 @@ public abstract class PackageBasedComponentDetectionStrategy implements Componen
 	
 	@Override
 	public void detectComponent(Resource res, Path container, ComponentCandidates candidate) {
-		if (!res.getContents().isEmpty()) {
-			if (res.getContents().get(0) instanceof CompilationUnit) {
-				var cu = (CompilationUnit) res.getContents().get(0);
-				var packName = cu.getClassifiers().get(0).getPackage().getNamespacesAsString();
-				mappings.forEach(map -> {
-					if (packName.matches(map.packageRegex)) {
-						candidate.addModuleClassifier(map.moduleClassification, map.moduleName, res);
-					}
-				});
-			}
+		if (res.getContents().isEmpty() || !(res.getContents().get(0) instanceof CompilationUnit)) {
+			return;
 		}
+		
+		var cu = (CompilationUnit) res.getContents().get(0);
+		if (cu.getClassifiers().isEmpty() || cu.getClassifiers().get(0).getPackage() == null) {
+			return;
+		}
+		
+		var packName = cu.getClassifiers().get(0).getPackage().getNamespacesAsString();
+		mappings.forEach(map -> {
+			if (packName.matches(map.packageRegex)) {
+				candidate.addModuleClassifier(map.moduleClassification, map.moduleName, res);
+			}
+		});
 	}
 }
