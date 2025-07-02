@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.revwalk.RevCommit;
 
-public class TEAMMATESTagCITest extends TEAMMATESCITest {
+public class TEAMMATESTagCITest {
 	private String[] getListOfCommitsFromTags(File gitDir) throws Exception {
 		class InternalCommit {
 			private int time;
