@@ -13,10 +13,10 @@ import org.emftext.language.java.statements.Statement;
 import org.palladiosimulator.pcm.repository.OperationSignature;
 
 import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationModel;
-import cipm.consistency.commitintegration.JavaFileSystemLayout;
 import cipm.consistency.commitintegration.JavaParserAndPropagatorUtils;
 import cipm.consistency.commitintegration.diff.util.JavaChangedMethodDetectorDiffPostProcessor;
 import cipm.consistency.commitintegration.diff.util.JavaModelComparator;
+import cipm.consistency.commitintegration.lang.java.JavaFileSystemLayout;
 import cipm.consistency.tools.evaluation.data.EvaluationDataContainer;
 import cipm.consistency.tools.evaluation.data.InstrumentationEvaluationData;
 import tools.vitruv.domains.java.tuid.JamoppStringOperations;

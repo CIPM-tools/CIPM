@@ -32,14 +32,17 @@ import cipm.consistency.base.shared.ModelUtil;
 import cipm.consistency.commitintegration.CommitIntegration;
 import cipm.consistency.commitintegration.CommitIntegrationState;
 import cipm.consistency.commitintegration.diff.util.ComparisonBasedJaccardCoefficientCalculator;
+import cipm.consistency.commitintegration.diff.util.JavaModelComparator;
 import cipm.consistency.commitintegration.diff.util.pcm.PCMModelComparator;
-import cipm.consistency.commitintegration.lang.lua.changeresolution.HierarchicalStateBasedChangeResolutionStrategy;
+import cipm.consistency.commitintegration.lang.java.JavaStateBasedChangeResolutionStrategy;
+//import cipm.consistency.commitintegration.lang.lua.changeresolution.HierarchicalStateBasedChangeResolutionStrategy;
 import cipm.consistency.models.code.CodeModelFacade;
 import cipm.consistency.tools.evaluation.data.EvaluationDataContainer;
 import cipm.consistency.tools.evaluation.data.PcmUpdateEvalData;
 import cipm.consistency.tools.evaluation.data.PcmUpdateEvalData.ComparisonType;
 import cipm.consistency.tools.evaluation.data.PcmUpdateEvalData.PcmEvalType;
 import cipm.consistency.vsum.Propagation;
+import cipm.consistency.vsum.test.IMUpdateEvaluator;
 
 /**
  * This class can be used to evaluate one propagation step, including the state based change
@@ -133,10 +136,10 @@ public class PropagationEvaluator<CM extends CodeModelFacade> {
             return validateEObject(modelRootElement);
         } catch (WrappedException e) {
             LOGGER.warn(e.getMessage());
-            if (e.getCause() instanceof UnresolvedReferenceException unresExp) {
-                LOGGER.warn("Could not resolve " + unresExp.getFeature()
-                    .getName() + " / " + unresExp.getReference() + " on " + unresExp.getObject());
-            }
+//            if (e.getCause() instanceof UnresolvedReferenceException unresExp) {
+//                LOGGER.warn("Could not resolve " + unresExp.getFeature()
+//                    .getName() + " / " + unresExp.getReference() + " on " + unresExp.getObject());
+//            }
             return false;
         }
     }
@@ -183,8 +186,7 @@ public class PropagationEvaluator<CM extends CodeModelFacade> {
     }
 
     private Comparison compareCodeModels(Resource parsedCodeModel, Resource vsumCodeModel) {
-        var changeResolutionStrategy = new HierarchicalStateBasedChangeResolutionStrategy(true);
-        return changeResolutionStrategy.compareStates(parsedCodeModel, vsumCodeModel);
+        return JavaModelComparator.compareJavaModels(parsedCodeModel, vsumCodeModel, null, null, null);
     }
 
     private void evaluateCodeModelUpdate(EvaluationDataContainer eval) {
@@ -398,7 +400,7 @@ public class PropagationEvaluator<CM extends CodeModelFacade> {
 
         try {
             var previousRepo = ModelUtil.readFromFile(repoFile, Repository.class);
-            evaluator.evaluateIMUpdate(repo, im, imEvalData, previousRepo);
+//            evaluator.evaluateIMUpdate(repo, im, imEvalData, previousRepo);
         } catch (Exception e) {
             LOGGER.error("Error loading previous repository: " + e.getMessage());
         }
