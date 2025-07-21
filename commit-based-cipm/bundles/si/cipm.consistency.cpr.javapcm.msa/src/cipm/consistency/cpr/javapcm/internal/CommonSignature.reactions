@@ -185,17 +185,17 @@ routine checkRemovalOfSEFF(java::ClassMethod classMethod) {
 		val seff = retrieve pcm::ResourceDemandingSEFF corresponding to classMethod
 	}
 	update {
-		deleteObjectWithChilds(seff)
+		deleteSEFFWithChilds(seff)
 	}
 }
 
-routine deleteObjectWithChilds(EObject obj) {
+routine deleteSEFFWithChilds(EObject obj) {
 	match {
-		val correspondingElements = retrieve many EObject corresponding to obj
+		val correspondingElements = retrieve many java::Commentable corresponding to obj
 	}
 	update {
 		for (child : new ArrayList(obj.eContents())) {
-			deleteObjectWithChilds(child);
+			deleteSEFFWithChilds(child);
 		}
 		for (correspondingEle : correspondingElements) {
 			removeCorrespondenceBetween(obj, correspondingEle);
