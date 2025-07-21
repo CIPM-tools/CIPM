@@ -1,6 +1,7 @@
 import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationModelPackage
 import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationType
 import cipm.consistency.cpr.pcmim.InternalUtils
+import java.util.ArrayList
 
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
 import "http://www.dmodel.com/InstrumentationMetamodel" as im
@@ -59,9 +60,11 @@ routine checkRemovalOfNonProxyServiceInstrumentationPoint(pcm::ResourceDemanding
 		val sip = retrieve im::ServiceInstrumentationPoint corresponding to seff
 	}
 	update {
-//		for (aip : sip.actionInstrumentationPoints) {
-//			aip.removeObject
-//		}
+		var aips = new ArrayList(sip.actionInstrumentationPoints);
+		for (aip : aips) {
+			removeCorrespondenceBetween(aip, aip.action);
+			aip.removeObject
+		}
 		sip.removeObject
 	}
 }
