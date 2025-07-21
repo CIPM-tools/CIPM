@@ -118,15 +118,32 @@ public class TEAMMATESCITestController {
         LOGGER.error(msg);
         Assert.fail(msg);
     }
-
+    
     /**
-     * Propagates the given commits and evaluates every propagation.
+     * Propagates the given commits and evaluates every propagation. It assumes that the propagation starts from an
+     * empty repository. Thus, if there is any previous state, it is reseted.
      * 
      * @param commitIds
      *            The commits to be propagated
      * @return The list of all the propagations.
      */
     protected List<Propagation> propagateAndEvaluate(String... commitIds) {
+    	return propagateAndEvaluate(true, commitIds);
+    }
+
+    /**
+     * Propagates the given commits and evaluates every propagation.
+     * 
+     * @param startFromNull When set to true, this parameter indicates if the propagation should start from an empty
+     *                      repository, which resets any previous persisted state or propagation. When set to false,
+     *                      the parameter indicates that the previous state corresponds to the first commit of the
+     *                      given commitIds. Therefore, the propagation starts with the changes between the first and
+     *                      second commit given in the commitIds.
+     * @param commitIds
+     *            The commits to be propagated
+     * @return The list of all the propagations.
+     */
+    protected List<Propagation> propagateAndEvaluate(boolean startFromNull, String... commitIds) {
         var evaluateImmediately = false;
 
         var historyEvalDir = this.state.getDirLayout()
@@ -136,8 +153,9 @@ public class TEAMMATESCITestController {
 
         List<Propagation> allPropagations = new ArrayList<>();
         try {
-            String previousCommitId = null;
-            for (var commitId : commitIds) {
+            String previousCommitId = startFromNull ? null : commitIds[0];
+            for (int i = startFromNull ? 0 : 1; i < commitIds.length; i++) {
+            	var commitId = commitIds[i];
                 if (commitId == null) {
                     // do an empty propagation to reset the models
                      this.teammatesController.propagateChanges(commitId);
