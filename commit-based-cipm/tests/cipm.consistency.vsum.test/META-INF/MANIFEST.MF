@@ -43,6 +43,7 @@ Require-Bundle: cipm.consistency.commitintegration,
  cipm.consistency.cpr.javapcm.teammates,
  cipm.consistency.cpr.javapcm.msa,
  cipm.consistency.commitintegration.lang.java,
- jamopp.resource
+ jamopp.resource,
+ cipm.consistency.cpr.pcmjava
 Export-Package: cipm.consistency.vsum.test
 Bundle-RequiredExecutionEnvironment: JavaSE-11
