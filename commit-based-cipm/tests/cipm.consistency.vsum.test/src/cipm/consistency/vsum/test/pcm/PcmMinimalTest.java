@@ -1,17 +1,18 @@
 package cipm.consistency.vsum.test.pcm;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.junit.Assert;
@@ -20,30 +21,37 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import cipm.consistency.commitintegration.CommitIntegrationState;
 import cipm.consistency.commitintegration.settings.CommitIntegrationSettingsContainer;
 import cipm.consistency.vsum.Propagation;
 import cipm.consistency.vsum.test.appspace.LoggingSetup;
+import jamopp.resource.JavaResource2Factory;
 
-public class PcmTEAMMATESCITestController {
-	private static final String COMMIT_TAG_V_8_0_0_RC_0 = "648425746bb9434051647c8266dfab50a8f2d6a3";
-	private static final String[] COMMIT_HASHES = { COMMIT_TAG_V_8_0_0_RC_0, "48b67bae03babf5a5e578aefce47f0285e8de8b4",
-			"83f518e279807dc7eb7023d008a4d1ab290fefee", "f33d0bcd5843678b832efd8ee2963e72a95ecfc9",
-			"ce4463a8741840fd25a41b14801eab9193c7ed18" };
-	// This version is the next one after the last commit in COMMIT_HASHES.
-	private static final String COMMIT_TAG_V_8_0_0_RC_2 = "8a97db611be37ae1975715723e1913de4fd675e8";
+public class PcmMinimalTest {
 
-	private static final Logger LOGGER = Logger.getLogger(PcmTEAMMATESCITestController.class);
+	/**
+	 * Initial commit (with 1 Java file, empty Java main method)
+	 */
+	private static final String commitID1 = "67d4507c6047be6bff3aad46158ee368db086bc4";
+	/**
+	 * With 1 Java file, main method prints "output"
+	 */
+	private static final String commitID2 = "5f86208a2b869aec3f5756ff2b95fbebf8e03045";
+	/**
+	 * First basic component addition
+	 */
+	private static final String commitID3 = "0ed2fca1e6e239d6dec6165741175b1cc5f542fa";
+	/**
+	 * Second basic component addition
+	 */
+	private static final String commitID4 = "c95bb64af02d82bb34cad06d934966dbc4be9673";
+
+	private static final Logger LOGGER = Logger.getLogger(PcmMinimalTest.class);
 	private PcmCommitIntegrationState state;
 	private PcmTEAMMATESCommitIntegration teammatesController;
 
-	private Path localRepository = Paths.get("target", "pcm", "TEAMMATES");
-	private String remoteRepository = "https://github.com/TEAMMATES/teammates.git";
-	private Path rootPath = Paths.get("target", "pcm", "TEAMMATESCITest");
-	private Path manualModelsPath = Paths.get("target", "pcm", "manual");
-	private Path javaModelResourcePath = Paths.get("target", "TEAMMATESCITest", "pcm",
-			"parsed-1-648425746bb9434051647c8266dfab50a8f2d6a3.code.javaxmi");
-	private Path pcmChangesPath = Paths.get("target", "TEAMMATESCITest", "pcm",
-			"pcmChanges-1-648425746bb9434051647c8266dfab50a8f2d6a3.changes");
+	private Path rootPath = Paths.get("target", "PcmMinimalTest");
+	private Path javaModelPath = rootPath.resolve(commitID1);
 
 	/**
 	 * 
@@ -55,24 +63,14 @@ public class PcmTEAMMATESCITestController {
 	 * @throws InvalidRemoteException
 	 */
 	protected void setup(boolean overwrite) {
+
 		// Create new empty state
-		this.teammatesController = new PcmTEAMMATESCommitIntegration(this.rootPath, this.javaModelResourcePath);
-		this.teammatesController.setPcmChangePath(pcmChangesPath);
+		this.teammatesController = new PcmTEAMMATESCommitIntegration(this.rootPath, this.javaModelPath);
 
 		// overwrite existing files?
 		try {
 			this.teammatesController.initialize(this.teammatesController);
 			this.state = this.teammatesController.getState();
-			// state.initialize(this.teammatesController,
-			// this.teammatesController.getRootPath(), overwrite);
-			if (Files.exists(this.localRepository)) {
-				this.teammatesController.getGitRepositoryWrapper()
-						.withLocalDirectory(this.localRepository.resolve(".git"));
-			} else {
-				this.teammatesController.getGitRepositoryWrapper().withRemoteRepositoryCopy(this.localRepository,
-						this.remoteRepository);
-			}
-			CommitIntegrationSettingsContainer.initialize(Paths.get("teammates-exec-files", "settings.properties"));
 		} catch (IOException | GitAPIException e) {
 			e.printStackTrace();
 			failTest("Unable to setup commit integration state");
@@ -91,11 +89,20 @@ public class PcmTEAMMATESCITestController {
 	 */
 	@BeforeAll
 	public static void deleteDataBeforeRunningTests() {
-		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("repository", new XMIResourceFactoryImpl());
-		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("system", new XMIResourceFactoryImpl());
-		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("resourceenvironment",
-				new XMIResourceFactoryImpl());
-		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("usagemodel", new XMIResourceFactoryImpl());
+		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("java", new JavaResource2Factory());
+		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("javaxmi", new JavaResource2Factory());
+//        try {
+//            Files.walk(TESTDATA_PATH)
+//                .sorted(Comparator.reverseOrder())
+//                .forEach(path -> {
+//                    if (!path.equals(TESTDATA_PATH)) {
+//                        path.toFile()
+//                            .delete();
+//                    }
+//                });
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 	}
 
 	@AfterEach
@@ -135,10 +142,7 @@ public class PcmTEAMMATESCITestController {
 	 * @return The list of all the propagations.
 	 */
 	protected List<Propagation> propagateAndEvaluate(boolean startFromNull, String... commitIds) {
-//		var evaluateImmediately = false;
-//
-//		var historyEvalDir = this.state.getDirLayout().getRootDirPath().getParent();
-//		var commitHistoryEvaluator = new CommitHistoryEvaluator();
+		var historyEvalDir = this.state.getDirLayout().getRootDirPath().getParent();
 
 		List<Propagation> allPropagations = new ArrayList<>();
 		try {
@@ -147,12 +151,11 @@ public class PcmTEAMMATESCITestController {
 				var commitId = commitIds[i];
 				if (commitId == null) {
 					// do an empty propagation to reset the models
-					this.teammatesController.propagateChangesList(commitId);
+					this.teammatesController.propagateChanges(null, null);
 					continue;
 				}
 
-				List<Optional<Propagation>> propagations = this.teammatesController
-						.propagateChangesList(previousCommitId, commitId);
+				var propagations = this.teammatesController.propagateChangesList(previousCommitId, commitId);
 				previousCommitId = commitId;
 				if (propagations.isEmpty() || propagations.size() > 1 || propagations.get(0).isEmpty()) {
 					continue;
@@ -173,6 +176,23 @@ public class PcmTEAMMATESCITestController {
 
 	@Test
 	public void testTeammates() {
-		propagateAndEvaluate(COMMIT_HASHES);
+		var resSet = new ResourceSetImpl();
+		var res = resSet.createResource(URI.createFileURI(this.teammatesController.getState().getDirLayout()
+				.getRootDirPath().resolve("pcmChanges.changes").toString()));
+		var props = propagateAndEvaluate(commitID3, commitID4);
+		for (var prop : props) {
+			for (var change : prop.getChanges()) {
+				// Java changes
+//				res.getContents().addAll(change.getOriginalChange().getEChanges());
+
+				// PCM changes
+				res.getContents().addAll(change.getConsequentialChanges().getEChanges());
+			}
+		}
+		try {
+			res.save(null);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

@@ -44,6 +44,8 @@ Require-Bundle: cipm.consistency.commitintegration,
  cipm.consistency.cpr.javapcm.msa,
  cipm.consistency.commitintegration.lang.java,
  jamopp.resource,
- cipm.consistency.cpr.pcmjava
+ cipm.consistency.cpr.pcmjava,
+ edu.kit.ipd.sdq.commons.util.emf,
+ edu.kit.ipd.sdq.activextendannotations
 Export-Package: cipm.consistency.vsum.test
 Bundle-RequiredExecutionEnvironment: JavaSE-11

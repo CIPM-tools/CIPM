@@ -249,7 +249,7 @@ public class MinimalTest {
 	public void testTeammates() {
 		var resSet = new ResourceSetImpl();
 		var res = resSet.createResource(URI.createFileURI(this.teammatesController.getState().getDirLayout()
-				.getPcmDirPath().resolve("pcmChanges.changes").toString()));
+				.getRootDirPath().resolve("pcmChanges.changes").toString()));
 		var props = propagateAndEvaluate(commitID3, commitID4);
 		for (var prop : props) {
 			for (var change : prop.getChanges()) {

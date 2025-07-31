@@ -1,12 +1,14 @@
 package cipm.consistency.vsum.test.pcm;
 
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
-import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -15,22 +17,19 @@ import cipm.consistency.base.models.instrumentation.InstrumentationModel.Instrum
 import cipm.consistency.models.ModelFacade;
 import cipm.consistency.vsum.Propagation;
 import cipm.consistency.vsum.VsumDirLayout;
+import cipm.consistency.vsum.test.pcm.newviews.ChangeAcceptingView;
+import cipm.consistency.vsum.test.pcm.newviews.IChangeAcceptingView;
+import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.composite.description.PropagatedChange;
 import tools.vitruv.change.correspondence.Correspondence;
 import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
 import tools.vitruv.change.interaction.UserInteractionFactory;
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
-import tools.vitruv.framework.views.IChangeRecordingView;
+import tools.vitruv.framework.views.ViewSelector;
 import tools.vitruv.framework.views.ViewTypeFactory;
 import tools.vitruv.framework.vsum.VirtualModelBuilder;
 import tools.vitruv.framework.vsum.internal.InternalVirtualModel;
 
-/**
- * Facade to the V-SUM.
- * 
- * @author Martin Armbruster
- * @author Lukas Burgey
- */
 @SuppressWarnings("restriction")
 public class PcmVsumFacadeImpl implements PcmVsumFacade {
 	private static final Logger LOGGER = Logger.getLogger(PcmVsumFacadeImpl.class.getName());
@@ -40,6 +39,12 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 	private InternalVirtualModel vsum;
 
 	private List<ModelFacade> models;
+
+	/**
+	 * Store the created views, since the changes they store are not guaranteed to
+	 * be propagated before they are closed.
+	 */
+	private final Map<InternalVirtualModel, IChangeAcceptingView> views = new HashMap<InternalVirtualModel, IChangeAcceptingView>();
 
 	// initialized is used as a breakpoint conditional
 	@SuppressWarnings("unused")
@@ -66,7 +71,7 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 	 */
 	private void loadModelResource(Resource res, boolean force) {
 		if (force || vsum.getModelInstance(res.getURI()) == null) {
-			this.propagateResource(res, null);
+			this.propagateResource(res);
 		}
 	}
 
@@ -105,10 +110,47 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 
 		LOGGER.info("Loading VSUM");
 		vsum = vsumBuilder.buildAndInitialize();
-		getChangeRecordingView(vsum);
+		getChangeAcceptingView(vsum);
 	}
 
-	public IChangeRecordingView getChangeRecordingView(InternalVirtualModel theVsum) {
+	public IChangeAcceptingView getChangeAcceptingView(InternalVirtualModel theVsum) {
+		/*
+		 * If a view was created for theVsum previously and is not closed, update and
+		 * return it instead. If it is closed, retrieve the non-propagated changes and
+		 * then re-create it.
+		 */
+		List<EChange> leftoverChanges = null;
+		if (views.containsKey(theVsum)) {
+			var storedView = views.get(theVsum);
+			if (!storedView.isClosed()) {
+				var viewSelector = storedView.getViewType().createSelector(theVsum);
+				// Selecting all elements here
+				viewSelector.getSelectableElements().forEach(ele -> {
+					if (ele instanceof InstrumentationModel) {
+						viewSelector.setSelected(ele, true);
+					}
+				});
+
+				/*
+				 * Forcefully access the setSelection method to update the persisting views.
+				 * 
+				 * TODO Find a better way to do this without reflection.
+				 */
+
+				try {
+					storedView.getClass().getMethod("setSelection", ViewSelector.class).invoke(storedView,
+							viewSelector);
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
+						| NoSuchMethodException | SecurityException e) {
+					throw new IllegalStateException(e);
+				}
+				return storedView;
+			} else {
+				leftoverChanges = storedView.getAllChanges();
+				views.remove(theVsum);
+			}
+		}
+
 		var viewType = ViewTypeFactory.createIdentityMappingViewType("myRecordingView");
 		var viewSelector = viewType.createSelector(theVsum);
 
@@ -118,7 +160,12 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 				viewSelector.setSelected(ele, true);
 			}
 		});
-		var view = (IChangeRecordingView) viewSelector.createView().withChangeRecordingTrait();
+		var underlyingView = viewSelector.createView();
+		var view = new ChangeAcceptingView(underlyingView);
+
+		view.addChanges(leftoverChanges);
+
+		views.put(theVsum, view);
 
 		return view;
 	}
@@ -183,8 +230,8 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 	 * @return The propagated changes
 	 */
 	@Override
-	public <T extends Notifier> Propagation propagateResource(Resource resource, List<T> changesToPropagate) {
-		return propagateResource(resource, null, null, changesToPropagate);
+	public Propagation propagateResource(Resource resource) {
+		return propagateResource(resource, null, null);
 	}
 
 	/**
@@ -198,8 +245,8 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 	 * @return The propagated changes
 	 */
 	@Override
-	public <T extends Notifier> Propagation propagateResource(Resource resource, URI targetUri, List<T> changesToPropagate) {
-		return propagateResource(resource, targetUri, null, changesToPropagate);
+	public Propagation propagateResource(Resource resource, URI targetUri) {
+		return propagateResource(resource, targetUri, null);
 	}
 
 	/**
@@ -214,19 +261,12 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 	 *                           underlying model
 	 * @return The propagated changes
 	 */
-	private <T extends Notifier>  Propagation propagateResource(Resource resource, URI targetUri, InternalVirtualModel vsum,
-			List<T> changesToPropagate) {
+	private Propagation propagateResource(Resource resource, URI targetUri, InternalVirtualModel vsum) {
 		if (vsum == null) {
 			vsum = this.vsum;
 		}
 
-		var view = getChangeRecordingView(vsum);
-
-		if (changesToPropagate != null) {
-			for (var change : changesToPropagate) {
-				view.getChangeRecorder().addToRecording(change);
-			}
-		}
+		var view = getChangeAcceptingView(vsum);
 
 		if (targetUri == null) {
 			targetUri = resource.getURI();
@@ -299,6 +339,26 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 			return vsum.getCorrespondenceModel();
 		}
 		return null;
+	}
+
+	@Override
+	public List<EChange> getAllChanges() {
+		return this.getChangeAcceptingView(vsum).getAllChanges();
+	}
+
+	@Override
+	public void addChange(EChange change) {
+		this.getChangeAcceptingView(vsum).addChange(change);
+	}
+
+	@Override
+	public boolean removeChange(EChange change) {
+		return this.getChangeAcceptingView(vsum).removeChange(change);
+	}
+
+	@Override
+	public void cleanChanges() {
+		this.getChangeAcceptingView(vsum).cleanChanges();
 	}
 
 }
