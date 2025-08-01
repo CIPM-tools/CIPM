@@ -35,23 +35,18 @@ import cipm.consistency.vsum.test.evaluator.commitHistory.CommitHistoryEvaluator
 import jamopp.resource.JavaResource2Factory;
 
 public class MinimalTest {
-
 	/**
-	 * Initial commit (with 1 Java file, empty Java main method)
+	 * Initial commit (with fake Object class)
 	 */
-	private static final String commitID1 = "67d4507c6047be6bff3aad46158ee368db086bc4";
+	private static final String commitID1 = "733720dc533fa707ae55c9c3f1367b06ecdf8a44";
 	/**
-	 * With 1 Java file, main method prints "output"
+	 * First basic component (teammates.common) addition
 	 */
-	private static final String commitID2 = "5f86208a2b869aec3f5756ff2b95fbebf8e03045";
+	private static final String commitID2 = "11e9611198ddde7b8feb52213d37be7f2c2e13dd";
 	/**
-	 * First basic component addition
+	 * Second basic component (teammates.logic.api) addition
 	 */
-	private static final String commitID3 = "0ed2fca1e6e239d6dec6165741175b1cc5f542fa";
-	/**
-	 * Second basic component addition
-	 */
-	private static final String commitID4 = "c95bb64af02d82bb34cad06d934966dbc4be9673";
+	private static final String commitID3 = "72ca58c5ec5f507fc3a91928925dd12bfd170f40";
 
 	private static final Logger LOGGER = Logger.getLogger(MinimalTest.class);
 	private CommitIntegrationState<JavaModelFacade> state;
@@ -90,7 +85,6 @@ public class MinimalTest {
 						this.remoteRepository);
 			}
 			CommitIntegrationSettingsContainer.initialize(Paths.get("teammates-exec-files", "settings.properties"));
-			JavaParserAndPropagatorUtils.setConfiguration(new Configuration(true));
 		} catch (IOException | GitAPIException e) {
 			e.printStackTrace();
 			failTest("Unable to setup commit integration state");
@@ -250,7 +244,7 @@ public class MinimalTest {
 		var resSet = new ResourceSetImpl();
 		var res = resSet.createResource(URI.createFileURI(this.teammatesController.getState().getDirLayout()
 				.getRootDirPath().resolve("pcmChanges.changes").toString()));
-		var props = propagateAndEvaluate(commitID3, commitID4);
+		var props = propagateAndEvaluate(commitID2, commitID3);
 		for (var prop : props) {
 			for (var change : prop.getChanges()) {
 				// Java changes

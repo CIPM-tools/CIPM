@@ -1,6 +1,5 @@
 package cipm.consistency.vsum.test.pcm;
 
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +24,6 @@ import tools.vitruv.change.correspondence.Correspondence;
 import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
 import tools.vitruv.change.interaction.UserInteractionFactory;
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
-import tools.vitruv.framework.views.ViewSelector;
 import tools.vitruv.framework.views.ViewTypeFactory;
 import tools.vitruv.framework.vsum.VirtualModelBuilder;
 import tools.vitruv.framework.vsum.internal.InternalVirtualModel;
@@ -122,33 +120,26 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 		List<EChange> leftoverChanges = null;
 		if (views.containsKey(theVsum)) {
 			var storedView = views.get(theVsum);
-			if (!storedView.isClosed()) {
-				var viewSelector = storedView.getViewType().createSelector(theVsum);
-				// Selecting all elements here
-				viewSelector.getSelectableElements().forEach(ele -> {
-					if (ele instanceof InstrumentationModel) {
-						viewSelector.setSelected(ele, true);
-					}
-				});
-
-				/*
-				 * Forcefully access the setSelection method to update the persisting views.
-				 * 
-				 * TODO Find a better way to do this without reflection.
-				 */
-
-				try {
-					storedView.getClass().getMethod("setSelection", ViewSelector.class).invoke(storedView,
-							viewSelector);
-				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
-						| NoSuchMethodException | SecurityException e) {
-					throw new IllegalStateException(e);
-				}
-				return storedView;
-			} else {
-				leftoverChanges = storedView.getAllChanges();
-				views.remove(theVsum);
-			}
+//			if (!storedView.isClosed()) {
+//				var viewSelector = storedView.getViewType().createSelector(theVsum);
+//				// Selecting all elements here
+//				viewSelector.getSelectableElements().forEach(ele -> {
+//					if (ele instanceof InstrumentationModel) {
+//						viewSelector.setSelected(ele, true);
+//					}
+//				});
+//
+//				/*
+//				 * Forcefully access the setSelection method to update the persisting views.
+//				 * 
+//				 * TODO Find a better way to do this without reflection.
+//				 */
+//				storedView.setSelection(viewSelector.getSelection());
+//				return storedView;
+//			} else {
+//			}
+			leftoverChanges = storedView.getAllChanges();
+			views.remove(theVsum);
 		}
 
 		var viewType = ViewTypeFactory.createIdentityMappingViewType("myRecordingView");
@@ -348,6 +339,7 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 
 	@Override
 	public void addChange(EChange change) {
+		// TODO Save the changes in this class instead of in views, as they must be replaced
 		this.getChangeAcceptingView(vsum).addChange(change);
 	}
 

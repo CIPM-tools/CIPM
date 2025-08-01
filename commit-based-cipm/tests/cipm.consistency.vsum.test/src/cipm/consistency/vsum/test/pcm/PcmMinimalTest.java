@@ -1,113 +1,78 @@
 package cipm.consistency.vsum.test.pcm;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.junit.Assert;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import cipm.consistency.commitintegration.CommitIntegrationState;
-import cipm.consistency.commitintegration.settings.CommitIntegrationSettingsContainer;
+import cipm.consistency.cpr.pcmjava.CommitIntegrationPCMJavaChangePropagationSpecification;
+import cipm.consistency.models.im.ImFacade;
+import cipm.consistency.models.pcm.PcmFacade;
 import cipm.consistency.vsum.Propagation;
 import cipm.consistency.vsum.test.appspace.LoggingSetup;
 import jamopp.resource.JavaResource2Factory;
+import mir.reactions.imInit.ImInitChangePropagationSpecification;
+import mir.reactions.pcmImUpdate.PcmImUpdateChangePropagationSpecification;
+import mir.reactions.pcmInit.PcmInitChangePropagationSpecification;
+import tools.vitruv.change.atomic.EChange;
 
 public class PcmMinimalTest {
-
-	/**
-	 * Initial commit (with 1 Java file, empty Java main method)
-	 */
-	private static final String commitID1 = "67d4507c6047be6bff3aad46158ee368db086bc4";
-	/**
-	 * With 1 Java file, main method prints "output"
-	 */
-	private static final String commitID2 = "5f86208a2b869aec3f5756ff2b95fbebf8e03045";
-	/**
-	 * First basic component addition
-	 */
-	private static final String commitID3 = "0ed2fca1e6e239d6dec6165741175b1cc5f542fa";
-	/**
-	 * Second basic component addition
-	 */
-	private static final String commitID4 = "c95bb64af02d82bb34cad06d934966dbc4be9673";
-
 	private static final Logger LOGGER = Logger.getLogger(PcmMinimalTest.class);
-	private PcmCommitIntegrationState state;
-	private PcmTEAMMATESCommitIntegration teammatesController;
+
+	private PcmVsumFacadeImpl vsumFacade;
+	private PcmFacade pcmFacade;
+	private ImFacade imFacade;
 
 	private Path rootPath = Paths.get("target", "PcmMinimalTest");
-	private Path javaModelPath = rootPath.resolve(commitID1);
+	private Path oldCommitRootPath = rootPath.resolve("oldCommit");
+	private Path newCommitRootPath = rootPath.resolve("newCommit");
+	private Path propagatedModelsRootPath = rootPath.resolve("propagatedModels");
 
-	/**
-	 * 
-	 * @param overwrite Are existing files (models, etc.) to be deleted before
-	 *                  initializing the commit integration state?
-	 * @throws GitAPIException
-	 * @throws IOException
-	 * @throws org.eclipse.jgit.api.errors.TransportException
-	 * @throws InvalidRemoteException
-	 */
+//	private Path oldJavaModelPath = rootPath.resolve("oldCommit.javaxmi");
+//	private Path newJavaModelPath = rootPath.resolve("newCommit.javaxmi");
+
+//	private Path oldRepoModelPath = rootPath.resolve("oldCommit.repository");
+//	private Path newRepoModelPath = rootPath.resolve("newCommit.repository");
+
+	private Path oldToNewPcmChangesPath = rootPath.resolve("oldToNewCommitPcmChanges.changes");
+
 	protected void setup(boolean overwrite) {
-
-		// Create new empty state
-		this.teammatesController = new PcmTEAMMATESCommitIntegration(this.rootPath, this.javaModelPath);
-
-		// overwrite existing files?
-		try {
-			this.teammatesController.initialize(this.teammatesController);
-			this.state = this.teammatesController.getState();
-		} catch (IOException | GitAPIException e) {
-			e.printStackTrace();
-			failTest("Unable to setup commit integration state");
-		}
+		vsumFacade = new PcmVsumFacadeImpl();
+		pcmFacade = new PcmFacade();
+		pcmFacade.initialize(oldCommitRootPath);
+		imFacade = new ImFacade();
+		vsumFacade.initialize(this.rootPath, List.of(pcmFacade, imFacade),
+				List.of(new PcmInitChangePropagationSpecification(), new ImInitChangePropagationSpecification(),
+						new PcmImUpdateChangePropagationSpecification(),
+						new CommitIntegrationPCMJavaChangePropagationSpecification()));
 	}
 
 	@BeforeEach
 	public void setup() {
 		LoggingSetup.setMinLogLevel(Level.DEBUG);
 		setup(false);
-//        LoggingSetup.resetLogLevels();
 	}
 
-	/*
-	 * Deletes all testdata before running a new batch of tests
-	 */
 	@BeforeAll
 	public static void deleteDataBeforeRunningTests() {
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("java", new JavaResource2Factory());
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("javaxmi", new JavaResource2Factory());
-//        try {
-//            Files.walk(TESTDATA_PATH)
-//                .sorted(Comparator.reverseOrder())
-//                .forEach(path -> {
-//                    if (!path.equals(TESTDATA_PATH)) {
-//                        path.toFile()
-//                            .delete();
-//                    }
-//                });
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-	}
 
-	@AfterEach
-	public void cleanupAfterTest() {
-		state.dispose();
+		// Added for .repository and .changes extensions
+		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("*", new XMIResourceFactoryImpl());
 	}
 
 	protected void failTest(String msg) {
@@ -115,84 +80,66 @@ public class PcmMinimalTest {
 		Assert.fail(msg);
 	}
 
-	/**
-	 * Propagates the given commits and evaluates every propagation. It assumes that
-	 * the propagation starts from an empty repository. Thus, if there is any
-	 * previous state, it is reseted.
-	 * 
-	 * @param commitIds The commits to be propagated
-	 * @return The list of all the propagations.
-	 */
-	protected List<Propagation> propagateAndEvaluate(String... commitIds) {
-		return propagateAndEvaluate(true, commitIds);
-	}
+	private Propagation propagatePcmChanges(Resource repoModel, Resource changeRes, PcmVsumFacadeImpl pcmVsum) {
+		LOGGER.info(String.format("Propagating"));
 
-	/**
-	 * Propagates the given commits and evaluates every propagation.
-	 * 
-	 * @param startFromNull When set to true, this parameter indicates if the
-	 *                      propagation should start from an empty repository, which
-	 *                      resets any previous persisted state or propagation. When
-	 *                      set to false, the parameter indicates that the previous
-	 *                      state corresponds to the first commit of the given
-	 *                      commitIds. Therefore, the propagation starts with the
-	 *                      changes between the first and second commit given in the
-	 *                      commitIds.
-	 * @param commitIds     The commits to be propagated
-	 * @return The list of all the propagations.
-	 */
-	protected List<Propagation> propagateAndEvaluate(boolean startFromNull, String... commitIds) {
-		var historyEvalDir = this.state.getDirLayout().getRootDirPath().getParent();
+		var changes = new ArrayList<EChange>();
+		changeRes.getContents().stream().filter((c) -> c instanceof EChange).forEach((c) -> changes.add((EChange) c));
 
-		List<Propagation> allPropagations = new ArrayList<>();
-		try {
-			String previousCommitId = startFromNull ? null : commitIds[0];
-			for (int i = startFromNull ? 0 : 1; i < commitIds.length; i++) {
-				var commitId = commitIds[i];
-				if (commitId == null) {
-					// do an empty propagation to reset the models
-					this.teammatesController.propagateChanges(null, null);
-					continue;
-				}
+		pcmVsum.addChanges(changes);
+		// the actual propagation is done here
+		var propagation = pcmVsum.propagateResource(repoModel, null);
 
-				var propagations = this.teammatesController.propagateChangesList(previousCommitId, commitId);
-				previousCommitId = commitId;
-				if (propagations.isEmpty() || propagations.size() > 1 || propagations.get(0).isEmpty()) {
-					continue;
-				}
+		// add some information needed for the evaluation to the propagation object
+//		propagation.setCommitIntegrationStateSnapshotPath(snapshotPath);
+//		propagation.setCommitIntegrationStateOriginalPath(state.getDirLayout().getRootDirPath());
+//		propagation.setPreviousParsedCodeModelPath(previousParsedModelPath);
+//		propagation.setParsedCodeModelPath(parsedModelPath);
+//		propagation.setPreviousPcmRepositoryPath(previousRepositoryPath);
 
-				var propagation = propagations.get(0).get();
-				allPropagations.add(propagation);
-			}
-
-			return allPropagations;
-		} catch (IOException | GitAPIException e) {
-			e.printStackTrace();
-			Assert.fail(e.getMessage());
-		}
-
-		return null;
+		return propagation;
 	}
 
 	@Test
-	public void testTeammates() {
+	public void testPcmChangePropagation() {
 		var resSet = new ResourceSetImpl();
-		var res = resSet.createResource(URI.createFileURI(this.teammatesController.getState().getDirLayout()
-				.getRootDirPath().resolve("pcmChanges.changes").toString()));
-		var props = propagateAndEvaluate(commitID3, commitID4);
-		for (var prop : props) {
-			for (var change : prop.getChanges()) {
-				// Java changes
-//				res.getContents().addAll(change.getOriginalChange().getEChanges());
+//		var oldJavaModelRes = resSet
+//				.createResource(URI.createFileURI(this.oldJavaModelPath.toFile().getAbsolutePath()));
+//		var newJavaModelRes = resSet
+//				.createResource(URI.createFileURI(this.newJavaModelPath.toFile().getAbsolutePath()));
+//		var oldRepoModelRes = resSet
+//				.createResource(URI.createFileURI(this.oldRepoModelPath.toFile().getAbsolutePath()));
+//		var newRepoModelRes = resSet
+//				.createResource(URI.createFileURI(this.newRepoModelPath.toFile().getAbsolutePath()));
 
-				// PCM changes
-				res.getContents().addAll(change.getConsequentialChanges().getEChanges());
-			}
+		var changeRes = resSet
+				.createResource(URI.createFileURI(this.oldToNewPcmChangesPath.toFile().getAbsolutePath()));
+		try {
+			changeRes.load(null);
+		} catch (IOException e) {
+			this.failTest(e.getMessage());
+		}
+		var propTargetPath = propagatedModelsRootPath.resolve("Repository.repository");
+		try {
+			FileUtils.copyFile(pcmFacade.getDirLayout().getPcmRepositoryPath().toFile(), propTargetPath.toFile());
+		} catch (IOException e) {
+			this.failTest(e.getMessage());
+		}
+		var propagationTarget = resSet.createResource(URI.createFileURI(propTargetPath.toFile().getAbsolutePath()));
+		try {
+			propagationTarget.load(null);
+		} catch (IOException e) {
+			this.failTest(e.getMessage());
+		}
+		var props = propagatePcmChanges(propagationTarget, changeRes, vsumFacade);
+		for (var originalChange : props.getChanges()) {
+			LOGGER.debug("Original change: " + originalChange.getOriginalChange());
+			LOGGER.debug("Consequential change: " + originalChange.getConsequentialChanges());
 		}
 		try {
-			res.save(null);
+			propagationTarget.save(null);
 		} catch (IOException e) {
-			e.printStackTrace();
+			this.failTest(e.getMessage());
 		}
 	}
 }

@@ -50,6 +50,8 @@ public class ChangeAcceptingView implements IChangeAcceptingView, CommittableVie
 		if (this.isClosed()) {
 			throw new IllegalStateException("The underlying view is closed");
 		}
+		if (this.changes.isEmpty())
+			return List.of();
 
 		ChangeableViewSource cvs = null;
 
@@ -62,7 +64,9 @@ public class ChangeAcceptingView implements IChangeAcceptingView, CommittableVie
 		 */
 
 		try {
-			cvs = (ChangeableViewSource) this.view.getClass().getMethod("getViewSource", null).invoke(this.view, null);
+			var met = this.view.getClass().getDeclaredMethod("getViewSource", null);
+			met.setAccessible(true);
+			cvs = (ChangeableViewSource) met.invoke(this.view, null);
 		} catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException | NoSuchMethodException
 				| SecurityException e) {
 			throw new IllegalStateException(e);
@@ -101,6 +105,23 @@ public class ChangeAcceptingView implements IChangeAcceptingView, CommittableVie
 
 	public ViewSelection getSelection() {
 		return this.view.getSelection();
+	}
+
+	public void setSelection(ViewSelection selection) {
+		/*
+		 * Forcefully access the setSelection method to update the persisting views.
+		 * 
+		 * TODO Find a better way to do this without reflection.
+		 */
+
+//		try {
+//			var met = view.getClass().getDeclaredMethod("setSelection", ViewSelection.class);
+//			met.setAccessible(true);
+//			met.invoke(view, selection);
+//		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+//				| SecurityException e) {
+//			throw new IllegalStateException(e);
+//		}
 	}
 
 	public ViewType<? extends ViewSelector> getViewType() {

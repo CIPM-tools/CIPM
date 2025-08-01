@@ -1,4 +1,4 @@
-package cipm.consistency.vsum.test.pcm;
+package cipm.consistency.vsum.test.pcm.unused;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -18,6 +18,7 @@ import cipm.consistency.models.pcm.PcmFacade;
 import cipm.consistency.tools.evaluation.data.EvaluationDataContainer;
 import cipm.consistency.tools.evaluation.data.EvaluationDataContainerReaderWriter;
 import cipm.consistency.vsum.Propagation;
+import cipm.consistency.vsum.test.pcm.PcmVsumFacadeImpl;
 
 public class PcmCommitIntegrationState {
 	private static final Logger LOGGER = Logger.getLogger(CommitIntegrationState.class.getName());

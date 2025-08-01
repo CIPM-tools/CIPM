@@ -4,6 +4,7 @@ import java.util.List;
 
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.framework.views.CommittableView;
+import tools.vitruv.framework.views.ViewSelection;
 
 public interface IChangeAcceptingView extends CommittableView {
 	public List<EChange> getAllChanges();
@@ -20,4 +21,6 @@ public interface IChangeAcceptingView extends CommittableView {
 	public boolean removeChange(EChange change);
 
 	public void cleanChanges();
+	
+	public void setSelection(ViewSelection selection);
 }

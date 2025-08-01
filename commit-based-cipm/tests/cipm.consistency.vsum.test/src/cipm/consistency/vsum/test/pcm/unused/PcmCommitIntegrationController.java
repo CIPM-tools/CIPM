@@ -1,4 +1,4 @@
-package cipm.consistency.vsum.test.pcm;
+package cipm.consistency.vsum.test.pcm.unused;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -18,7 +17,6 @@ import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 
-import cipm.consistency.commitintegration.CommitIntegrationFailureMode;
 import cipm.consistency.tools.evaluation.data.EvaluationDataContainer;
 import cipm.consistency.vsum.Propagation;
 import tools.vitruv.change.atomic.EChange;
@@ -129,9 +127,7 @@ public class PcmCommitIntegrationController {
 
 		var exception = propagation.getException();
 		if (exception != null) {
-			if (getFailureMode() == CommitIntegrationFailureMode.ABORT) {
-				throw exception;
-			}
+
 		} else {
 			// successful propagation
 			state.setLastSuccessfulPropagation(propagation);
@@ -150,42 +146,6 @@ public class PcmCommitIntegrationController {
 
 		// trigger some post propagation hooks
 		postPropagationHook();
-
-		if (exception != null) {
-			switch (getFailureMode()) {
-			case BACKUP:
-				var lastSuccessfulPropagation = state.getLastSuccessfulPropagation();
-				if (lastSuccessfulPropagation != null) {
-					// overwrite the current state with a backup, as models may have been corrupted
-					// by the broken propagation
-					var backupPath = lastSuccessfulPropagation.getCommitIntegrationStateCopyPath();
-					var currentPath = state.getDirLayout().getRootDirPath();
-					LOGGER.info("Loading snapshot from last successful propagation: " + backupPath);
-					try {
-						FileUtils.copyDirectory(backupPath.toFile(), currentPath.toFile());
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				} // intentional fall through
-			case RELOAD:
-				LOGGER.info("Reloading commit integration state");
-				reload();
-				break;
-			case CLEAN:
-				try {
-					LOGGER.info("Resetting commit integration state");
-					var ci = state.getCommitIntegration();
-					state.getDirLayout().delete();
-					state.dispose();
-					state.initialize(ci, ci.getRootPath(), true);
-				} catch (IOException | GitAPIException e) {
-					e.printStackTrace();
-				}
-				break;
-			default:
-			}
-		}
 
 		return Optional.of(propagation);
 	}
@@ -322,9 +282,5 @@ public class PcmCommitIntegrationController {
 			LOGGER.error("Unable to checkout", e);
 		}
 		return false;
-	}
-
-	private CommitIntegrationFailureMode getFailureMode() {
-		return state.getCommitIntegration().getFailureMode();
 	}
 }

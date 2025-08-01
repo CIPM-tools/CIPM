@@ -1,4 +1,4 @@
-package cipm.consistency.vsum.test.pcm;
+package cipm.consistency.vsum.test.pcm.unused;
 
 import java.nio.file.Path;
 
