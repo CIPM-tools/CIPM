@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Settings Container for the Commit-Based Integration
 Bundle-SymbolicName: cipm.consistency.commitintegration.settings
-Bundle-Version: 0.1.0
+Bundle-Version: 0.1.1
 Export-Package: cipm.consistency.commitintegration.settings
 Require-Bundle: org.apache.log4j,
  org.apache.commons.io

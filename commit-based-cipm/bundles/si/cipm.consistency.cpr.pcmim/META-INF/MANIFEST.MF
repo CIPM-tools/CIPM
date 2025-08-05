@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Consistency Preservation Rules from the PCM to the Instrumentation Model
 Bundle-SymbolicName: cipm.consistency.cpr.pcmim;singleton:=true
-Bundle-Version: 0.1.0
+Bundle-Version: 0.1.1
 Export-Package: cipm.consistency.cpr.pcmim,
  mir.reactions.imUpdate,
  mir.routines.imUpdate

@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: cipm.concistency.dependencywrapper
 Bundle-SymbolicName: cipm.consistency.dependencywrapper
 Automatic-Module-Name: cipm.consistency.dependencywrapper
-Bundle-Version: 0.1.0
+Bundle-Version: 0.1.1
 Require-Bundle: tools.vitruv.dsls.reactions,
  tools.vitruv.dsls.common,
  tools.vitruv.extensions.dslsruntime.reactions,

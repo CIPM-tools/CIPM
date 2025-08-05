@@ -33,6 +33,11 @@ public class JaMoPPModelUtil {
             if (element instanceof NamespaceAwareElement) {
 
                 String namespace = ((NamespaceAwareElement) element).getNamespacesAsString();
+                
+                // Null check to avoid NullPointerExceptions
+                if (namespace == null) {
+                	return null;
+                }
                 if (namespace.lastIndexOf('$') != -1) {
                     namespace = namespace.substring(0, namespace.lastIndexOf('$'));
                 }

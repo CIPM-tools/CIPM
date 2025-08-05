@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JaMoPP SPLevo Differ
 Bundle-SymbolicName: org.splevo.jamopp.diffing;singleton:=true
-Bundle-Version: 0.1.0
+Bundle-Version: 0.1.1
 Bundle-ClassPath: .
 Bundle-Activator: org.splevo.jamopp.diffing.Activator
 Bundle-Vendor: www.splevo.org

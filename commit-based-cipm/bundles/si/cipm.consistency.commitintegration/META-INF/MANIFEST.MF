@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Commit-Based Integration of Java Code
 Bundle-SymbolicName: cipm.consistency.commitintegration
-Bundle-Version: 0.1.0
+Bundle-Version: 0.1.1
 Export-Package: cipm.consistency.commitintegration,
  cipm.consistency.commitintegration.detection
 Require-Bundle: org.apache.log4j,
@@ -17,9 +17,6 @@ Require-Bundle: org.apache.log4j,
  cipm.consistency.domains.java,
  jamopp.parser.jdt.singlefile,
  jamopp.parser,
- org.eclipse.xtext.xbase.lib,
- org.eclipse.xtend.lib,
- org.eclipse.xtend.lib.macro,
  tools.vitruv.framework.userinteraction,
  cipm.consistency.tools.evaluation.data,
  cipm.consistency.commitintegration.settings,

@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>cipm.consistency</groupId>
 	<artifactId>pipeline.parent</artifactId>
-	<version>0.1.0</version>
+	<version>0.1.1</version>
 	<packaging>pom</packaging>
 	
 	<repositories>
@@ -28,12 +28,12 @@
 		<repository>
 			<id>Eclipse</id>
 			<layout>p2</layout>
-			<url>https://download.eclipse.org/releases/2021-09/</url>
+			<url>https://download.eclipse.org/releases/2022-09/</url>
 		</repository>
 		<repository>
 			<id>Eclipse Orbit</id>
 			<layout>p2</layout>
-			<url>https://download.eclipse.org/tools/orbit/downloads/2021-09/</url>
+			<url>https://download.eclipse.org/tools/orbit/downloads/2022-09/</url>
 		</repository>
 		<repository>
 			<id>PCM Commons</id>
@@ -211,7 +211,7 @@
 							<dependency>
 								<groupId>cipm.consistency</groupId>
 								<artifactId>cipm.consistency.dependencywrapper</artifactId>
-								<version>0.1.0</version>
+								<version>0.1.1</version>
 							</dependency>
 							<!-- Necessary for Eclipse 2021-06 due to bug and workaround described here: https://github.com/eclipse/xtext-xtend/issues/116#issuecomment-271916734 -->
 							<dependency>

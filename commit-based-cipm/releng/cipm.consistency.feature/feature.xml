@@ -2,7 +2,7 @@
 <feature
       id="cipm.consistency.feature"
       label="CIPM"
-      version="0.1.0"
+      version="0.1.1"
       provider-name="MCSE">
 
    <description>

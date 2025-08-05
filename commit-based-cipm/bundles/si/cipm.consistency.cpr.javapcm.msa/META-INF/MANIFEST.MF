@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Consistency Preservation Rules for Java to PCM and Microservice-based Applications
 Bundle-SymbolicName: cipm.consistency.cpr.javapcm.msa
-Bundle-Version: 0.1.0
+Bundle-Version: 0.1.1
 Export-Package: cipm.consistency.cpr.javapcm,
  cipm.consistency.cpr.javapcm.internal,
  mir.reactions.all,

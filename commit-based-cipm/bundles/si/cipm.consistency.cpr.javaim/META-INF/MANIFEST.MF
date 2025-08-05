@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Consistency Preservation Rules from Java to the Instrumentation Model
 Bundle-SymbolicName: cipm.consistency.cpr.javaim;singleton:=true
-Bundle-Version: 0.1.0
+Bundle-Version: 0.1.1
 Export-Package: cipm.consistency.cpr.javaim
 Require-Bundle: javax.inject,
  org.eclipse.osgi,

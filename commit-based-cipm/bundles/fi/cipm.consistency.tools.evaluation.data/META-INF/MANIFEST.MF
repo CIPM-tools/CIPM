@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Evaluation and Statistical Data
 Bundle-SymbolicName: cipm.consistency.tools.evaluation.data
-Bundle-Version: 0.1.0
+Bundle-Version: 0.1.1
 Automatic-Module-Name: cipm.consistency.tools.evaluation.data
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Require-Bundle: org.eclipse.jgit,

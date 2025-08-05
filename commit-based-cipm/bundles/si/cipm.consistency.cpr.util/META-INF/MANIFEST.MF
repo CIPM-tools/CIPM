@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Utilities for Consistency Preservation Rules
 Bundle-SymbolicName: cipm.consistency.cpr.util
-Bundle-Version: 0.1.0
+Bundle-Version: 0.1.1
 Export-Package: cipm.consistency.cpr.util
 Require-Bundle: org.emftext.language.java,
  org.palladiosimulator.pcm,

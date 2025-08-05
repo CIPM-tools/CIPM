@@ -106,3 +106,6 @@ tmp/
 
 # oh-my-zsh gradle plugin
 .gradletasknamecache
+
+# polygot
+*.polyglot.META-INF

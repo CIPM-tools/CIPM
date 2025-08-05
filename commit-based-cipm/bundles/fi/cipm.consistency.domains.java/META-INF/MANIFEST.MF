@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Adjusted Java Domain
 Bundle-SymbolicName: cipm.consistency.domains.java;singleton:=true
-Bundle-Version: 0.1.0
+Bundle-Version: 0.1.1
 Export-Package: cipm.consistency.domains.java,
  cipm.consistency.domains.java.propagation,
  tools.vitruv.domains.provider.java

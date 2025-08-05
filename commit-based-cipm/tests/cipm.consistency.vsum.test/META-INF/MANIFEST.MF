@@ -2,13 +2,13 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Tests for the Evaluation of CIPM
 Bundle-SymbolicName: cipm.consistency.vsum.test
-Bundle-Version: 0.1.0
+Bundle-Version: 0.1.1
 Automatic-Module-Name: cipm.consistency.vsum.test
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Require-Bundle: cipm.consistency.commitintegration,
  org.apache.log4j,
- org.junit.jupiter.api,
- org.junit.jupiter.engine,
+ junit-jupiter-api,
+ junit-jupiter-engine,
  cipm.consistency.vsum,
  org.eclipse.jgit,
  tools.vitruv.framework.vsum,
