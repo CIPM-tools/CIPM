@@ -1,6 +1,5 @@
 package cipm.consistency.vsum.test.pcm.newviews;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -16,36 +15,69 @@ import com.google.common.base.Preconditions;
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.composite.description.PropagatedChange;
 import tools.vitruv.change.composite.description.VitruviusChangeFactory;
-import tools.vitruv.framework.views.ChangeableViewSource;
 import tools.vitruv.framework.views.CommittableView;
 import tools.vitruv.framework.views.View;
 import tools.vitruv.framework.views.ViewSelection;
 import tools.vitruv.framework.views.ViewSelector;
 import tools.vitruv.framework.views.ViewType;
 import tools.vitruv.framework.views.changederivation.StateBasedChangeResolutionStrategy;
+import tools.vitruv.framework.vsum.internal.InternalVirtualModel;
 
+@SuppressWarnings("restriction")
 public class ChangeAcceptingView implements IChangeAcceptingView, CommittableView {
+
+	/*
+	 * TODO Remove the underlying view, make operations on vsum instead
+	 * 
+	 * Only implement the methods that you actually need / use. For the rest, just
+	 * implement placeholders and minimally for now. Do not throw
+	 * UnsupportedOperationException, do nothing or do what you need to keep working
+	 * instead.
+	 * 
+	 * If implementing those methods is not possible, change the visibility
+	 * modifiers in tools.vitruv.framework.views.impl (submodule).
+	 * 
+	 * In the future, once access to BasicView is possible, extend it instead.
+	 */
+
+	/*
+	 * TODO If changes create or introduce new EObjects, the view gets them (not the
+	 * vsum)
+	 * 
+	 * Therefore, make sure to transfer those changes from that view to vsum.
+	 */
+
 	@Delegate
 	private View view;
+
+	private InternalVirtualModel vsum;
 
 	// TODO Change to VitruviusChange once composite changes are supported
 	private final EList<EChange> changes = new BasicEList<EChange>();
 
-	public ChangeAcceptingView(final View view) {
+	public ChangeAcceptingView(final InternalVirtualModel vsum, final View view) {
 		Preconditions.checkArgument((view != null), "view must not be null");
 		boolean _isModified = view.isModified();
 		boolean _not = (!_isModified);
 		Preconditions.checkState(_not, "view must not be modified");
 		this.view = view;
+		this.vsum = vsum;
 	}
 
 	@Override
 	public void update() {
+		/*
+		 * If the update() method from underlying view is used, IllegalStateException is
+		 * thrown from a checkState call in BasicView.xtend, due to
+		 * this.view.isModified() = true
+		 */
+
+		// TODO Ask about what should be done here
+
 		this.view.update();
 	}
 
 	@Override
-	@SuppressWarnings("all")
 	public List<PropagatedChange> commitChanges() {
 		if (this.isClosed()) {
 			throw new IllegalStateException("The underlying view is closed");
@@ -53,26 +85,7 @@ public class ChangeAcceptingView implements IChangeAcceptingView, CommittableVie
 		if (this.changes.isEmpty())
 			return List.of();
 
-		ChangeableViewSource cvs = null;
-
-		/*
-		 * Forcefully access the "getViewSource" method from ModifiableView interface,
-		 * which is not accessible from here. Needed to retrieve the underlying object,
-		 * which has the means to propagate.
-		 * 
-		 * TODO Find a better way to access "getViewSource" without using reflection
-		 */
-
-		try {
-			var met = this.view.getClass().getDeclaredMethod("getViewSource", null);
-			met.setAccessible(true);
-			cvs = (ChangeableViewSource) met.invoke(this.view, null);
-		} catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException | NoSuchMethodException
-				| SecurityException e) {
-			throw new IllegalStateException(e);
-		}
-
-		final List<PropagatedChange> propagatedChanges = cvs
+		final List<PropagatedChange> propagatedChanges = vsum
 				.propagateChange(VitruviusChangeFactory.getInstance().createTransactionalChange(this.changes));
 
 		this.cleanChanges();
@@ -96,32 +109,19 @@ public class ChangeAcceptingView implements IChangeAcceptingView, CommittableVie
 	}
 
 	public Collection<EObject> getRootObjects() {
+		// TODO Should be no problem to do nothing here, if there are issues, copy from
+		// existing method implementations
 		return this.view.getRootObjects();
 	}
 
 	public <T extends Object> Collection<T> getRootObjects(final Class<T> clazz) {
+		// TODO Should be no problem to do nothing here, if there are issues, copy from
+		// existing method implementations
 		return this.view.getRootObjects(clazz);
 	}
 
 	public ViewSelection getSelection() {
 		return this.view.getSelection();
-	}
-
-	public void setSelection(ViewSelection selection) {
-		/*
-		 * Forcefully access the setSelection method to update the persisting views.
-		 * 
-		 * TODO Find a better way to do this without reflection.
-		 */
-
-//		try {
-//			var met = view.getClass().getDeclaredMethod("setSelection", ViewSelection.class);
-//			met.setAccessible(true);
-//			met.invoke(view, selection);
-//		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-//				| SecurityException e) {
-//			throw new IllegalStateException(e);
-//		}
 	}
 
 	public ViewType<? extends ViewSelector> getViewType() {

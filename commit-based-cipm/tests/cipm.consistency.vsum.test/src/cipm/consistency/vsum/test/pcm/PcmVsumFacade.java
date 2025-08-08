@@ -1,7 +1,5 @@
 package cipm.consistency.vsum.test.pcm;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
@@ -14,14 +12,11 @@ import cipm.consistency.vsum.test.pcm.newviews.IChangeAcceptingView;
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.correspondence.Correspondence;
 import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
-import tools.vitruv.change.propagation.ChangePropagationSpecification;
+
 import tools.vitruv.framework.vsum.internal.InternalVirtualModel;
 
 @SuppressWarnings("restriction")
 public interface PcmVsumFacade {
-
-	void initialize(Path rootPath, List<ModelFacade> models, List<ChangePropagationSpecification> changeSpecs)
-			throws IOException;
 
 	/**
 	 * @param models The models which should be loaded into the VSUM
@@ -71,7 +66,7 @@ public interface PcmVsumFacade {
 
 	EditableCorrespondenceModelView<Correspondence> getCorrespondenceView();
 
-	IChangeAcceptingView getChangeAcceptingView(InternalVirtualModel vsum);
+	IChangeAcceptingView getChangeAcceptingView();
 
 	VsumDirLayout getDirLayout();
 }

@@ -2,9 +2,9 @@ package cipm.consistency.vsum.test.pcm;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
+
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -34,33 +34,30 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 
 	private VsumDirLayout dirLayout;
 	private List<ChangePropagationSpecification> changeSpecs;
-	private InternalVirtualModel vsum;
+	private final InternalVirtualModel vsum;
 
 	private List<ModelFacade> models;
 
 	/**
-	 * Store the created views, since the changes they store are not guaranteed to
-	 * be propagated before they are closed.
+	 * Contains all changes that are still to be propagated. They have to be stored
+	 * here, as the views have to be constantly re-created.
 	 */
-	private final Map<InternalVirtualModel, IChangeAcceptingView> views = new HashMap<InternalVirtualModel, IChangeAcceptingView>();
+	private final List<EChange> changesToPropagate = new ArrayList<EChange>();
 
-	// initialized is used as a breakpoint conditional
-	@SuppressWarnings("unused")
-	private boolean initialized = false;
-
-	public PcmVsumFacadeImpl() {
+	public PcmVsumFacadeImpl(Path rootPath, List<ModelFacade> models,
+			List<ChangePropagationSpecification> changeSpecs) {
 		dirLayout = new VsumDirLayout();
-	}
 
-	public void initialize(Path rootPath, List<ModelFacade> models, List<ChangePropagationSpecification> changeSpecs) {
 		dirLayout.initialize(rootPath);
 		this.changeSpecs = changeSpecs;
-		loadOrCreateVsum();
+		var vsumBuilder = getVsumBuilder();
+
+		LOGGER.info("Loading VSUM");
+		vsum = vsumBuilder.buildAndInitialize();
+		getChangeAcceptingView();
 
 		this.models = models;
 		loadModels(models, false);
-
-		initialized = true;
 	}
 
 	/*
@@ -103,47 +100,9 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 		loadModels(this.models, true);
 	}
 
-	private void loadOrCreateVsum() {
-		var vsumBuilder = getVsumBuilder();
-
-		LOGGER.info("Loading VSUM");
-		vsum = vsumBuilder.buildAndInitialize();
-		getChangeAcceptingView(vsum);
-	}
-
-	public IChangeAcceptingView getChangeAcceptingView(InternalVirtualModel theVsum) {
-		/*
-		 * If a view was created for theVsum previously and is not closed, update and
-		 * return it instead. If it is closed, retrieve the non-propagated changes and
-		 * then re-create it.
-		 */
-		List<EChange> leftoverChanges = null;
-		if (views.containsKey(theVsum)) {
-			var storedView = views.get(theVsum);
-//			if (!storedView.isClosed()) {
-//				var viewSelector = storedView.getViewType().createSelector(theVsum);
-//				// Selecting all elements here
-//				viewSelector.getSelectableElements().forEach(ele -> {
-//					if (ele instanceof InstrumentationModel) {
-//						viewSelector.setSelected(ele, true);
-//					}
-//				});
-//
-//				/*
-//				 * Forcefully access the setSelection method to update the persisting views.
-//				 * 
-//				 * TODO Find a better way to do this without reflection.
-//				 */
-//				storedView.setSelection(viewSelector.getSelection());
-//				return storedView;
-//			} else {
-//			}
-			leftoverChanges = storedView.getAllChanges();
-			views.remove(theVsum);
-		}
-
+	public IChangeAcceptingView getChangeAcceptingView() {
 		var viewType = ViewTypeFactory.createIdentityMappingViewType("myRecordingView");
-		var viewSelector = viewType.createSelector(theVsum);
+		var viewSelector = viewType.createSelector(vsum);
 
 		// Selecting all elements here
 		viewSelector.getSelectableElements().forEach(ele -> {
@@ -152,11 +111,9 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 			}
 		});
 		var underlyingView = viewSelector.createView();
-		var view = new ChangeAcceptingView(underlyingView);
+		var view = new ChangeAcceptingView(vsum, underlyingView);
 
-		view.addChanges(leftoverChanges);
-
-		views.put(theVsum, view);
+		view.addChanges(changesToPropagate);
 
 		return view;
 	}
@@ -222,7 +179,7 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 	 */
 	@Override
 	public Propagation propagateResource(Resource resource) {
-		return propagateResource(resource, null, null);
+		return propagateResource(resource, null);
 	}
 
 	/**
@@ -237,27 +194,7 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 	 */
 	@Override
 	public Propagation propagateResource(Resource resource, URI targetUri) {
-		return propagateResource(resource, targetUri, null);
-	}
-
-	/**
-	 * Propagate a resource into the underlying vsum
-	 * 
-	 * @param resource           The propagated resource
-	 * @param targetUri          The uri where vitruv persists the propagated
-	 *                           resource
-	 * @param vsum               Optional, may be used to override the vsum to which
-	 *                           the change is propagated
-	 * @param changesToPropagate All changes that should be propagated to the
-	 *                           underlying model
-	 * @return The propagated changes
-	 */
-	private Propagation propagateResource(Resource resource, URI targetUri, InternalVirtualModel vsum) {
-		if (vsum == null) {
-			vsum = this.vsum;
-		}
-
-		var view = getChangeAcceptingView(vsum);
+		var view = getChangeAcceptingView();
 
 		if (targetUri == null) {
 			targetUri = resource.getURI();
@@ -288,7 +225,7 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 		}
 		new ArrayList<>(resource.getContents()).forEach(ele -> view.registerRoot(ele, actualtargetUri));
 
-		List<PropagatedChange> changeList = List.of();
+		List<PropagatedChange> changeList = null;
 		IllegalStateException exception = null;
 
 		try {
@@ -298,7 +235,14 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 			exception = e;
 		}
 
+		// Propagation constructor handles null parameters
 		var propagation = new Propagation(changeList);
+
+		// Remove propagated changes from changesToPropagate
+		for (var propagatedEChange : view.getAllChanges()) {
+			this.removeChange(propagatedEChange);
+		}
+
 		propagation.setException(exception);
 
 		logPropagatedChanges(resource, propagation);
@@ -334,23 +278,21 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 
 	@Override
 	public List<EChange> getAllChanges() {
-		return this.getChangeAcceptingView(vsum).getAllChanges();
+		return new ArrayList<EChange>(this.changesToPropagate);
 	}
 
 	@Override
 	public void addChange(EChange change) {
-		// TODO Save the changes in this class instead of in views, as they must be replaced
-		this.getChangeAcceptingView(vsum).addChange(change);
+		this.changesToPropagate.add(change);
 	}
 
 	@Override
 	public boolean removeChange(EChange change) {
-		return this.getChangeAcceptingView(vsum).removeChange(change);
+		return this.changesToPropagate.remove(change);
 	}
 
 	@Override
 	public void cleanChanges() {
-		this.getChangeAcceptingView(vsum).cleanChanges();
+		this.changesToPropagate.clear();
 	}
-
 }

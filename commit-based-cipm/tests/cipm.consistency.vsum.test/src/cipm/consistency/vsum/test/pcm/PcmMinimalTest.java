@@ -50,11 +50,10 @@ public class PcmMinimalTest {
 	private Path oldToNewPcmChangesPath = rootPath.resolve("oldToNewCommitPcmChanges.changes");
 
 	protected void setup(boolean overwrite) {
-		vsumFacade = new PcmVsumFacadeImpl();
 		pcmFacade = new PcmFacade();
 		pcmFacade.initialize(oldCommitRootPath);
 		imFacade = new ImFacade();
-		vsumFacade.initialize(this.rootPath, List.of(pcmFacade, imFacade),
+		vsumFacade = new PcmVsumFacadeImpl(this.rootPath, List.of(pcmFacade, imFacade),
 				List.of(new PcmInitChangePropagationSpecification(), new ImInitChangePropagationSpecification(),
 						new PcmImUpdateChangePropagationSpecification(),
 						new CommitIntegrationPCMJavaChangePropagationSpecification()));
@@ -132,9 +131,11 @@ public class PcmMinimalTest {
 			this.failTest(e.getMessage());
 		}
 		var props = propagatePcmChanges(propagationTarget, changeRes, vsumFacade);
-		for (var originalChange : props.getChanges()) {
-			LOGGER.debug("Original change: " + originalChange.getOriginalChange());
-			LOGGER.debug("Consequential change: " + originalChange.getConsequentialChanges());
+		if (props != null && props.getChanges() != null) {
+			for (var originalChange : props.getChanges()) {
+				LOGGER.debug("Original change: " + originalChange.getOriginalChange());
+				LOGGER.debug("Consequential change: " + originalChange.getConsequentialChanges());
+			}
 		}
 		try {
 			propagationTarget.save(null);
