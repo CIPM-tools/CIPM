@@ -7,7 +7,7 @@ import java.util.List;
 import org.eclipse.emf.common.util.URI;
 
 import cipm.consistency.fitests.similarity.jamopp.parser.AbstractJaMoPPParserSimilarityTestFactory;
-import cipm.consistency.fitests.similarity.jamopp.parser.EAllContentSimilarityTestFactory;
+import cipm.consistency.fitests.similarity.jamopp.parser.ModelComparisonTestFactory;
 
 /**
  * Contains repository parser tests for the "cwa-server" repository
@@ -43,7 +43,10 @@ public class CWARepoTest extends AbstractJaMoPPParserRepoTest {
 	@Override
 	protected Collection<AbstractJaMoPPParserSimilarityTestFactory> getTestFactories() {
 		var res = new ArrayList<AbstractJaMoPPParserSimilarityTestFactory>();
-		res.add(new EAllContentSimilarityTestFactory(this.getSCC()));
+		// TODO Determine whether the order of Resource contents should matter
+		// Especially important due to synthetic elements from TrivialRecovery
+		// Use ModelComparisonTestFactory(boolean) to set it (true by default)
+		res.add(new ModelComparisonTestFactory());
 		res.forEach((tf) -> tf.setExpectedSimilarityResultProvider(getExpectedSimilarityResultProviderForCommits()));
 		return res;
 	}
