@@ -87,7 +87,7 @@ public class DiffFilter {
 
 		// Do not use System.lineSeparator since GIT uses UNIX terminal
 		// UNIX terminal uses "\n" for new line
-		var diffLines = text.split(lineSeparator);
+		var diffLines = text.split("\\r?\\n");
 
 		for (var l : diffLines) {
 			lines.add(l);
