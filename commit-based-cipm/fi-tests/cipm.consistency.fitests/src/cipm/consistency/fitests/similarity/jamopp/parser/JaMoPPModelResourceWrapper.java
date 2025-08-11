@@ -1,9 +1,12 @@
 package cipm.consistency.fitests.similarity.jamopp.parser;
 
 import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 
 import cipm.consistency.fitests.similarity.ILoggable;
@@ -27,6 +30,15 @@ import cipm.consistency.fitests.similarity.jamopp.JaMoPPResourceParsingStrategy;
  * @author Alp Torac Genc
  */
 public class JaMoPPModelResourceWrapper implements IModelResourceWrapper, ILoggable {
+	/**
+	 * @see {@link #isResolveAllProxies()}
+	 */
+	private boolean resolveAllProxies = false;
+	/**
+	 * @see {@link #isSplitArtificialResource()}
+	 */
+	private boolean splitArtificialResource = false;
+
 	private AbstractResourceHelper resHelper;
 
 	/**
@@ -117,54 +129,58 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper, ILogga
 	 *                              will have
 	 * @return The created ArtificialResource
 	 */
-	protected Resource prepareArtificialResource(Resource modelResource, URI artificialResourceURI) {
-		var modelResourceSet = modelResource.getResourceSet();
-
+	protected Resource prepareArtificialResource(ResourceSet modelResourceSet, List<Resource> directModelResources,
+			URI artificialResourceURI) {
 		// Create the ArtificialResource
 		parsingStrat.performTrivialRecovery(modelResourceSet);
 
-		var artificialResource = modelResourceSet.getResources().stream()
-				.filter((r) -> r.getURI().toString().contains(artificialResourceName)).findFirst().orElse(null);
+		Resource artificialResourceForModelResSet = null;
 
-		if (artificialResource != null) {
-			artificialResource.setURI(artificialResourceURI);
+		if (isSplitArtificialResource()) {
+			artificialResourceForModelResSet = modelResourceSet.getResources().stream()
+					.filter((r) -> r.getURI().toString().contains(artificialResourceName)).findFirst().orElse(null);
 
-			this.logDebugMsg(String.format("ArtificialResource is parsed and has its URI set to %s",
-					artificialResource.getURI()));
+			if (artificialResourceForModelResSet != null) {
+				artificialResourceForModelResSet.setURI(artificialResourceURI);
 
-			// Use an array to avoid modifications while iterating, which lead to exceptions
-			var resArr = modelResourceSet.getResources().toArray(Resource[]::new);
+				this.logDebugMsg(String.format("ArtificialResource is parsed and has its URI set to %s",
+						artificialResourceForModelResSet.getURI()));
 
-			/*
-			 * Iterate over all resources under modelResourceSet and look for resources of
-			 * native Java libraries. Place each such resource's contents into the
-			 * ArtificialResource and remove the native Java library resource from
-			 * modelResourceSet (as it will be empty afterward). This moves all
-			 * CompilationUnits housing the Classifiers required by the parsed model
-			 * resource into ArtificialResource.
-			 */
-			for (int i = 0; i < resArr.length; i++) {
-				var r = resArr[i];
-				if (!r.getURI().isFile() && r != artificialResource && r != modelResource) {
-					this.logDebugMsg(String.format("Adding Resource %s to ArtificialResource", r.getURI()));
-					artificialResource.getContents().addAll(r.getContents());
-					this.logDebugMsg(String.format("Added Resource %s to ArtificialResource", r.getURI()));
-					modelResourceSet.getResources().remove(r);
-					this.logDebugMsg(String.format("Removed (empty) Resource %s from ResourceSet", r.getURI()));
+				// Use an array to avoid modifications while iterating, which lead to exceptions
+				var resArr = modelResourceSet.getResources().toArray(Resource[]::new);
+
+				/*
+				 * Iterate over all resources under modelResourceSet and look for resources of
+				 * native Java libraries. Place each such resource's contents into the
+				 * ArtificialResource and remove the native Java library resource from
+				 * modelResourceSet (as it will be empty afterward). This moves all
+				 * CompilationUnits housing the Classifiers required by the parsed model
+				 * resource into ArtificialResource.
+				 */
+				for (int i = 0; i < resArr.length; i++) {
+					var r = resArr[i];
+					if (!r.getURI().isFile() && r != artificialResourceForModelResSet
+							&& !directModelResources.contains(r)) {
+						this.logDebugMsg(String.format("Adding Resource %s to ArtificialResource", r.getURI()));
+						artificialResourceForModelResSet.getContents().addAll(r.getContents());
+						this.logDebugMsg(String.format("Added Resource %s to ArtificialResource", r.getURI()));
+						modelResourceSet.getResources().remove(r);
+						this.logDebugMsg(String.format("Removed (empty) Resource %s from ResourceSet", r.getURI()));
+					}
 				}
+
+				// "-2" to exclude modelResource and artificialResource from resource count
+				this.logDebugMsg(String.format("%d/%d resources have been added to ArtificialResource",
+						(resArr.length - modelResourceSet.getResources().size()) - 2, resArr.length - 2));
+
+				// Do not handle potential proxies in ArtificialResource, because they belong to
+				// internals of native classes, which are irrelevant for the model. Normally
+				// there should be no proxies, if the code represented in the model resource is
+				// valid.
 			}
-
-			// "-2" to exclude modelResource and artificialResource from resource count
-			this.logDebugMsg(String.format("%d/%d resources have been added to ArtificialResource",
-					(resArr.length - modelResourceSet.getResources().size()) - 2, resArr.length - 2));
-
-			// Do not handle potential proxies in ArtificialResource, because they belong to
-			// internals of native classes, which are irrelevant for the model. Normally
-			// there should be no proxies, if the code represented in the model resource is
-			// valid.
 		}
 
-		return artificialResource;
+		return artificialResourceForModelResSet;
 	}
 
 	/**
@@ -192,32 +208,37 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper, ILogga
 
 		// Find the model resource (i.e. the resource that contains the direct contents
 		// of model files)
-		var modelResource = modelResourceSet.getResources().stream()
-				.filter((r) -> r.getURI().toFileString().contains(modelDir.toString())).findFirst().get();
+		var directModelResources = modelResourceSet.getResources().stream()
+				.filter((r) -> r.getURI().isFile() && r.getURI().toFileString().contains(modelDir.toString()))
+				.collect(Collectors.toList());
 
-		/*
-		 * Attempt to resolve potential proxies that can be resolved prior to
-		 * TrivialRecovery, so that it constructs less synthetic elements that are
-		 * redundant.
-		 * 
-		 * This is necessary, because synthetic elements' type can vary and can cause
-		 * typing issues during similarity checking, as the (cached) model resource will
-		 * use the synthetic elements, even though they are present directly in the
-		 * model resource.
-		 * 
-		 * Examples to this are LocalVariableStatements; which are declared within the
-		 * model, are accessible and referenced by IdentifierReferences. Due to the
-		 * absence of context information during parsing, they are considered Fields,
-		 * unless they are resolved (via EcoreUtil.resolveAll(...) for instance)
-		 * directly after being parsed. Not resolving them causes the
-		 * IdentifierReferences to point at their synthetic element correspondents
-		 * (Fields), as opposed to their declaration in the model resource.
-		 */
-		EcoreUtil.resolveAll(modelResource);
+		if (isResolveAllProxies()) {
+			/*
+			 * Attempt to resolve potential proxies that can be resolved prior to
+			 * TrivialRecovery, so that it constructs less synthetic elements that are
+			 * redundant.
+			 * 
+			 * This is necessary, because synthetic elements' type can vary and can cause
+			 * typing issues during similarity checking, as the (cached) model resource will
+			 * use the synthetic elements, even though they are present directly in the
+			 * model resource.
+			 * 
+			 * Examples to this are LocalVariableStatements; which are declared within the
+			 * model, are accessible and referenced by IdentifierReferences. Due to the
+			 * absence of context information during parsing, they are considered Fields,
+			 * unless they are resolved (via EcoreUtil.resolveAll(...) for instance)
+			 * directly after being parsed. Not resolving them causes the
+			 * IdentifierReferences to point at their synthetic element correspondents
+			 * (Fields), as opposed to their declaration in the model resource.
+			 */
+			for (var r : directModelResources) {
+				EcoreUtil.resolveAll(r);
+			}
+		}
 
 		mergedModelResource = this.resHelper.createResource(modelResourceURI);
 
-		artificialResource = this.prepareArtificialResource(modelResource,
+		artificialResource = this.prepareArtificialResource(modelResourceSet, directModelResources,
 				this.getArtificialResourceURI(modelResourceURI));
 
 		this.logDebugMsg(String.format("Merging non-ArtificialResources"));
@@ -379,5 +400,37 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper, ILogga
 	 */
 	public boolean modelResourceExists() {
 		return this.getModelResource() != null;
+	}
+
+	/**
+	 * @return Whether all proxies should be resolved after a model is parsed inside
+	 *         {@link #parseModelResource(Path, URI)}. Set to false by default.
+	 */
+	public boolean isResolveAllProxies() {
+		return resolveAllProxies;
+	}
+
+	/**
+	 * @see {@link #isResolveAllProxies()}
+	 */
+	public void setResolveAllProxies(boolean resolveAllProxies) {
+		this.resolveAllProxies = resolveAllProxies;
+	}
+
+	/**
+	 * @return Whether the synthetic contents, which were created while parsing the
+	 *         model, should be split into a separate Resource. Set to false by
+	 *         default.
+	 * @see {@link JaMoPPResourceParsingStrategy#performTrivialRecovery()}
+	 */
+	public boolean isSplitArtificialResource() {
+		return splitArtificialResource;
+	}
+
+	/**
+	 * @see {@link #isSplitArtificialResource()}
+	 */
+	public void setSplitArtificialResource(boolean splitArtificialResource) {
+		this.splitArtificialResource = splitArtificialResource;
 	}
 }
