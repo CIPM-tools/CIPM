@@ -560,7 +560,7 @@ public abstract class AbstractJaMoPPParserRepoTest extends AbstractJaMoPPParserS
 
 		opts.copyOptionsFrom(superOpts);
 
-		opts.setShouldDeleteRepositoryClones(true);
+		opts.setShouldDeleteRepositoryClones(false);
 		opts.setShouldSaveCachedExpectedSimilarityResults(true);
 		opts.setShouldUseCachedExpectedSimilarityResults(true);
 		return opts;

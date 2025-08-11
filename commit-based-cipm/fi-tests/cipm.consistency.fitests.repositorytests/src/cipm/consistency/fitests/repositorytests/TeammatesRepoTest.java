@@ -44,4 +44,11 @@ public class TeammatesRepoTest extends AbstractJaMoPPParserRepoTest {
 		res.forEach((tf) -> tf.setExpectedSimilarityResultProvider(getExpectedSimilarityResultProviderForCommits()));
 		return res;
 	}
+
+	@Override
+	protected RepoParserTestOptions initResourceTestOptions() {
+		var opts = super.initResourceTestOptions();
+		opts.setShouldDeleteRepositoryClones(true);
+		return opts;
+	}
 }
