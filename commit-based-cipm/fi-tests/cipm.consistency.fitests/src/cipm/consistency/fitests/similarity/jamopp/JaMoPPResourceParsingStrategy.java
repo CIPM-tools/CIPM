@@ -89,4 +89,18 @@ public class JaMoPPResourceParsingStrategy extends AbstractResourceParsingStrate
 	public void performTrivialRecovery(ResourceSet resourceSet) {
 		new TrivialRecovery(resourceSet).recover();
 	}
+
+	@Override
+	protected void exclusionPatternsChanged() {
+		var exclusionPatternSet = this.getExclusionPatterns();
+		String[] exclusionPatterns = null;
+
+		if (exclusionPatternSet == null || exclusionPatternSet.isEmpty()) {
+			exclusionPatterns = new String[] {};
+		} else {
+			exclusionPatterns = exclusionPatternSet.toArray(String[]::new);
+		}
+
+		this.getParser().setExclusionPatterns(exclusionPatterns);
+	}
 }

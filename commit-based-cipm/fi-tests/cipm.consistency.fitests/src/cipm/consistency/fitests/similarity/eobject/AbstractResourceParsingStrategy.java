@@ -58,6 +58,7 @@ public abstract class AbstractResourceParsingStrategy {
 	 */
 	public void addExclusionPattern(String pattern) {
 		this.exclusionPatterns.add(pattern);
+		this.exclusionPatternsChanged();
 	}
 
 	/**
@@ -69,6 +70,7 @@ public abstract class AbstractResourceParsingStrategy {
 	 */
 	public void removeExclusionPattern(String pattern) {
 		this.exclusionPatterns.remove(pattern);
+		this.exclusionPatternsChanged();
 	}
 
 	/**
@@ -76,7 +78,26 @@ public abstract class AbstractResourceParsingStrategy {
 	 */
 	public void clearExclusionPatterns() {
 		this.exclusionPatterns.clear();
+		this.exclusionPatternsChanged();
 	}
+
+	/**
+	 * Modifications on the return value will not affect this class.
+	 * 
+	 * @return All exclusion patterns of this instance.
+	 */
+	public Set<String> getExclusionPatterns() {
+		return new HashSet<String>(this.exclusionPatterns);
+	}
+
+	/**
+	 * Performs any implementation-specific operations needed to adapt the
+	 * underlying model parsing mechanisms. <br>
+	 * <br>
+	 * This method should be called by each method, which modifies the exclusion
+	 * patterns stored in this instance.
+	 */
+	protected abstract void exclusionPatternsChanged();
 
 	/**
 	 * Parses a ResourceSet for the model at given path.
