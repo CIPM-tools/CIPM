@@ -9,8 +9,10 @@ import cipm.consistency.fitests.similarity.jamopp.parser.GeneralTimeMeasurementT
 import cipm.consistency.fitests.similarity.jamopp.parser.IExpectedSimilarityResultProvider;
 import cipm.consistency.fitests.similarity.jamopp.parser.IJaMoPPParserTestGenerationStrategy;
 import cipm.consistency.fitests.similarity.jamopp.parser.IModelResourceWrapper;
+import cipm.consistency.fitests.similarity.jamopp.parser.ITimeMeasurementTag;
 import cipm.consistency.fitests.similarity.jamopp.parser.ReflexiveSymmetricIterationTestGenerationStrategy;
 import cipm.consistency.fitests.similarity.jamopp.parser.JaMoPPModelResourceWrapper;
+import cipm.consistency.fitests.similarity.jamopp.parser.ParserTestTimeMeasurementKey;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -173,6 +175,17 @@ public abstract class AbstractJaMoPPParserRepoTest extends AbstractJaMoPPParserS
 	}
 
 	@Override
+	protected void startTimeMeasurement(ParserTestTimeMeasurementKey key, ITimeMeasurementTag tag) {
+		super.startTimeMeasurement(
+				key.withRepositoryName(getRepoName()).withRepositoryURI(this.getRepoURI().toString()), tag);
+	}
+
+	@Override
+	protected ParserTestTimeMeasurementKey createTimeMeasurementKey() {
+		return new ParserTestTimeMeasurementKey();
+	}
+
+	@Override
 	protected RepoParserTestFileLayout initParserTestFileLayout() {
 		var parserTestLayout = super.initParserTestFileLayout();
 		var layout = new RepoParserTestFileLayout(parserTestLayout);
@@ -260,7 +273,9 @@ public abstract class AbstractJaMoPPParserRepoTest extends AbstractJaMoPPParserS
 			for (var cID : commitIDList) {
 				var cachedCommitURI = this.getTestFileLayout().getModelResourceSaveURIForCommit(cID);
 				var res = new JaMoPPModelResourceWrapper(this.getResourceHelper());
-				this.startTimeMeasurement(GeneralTimeMeasurementTag.LOAD_MODEL_RESOURCE);
+				this.startTimeMeasurement(
+						this.createTimeMeasurementKey().withParsedModelLocation(cachedCommitURI.toString()),
+						GeneralTimeMeasurementTag.LOAD_MODEL_RESOURCE);
 				res.loadModelResource(cachedCommitURI);
 				this.stopTimeMeasurement();
 				this.getCacheUtil().addToCache(cachedCommitURI.toString(), res);
@@ -303,7 +318,6 @@ public abstract class AbstractJaMoPPParserRepoTest extends AbstractJaMoPPParserS
 	 *                     results should be computed.
 	 */
 	protected void computeExpectedSimilarityResults(Git git, List<String> commitIDList) {
-		this.startTimeMeasurement(GeneralTimeMeasurementTag.EXPECTED_SIMILARITY_RESULT_COMPUTATION);
 		var testStrats = this.getTestGenerationStrategies();
 		var expectedValueEstimator = new RepoTestSimilarityValueEstimator();
 
@@ -317,15 +331,18 @@ public abstract class AbstractJaMoPPParserRepoTest extends AbstractJaMoPPParserS
 			if (resultCache.getResult(commitID1, commitID2) == null) {
 				this.logDebugMsg(
 						String.format("Computing expected similarity result for: %s vs %s", commitID1, commitID2));
+				this.startTimeMeasurement(
+						this.createTimeMeasurementKey().withLeftCommitID(commitID1).withRightCommitID(commitID2),
+						GeneralTimeMeasurementTag.EXPECTED_SIMILARITY_RESULT_COMPUTATION);
 				var result = expectedValueEstimator.getExpectedSimilarityValueFor(git, commitID1, commitID2);
 
 				resultCache.addResult(commitID1, commitID2, result);
+				this.stopTimeMeasurement();
 
 				this.logDebugMsg(String.format("Computed expected similarity result (%s) for: %s vs %s", result,
 						commitID1, commitID2));
 			}
 		}));
-		this.stopTimeMeasurement();
 	}
 
 	/**
@@ -423,7 +440,8 @@ public abstract class AbstractJaMoPPParserRepoTest extends AbstractJaMoPPParserS
 
 			this.logDebugMsg(String.format("Checking out: %s", commitID));
 
-			this.startTimeMeasurement(RepoTimeMeasurementTag.CHECKOUT_TO_COMMIT);
+			this.startTimeMeasurement(this.createTimeMeasurementKey().withCommitID(commitID),
+					RepoTimeMeasurementTag.CHECKOUT_TO_COMMIT);
 			try {
 				git.checkout().setName(commitID).call();
 			} catch (GitAPIException e) {

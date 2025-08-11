@@ -84,12 +84,49 @@ public abstract class AbstractJaMoPPParserSimilarityTestFactory {
 	 */
 	public boolean getExpectedSimilarityResultFor(Resource lhsRes, Path lhsResPath, Resource rhsRes, Path rhsResPath) {
 		ParserTestTimeMeasurer.getInstance().startTimeMeasurement(
-				this.getExpectedSimilarityResultProvider().getClass().getSimpleName(),
+				this.getTimeMeasurementKeyFor(lhsRes, lhsResPath, rhsRes, rhsResPath),
 				GeneralTimeMeasurementTag.EXPECTED_SIMILARITY_RESULT_COMPUTATION);
 		var result = this.getExpectedSimilarityResultProvider().getExpectedSimilarityResultFor(lhsRes, lhsResPath,
 				rhsRes, rhsResPath);
 		ParserTestTimeMeasurer.getInstance().stopTimeMeasurement();
 		return result;
+	}
+
+	/**
+	 * @return Generates a time measurement key for the given parameters
+	 */
+	protected ParserTestTimeMeasurementKey getTimeMeasurementKeyFor(Resource lhsRes, Path lhsResPath, Resource rhsRes,
+			Path rhsResPath) {
+		var key = new ParserTestTimeMeasurementKey();
+
+		key.withTestFactoryClassName(this.getClass().getSimpleName());
+		key.withExpectedSimilarityResultProviderClassName(this.getExpectedSimilarityResultProvider().getClass().getSimpleName());
+
+		// TODO Clean up or fix to set the repository name and commitID fields
+		// It is currently possible to derive them from the model resource URIs:
+		// modelRes.getURI() = ".../repositoryName/commitID.javaxmi"
+
+		if (lhsRes != null) {
+			key.withParsedLeftModelLocation(lhsRes.getURI().toString());
+//					.withLeftRepositoryName(lhsRes.getURI().segment(lhsRes.getURI().segmentCount() - 2))
+//					.withLeftCommitID(lhsRes.getURI().lastSegment().split("\\.")[0])
+		}
+
+		if (lhsResPath != null) {
+			key.withOriginalLeftModelLocation(lhsResPath.toString());
+		}
+
+		if (rhsRes != null) {
+			key.withParsedRightModelLocation(rhsRes.getURI().toString());
+//					.withRightRepositoryName(rhsRes.getURI().segment(rhsRes.getURI().segmentCount() - 2))
+//					.withRightCommitID(rhsRes.getURI().lastSegment().split("\\.")[0])
+		}
+
+		if (rhsResPath != null) {
+			key.withOriginalRightModelLocation(rhsResPath.toString());
+		}
+
+		return key;
 	}
 
 	/**

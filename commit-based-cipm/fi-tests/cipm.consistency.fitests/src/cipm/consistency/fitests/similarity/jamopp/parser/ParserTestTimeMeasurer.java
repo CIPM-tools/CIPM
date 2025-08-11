@@ -162,7 +162,7 @@ public class ParserTestTimeMeasurer {
 	 * @param tag The tag of the time measurement, which is used to group time
 	 *            measurements
 	 */
-	public void startTimeMeasurement(String key, ITimeMeasurementTag tag) {
+	public void startTimeMeasurement(ParserTestTimeMeasurementKey key, ITimeMeasurementTag tag) {
 		if (this.startTime == null) {
 			this.startTime = LocalDateTime.now();
 			this.startTimeString = fileContentTimeFormatter.format(this.startTime);
@@ -332,7 +332,7 @@ public class ParserTestTimeMeasurer {
 		private Long millis;
 
 		@Expose
-		private final String key;
+		private final ParserTestTimeMeasurementKey key;
 		@Expose
 		private final ITimeMeasurementTag tag;
 
@@ -341,13 +341,13 @@ public class ParserTestTimeMeasurer {
 		 *              measurement. The start and end times of this time measurement
 		 *              are provided indirectly through this parameter, as it may be
 		 *              necessary to pause and resume this time measurement.
-		 * @param key   The key of the time measurement, which describes its purpose
-		 *              further
+		 * @param key   Keys associated with the time measurement, which describe what
+		 *              was measured
 		 * @param tag   The tag of the time measurement, which can be used for a
 		 *              high-level grouping of time measurements based on what they are
 		 *              taken from
 		 */
-		private TimeMeasurementEntry(StopWatch watch, String key, ITimeMeasurementTag tag) {
+		private TimeMeasurementEntry(StopWatch watch, ParserTestTimeMeasurementKey key, ITimeMeasurementTag tag) {
 			this.watch = watch;
 			this.tag = tag;
 			this.key = key;
@@ -357,7 +357,8 @@ public class ParserTestTimeMeasurer {
 			return millis;
 		}
 
-		public String getKey() {
+		@SuppressWarnings("unused")
+		public ParserTestTimeMeasurementKey getKey() {
 			return key;
 		}
 
@@ -365,6 +366,7 @@ public class ParserTestTimeMeasurer {
 			return tag;
 		}
 
+		@SuppressWarnings("unused")
 		public StopWatch getWatch() {
 			return watch;
 		}
