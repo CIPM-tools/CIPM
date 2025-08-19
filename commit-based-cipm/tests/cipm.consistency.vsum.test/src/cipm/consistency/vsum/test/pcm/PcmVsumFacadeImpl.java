@@ -66,7 +66,8 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 	 */
 	private void loadModelResource(Resource res, boolean force) {
 		if (force || vsum.getModelInstance(res.getURI()) == null) {
-			this.propagateResource(res);
+//			this.propagateResource(res);
+			vsum.getViewSourceModels().add(res);
 		}
 	}
 
@@ -105,13 +106,13 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 		var viewSelector = viewType.createSelector(vsum);
 
 		// Selecting all elements here
-		viewSelector.getSelectableElements().forEach(ele -> {
-			if (ele instanceof InstrumentationModel) {
-				viewSelector.setSelected(ele, true);
-			}
-		});
-		var underlyingView = viewSelector.createView();
-		var view = new ChangeAcceptingView(vsum, underlyingView);
+		viewSelector.getSelectableElements().forEach(ele -> viewSelector.setSelected(ele, true));
+//		viewSelector.getSelectableElements().forEach(ele -> {
+//			if (ele instanceof InstrumentationModel) {
+//				viewSelector.setSelected(ele, true);
+//			}
+//		});
+		var view = new ChangeAcceptingView(vsum, viewType, viewSelector);
 
 		view.addChanges(changesToPropagate);
 
