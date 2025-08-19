@@ -4,11 +4,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
@@ -21,13 +19,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import cipm.consistency.cpr.pcmjava.CommitIntegrationPCMJavaChangePropagationSpecification;
 import cipm.consistency.models.im.ImFacade;
 import cipm.consistency.models.pcm.PcmFacade;
 import cipm.consistency.vsum.Propagation;
 import cipm.consistency.vsum.test.appspace.LoggingSetup;
 import jamopp.resource.JavaResource2Factory;
-import mir.reactions.dummyPCM.DummyPCMChangePropagationSpecification;
+import mir.reactions.dummyPCMCPRs.DummyPCMCPRsChangePropagationSpecification;
 import mir.reactions.imInit.ImInitChangePropagationSpecification;
 import mir.reactions.pcmImUpdate.PcmImUpdateChangePropagationSpecification;
 import mir.reactions.pcmInit.PcmInitChangePropagationSpecification;
@@ -40,7 +37,7 @@ public class PcmMinimalTest {
 	private PcmFacade pcmFacade;
 	private ImFacade imFacade;
 
-	private Path rootPath = Paths.get("target", "PcmMinimalTest");
+	private Path rootPath = Paths.get("target", "PcmMinimalTest").toAbsolutePath();
 	private Path oldCommitRootPath = rootPath.resolve("oldCommit");
 	private Path newCommitRootPath = rootPath.resolve("newCommit");
 	private Path propagatedModelsRootPath = rootPath.resolve("propagatedModels");
@@ -54,11 +51,22 @@ public class PcmMinimalTest {
 	private Path oldToNewPcmChangesPath = rootPath.resolve("oldToNewCommitPcmChanges.changes");
 
 	protected void setup(boolean overwrite) {
-		// Copy "oldCommit" contents to "propagatedModels"
-		var oldCommitFiles = this.oldCommitRootPath.toFile().listFiles();
-		for (var f : oldCommitFiles) {
+		// Copy all oldCommit files to propagatedModels
+		// to leave oldCommit unmodified
+		for (var f : this.oldCommitRootPath.toFile().listFiles()) {
 			try {
-				Files.copy(f.toPath(), this.propagatedModelsRootPath.resolve(f.getName()));
+				var targetFile = this.propagatedModelsRootPath.resolve(f.getName()).toFile();
+				if (targetFile.exists()) {
+					targetFile.delete();
+				} else {
+					targetFile.getParentFile().mkdirs();
+				}
+				Files.copy(f.toPath(), targetFile.toPath());
+
+				// Make sure to fix the URIs and HREFs in the changes file
+				var changesString = Files.readString(this.oldToNewPcmChangesPath);
+				changesString = changesString.replaceAll("oldCommit", "propagatedModels");
+				Files.write(this.oldToNewPcmChangesPath, changesString.getBytes());
 			} catch (IOException e) {
 				e.printStackTrace();
 				Assertions.fail(e);
@@ -70,7 +78,8 @@ public class PcmMinimalTest {
 		imFacade = new ImFacade();
 		vsumFacade = new PcmVsumFacadeImpl(this.rootPath, List.of(pcmFacade, imFacade),
 				List.of(new PcmInitChangePropagationSpecification(), new ImInitChangePropagationSpecification(),
-						new PcmImUpdateChangePropagationSpecification(), new DummyPCMChangePropagationSpecification()));
+						new PcmImUpdateChangePropagationSpecification(),
+						new DummyPCMCPRsChangePropagationSpecification()));
 	}
 
 	@BeforeEach
@@ -125,18 +134,8 @@ public class PcmMinimalTest {
 //		var newRepoModelRes = resSet
 //				.createResource(URI.createFileURI(this.newRepoModelPath.toFile().getAbsolutePath()));
 
-		// Fix URIs and hrefs
 		var changeFilePath = this.oldToNewPcmChangesPath;
 		var changeFile = changeFilePath.toFile();
-		try {
-			var changesString = Files.readString(this.oldToNewPcmChangesPath);
-			changesString = changesString.replaceAll("MinimalTest/pcm", "PcmMinimalTest/oldCommit");
-			changesString = changesString.replaceAll("href=\"pcm/", "href=\"oldCommit/");
-			Files.write(changeFilePath, changesString.getBytes());
-		} catch (IOException e1) {
-			e1.printStackTrace();
-			Assertions.fail(e1);
-		}
 
 		var changeRes = resSet.createResource(URI.createFileURI(changeFile.getAbsolutePath()));
 		try {
@@ -146,11 +145,11 @@ public class PcmMinimalTest {
 		}
 
 		var propTargetPath = propagatedModelsRootPath.resolve("Repository.repository");
-		try {
-			FileUtils.copyFile(pcmFacade.getDirLayout().getPcmRepositoryPath().toFile(), propTargetPath.toFile());
-		} catch (IOException e) {
-			this.failTest(e.getMessage());
-		}
+//		try {
+//			FileUtils.copyFile(pcmFacade.getDirLayout().getPcmRepositoryPath().toFile(), propTargetPath.toFile());
+//		} catch (IOException e) {
+//			this.failTest(e.getMessage());
+//		}
 		var propagationTarget = resSet.createResource(URI.createFileURI(propTargetPath.toFile().getAbsolutePath()));
 		try {
 			propagationTarget.load(null);
@@ -164,10 +163,8 @@ public class PcmMinimalTest {
 				LOGGER.debug("Consequential change: " + originalChange.getConsequentialChanges());
 			}
 		}
-		try {
-			propagationTarget.save(null);
-		} catch (IOException e) {
-			this.failTest(e.getMessage());
-		}
+
+		// vsumFacade saves the propagated resource internally
+		// no need to save propagationTarget afterward
 	}
 }

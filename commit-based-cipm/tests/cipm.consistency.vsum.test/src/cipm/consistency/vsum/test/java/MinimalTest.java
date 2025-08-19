@@ -17,6 +17,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,8 +55,15 @@ public class MinimalTest {
 
 	private Path localRepository = new File("C:\\Users\\atora\\Desktop\\MinimalRepo").getAbsoluteFile().toPath();
 	private String remoteRepository = "";
-	private Path rootPath = Paths.get("target", "MinimalTest");
-	private Path manualModelsPath = Paths.get("target", "manual");
+
+	private Path targetPath = Paths.get("target").toAbsolutePath();
+	private Path rootPath = targetPath.resolve(MinimalTest.class.getSimpleName());
+	private Path manualModelsPath = targetPath.resolve("manual");
+
+	private Path pcmMinimalTestPath = targetPath.resolve("PcmMinimalTest");
+
+	private String oldCommitID = commitID2;
+	private String newCommitID = commitID3;
 
 	/**
 	 * 
@@ -240,24 +248,87 @@ public class MinimalTest {
 	}
 
 	@Test
-	public void testTeammates() {
+	public void createPCMMinimalTestResources() {
+		this.createChangeResource();
+
+		var oldCommitRootPath = this.targetPath
+				.resolve(String.format("%s-1-%s", MinimalTest.class.getSimpleName(), oldCommitID.substring(0, 7)));
+		this.copyPCMMinimalTestModelResources(oldCommitRootPath, this.pcmMinimalTestPath.resolve("oldCommit"), oldCommitID);
+
+		var newCommitRootPath = this.targetPath
+				.resolve(String.format("%s-2-%s", MinimalTest.class.getSimpleName(), newCommitID.substring(0, 7)));
+		this.copyPCMMinimalTestModelResources(newCommitRootPath, this.pcmMinimalTestPath.resolve("newCommit"), newCommitID);
+	}
+
+	private void createChangeResource() {
 		var resSet = new ResourceSetImpl();
-		var res = resSet.createResource(URI.createFileURI(this.teammatesController.getState().getDirLayout()
-				.getRootDirPath().resolve("pcmChanges.changes").toString()));
-		var props = propagateAndEvaluate(commitID2, commitID3);
+		var changesFileName = "oldToNewCommitPcmChanges.changes";
+
+		var minimalTestChangesPath = this.teammatesController.getState().getDirLayout().getRootDirPath()
+				.resolve(changesFileName);
+		var changeRes = resSet.createResource(URI.createFileURI(minimalTestChangesPath.toString()));
+		var props = propagateAndEvaluate(oldCommitID, newCommitID);
 		for (var prop : props) {
 			for (var change : prop.getChanges()) {
 				// Java changes
 //				res.getContents().addAll(change.getOriginalChange().getEChanges());
 
 				// PCM changes
-				res.getContents().addAll(change.getConsequentialChanges().getEChanges());
+				changeRes.getContents().addAll(change.getConsequentialChanges().getEChanges());
 			}
 		}
 		try {
-			res.save(null);
+			// Save the consequential changes under "MinimalTest"
+			changeRes.save(null);
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+
+		var pcmMinimalTestChangesPath = this.pcmMinimalTestPath.resolve(changesFileName);
+		// Copy consequential changes to "PcmMinimalTest"
+		this.copyFile(minimalTestChangesPath.toFile(), pcmMinimalTestChangesPath);
+		this.fixURIsAndHREFs(pcmMinimalTestChangesPath);
+	}
+
+	private void copyFile(File f, Path targetPath) {
+		try {
+			var targetFile = targetPath.toFile();
+			if (!targetFile.exists()) {
+				targetFile.getParentFile().mkdirs();
+//				targetFile.createNewFile();
+			}
+			Files.copy(f.toPath(), targetFile.toPath());
+		} catch (IOException e) {
+			e.printStackTrace();
+			Assertions.fail(e);
+		}
+	}
+
+	private void fixURIsAndHREFs(Path changesFilePath) {
+		try {
+			var changesString = Files.readString(changesFilePath);
+			changesString = changesString.replaceAll("MinimalTest/pcm", "PcmMinimalTest/oldCommit");
+			changesString = changesString.replaceAll("href=\"pcm/", "href=\"oldCommit/");
+			Files.write(changesFilePath, changesString.getBytes());
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			Assertions.fail(e1);
+		}
+	}
+
+	private void copyPCMMinimalTestModelResources(Path commitRootPath, Path copyTargetPath, String commitID) {
+		var codeModelPath = commitRootPath.resolve("code").resolve("Java.javaxmi");
+		this.copyFile(codeModelPath.toFile(), copyTargetPath.resolve("Java.javaxmi"));
+		var pcmModelsPath = commitRootPath.resolve("pcm");
+		for (var f : pcmModelsPath.toFile().listFiles()) {
+			if (!f.getName().endsWith(".repository")) {
+				this.copyFile(f, copyTargetPath.resolve(f.getName()));
+			} else {
+				if (f.getName().contains(commitID)) {
+					// Parsed repository
+					this.copyFile(f, copyTargetPath.resolve("Repository.repository"));
+				}
+			}
 		}
 	}
 }
