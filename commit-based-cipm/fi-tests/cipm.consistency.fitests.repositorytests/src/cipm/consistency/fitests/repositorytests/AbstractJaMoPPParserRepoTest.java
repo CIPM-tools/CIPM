@@ -164,9 +164,10 @@ public abstract class AbstractJaMoPPParserRepoTest extends AbstractJaMoPPParserS
 			this.stopTimeMeasurement();
 		}
 
-		if (this.getResourceTestOptions().shouldDeleteRepositoryClones()) {
+		var localRepoPath = this.getTestFileLayout().getModelSourceFileRootDirPath();
+		if (this.getResourceTestOptions().shouldDeleteRepositoryClones() && localRepoPath.toFile().exists()) {
 			this.startTimeMeasurement(RepoTimeMeasurementTag.DELETE_LOCAL_REPO_CLONE);
-			this.getFileUtil().deleteAll(this.getTestFileLayout().getModelSourceFileRootDirPath());
+			this.getFileUtil().deleteAll(localRepoPath);
 			this.stopTimeMeasurement();
 		}
 
