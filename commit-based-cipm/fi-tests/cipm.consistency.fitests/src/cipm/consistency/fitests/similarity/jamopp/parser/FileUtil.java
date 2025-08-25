@@ -6,14 +6,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.TreeSet;
 
-import cipm.consistency.fitests.similarity.ILoggable;
+import cipm.consistency.fitests.similarity.SimilarityTestLogger;
 
 /**
  * A utility class that contains file-related operations.
  * 
  * @author Alp Torac Genc
  */
-public class FileUtil implements ILoggable {
+public class FileUtil {
 	/**
 	 * @return Whether the content of both dirs are similar.
 	 * 
@@ -36,7 +36,9 @@ public class FileUtil implements ILoggable {
 		try {
 			content = Files.readString(f.toPath());
 		} catch (IOException e) {
-			this.logDebugMsg(String.format("Could not read: %s, returning empty string", f.toPath().toString()));
+			SimilarityTestLogger.logDebugMsg(
+					String.format("Could not read: %s, returning empty string", f.toPath().toString()),
+					this.getClass());
 		}
 
 		return content.replaceAll("\\n", "").replaceAll("\\r", "").replaceAll("\\s", "");
@@ -69,7 +71,7 @@ public class FileUtil implements ILoggable {
 	 * @see {@link #filesEqual(File, File)}, {@link #readEffectiveText(File)}
 	 */
 	public boolean dirsEqual(File dir1, File dir2) {
-		this.logDebugMsg("Comparing: " + dir1.getName() + " and " + dir2.getName());
+		SimilarityTestLogger.logDebugMsg("Comparing: " + dir1.getName() + " and " + dir2.getName(), this.getClass());
 
 		// There cannot be 2 files with the same path, name and extension
 		// so using TreeSet, which sorts the files spares doing so here
@@ -103,16 +105,18 @@ public class FileUtil implements ILoggable {
 
 			if (f1.isDirectory() && f2.isDirectory()) {
 				if (!dirsEqual(f1, f2)) {
-					this.logDebugMsg("Directories " + f1.getName() + " and " + f2.getName() + " are not equal");
+					SimilarityTestLogger.logDebugMsg(
+							"Directories " + f1.getName() + " and " + f2.getName() + " are not equal", this.getClass());
 					return false;
 				}
 			} else if (f1.isFile() && f2.isFile()) {
 				if (!filesEqual(f1, f2)) {
-					this.logDebugMsg("Files " + f1.getName() + " and " + f2.getName() + " are not equal");
+					SimilarityTestLogger.logDebugMsg(
+							"Files " + f1.getName() + " and " + f2.getName() + " are not equal", this.getClass());
 					return false;
 				}
 			} else {
-				this.logErrorMsg("Unexpected case there is a file and a directory");
+				SimilarityTestLogger.logErrorMsg("Unexpected case there is a file and a directory", this.getClass());
 				return false;
 			}
 		}

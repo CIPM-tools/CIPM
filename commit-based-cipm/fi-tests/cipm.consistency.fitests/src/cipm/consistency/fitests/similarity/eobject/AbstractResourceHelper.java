@@ -11,7 +11,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 
-import cipm.consistency.fitests.similarity.ILoggable;
+import cipm.consistency.fitests.similarity.SimilarityTestLogger;
 
 /**
  * An abstract class that is meant to be implemented by classes, which
@@ -19,7 +19,7 @@ import cipm.consistency.fitests.similarity.ILoggable;
  * 
  * @author Alp Torac Genc
  */
-public abstract class AbstractResourceHelper implements ILoggable {
+public abstract class AbstractResourceHelper {
 	/**
 	 * The extension of {@link Resource} files, if they are saved.
 	 */
@@ -92,7 +92,8 @@ public abstract class AbstractResourceHelper implements ILoggable {
 				 * it to the second one.
 				 */
 				if (eo.eResource() != null) {
-					this.logErrorMsg("An EObject's resource was set and shifted during resource creation");
+					SimilarityTestLogger.logErrorMsg(
+							"An EObject's resource was set and shifted during resource creation", this.getClass());
 				}
 				res.getContents().add(eo);
 			}
@@ -149,12 +150,13 @@ public abstract class AbstractResourceHelper implements ILoggable {
 	 */
 	public void loadResource(Resource res) {
 		try {
-			this.logDebugMsg(String.format("Loading resource at: %s", res.getURI()));
+			SimilarityTestLogger.logDebugMsg(String.format("Loading resource at: %s", res.getURI()), this.getClass());
 			res.load(null);
-			this.logDebugMsg(String.format("Loaded %s", res.getURI()));
+			SimilarityTestLogger.logDebugMsg(String.format("Loaded %s", res.getURI()), this.getClass());
 		} catch (IOException e) {
 			e.printStackTrace();
-			this.logInfoMsg(String.format("Could not load resource at: %s", res.getURI()));
+			SimilarityTestLogger.logInfoMsg(String.format("Could not load resource at: %s", res.getURI()),
+					this.getClass());
 		}
 	}
 
@@ -228,8 +230,10 @@ public abstract class AbstractResourceHelper implements ILoggable {
 				return !this.resourceFileExists(uri);
 			} catch (IOException e) {
 				var isResourceDeleted = !this.resourceFileExists(uri);
-				this.logInfoMsg(String.format("Could not delete resource as expected: %s (is deleted: %s) %s %s",
-						res.getURI().toString(), isResourceDeleted, System.lineSeparator(), e.getMessage()));
+				SimilarityTestLogger.logInfoMsg(
+						String.format("Could not delete resource as expected: %s (is deleted: %s) %s %s",
+								res.getURI().toString(), isResourceDeleted, System.lineSeparator(), e.getMessage()),
+						this.getClass());
 				return isResourceDeleted;
 			}
 		}

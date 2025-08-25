@@ -9,7 +9,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 
-import cipm.consistency.fitests.similarity.ILoggable;
+import cipm.consistency.fitests.similarity.SimilarityTestLogger;
 import cipm.consistency.fitests.similarity.eobject.AbstractResourceHelper;
 import cipm.consistency.fitests.similarity.jamopp.JaMoPPResourceParsingStrategy;
 
@@ -29,7 +29,7 @@ import cipm.consistency.fitests.similarity.jamopp.JaMoPPResourceParsingStrategy;
  * 
  * @author Alp Torac Genc
  */
-public class JaMoPPModelResourceWrapper implements IModelResourceWrapper, ILoggable {
+public class JaMoPPModelResourceWrapper implements IModelResourceWrapper {
 	/**
 	 * @see {@link #isResolveAllProxies()}
 	 */
@@ -151,8 +151,8 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper, ILogga
 			if (artificialResourceForModelResSet != null) {
 				artificialResourceForModelResSet.setURI(artificialResourceURI);
 
-				this.logDebugMsg(String.format("ArtificialResource is parsed and has its URI set to %s",
-						artificialResourceForModelResSet.getURI()));
+				SimilarityTestLogger.logDebugMsg(String.format("ArtificialResource is parsed and has its URI set to %s",
+						artificialResourceForModelResSet.getURI()), this.getClass());
 
 				// Use an array to avoid modifications while iterating, which lead to exceptions
 				var resArr = modelResourceSet.getResources().toArray(Resource[]::new);
@@ -169,17 +169,23 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper, ILogga
 					var r = resArr[i];
 					if (!r.getURI().isFile() && r != artificialResourceForModelResSet
 							&& !directModelResources.contains(r)) {
-						this.logDebugMsg(String.format("Adding Resource %s to ArtificialResource", r.getURI()));
+						SimilarityTestLogger.logDebugMsg(
+								String.format("Adding Resource %s to ArtificialResource", r.getURI()), this.getClass());
 						artificialResourceForModelResSet.getContents().addAll(r.getContents());
-						this.logDebugMsg(String.format("Added Resource %s to ArtificialResource", r.getURI()));
+						SimilarityTestLogger.logDebugMsg(
+								String.format("Added Resource %s to ArtificialResource", r.getURI()), this.getClass());
 						modelResourceSet.getResources().remove(r);
-						this.logDebugMsg(String.format("Removed (empty) Resource %s from ResourceSet", r.getURI()));
+						SimilarityTestLogger.logDebugMsg(
+								String.format("Removed (empty) Resource %s from ResourceSet", r.getURI()),
+								this.getClass());
 					}
 				}
 
 				// "-2" to exclude modelResource and artificialResource from resource count
-				this.logDebugMsg(String.format("%d/%d resources have been added to ArtificialResource",
-						(resArr.length - modelResourceSet.getResources().size()) - 2, resArr.length - 2));
+				SimilarityTestLogger.logDebugMsg(
+						String.format("%d/%d resources have been added to ArtificialResource",
+								(resArr.length - modelResourceSet.getResources().size()) - 2, resArr.length - 2),
+						this.getClass());
 
 				// Do not handle potential proxies in ArtificialResource, because they belong to
 				// internals of native classes, which are irrelevant for the model. Normally
@@ -212,7 +218,8 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper, ILogga
 		modelResourceSet = parsingStrat.parseModelResource(modelDir);
 
 		var resCount = modelResourceSet.getResources().size();
-		this.logDebugMsg(String.format("%d resources have been parsed under %s", resCount, modelDir));
+		SimilarityTestLogger.logDebugMsg(String.format("%d resources have been parsed under %s", resCount, modelDir),
+				this.getClass());
 
 		// Find the model resource (i.e. the resource that contains the direct contents
 		// of model files)
@@ -249,19 +256,21 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper, ILogga
 		artificialResource = this.prepareArtificialResource(modelResourceSet, directModelResources,
 				this.getArtificialResourceURI(modelResourceURI));
 
-		this.logDebugMsg(String.format("Merging non-ArtificialResources"));
+		SimilarityTestLogger.logDebugMsg(String.format("Merging non-ArtificialResources"), this.getClass());
 
 		for (var r : modelResourceSet.getResources()) {
 			if (r != artificialResource) {
-				this.logDebugMsg(String.format("Including %s into the merged resource", r.getURI()));
+				SimilarityTestLogger.logDebugMsg(String.format("Including %s into the merged resource", r.getURI()),
+						this.getClass());
 				mergedModelResource.getContents().addAll(r.getContents());
-				this.logDebugMsg(String.format("Included %s into the merged resource", r.getURI()));
+				SimilarityTestLogger.logDebugMsg(String.format("Included %s into the merged resource", r.getURI()),
+						this.getClass());
 			}
 		}
 
-		this.logDebugMsg(String.format("Merged non-ArtificialResources"));
+		SimilarityTestLogger.logDebugMsg(String.format("Merged non-ArtificialResources"), this.getClass());
 
-		this.logDebugMsg(String.format("%s parsed (uncached)", modelDir));
+		SimilarityTestLogger.logDebugMsg(String.format("%s parsed (uncached)", modelDir), this.getClass());
 
 		// Add ArtificialResource to mergedResource's resource set, so that it can be
 		// found by the model resource's contents that have been moved
@@ -287,16 +296,16 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper, ILogga
 	public boolean saveResources() {
 		var result = true;
 		if (mergedModelResource != null) {
-			this.logDebugMsg("Merged model resource exists, saving it now");
+			SimilarityTestLogger.logDebugMsg("Merged model resource exists, saving it now", this.getClass());
 			result = this.resHelper.saveResourceIfNotSaved(mergedModelResource);
-			this.logDebugMsg(String.format("%s merged model resource at %s", result ? "Saved" : "Could not save",
-					mergedModelResource.getURI()));
+			SimilarityTestLogger.logDebugMsg(String.format("%s merged model resource at %s",
+					result ? "Saved" : "Could not save", mergedModelResource.getURI()), this.getClass());
 		}
 		if (artificialResource != null) {
-			this.logDebugMsg("Artificial resource exists, saving it now");
+			SimilarityTestLogger.logDebugMsg("Artificial resource exists, saving it now", this.getClass());
 			result = result && this.resHelper.saveResourceIfNotSaved(artificialResource);
-			this.logDebugMsg(String.format("%s artificial resource at %s", result ? "Saved" : "Could not save",
-					artificialResource.getURI()));
+			SimilarityTestLogger.logDebugMsg(String.format("%s artificial resource at %s",
+					result ? "Saved" : "Could not save", artificialResource.getURI()), this.getClass());
 		}
 		return result;
 	}
@@ -308,17 +317,17 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper, ILogga
 	public boolean deleteResources() {
 		var result = false;
 		if (mergedModelResource != null) {
-			this.logDebugMsg("Merged model resource exists, deleting it now");
+			SimilarityTestLogger.logDebugMsg("Merged model resource exists, deleting it now", this.getClass());
 			result = this.resHelper.deleteResource(mergedModelResource);
-			this.logDebugMsg(String.format("%s merged model resource at %s", result ? "Deleted" : "Could not delete",
-					mergedModelResource.getURI()));
+			SimilarityTestLogger.logDebugMsg(String.format("%s merged model resource at %s",
+					result ? "Deleted" : "Could not delete", mergedModelResource.getURI()), this.getClass());
 
 		}
 		if (artificialResource != null) {
-			this.logDebugMsg("Artificial resource exists, deleting it now");
+			SimilarityTestLogger.logDebugMsg("Artificial resource exists, deleting it now", this.getClass());
 			result = result && this.resHelper.deleteResource(artificialResource);
-			this.logDebugMsg(String.format("%s artificial resource at %s", result ? "Saved" : "Could not save",
-					artificialResource.getURI()));
+			SimilarityTestLogger.logDebugMsg(String.format("%s artificial resource at %s",
+					result ? "Saved" : "Could not save", artificialResource.getURI()), this.getClass());
 		}
 		return result;
 	}
@@ -330,17 +339,17 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper, ILogga
 	public boolean unloadResources() {
 		var result = false;
 		if (mergedModelResource != null) {
-			this.logDebugMsg("Merged model resource exists, unloading it now");
+			SimilarityTestLogger.logDebugMsg("Merged model resource exists, unloading it now", this.getClass());
 			result = this.resHelper.unloadResource(mergedModelResource);
-			this.logDebugMsg(String.format("%s merged model resource at %s", result ? "Unloaded" : "Could not unload",
-					mergedModelResource.getURI()));
+			SimilarityTestLogger.logDebugMsg(String.format("%s merged model resource at %s",
+					result ? "Unloaded" : "Could not unload", mergedModelResource.getURI()), this.getClass());
 
 		}
 		if (artificialResource != null) {
-			this.logDebugMsg("Artificial resource exists, unloading it now");
+			SimilarityTestLogger.logDebugMsg("Artificial resource exists, unloading it now", this.getClass());
 			result = result && this.resHelper.unloadResource(artificialResource);
-			this.logDebugMsg(String.format("%s artificial resource at %s", result ? "Unloaded" : "Could not unload",
-					artificialResource.getURI()));
+			SimilarityTestLogger.logDebugMsg(String.format("%s artificial resource at %s",
+					result ? "Unloaded" : "Could not unload", artificialResource.getURI()), this.getClass());
 		}
 		return result;
 	}
@@ -362,17 +371,17 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper, ILogga
 	public boolean loadParsedResources() {
 		var result = true;
 		if (mergedModelResource != null && !this.mergedModelResource.isLoaded()) {
-			this.logDebugMsg("Merged model resource exists, loading it now");
+			SimilarityTestLogger.logDebugMsg("Merged model resource exists, loading it now", this.getClass());
 			result = this.resHelper.unloadResource(mergedModelResource);
-			this.logDebugMsg(String.format("%s merged model resource at %s", result ? "Loaded" : "Could not load",
-					mergedModelResource.getURI()));
+			SimilarityTestLogger.logDebugMsg(String.format("%s merged model resource at %s",
+					result ? "Loaded" : "Could not load", mergedModelResource.getURI()), this.getClass());
 
 		}
 		if (artificialResource != null && !this.artificialResource.isLoaded()) {
-			this.logDebugMsg("Artificial resource exists, unloading it now");
+			SimilarityTestLogger.logDebugMsg("Artificial resource exists, unloading it now", this.getClass());
 			result = result && this.resHelper.unloadResource(artificialResource);
-			this.logDebugMsg(String.format("%s artificial resource at %s", result ? "Loaded" : "Could not load",
-					artificialResource.getURI()));
+			SimilarityTestLogger.logDebugMsg(String.format("%s artificial resource at %s",
+					result ? "Loaded" : "Could not load", artificialResource.getURI()), this.getClass());
 		}
 		return result;
 	}

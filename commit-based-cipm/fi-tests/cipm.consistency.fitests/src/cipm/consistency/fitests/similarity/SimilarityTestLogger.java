@@ -6,18 +6,26 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
 /**
- * An interface that encapsulates logging. <br>
+ * A utility class that encapsulates logging. <br>
  * <br>
- * Make sure to call {@link ILoggable#setUpLogger()} prior to other methods.
+ * Make sure to call {@link SimilarityTestLogger#setUpLogger()} prior to other
+ * methods.
  * 
  * @author Alp Torac Genc
  */
-public interface ILoggable {
+public class SimilarityTestLogger {
+	private final static String cipmRootLoggerName = "cipm";
+	private final static String cipmLoggerNamePrefix = cipmRootLoggerName + ".";
+
 	/**
 	 * @return The Logger with the given name
 	 */
 	private static Logger getLoggerFor(String loggerName) {
 		return Logger.getLogger(loggerName);
+	}
+
+	private static Logger getLoggerFor(Class<?> cls) {
+		return getLoggerFor(cipmLoggerNamePrefix + cls.getSimpleName());
 	}
 
 	/**
@@ -30,7 +38,7 @@ public interface ILoggable {
 		 * OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL
 		 */
 
-		Logger logger = getLoggerFor("cipm");
+		Logger logger = getLoggerFor(cipmRootLoggerName);
 		logger.setLevel(Level.DEBUG);
 
 		// logger = Logger.getLogger("jamopp");
@@ -49,33 +57,29 @@ public interface ILoggable {
 	/**
 	 * Logs the given message at {@link Level#DEBUG} level.
 	 */
-	public default void logDebugMsg(String msg) {
-		var logger = getLoggerFor("cipm." + this.getClass().getSimpleName());
-		logger.debug(msg);
+	public static void logDebugMsg(String msg, Class<?> cls) {
+		getLoggerFor(cls).debug(msg);
 	}
 
 	/**
 	 * Logs the given message at {@link Level#INFO} level.
 	 */
-	public default void logInfoMsg(String msg) {
-		var logger = getLoggerFor("cipm." + this.getClass().getSimpleName());
-		logger.info(msg);
+	public static void logInfoMsg(String msg, Class<?> cls) {
+		getLoggerFor(cls).info(msg);
 	}
 
 	/**
 	 * Logs the given message at {@link Level#ERROR} level.
 	 */
-	public default void logErrorMsg(String msg) {
-		var logger = getLoggerFor("cipm." + this.getClass().getSimpleName());
-		logger.error(msg);
+	public static void logErrorMsg(String msg, Class<?> cls) {
+		getLoggerFor(cls).error(msg);
 	}
 
 	/**
 	 * Logs the given message at the {@link Level} that corresponds to the given
 	 * priority.
 	 */
-	public default void logMsg(String msg, int priority) {
-		var logger = getLoggerFor("cipm." + this.getClass().getSimpleName());
-		logger.log(Level.toLevel(priority), msg);
+	public static void logMsg(String msg, int priority, Class<?> cls) {
+		getLoggerFor(cls).log(Level.toLevel(priority), msg);
 	}
 }

@@ -15,6 +15,7 @@ import org.junit.jupiter.api.DynamicContainer;
 import org.junit.jupiter.api.DynamicNode;
 import org.junit.jupiter.api.TestFactory;
 
+import cipm.consistency.fitests.similarity.SimilarityTestLogger;
 import cipm.consistency.fitests.similarity.jamopp.AbstractJaMoPPSimilarityTest;
 
 /**
@@ -98,13 +99,13 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	@AfterEach
 	@Override
 	public void tearDown() {
-		this.logDebugMsg("Tearing down after parser test");
+		SimilarityTestLogger.logDebugMsg("Tearing down after parser test", this.getClass());
 
 		this.startTimeMeasurement(GeneralTimeMeasurementTag.TEST_AFTEREACH);
 		var cachedResources = resourceCache.getCachedResources();
 
 		if (this.getResourceTestOptions().shouldSaveCachedResources()) {
-			this.logDebugMsg("Saving all cached resources after parser test");
+			SimilarityTestLogger.logDebugMsg("Saving all cached resources after parser test", this.getClass());
 			cachedResources.forEach((res) -> {
 				this.startTimeMeasurement(
 						createTimeMeasurementKey().withParsedModelLocation(res.getModelResource().getURI().toString()),
@@ -112,11 +113,11 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 				res.saveResources();
 				this.stopTimeMeasurement();
 			});
-			this.logDebugMsg("Saved all cached resources after parser test");
+			SimilarityTestLogger.logDebugMsg("Saved all cached resources after parser test", this.getClass());
 		}
 
 		if (this.getResourceTestOptions().shouldDeleteAllResources()) {
-			this.logDebugMsg("Deleting all cached resources after parser test");
+			SimilarityTestLogger.logDebugMsg("Deleting all cached resources after parser test", this.getClass());
 			cachedResources.forEach((res) -> {
 				this.startTimeMeasurement(
 						createTimeMeasurementKey().withParsedModelLocation(res.getModelResource().getURI().toString()),
@@ -124,9 +125,9 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 				res.deleteResources();
 				this.stopTimeMeasurement();
 			});
-			this.logDebugMsg("Deleted all cached resources after parser test");
+			SimilarityTestLogger.logDebugMsg("Deleted all cached resources after parser test", this.getClass());
 		} else if (this.getResourceTestOptions().shouldUnloadAllResources()) {
-			this.logDebugMsg("Unloading all cached resources after parser test");
+			SimilarityTestLogger.logDebugMsg("Unloading all cached resources after parser test", this.getClass());
 			cachedResources.forEach((res) -> {
 				this.startTimeMeasurement(
 						createTimeMeasurementKey().withParsedModelLocation(res.getModelResource().getURI().toString()),
@@ -134,15 +135,17 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 				res.unloadResources();
 				this.stopTimeMeasurement();
 			});
-			this.logDebugMsg("Unloaded all cached resources after parser test");
+			SimilarityTestLogger.logDebugMsg("Unloaded all cached resources after parser test", this.getClass());
 		}
 
 		if (this.getResourceTestOptions().shouldRemoveResourcesFromCache()) {
-			this.logDebugMsg("Removing all cached resources from cache after parser test");
+			SimilarityTestLogger.logDebugMsg("Removing all cached resources from cache after parser test",
+					this.getClass());
 			this.startTimeMeasurement(GeneralTimeMeasurementTag.MODEL_RESOURCE_CACHE_ACCESS);
 			resourceCache.cleanCache();
 			this.stopTimeMeasurement();
-			this.logDebugMsg("Removed all cached resources from cache after parser test");
+			SimilarityTestLogger.logDebugMsg("Removed all cached resources from cache after parser test",
+					this.getClass());
 		}
 
 		super.tearDown();
@@ -150,7 +153,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 
 		this.saveTimeMeasurements();
 
-		this.logDebugMsg("Tore down after parser test");
+		SimilarityTestLogger.logDebugMsg("Tore down after parser test", this.getClass());
 	}
 
 	protected ParserTestFileLayout initParserTestFileLayout() {
@@ -172,9 +175,9 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	 * {@code startTimeMeasurement} and {@code stopTimeMeasurement} calls.
 	 */
 	protected void saveTimeMeasurements() {
-		this.logDebugMsg("Saving time measurements");
+		SimilarityTestLogger.logDebugMsg("Saving time measurements", this.getClass());
 		ParserTestTimeMeasurer.getInstance().save(this.layout.getTimeMeasurementsFileSavePath());
-		this.logDebugMsg("Saved time measurements");
+		SimilarityTestLogger.logDebugMsg("Saved time measurements", this.getClass());
 	}
 
 	/**
@@ -254,9 +257,8 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	 * @see {@link #prepareArtificialResource(Resource, URI)}
 	 */
 	protected IModelResourceWrapper parseModelsDirWithoutCaching(Path modelDir) {
-		this.startTimeMeasurement(
-				createTimeMeasurementKey().withOriginalModelLocation(modelDir.toString())
-						.withResourceParsingStrategyClassName(this.getResourceParsingStrategy().getClass().getSimpleName()),
+		this.startTimeMeasurement(createTimeMeasurementKey().withOriginalModelLocation(modelDir.toString())
+				.withResourceParsingStrategyClassName(this.getResourceParsingStrategy().getClass().getSimpleName()),
 				GeneralTimeMeasurementTag.PARSE_MODEL_RESOURCE);
 		var wrapper = new JaMoPPModelResourceWrapper(this.getResourceHelper(), this.getResourceParsingStrategy());
 		wrapper.parseModelResource(modelDir, this.layout.getModelResourceURI(modelDir));
@@ -293,7 +295,8 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	 */
 	protected IModelResourceWrapper parseModelsDirWithCaching(Path modelDir, URI cachedModelURI, String cacheKey) {
 		this.startTimeMeasurement(createTimeMeasurementKey().withOriginalModelLocation(modelDir.toString())
-				.withParsedModelLocation(cachedModelURI.toString()), GeneralTimeMeasurementTag.MODEL_RESOURCE_CACHE_ACCESS);
+				.withParsedModelLocation(cachedModelURI.toString()),
+				GeneralTimeMeasurementTag.MODEL_RESOURCE_CACHE_ACCESS);
 		var cache = this.getCacheUtil();
 		var modelName = this.getDisplayNameForModelDir(modelDir);
 
@@ -308,11 +311,14 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 		if (cacheKey != null) {
 			// Search for the resource in the cache
 			if (cache.isInCache(cacheKey)) {
-				this.logDebugMsg(String.format("%s is in cache, using cached version", modelName));
+				SimilarityTestLogger.logDebugMsg(String.format("%s is in cache, using cached version", modelName),
+						this.getClass());
 				resWrapper = cache.getFromCache(cacheKey);
 				if (!resWrapper.isModelResourceLoaded()) {
-					this.startTimeMeasurement(createTimeMeasurementKey().withOriginalModelLocation(modelDir.toString())
-							.withParsedModelLocation(cachedModelURI.toString()), GeneralTimeMeasurementTag.LOAD_MODEL_RESOURCE);
+					this.startTimeMeasurement(
+							createTimeMeasurementKey().withOriginalModelLocation(modelDir.toString())
+									.withParsedModelLocation(cachedModelURI.toString()),
+							GeneralTimeMeasurementTag.LOAD_MODEL_RESOURCE);
 					resWrapper.loadParsedResources();
 					this.stopTimeMeasurement();
 				}
@@ -321,12 +327,15 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 			// Search for the resource file in cache save location
 			if (resWrapper == null) {
 				resWrapper = new JaMoPPModelResourceWrapper(this.getResourceHelper());
-				this.startTimeMeasurement(createTimeMeasurementKey().withOriginalModelLocation(modelDir.toString())
-						.withParsedModelLocation(cachedModelURI.toString()), GeneralTimeMeasurementTag.LOAD_MODEL_RESOURCE);
+				this.startTimeMeasurement(
+						createTimeMeasurementKey().withOriginalModelLocation(modelDir.toString())
+								.withParsedModelLocation(cachedModelURI.toString()),
+						GeneralTimeMeasurementTag.LOAD_MODEL_RESOURCE);
 				resWrapper.loadModelResource(cachedModelURI);
 				this.stopTimeMeasurement();
 				if (resWrapper.isModelResourceLoaded()) {
-					this.logDebugMsg(String.format("Loaded %s from its resource file", modelName));
+					SimilarityTestLogger.logDebugMsg(String.format("Loaded %s from its resource file", modelName),
+							this.getClass());
 				}
 			}
 		}
@@ -340,7 +349,8 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 		cache.addToCache(key, resWrapper);
 		this.stopTimeMeasurement();
 
-		this.logDebugMsg(String.format("%s parsed (with caching)", this.getDisplayNameForModelDir(modelDir)));
+		SimilarityTestLogger.logDebugMsg(
+				String.format("%s parsed (with caching)", this.getDisplayNameForModelDir(modelDir)), this.getClass());
 		return resWrapper;
 	}
 

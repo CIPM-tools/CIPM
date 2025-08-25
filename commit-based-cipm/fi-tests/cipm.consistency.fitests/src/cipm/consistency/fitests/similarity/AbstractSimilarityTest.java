@@ -13,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
  * 
  * @author Alp Torac Genc
  */
-public abstract class AbstractSimilarityTest implements ILoggable {
+public abstract class AbstractSimilarityTest {
 	/**
 	 * @see {@link #getSCC()}
 	 */
@@ -33,7 +33,7 @@ public abstract class AbstractSimilarityTest implements ILoggable {
 	 */
 	@BeforeEach
 	public void setUp() {
-		ILoggable.setUpLogger();
+		SimilarityTestLogger.setUpLogger();
 
 		this.setSCC(this.initSCC());
 	}
