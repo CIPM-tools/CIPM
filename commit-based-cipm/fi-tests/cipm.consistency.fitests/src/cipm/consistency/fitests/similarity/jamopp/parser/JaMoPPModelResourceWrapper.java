@@ -111,23 +111,31 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper, ILogga
 	}
 
 	/**
-	 * Creates and prepares the ArtificialResource of the given model resource,
-	 * under the same ResourceSet (i.e. the ResourceSet of the given model
-	 * resource). The created ArtificialResource will contain synthetic model
-	 * elements for the proxy objects within the given model resource, as well as
-	 * the native Java library resources that are needed by the given model
-	 * resource. <br>
+	 * Creates and prepares an ArtificialResource for modelResourceSet, according to
+	 * {@link JaMoPPResourceParsingStrategy#performTrivialRecovery(ResourceSet)}.
+	 * The created ArtificialResource will contain synthetic model elements for the
+	 * proxy objects within directModelResources, as well as the native Java library
+	 * resources that are needed by modelResourceSet. <br>
 	 * <br>
-	 * Separating said model elements from the model resource allows its actual
-	 * contents (i.e. the code that is directly present in the model files) to be
-	 * compared more efficiently, by excluding the imported dependencies, which are
-	 * the same for each model resource.
+	 * If {@link #isSplitArtificialResource()}, moves all non-direct model resources
+	 * (i.e. model resources that are not a part of directModelResources), into the
+	 * created ArtificialResource. This way, direct model elements inside
+	 * directModelResources can be compared more efficiently, since the non-direct
+	 * model resources will likely be excluded from the comparison.
 	 * 
-	 * @param modelResource         The model resource, for which an
-	 *                              ArtificialResource should be created
+	 * @param modelResourceSet      The model resource set that was the result of
+	 *                              parsing a model. An ArtificialResource will be
+	 *                              created for this ResourceSet, within this
+	 *                              ResourceSet.
+	 * @param directModelResources  A list of model resources, which were directly
+	 *                              parsed from the contents of the model source
+	 *                              files. This list should not include any
+	 *                              dependency, which is not a direct part of the
+	 *                              model (such as Java native libraries).
 	 * @param artificialResourceURI The URI, which the created ArtificialResource
-	 *                              will have
-	 * @return The created ArtificialResource
+	 *                              will have. ArtificialResource will be saved at
+	 *                              that URI, if desired.
+	 * @return The created ArtificialResource for modelResourceSet
 	 */
 	protected Resource prepareArtificialResource(ResourceSet modelResourceSet, List<Resource> directModelResources,
 			URI artificialResourceURI) {
@@ -404,7 +412,8 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper, ILogga
 
 	/**
 	 * @return Whether all proxies should be resolved after a model is parsed inside
-	 *         {@link #parseModelResource(Path, URI)}. Set to false by default.
+	 *         {@link #parseModelResource(Path, URI)}. Set to false by default, can
+	 *         be changed via {@link #setResolveAllProxies(boolean)}.
 	 */
 	public boolean isResolveAllProxies() {
 		return resolveAllProxies;
@@ -420,7 +429,8 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper, ILogga
 	/**
 	 * @return Whether the synthetic contents, which were created while parsing the
 	 *         model, should be split into a separate Resource. Set to false by
-	 *         default.
+	 *         default, can be changed via
+	 *         {@link #setSplitArtificialResource(boolean)}.
 	 * @see {@link JaMoPPResourceParsingStrategy#performTrivialRecovery()}
 	 */
 	public boolean isSplitArtificialResource() {
