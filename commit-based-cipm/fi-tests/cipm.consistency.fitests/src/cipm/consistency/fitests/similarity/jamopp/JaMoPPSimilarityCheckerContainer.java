@@ -19,13 +19,13 @@ public class JaMoPPSimilarityCheckerContainer implements ISimilarityCheckerConta
 
 	private SimilarityChecker getSimilarityChecker() {
 		if (this.sc == null) {
-			this.newSimilarityChecker();
+			this.resetSimilarityChecker();
 		}
 		return this.sc;
 	}
 
 	@Override
-	public void newSimilarityChecker() {
+	public void resetSimilarityChecker() {
 		this.sc = new SimilarityChecker();
 	}
 
