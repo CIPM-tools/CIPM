@@ -2,7 +2,7 @@ package cipm.consistency.vsum.test.pcm;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
-
+import java.util.Collection;
 import java.util.List;
 
 import java.util.stream.Collectors;
@@ -12,7 +12,6 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 
-import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationModel;
 import cipm.consistency.models.ModelFacade;
 import cipm.consistency.vsum.Propagation;
 import cipm.consistency.vsum.VsumDirLayout;
@@ -42,7 +41,7 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 	 * Contains all changes that are still to be propagated. They have to be stored
 	 * here, as the views have to be constantly re-created.
 	 */
-	private final List<EChange> changesToPropagate = new ArrayList<EChange>();
+	private final Collection<EChange> changesToPropagate = new ArrayList<EChange>();
 
 	public PcmVsumFacadeImpl(Path rootPath, List<ModelFacade> models,
 			List<ChangePropagationSpecification> changeSpecs) {
@@ -278,7 +277,7 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 	}
 
 	@Override
-	public List<EChange> getAllChanges() {
+	public Collection<EChange> getAllChanges() {
 		return new ArrayList<EChange>(this.changesToPropagate);
 	}
 

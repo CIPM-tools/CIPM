@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.eclipse.emf.common.notify.Notifier;
-import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -77,7 +76,7 @@ public class ChangeAcceptingView implements IChangeAcceptingView, CommittableVie
 	private InternalVirtualModel vsum;
 
 	// TODO Change to VitruviusChange once composite changes are supported
-	private final EList<EChange> changes = new BasicEList<EChange>();
+	private final Collection<EChange> changes = new ArrayList<EChange>();
 
 	public ChangeAcceptingView(final InternalVirtualModel vsum, final ViewType<? extends ViewSelector> viewType,
 			final ViewSelection selection) {
@@ -123,7 +122,8 @@ public class ChangeAcceptingView implements IChangeAcceptingView, CommittableVie
 		viewSources.stream()
 				.filter((vs) -> vs.getContents().stream().anyMatch((c) -> this.getSelection().isViewObjectSelected(c)))
 				.forEach((r) -> resourcesWithSelectedElements.add(r));
-		ResourceCopier.copyViewSourceResources(resourcesWithSelectedElements, this.viewResourceSet, (c) -> this.getSelection().isViewObjectSelected(c));
+		ResourceCopier.copyViewSourceResources(resourcesWithSelectedElements, this.viewResourceSet,
+				(c) -> this.getSelection().isViewObjectSelected(c));
 
 		this.addChangeListeners(this.viewResourceSet);
 		this.setupReferenceState();
@@ -270,7 +270,7 @@ public class ChangeAcceptingView implements IChangeAcceptingView, CommittableVie
 	}
 
 	@Override
-	public List<EChange> getAllChanges() {
+	public Collection<EChange> getAllChanges() {
 		return new ArrayList<EChange>(this.changes);
 	}
 

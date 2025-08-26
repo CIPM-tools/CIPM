@@ -1,16 +1,16 @@
 package cipm.consistency.vsum.test.pcm.newviews;
 
-import java.util.List;
+import java.util.Collection;
 
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.framework.views.CommittableView;
 
 public interface IChangeAcceptingView extends CommittableView {
-	public List<EChange> getAllChanges();
+	public Collection<EChange> getAllChanges();
 
 	public void addChange(EChange change);
 
-	public default void addChanges(List<EChange> changesToAdd) {
+	public default void addChanges(Collection<EChange> changesToAdd) {
 		if (changesToAdd == null)
 			return;
 

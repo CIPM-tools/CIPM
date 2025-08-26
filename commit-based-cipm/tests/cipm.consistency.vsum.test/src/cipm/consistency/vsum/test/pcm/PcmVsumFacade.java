@@ -1,5 +1,6 @@
 package cipm.consistency.vsum.test.pcm;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
@@ -47,11 +48,11 @@ public interface PcmVsumFacade {
 	 */
 	Propagation propagateResource(Resource resource, URI targetUri);
 
-	List<EChange> getAllChanges();
+	Collection<EChange> getAllChanges();
 
 	void addChange(EChange change);
 
-	default void addChanges(List<EChange> changesToAdd) {
+	default void addChanges(Collection<EChange> changesToAdd) {
 		if (changesToAdd == null)
 			return;
 
