@@ -4,6 +4,7 @@ import cipm.consistency.fitests.repositorytests.util.RepoCacheSimilarityResultPr
 import cipm.consistency.fitests.repositorytests.util.RepoTestResultCache;
 import cipm.consistency.fitests.repositorytests.util.RepoTestSimilarityValueEstimator;
 import cipm.consistency.fitests.similarity.SimilarityTestLogger;
+import cipm.consistency.fitests.similarity.eobject.ResourceHelper;
 import cipm.consistency.fitests.similarity.jamopp.JaMoPPResourceParsingStrategy;
 import cipm.consistency.fitests.similarity.jamopp.parser.AbstractJaMoPPParserSimilarityTest;
 import cipm.consistency.fitests.similarity.jamopp.parser.GeneralTimeMeasurementTag;
@@ -248,8 +249,7 @@ public abstract class AbstractJaMoPPParserRepoTest extends AbstractJaMoPPParserS
 		}));
 
 		for (var cID : commitIDList) {
-			if (!this.getResourceHelper()
-					.resourceFileExists(this.getTestFileLayout().getModelResourceSaveURIForCommit(cID))) {
+			if (!ResourceHelper.resourceFileExists(this.getTestFileLayout().getModelResourceSaveURIForCommit(cID))) {
 				SimilarityTestLogger.logDebugMsg(String.format("Model resource missing for: %s", cID), this.getClass());
 				commitResourcesExist = false;
 				// Check for the other ones as well, for debugging purposes
@@ -283,7 +283,7 @@ public abstract class AbstractJaMoPPParserRepoTest extends AbstractJaMoPPParserS
 		} else {
 			for (var cID : commitIDList) {
 				var cachedCommitURI = this.getTestFileLayout().getModelResourceSaveURIForCommit(cID);
-				var res = new JaMoPPModelResourceWrapper(this.getResourceHelper());
+				var res = new JaMoPPModelResourceWrapper();
 				this.startTimeMeasurement(
 						this.createTimeMeasurementKey().withParsedModelLocation(cachedCommitURI.toString()),
 						GeneralTimeMeasurementTag.LOAD_MODEL_RESOURCE);

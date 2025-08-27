@@ -14,56 +14,22 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import cipm.consistency.fitests.similarity.SimilarityTestLogger;
 
 /**
- * An abstract class that is meant to be implemented by classes, which
- * encapsulate basic operations on {@link Resource} instances.
+ * A utility class that provides basic operations on {@link Resource} instances.
  * 
  * @author Alp Torac Genc
  */
-public abstract class AbstractResourceHelper {
-	/**
-	 * The extension of {@link Resource} files, if they are saved.
-	 */
-	private String resourceFileExtension;
-
-	/**
-	 * Constructs an instance with the foreseen initial resource registry entries.
-	 * 
-	 * @see {@link #setInitialResourceRegistries()}
-	 */
-	public AbstractResourceHelper() {
-		this.setInitialResourceRegistries();
-	}
-
+public class ResourceHelper {
 	/**
 	 * @return The resource registry, which will be modified by this instance.
 	 */
-	private Resource.Factory.Registry getResourceRegistry() {
+	private static Resource.Factory.Registry getResourceRegistry() {
 		return Resource.Factory.Registry.INSTANCE;
-	}
-
-	/**
-	 * Sets all resource registries foreseen for this instance.
-	 */
-	public abstract void setInitialResourceRegistries();
-
-	/**
-	 * Sets the extension of {@link Resource} files, if they are saved.
-	 */
-	public void setResourceFileExtension(String resourceFileExtension) {
-		this.resourceFileExtension = resourceFileExtension;
-	}
-
-	/**
-	 * @return The extension of the {@link Resource} files.
-	 */
-	public String getResourceFileExtension() {
-		return this.resourceFileExtension;
 	}
 
 	/**
 	 * @return An empty {@link ResourceSetImpl}
 	 */
-	public ResourceSet createResourceSet() {
+	public static ResourceSet createResourceSet() {
 		return new ResourceSetImpl();
 	}
 
@@ -80,7 +46,7 @@ public abstract class AbstractResourceHelper {
 	 * since doing so will REMOVE the said EObject instances from their former
 	 * Resource and cause side effects in tests.</b>
 	 */
-	public Resource createResource(Collection<? extends EObject> eos, ResourceSet rSet, URI resURI) {
+	public static Resource createResource(Collection<? extends EObject> eos, ResourceSet rSet, URI resURI) {
 		var res = rSet.createResource(resURI);
 
 		if (eos != null) {
@@ -93,7 +59,7 @@ public abstract class AbstractResourceHelper {
 				 */
 				if (eo.eResource() != null) {
 					SimilarityTestLogger.logErrorMsg(
-							"An EObject's resource was set and shifted during resource creation", this.getClass());
+							"An EObject's resource was set and shifted during resource creation", ResourceHelper.class);
 				}
 				res.getContents().add(eo);
 			}
@@ -111,52 +77,53 @@ public abstract class AbstractResourceHelper {
 	 * 
 	 * @see {@link #setDefaultResourceRegistry()}
 	 */
-	public void setResourceRegistry(String extension, Object factory) {
-		this.getResourceRegistry().getExtensionToFactoryMap().put(extension, factory);
+	public static void setResourceRegistry(String extension, Object factory) {
+		getResourceRegistry().getExtensionToFactoryMap().put(extension, factory);
 	}
 
 	/**
 	 * Attempts to save the given resource instance. Instead of throwing exceptions,
 	 * returns true/false to indicate success/failure.
 	 */
-	public boolean saveResource(Resource res) {
+	public static boolean saveResource(Resource res) {
 		var uri = res.getURI();
 		if (uri.isFile()) {
 			try {
 				res.save(null);
-				return this.resourceFileExists(uri);
+				return resourceFileExists(uri);
 			} catch (IOException excep) {
 				excep.printStackTrace();
-				return this.resourceFileExists(uri);
+				return resourceFileExists(uri);
 			}
 		}
-		return this.resourceFileExists(uri);
+		return resourceFileExists(uri);
 	}
 
 	/**
 	 * Attempts to save the given resource instance. Instead of throwing exceptions,
 	 * returns true/false to indicate success/failure.
 	 */
-	public boolean saveResourceIfNotSaved(Resource res) {
+	public static boolean saveResourceIfNotSaved(Resource res) {
 		var uri = res.getURI();
-		if (uri.isFile() && !this.resourceFileExists(uri)) {
-			return this.saveResource(res);
+		if (uri.isFile() && !resourceFileExists(uri)) {
+			return saveResource(res);
 		}
-		return this.resourceFileExists(uri);
+		return resourceFileExists(uri);
 	}
 
 	/**
 	 * Loads the given resource
 	 */
-	public void loadResource(Resource res) {
+	public static void loadResource(Resource res) {
 		try {
-			SimilarityTestLogger.logDebugMsg(String.format("Loading resource at: %s", res.getURI()), this.getClass());
+			SimilarityTestLogger.logDebugMsg(String.format("Loading resource at: %s", res.getURI()),
+					ResourceHelper.class);
 			res.load(null);
-			SimilarityTestLogger.logDebugMsg(String.format("Loaded %s", res.getURI()), this.getClass());
+			SimilarityTestLogger.logDebugMsg(String.format("Loaded %s", res.getURI()), ResourceHelper.class);
 		} catch (IOException e) {
 			e.printStackTrace();
 			SimilarityTestLogger.logInfoMsg(String.format("Could not load resource at: %s", res.getURI()),
-					this.getClass());
+					ResourceHelper.class);
 		}
 	}
 
@@ -164,12 +131,12 @@ public abstract class AbstractResourceHelper {
 	 * @return A resource instance, which has the contents of the saved resource
 	 *         file at the given URI
 	 */
-	public Resource loadResource(URI resourceURI) {
+	public static Resource loadResource(URI resourceURI) {
 		Resource res = null;
 
 		if (resourceURI.isFile() && new File(resourceURI.toFileString()).exists()) {
-			res = this.createResource(resourceURI);
-			this.loadResource(res);
+			res = createResource(resourceURI);
+			loadResource(res);
 		}
 
 		return res;
@@ -178,8 +145,8 @@ public abstract class AbstractResourceHelper {
 	/**
 	 * @return The loaded resource located at the given path
 	 */
-	public Resource loadResource(Path resourcePath) {
-		return this.loadResource(URI.createFileURI(resourcePath.toString()));
+	public static Resource loadResource(Path resourcePath) {
+		return loadResource(URI.createFileURI(resourcePath.toString()));
 	}
 
 	/**
@@ -187,8 +154,8 @@ public abstract class AbstractResourceHelper {
 	 * @param resourceURI The URI, where the resource points at
 	 * @return An empty resource inside the given resource set, with the given URI
 	 */
-	public Resource createResource(ResourceSet resSet, URI resourceURI) {
-		return this.createResource(null, resSet, resourceURI);
+	public static Resource createResource(ResourceSet resSet, URI resourceURI) {
+		return createResource(null, resSet, resourceURI);
 	}
 
 	/**
@@ -196,14 +163,14 @@ public abstract class AbstractResourceHelper {
 	 * @return An empty resource, inside a freshly created resource set, with the
 	 *         given URI
 	 */
-	public Resource createResource(URI resourceURI) {
-		return this.createResource(this.createResourceSet(), resourceURI);
+	public static Resource createResource(URI resourceURI) {
+		return createResource(createResourceSet(), resourceURI);
 	}
 
 	/**
 	 * Unloads the given {@link Resource} instance.
 	 */
-	public boolean unloadResource(Resource res) {
+	public static boolean unloadResource(Resource res) {
 		res.unload();
 		return !res.isLoaded();
 	}
@@ -213,7 +180,7 @@ public abstract class AbstractResourceHelper {
 	 * @return Whether the resource file exists. Will return false if the given URI
 	 *         does not point at a file, regardless of whether the resource exists.
 	 */
-	public boolean resourceFileExists(URI resURI) {
+	public static boolean resourceFileExists(URI resURI) {
 		return resURI.isFile() && new File(resURI.toFileString()).exists();
 	}
 
@@ -222,33 +189,33 @@ public abstract class AbstractResourceHelper {
 	 * 
 	 * @return Whether the file of the given resource is deleted.
 	 */
-	public boolean deleteResource(Resource res) {
+	public static boolean deleteResource(Resource res) {
 		var uri = res.getURI();
-		if (this.resourceFileExists(uri)) {
+		if (resourceFileExists(uri)) {
 			try {
 				res.delete(null);
-				return !this.resourceFileExists(uri);
+				return !resourceFileExists(uri);
 			} catch (IOException e) {
-				var isResourceDeleted = !this.resourceFileExists(uri);
+				var isResourceDeleted = !resourceFileExists(uri);
 				SimilarityTestLogger.logInfoMsg(
 						String.format("Could not delete resource as expected: %s (is deleted: %s) %s %s",
 								res.getURI().toString(), isResourceDeleted, System.lineSeparator(), e.getMessage()),
-						this.getClass());
+						ResourceHelper.class);
 				return isResourceDeleted;
 			}
 		}
-		return !this.resourceFileExists(uri);
+		return !resourceFileExists(uri);
 	}
 
 	/**
 	 * Removes the entry matching to the given {@code resourceFileExtension} from
 	 * the resource factory.
 	 */
-	public void removeFromRegistry(String resourceFileExtension) {
+	public static void removeFromRegistry(String resourceFileExtension) {
 		if (resourceFileExtension == null)
 			return;
 
-		var regMap = this.getResourceRegistry().getExtensionToFactoryMap();
+		var regMap = getResourceRegistry().getExtensionToFactoryMap();
 		regMap.remove(resourceFileExtension);
 	}
 }

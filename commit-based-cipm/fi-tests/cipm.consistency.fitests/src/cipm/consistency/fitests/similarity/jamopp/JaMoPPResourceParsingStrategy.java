@@ -5,9 +5,11 @@ import java.nio.file.Path;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 
 import cipm.consistency.fitests.similarity.eobject.AbstractResourceParsingStrategy;
+import cipm.consistency.fitests.similarity.eobject.ResourceHelper;
 import jamopp.options.ParserOptions;
 import jamopp.parser.jdt.singlefile.JaMoPPJDTSingleFileParser;
 import jamopp.recovery.trivial.TrivialRecovery;
+import jamopp.resource.JavaResource2Factory;
 
 /**
  * A class that uses {@link JaMoPPJDTSingleFileParser} to parse Java model
@@ -24,10 +26,26 @@ import jamopp.recovery.trivial.TrivialRecovery;
  */
 public class JaMoPPResourceParsingStrategy extends AbstractResourceParsingStrategy {
 	/**
+	 * @see {@link #preConstructionSetup()}
+	 */
+	private static final String javaSrcExt = "java";
+	/**
+	 * @see {@link #preConstructionSetup()}
+	 * @see {@link #getResourceFileExtension()}
+	 */
+	private static final String resFileExt = "javaxmi";
+
+	/**
 	 * @see {@link #getParser()}
 	 */
 	private final JaMoPPJDTSingleFileParser parser;
 
+	/**
+	 * Performs any preparation necessary prior to the construction of an instance.
+	 * Then constructs an instance, as well as the underlying parser it uses.
+	 * 
+	 * @see {@link #preConstructionSetup()}
+	 */
 	public JaMoPPResourceParsingStrategy() {
 		super();
 		this.parser = new JaMoPPJDTSingleFileParser();
@@ -71,6 +89,18 @@ public class JaMoPPResourceParsingStrategy extends AbstractResourceParsingStrate
 		ParserOptions.RESOLVE_ALL_BINDINGS.setValue(Boolean.FALSE);
 	}
 
+	/**
+	 * @implSpec Sets the resource factory registry for the file extension of
+	 *           JaMoPP-related Resource instances ({@value #resFileExt}).
+	 *           Additionally sets the resource factory registry for Resource
+	 *           instances with the file extension {@value #javaSrcExt}.
+	 */
+	@Override
+	protected void preConstructionSetup() {
+		ResourceHelper.setResourceRegistry(javaSrcExt, new JavaResource2Factory());
+		ResourceHelper.setResourceRegistry(resFileExt, new JavaResource2Factory());
+	}
+
 	@Override
 	public ResourceSet parseModelResource(Path modelDir) {
 		return parser.parseDirectory(modelDir);
@@ -102,5 +132,14 @@ public class JaMoPPResourceParsingStrategy extends AbstractResourceParsingStrate
 		}
 
 		this.getParser().setExclusionPatterns(exclusionPatterns);
+	}
+
+	/**
+	 * @return The extension of the resource files created within tests, should they
+	 *         be saved.
+	 */
+	@Override
+	public String getResourceFileExtension() {
+		return resFileExt;
 	}
 }

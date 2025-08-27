@@ -4,7 +4,9 @@ import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
 /**
  * An abstract class meant to be extended by classes that envelop the means to
@@ -31,6 +33,16 @@ public abstract class AbstractResourceParsingStrategy {
 	 * @see {@link AbstractResourceParsingStrategy}
 	 */
 	private final Set<String> exclusionPatterns = new HashSet<>();
+
+	/**
+	 * Performs any preparation necessary prior to the construction of an instance.
+	 * Then constructs an instance.
+	 * 
+	 * @see {@link #preConstructionSetup()}
+	 */
+	public AbstractResourceParsingStrategy() {
+		this.preConstructionSetup();
+	}
 
 	/**
 	 * Sets the ResourceSet used from within to the given one.
@@ -100,6 +112,24 @@ public abstract class AbstractResourceParsingStrategy {
 	protected abstract void exclusionPatternsChanged();
 
 	/**
+	 * Performs any necessary preparation prior to the construction of an instance
+	 * of this class. This includes setting up the necessary
+	 * {@link Resource.Factory.Registry} and other preparation steps, which do not
+	 * involve the members of this class. <br>
+	 * <br>
+	 * If this method is to be overridden in the concrete implementations, it is
+	 * recommended to check the implementation of the super method, as there could
+	 * be conflicts.<br>
+	 * <br>
+	 * Note: This is the first step in the constructor. Therefore, there should be
+	 * no references to class members that are initialised within the constructor,
+	 * as that might cause NullPointerExceptions.
+	 */
+	protected void preConstructionSetup() {
+		ResourceHelper.setResourceRegistry("*", new XMIResourceFactoryImpl());
+	}
+
+	/**
 	 * Parses a ResourceSet for the model at given path.
 	 * 
 	 * @param modelDir The path to a given model. Refer to the concrete
@@ -109,4 +139,9 @@ public abstract class AbstractResourceParsingStrategy {
 	 *         given model path.
 	 */
 	public abstract ResourceSet parseModelResource(Path modelDir);
+
+	/**
+	 * @return The extension of the {@link Resource} files, if they are saved.
+	 */
+	public abstract String getResourceFileExtension();
 }

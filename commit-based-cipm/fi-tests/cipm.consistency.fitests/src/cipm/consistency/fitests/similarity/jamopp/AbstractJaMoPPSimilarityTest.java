@@ -13,11 +13,6 @@ import cipm.consistency.fitests.similarity.eobject.AbstractEObjectSimilarityTest
  */
 public abstract class AbstractJaMoPPSimilarityTest extends AbstractEObjectSimilarityTest {
 	@Override
-	protected JaMoPPResourceHelper initResourceHelper() {
-		return new JaMoPPResourceHelper();
-	}
-
-	@Override
 	protected ISimilarityCheckerContainer initSCC() {
 		return new JaMoPPSimilarityCheckerContainer();
 	}

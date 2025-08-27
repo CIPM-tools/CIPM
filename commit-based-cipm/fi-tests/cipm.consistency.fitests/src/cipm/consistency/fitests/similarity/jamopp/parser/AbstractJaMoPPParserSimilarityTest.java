@@ -162,7 +162,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 		layout.setTestModelResourceFilesSaveDirPath(testModelResourceFilesSaveDirPath);
 		layout.setCacheSaveDirPath(cacheSaveDirPath);
 		layout.setTimeMeasurementsFileSavePath(timeMeasurementsFileSavePath);
-		layout.setModelResourceFileExtension(this.getResourceFileExtension());
+		layout.setModelResourceFileExtension(this.getResourceParsingStrategy().getResourceFileExtension());
 		return layout;
 	}
 
@@ -260,7 +260,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 		this.startTimeMeasurement(createTimeMeasurementKey().withOriginalModelLocation(modelDir.toString())
 				.withResourceParsingStrategyClassName(this.getResourceParsingStrategy().getClass().getSimpleName()),
 				GeneralTimeMeasurementTag.PARSE_MODEL_RESOURCE);
-		var wrapper = new JaMoPPModelResourceWrapper(this.getResourceHelper(), this.getResourceParsingStrategy());
+		var wrapper = new JaMoPPModelResourceWrapper(this.getResourceParsingStrategy());
 		wrapper.parseModelResource(modelDir, this.layout.getModelResourceURI(modelDir));
 		this.stopTimeMeasurement();
 		return wrapper;
@@ -326,7 +326,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 
 			// Search for the resource file in cache save location
 			if (resWrapper == null) {
-				resWrapper = new JaMoPPModelResourceWrapper(this.getResourceHelper());
+				resWrapper = new JaMoPPModelResourceWrapper();
 				this.startTimeMeasurement(
 						createTimeMeasurementKey().withOriginalModelLocation(modelDir.toString())
 								.withParsedModelLocation(cachedModelURI.toString()),

@@ -1,6 +1,5 @@
 package cipm.consistency.fitests.similarity.eobject;
 
-import org.eclipse.emf.ecore.resource.Resource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -12,11 +11,6 @@ import cipm.consistency.fitests.similarity.AbstractSimilarityTest;
  * @author Alp Torac Genc
  */
 public abstract class AbstractEObjectSimilarityTest extends AbstractSimilarityTest {
-	/**
-	 * @see {@link #getResourceHelper()}
-	 */
-	private AbstractResourceHelper resHelper;
-
 	/**
 	 * @see {@link #getResourceParsingStrategy()}
 	 */
@@ -30,16 +24,14 @@ public abstract class AbstractEObjectSimilarityTest extends AbstractSimilarityTe
 	/**
 	 * {@inheritDoc} <br>
 	 * <br>
-	 * {@link AbstractEObjectSimilarityTest}: Sets up Resource-related helper
-	 * classes and options {@link AbstractResourceHelper},
-	 * {@link AbstractResourceParsingStrategy}, {@link ResourceTestOptions}.
+	 * {@link AbstractEObjectSimilarityTest}: Sets up Resource parsing strategy
+	 * {@link AbstractResourceParsingStrategy} and Resource-related test options
+	 * {@link ResourceTestOptions}.
 	 */
 	@BeforeEach
 	@Override
 	public void setUp() {
 		super.setUp();
-
-		this.setResourceHelper(this.initResourceHelper());
 
 		this.setResourceParsingStrategy(this.initResourceParsingStrategy());
 		this.setResourceTestOptions(this.initResourceTestOptions());
@@ -55,27 +47,10 @@ public abstract class AbstractEObjectSimilarityTest extends AbstractSimilarityTe
 	@AfterEach
 	@Override
 	public void tearDown() {
-		this.cleanUpResourceHelper();
 		this.cleanUpResourceParsingStrategy();
 		this.cleanUpResourceTestOptions();
 
 		super.tearDown();
-	}
-
-	/**
-	 * The {@link AbstractResourceHelper} instance that can be used for creating
-	 * {@link Resource} instances.
-	 */
-	protected AbstractResourceHelper getResourceHelper() {
-		return this.resHelper;
-	}
-
-	/**
-	 * Sets up the {@link AbstractResourceHelper} instance that will be used with
-	 * the given one.
-	 */
-	protected void setResourceHelper(AbstractResourceHelper resHelper) {
-		this.resHelper = resHelper;
 	}
 
 	protected AbstractResourceParsingStrategy getResourceParsingStrategy() {
@@ -86,23 +61,12 @@ public abstract class AbstractEObjectSimilarityTest extends AbstractSimilarityTe
 		this.parsingStrat = parsingStrat;
 	}
 
-	/**
-	 * @return The extension of the {@link Resource} files, if they are saved.
-	 */
-	public String getResourceFileExtension() {
-		return this.getResourceHelper().getResourceFileExtension();
-	}
-
 	protected ResourceTestOptions getResourceTestOptions() {
 		return this.resourceTestOptions;
 	}
 
 	protected void setResourceTestOptions(ResourceTestOptions resourceTestOptions) {
 		this.resourceTestOptions = resourceTestOptions;
-	}
-
-	protected void cleanUpResourceHelper() {
-		this.resHelper = null;
 	}
 
 	protected void cleanUpResourceParsingStrategy() {
@@ -112,13 +76,6 @@ public abstract class AbstractEObjectSimilarityTest extends AbstractSimilarityTe
 	protected void cleanUpResourceTestOptions() {
 		this.resourceTestOptions = null;
 	}
-
-	/**
-	 * Override in implementors to change the default value, if needed.
-	 * 
-	 * @return The {@link AbstractResourceHelper} that will be initially used.
-	 */
-	protected abstract AbstractResourceHelper initResourceHelper();
 
 	protected abstract ResourceTestOptions initResourceTestOptions();
 
