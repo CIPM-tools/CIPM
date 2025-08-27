@@ -1,6 +1,6 @@
 package cipm.consistency.fitests.repositorytests;
 
-import cipm.consistency.fitests.similarity.jamopp.parser.ITimeMeasurementTag;
+import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.ITimeMeasurementTag;
 
 /**
  * An enum containing various GIT-Repository-related tags that can be used while

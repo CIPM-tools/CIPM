@@ -1,4 +1,4 @@
-package cipm.consistency.fitests.similarity.jamopp.parser;
+package cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement;
 
 /**
  * A placeholder interface meant to be extended by enums that contain tags for

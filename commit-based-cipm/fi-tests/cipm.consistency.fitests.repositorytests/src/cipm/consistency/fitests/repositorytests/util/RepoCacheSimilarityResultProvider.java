@@ -4,7 +4,7 @@ import java.nio.file.Path;
 
 import org.eclipse.emf.ecore.resource.Resource;
 
-import cipm.consistency.fitests.similarity.jamopp.parser.IExpectedSimilarityResultProvider;
+import cipm.consistency.fitests.similarity.jamopp.parser.resultprovider.IExpectedSimilarityResultProvider;
 
 /**
  * Provides expected similarity results based on a result cache.

@@ -1,4 +1,4 @@
-package cipm.consistency.fitests.similarity.jamopp.parser;
+package cipm.consistency.fitests.similarity.jamopp.parser.resultprovider;
 
 import java.nio.file.Path;
 

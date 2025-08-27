@@ -1,8 +1,10 @@
-package cipm.consistency.fitests.similarity.jamopp.parser;
+package cipm.consistency.fitests.similarity.jamopp.parser.resultprovider;
 
 import java.nio.file.Path;
 
 import org.eclipse.emf.ecore.resource.Resource;
+
+import cipm.consistency.fitests.similarity.jamopp.parser.FileUtil;
 
 /**
  * Provides expected similarity results for model resources by comparing the

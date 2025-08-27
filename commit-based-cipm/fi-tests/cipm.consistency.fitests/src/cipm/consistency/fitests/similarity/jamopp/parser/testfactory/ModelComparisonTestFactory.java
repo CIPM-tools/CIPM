@@ -1,4 +1,4 @@
-package cipm.consistency.fitests.similarity.jamopp.parser;
+package cipm.consistency.fitests.similarity.jamopp.parser.testfactory;
 
 import java.nio.file.Path;
 
@@ -10,6 +10,10 @@ import org.junit.jupiter.api.DynamicTest;
 
 import cipm.consistency.commitintegration.diff.util.JavaModelComparator;
 import cipm.consistency.fitests.similarity.jamopp.JaMoPPSimilarityCheckerContainer;
+import cipm.consistency.fitests.similarity.jamopp.parser.resultprovider.IExpectedSimilarityResultProvider;
+import cipm.consistency.fitests.similarity.jamopp.parser.resultprovider.ResourceContentSimilarityResultProvider;
+import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.GeneralTimeMeasurementTag;
+import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.ParserTestTimeMeasurer;
 
 /**
  * A test class factory, which generates dynamic tests that performs

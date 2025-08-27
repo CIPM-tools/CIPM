@@ -1,4 +1,4 @@
-package cipm.consistency.fitests.similarity.jamopp.parser;
+package cipm.consistency.fitests.similarity.jamopp.parser.testfactory;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -10,6 +10,10 @@ import org.junit.jupiter.api.DynamicNode;
 import org.junit.jupiter.api.DynamicTest;
 
 import cipm.consistency.fitests.similarity.ISimilarityCheckerContainer;
+import cipm.consistency.fitests.similarity.jamopp.parser.resultprovider.FileContentSimilarityResultProvider;
+import cipm.consistency.fitests.similarity.jamopp.parser.resultprovider.IExpectedSimilarityResultProvider;
+import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.GeneralTimeMeasurementTag;
+import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.ParserTestTimeMeasurer;
 
 /**
  * A test class factory, which generates dynamic tests that check the similarity

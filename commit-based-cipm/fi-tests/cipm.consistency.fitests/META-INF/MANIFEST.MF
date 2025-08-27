@@ -26,5 +26,7 @@ Require-Bundle: junit-jupiter-api,
 Export-Package: cipm.consistency.fitests.similarity,
  cipm.consistency.fitests.similarity.eobject,
  cipm.consistency.fitests.similarity.jamopp,
- cipm.consistency.fitests.similarity.jamopp.parser
-
+ cipm.consistency.fitests.similarity.jamopp.parser,
+ cipm.consistency.fitests.similarity.jamopp.parser.resultprovider,
+ cipm.consistency.fitests.similarity.jamopp.parser.testfactory,
+ cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement

@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
 
-import cipm.consistency.fitests.similarity.jamopp.parser.AbstractJaMoPPParserSimilarityTestFactory;
-import cipm.consistency.fitests.similarity.jamopp.parser.ModelComparisonTestFactory;
+import cipm.consistency.fitests.similarity.jamopp.parser.testfactory.AbstractJaMoPPParserSimilarityTestFactory;
+import cipm.consistency.fitests.similarity.jamopp.parser.testfactory.ModelComparisonTestFactory;
 
 /**
  * Contains repository parser tests for the "cwa-server" repository

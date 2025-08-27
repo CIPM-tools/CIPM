@@ -1,4 +1,4 @@
-package cipm.consistency.fitests.similarity.jamopp.parser;
+package cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

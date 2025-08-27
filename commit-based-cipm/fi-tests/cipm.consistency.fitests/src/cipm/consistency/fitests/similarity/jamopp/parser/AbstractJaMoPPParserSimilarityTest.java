@@ -17,6 +17,12 @@ import org.junit.jupiter.api.TestFactory;
 
 import cipm.consistency.fitests.similarity.SimilarityTestLogger;
 import cipm.consistency.fitests.similarity.jamopp.AbstractJaMoPPSimilarityTest;
+import cipm.consistency.fitests.similarity.jamopp.parser.testfactory.AbstractJaMoPPParserSimilarityTestFactory;
+import cipm.consistency.fitests.similarity.jamopp.parser.testfactory.IJaMoPPParserTestGenerationStrategy;
+import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.GeneralTimeMeasurementTag;
+import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.ITimeMeasurementTag;
+import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.ParserTestTimeMeasurementKey;
+import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.ParserTestTimeMeasurer;
 
 /**
  * An abstract test class, which can be used for implementing tests that involve

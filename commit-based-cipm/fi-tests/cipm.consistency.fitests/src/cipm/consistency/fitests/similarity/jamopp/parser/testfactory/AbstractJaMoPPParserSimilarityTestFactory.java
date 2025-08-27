@@ -1,9 +1,15 @@
-package cipm.consistency.fitests.similarity.jamopp.parser;
+package cipm.consistency.fitests.similarity.jamopp.parser.testfactory;
 
 import java.nio.file.Path;
 
 import org.eclipse.emf.ecore.resource.Resource;
 import org.junit.jupiter.api.DynamicNode;
+
+import cipm.consistency.fitests.similarity.jamopp.parser.resultprovider.IExpectedSimilarityResultProvider;
+import cipm.consistency.fitests.similarity.jamopp.parser.resultprovider.ResourceReferenceEqualitySimilarityResultProvider;
+import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.GeneralTimeMeasurementTag;
+import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.ParserTestTimeMeasurementKey;
+import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.ParserTestTimeMeasurer;
 
 /**
  * An abstract class meant to be implemented by classes that encapsulate logic

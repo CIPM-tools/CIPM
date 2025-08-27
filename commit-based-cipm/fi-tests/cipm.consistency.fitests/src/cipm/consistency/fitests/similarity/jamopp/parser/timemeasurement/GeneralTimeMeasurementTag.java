@@ -1,4 +1,4 @@
-package cipm.consistency.fitests.similarity.jamopp.parser;
+package cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement;
 
 /**
  * An enum containing various general-purpose tags that can be used while taking
