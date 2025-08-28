@@ -300,7 +300,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 				.withResourceParsingStrategyClassName(this.getResourceParsingStrategy().getClass().getSimpleName()),
 				GeneralTimeMeasurementTag.PARSE_MODEL_RESOURCE);
 		var wrapper = new JaMoPPModelResourceWrapper(this.getResourceParsingStrategy());
-		wrapper.parseModelResource(modelDir, this.layout.getModelResourceURI(modelDir));
+		wrapper.parseModelResource(modelDir, this.getTestFileLayout().getModelResourceURI(modelDir));
 		this.stopTimeMeasurement();
 		return wrapper;
 	}
@@ -319,7 +319,8 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	 * {@code this.getModelResourceURI(modelDir)} as cached model URI.
 	 */
 	protected IModelResourceWrapper parseModelsDirWithCaching(Path modelDir, String cacheKey) {
-		return this.parseModelsDirWithCaching(modelDir, this.layout.getModelResourceURI(modelDir), cacheKey);
+		return this.parseModelsDirWithCaching(modelDir, this.getTestFileLayout().getModelResourceURI(modelDir),
+				cacheKey);
 	}
 
 	/**
@@ -506,7 +507,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	public Collection<DynamicNode> createTests() {
 		this.startTimeMeasurement(GeneralTimeMeasurementTag.DYNAMIC_TEST_CREATION);
 
-		var modelSourceFileRootDirPath = this.layout.getModelSourceFileRootDirPath();
+		var modelSourceFileRootDirPath = this.getTestFileLayout().getModelSourceFileRootDirPath();
 
 		var tests = new ArrayList<DynamicNode>();
 
