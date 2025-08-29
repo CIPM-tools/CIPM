@@ -3,6 +3,7 @@ package cipm.consistency.vsum.test.pcm.cprunittests;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
@@ -51,6 +52,7 @@ public class PcmCprTriggerTest extends AbstractPcmCprTest {
 
 		// Ensure that the change is not applied prior to propagation
 		Assertions.assertEquals(1, repoRes.getContents().size());
+		Assertions.assertEquals(repoEObj, repoRes.getContents().get(0));
 		Assertions.assertNotEquals(newEntityName, repoEObj.eGet(attr));
 
 		// Propagate the changes to repoRes, which results in applying the change to the
@@ -66,7 +68,8 @@ public class PcmCprTriggerTest extends AbstractPcmCprTest {
 		// Ensure that the change was actually applied
 		var propagatedResource = this.getResourceFromPcmFacade(AbstractPcmCprTest.repositoryFileName);
 		Assertions.assertEquals(1, propagatedResource.getContents().size());
-		Assertions.assertEquals(newEntityName, propagatedResource.getContents().get(0).eGet(attr));
+		var propagatedRepoEObj = propagatedResource.getContents().get(0);
+		Assertions.assertEquals(newEntityName, propagatedRepoEObj.eGet(attr));
 
 		// Ensure that the Resource is saved after changes are applied
 		var res = this.loadNewResourceInstance(propagatedResource);
@@ -74,6 +77,7 @@ public class PcmCprTriggerTest extends AbstractPcmCprTest {
 		// Ensure that the loaded Resource has the expected contents
 		Assertions.assertEquals(1, res.getContents().size());
 		var resRepoEObj = res.getContents().get(0);
+		Assertions.assertTrue(EcoreUtil.equals(resRepoEObj, propagatedRepoEObj));
 		Assertions.assertEquals(newEntityName, resRepoEObj.eGet(attr));
 	}
 }
