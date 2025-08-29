@@ -12,7 +12,9 @@ import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
@@ -45,6 +47,8 @@ public abstract class AbstractPcmCprTest {
 	 */
 	private static final Path propagatedModelsRootPath = rootPath.resolve("propagatedModels");
 
+	protected static final String repositoryFileName = "Repository.repository";
+	
 	private PcmVsumFacade vsumFacade;
 	private PcmFacade pcmFacade;
 
@@ -205,6 +209,64 @@ public abstract class AbstractPcmCprTest {
 				LOGGER.info("Consequential change: " + originalChange.getConsequentialChanges());
 			}
 		}
+	}
+
+	/**
+	 * Creates, loads and returns a Resource instance for the given URI.
+	 */
+	protected Resource loadResource(URI uri) {
+		var resSet = new ResourceSetImpl();
+		return this.loadResource(resSet.createResource(uri));
+	}
+
+	/**
+	 * Creates, loads and returns a new Resource instance for the same URI. Can be
+	 * used to create a separate Resource instance for the given resource.
+	 */
+	protected Resource loadNewResourceInstance(Resource resource) {
+		return this.loadResource(resource.getURI());
+	}
+
+	/**
+	 * Loads and returns the given resource. Does not create a new resource
+	 * instance.
+	 */
+	protected Resource loadResource(Resource resource) {
+		try {
+			resource.load(null);
+		} catch (IOException e) {
+			this.failTest(e);
+		}
+		return resource;
+	}
+
+	/**
+	 * Retrieves a resource instance from the {@link #getPcmFacade()}, whose file's
+	 * name matches the given parameter. <br>
+	 * <br>
+	 * The file name of a resource instance is the last segment of its URI.
+	 * 
+	 * @return The Resource with the given file name that is directly inside the
+	 *         PcmFacade
+	 */
+	protected Resource getResourceFromPcmFacade(String resourceFileName) {
+		return this.getPcmFacade().getResources().stream()
+				.filter((r) -> r.getURI().lastSegment().equals(resourceFileName)).findFirst().get();
+	}
+
+	/**
+	 * The return value is the result of loading
+	 * {@link #getResourceFromPcmFacade(String)} into a separate Resource instance.
+	 * This should be the propagation target, as propagating and modifying the same
+	 * Resource instance results in issues (due to concurrent changes (?)).
+	 * 
+	 * TODO Clarify whether this is true
+	 * 
+	 * @return A loaded "copy" of the Resource with the given file name inside the
+	 *         PcmFacade
+	 */
+	protected Resource getNewInstanceForResourceFromPcmFacade(String resourceFileName) {
+		return this.loadNewResourceInstance(this.getResourceFromPcmFacade(resourceFileName));
 	}
 
 	/**

@@ -1,11 +1,8 @@
 package cipm.consistency.vsum.test.pcm.cprunittests;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
@@ -28,7 +25,7 @@ public class PcmCprTriggerTest extends AbstractPcmCprTest {
 
 	@Test
 	public void testCprTrigger() {
-		var repoRes = this.getRepoRes();
+		var repoRes = this.getNewInstanceForResourceFromPcmFacade(AbstractPcmCprTest.repositoryFileName);
 		var repoEObj = repoRes.getContents().get(0);
 		var repoEObjFragment = repoRes.getURIFragment(repoEObj);
 		var repoEObjURI = repoRes.getURI().appendFragment(repoEObjFragment).toString();
@@ -67,53 +64,16 @@ public class PcmCprTriggerTest extends AbstractPcmCprTest {
 		this.logPropagatedChanges(props);
 
 		// Ensure that the change was actually applied
-		var propagatedResource = this.getRepoResInPcmFacade();
+		var propagatedResource = this.getResourceFromPcmFacade(AbstractPcmCprTest.repositoryFileName);
 		Assertions.assertEquals(1, propagatedResource.getContents().size());
 		Assertions.assertEquals(newEntityName, propagatedResource.getContents().get(0).eGet(attr));
 
 		// Ensure that the Resource is saved after changes are applied
-		var resSet = new ResourceSetImpl();
-		var res = resSet.createResource(propagatedResource.getURI());
-		try {
-			res.load(null);
-		} catch (IOException e) {
-			this.failTest(e);
-		}
+		var res = this.loadNewResourceInstance(propagatedResource);
 
 		// Ensure that the loaded Resource has the expected contents
 		Assertions.assertEquals(1, res.getContents().size());
 		var resRepoEObj = res.getContents().get(0);
 		Assertions.assertEquals(newEntityName, resRepoEObj.eGet(attr));
-	}
-
-	/**
-	 * The return value is the result of loading {@link #getRepoResInPcmFacade()}
-	 * into a separate Resource instance. This should be the propagation target, as
-	 * propagating and modifying the same Resource instance results in issues (due
-	 * to concurrent changes (?)).
-	 * 
-	 * TODO Clarify whether this is true
-	 * 
-	 * @return A loaded "copy" of the repository Resource inside the underlying
-	 *         PcmFacade
-	 */
-	private Resource getRepoRes() {
-		var repoResInFacade = this.getRepoResInPcmFacade();
-		var resSet = new ResourceSetImpl();
-		var propagationTarget = resSet.createResource(repoResInFacade.getURI());
-		try {
-			propagationTarget.load(null);
-		} catch (IOException e) {
-			this.failTest(e.getMessage());
-		}
-		return propagationTarget;
-	}
-
-	/**
-	 * @return The repository Resource directly inside the underlying PcmFacade
-	 */
-	private Resource getRepoResInPcmFacade() {
-		return this.getPcmFacade().getResources().stream().filter((r) -> r.getURI().toString().contains(".repository"))
-				.findFirst().get();
 	}
 }
