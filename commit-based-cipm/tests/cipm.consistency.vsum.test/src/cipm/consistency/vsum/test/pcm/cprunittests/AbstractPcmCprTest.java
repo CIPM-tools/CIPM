@@ -184,8 +184,7 @@ public abstract class AbstractPcmCprTest {
 
 		this.getPcmVsumFacade().addChanges(changes);
 		// the actual propagation is done here
-		var propagation = this.getPcmVsumFacade().propagateResource(pcmResourceToPropagate,
-				pcmResourceToPropagate.getURI());
+		var propagation = this.getPcmVsumFacade().propagateResource(pcmResourceToPropagate);
 
 		return propagation;
 	}
