@@ -84,8 +84,6 @@ public class ResourceHelper {
 	/**
 	 * Attempts to save the given resource instance. Instead of throwing exceptions,
 	 * returns true/false to indicate success/failure.
-	 * 
-	 * TODO Log the error message
 	 */
 	public static boolean saveResource(Resource res) {
 		var uri = res.getURI();
@@ -95,6 +93,7 @@ public class ResourceHelper {
 				return resourceFileExists(uri);
 			} catch (IOException excep) {
 				excep.printStackTrace();
+				SimilarityTestLogger.logErrorMsg(excep.getMessage(), ResourceHelper.class);
 				return resourceFileExists(uri);
 			}
 		}
@@ -115,8 +114,6 @@ public class ResourceHelper {
 
 	/**
 	 * Loads the given resource
-	 * 
-	 * TODO Log error message
 	 */
 	public static void loadResource(Resource res) {
 		try {
@@ -128,6 +125,7 @@ public class ResourceHelper {
 			e.printStackTrace();
 			SimilarityTestLogger.logInfoMsg(String.format("Could not load resource at: %s", res.getURI()),
 					ResourceHelper.class);
+			SimilarityTestLogger.logErrorMsg(e.getMessage(), ResourceHelper.class);
 		}
 	}
 
@@ -191,8 +189,6 @@ public class ResourceHelper {
 	/**
 	 * Deletes the given resource
 	 * 
-	 * TODO Log error message
-	 * 
 	 * @return Whether the file of the given resource is deleted.
 	 */
 	public static boolean deleteResource(Resource res) {
@@ -207,6 +203,7 @@ public class ResourceHelper {
 						String.format("Could not delete resource as expected: %s (is deleted: %s) %s %s",
 								res.getURI().toString(), isResourceDeleted, System.lineSeparator(), e.getMessage()),
 						ResourceHelper.class);
+				SimilarityTestLogger.logErrorMsg(e.getMessage(), ResourceHelper.class);
 				return isResourceDeleted;
 			}
 		}
