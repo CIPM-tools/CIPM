@@ -7,6 +7,7 @@ import cipm.consistency.fitests.similarity.SimilarityTestLogger;
 import cipm.consistency.fitests.similarity.eobject.ResourceHelper;
 import cipm.consistency.fitests.similarity.jamopp.JaMoPPResourceParsingStrategy;
 import cipm.consistency.fitests.similarity.jamopp.parser.AbstractJaMoPPParserSimilarityTest;
+import cipm.consistency.fitests.similarity.jamopp.parser.FileUtil;
 import cipm.consistency.fitests.similarity.jamopp.parser.IModelResourceWrapper;
 import cipm.consistency.fitests.similarity.jamopp.parser.resultprovider.IExpectedSimilarityResultProvider;
 import cipm.consistency.fitests.similarity.jamopp.parser.testfactory.IJaMoPPParserTestGenerationStrategy;
@@ -177,7 +178,7 @@ public abstract class AbstractJaMoPPParserRepoTest extends AbstractJaMoPPParserS
 		var localRepoPath = this.getTestFileLayout().getModelSourceFileRootDirPath();
 		if (this.getResourceTestOptions().shouldDeleteRepositoryClones() && localRepoPath.toFile().exists()) {
 			this.startTimeMeasurement(RepoTimeMeasurementTag.DELETE_LOCAL_REPO_CLONE);
-			this.getFileUtil().deleteAll(localRepoPath);
+			FileUtil.deleteAll(localRepoPath);
 			this.stopTimeMeasurement();
 		}
 
@@ -313,7 +314,7 @@ public abstract class AbstractJaMoPPParserRepoTest extends AbstractJaMoPPParserS
 				this.getClass());
 
 		this.startTimeMeasurement(RepoTimeMeasurementTag.DELETE_LOCAL_REPO_CLONE);
-		this.getFileUtil().deleteAll(mainLocalClonePath);
+		FileUtil.deleteAll(mainLocalClonePath);
 		this.stopTimeMeasurement();
 
 		SimilarityTestLogger.logDebugMsg("Cleaned main local repository clone", this.getClass());
@@ -399,7 +400,7 @@ public abstract class AbstractJaMoPPParserRepoTest extends AbstractJaMoPPParserS
 				// Faulty repository clone, delete and re-try
 				SimilarityTestLogger.logDebugMsg("Could not open existing repository, deleting it and re-cloning",
 						this.getClass());
-				this.getFileUtil().deleteAll(clonePath);
+				FileUtil.deleteAll(clonePath);
 				if (clonePath.toFile().exists() && clonePath.toFile().list().length != 0) {
 					throw new IllegalStateException("Could not delete faulty repository clone");
 				}

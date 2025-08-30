@@ -11,8 +11,6 @@ import cipm.consistency.fitests.similarity.SimilarityTestLogger;
 /**
  * A utility class that contains file-related operations.
  * 
- * TODO Turn into a singleton
- * 
  * @author Alp Torac Genc
  */
 public class FileUtil {
@@ -22,7 +20,7 @@ public class FileUtil {
 	 * @see {@link #filesEqual(File, File)}
 	 * @see {@link #dirsEqual(File, File)}
 	 */
-	public boolean areContentsEqual(Path path1, Path path2) {
+	public static boolean areContentsEqual(Path path1, Path path2) {
 		return dirsEqual(path1.toFile(), path2.toFile());
 	}
 
@@ -32,15 +30,14 @@ public class FileUtil {
 	 * If the given file cannot be read (due to IOException), returns an empty
 	 * string.
 	 */
-	public String readEffectiveText(File f) {
+	public static String readEffectiveText(File f) {
 		var content = "";
 
 		try {
 			content = Files.readString(f.toPath());
 		} catch (IOException e) {
 			SimilarityTestLogger.logDebugMsg(
-					String.format("Could not read: %s, returning empty string", f.toPath().toString()),
-					this.getClass());
+					String.format("Could not read: %s, returning empty string", f.toPath().toString()), FileUtil.class);
 		}
 
 		return content.replaceAll("\\n", "").replaceAll("\\r", "").replaceAll("\\s", "");
@@ -54,7 +51,7 @@ public class FileUtil {
 	 * 
 	 * @see {@link #readEffectiveText(File)}
 	 */
-	public boolean filesEqual(File f1, File f2) {
+	public static boolean filesEqual(File f1, File f2) {
 		var f1Content = readEffectiveText(f1);
 		var f2Content = readEffectiveText(f2);
 
@@ -74,8 +71,8 @@ public class FileUtil {
 	 * 
 	 * @see {@link #filesEqual(File, File)}, {@link #readEffectiveText(File)}
 	 */
-	public boolean dirsEqual(File dir1, File dir2) {
-		SimilarityTestLogger.logDebugMsg("Comparing: " + dir1.getName() + " and " + dir2.getName(), this.getClass());
+	public static boolean dirsEqual(File dir1, File dir2) {
+		SimilarityTestLogger.logDebugMsg("Comparing: " + dir1.getName() + " and " + dir2.getName(), FileUtil.class);
 
 		// There cannot be 2 files with the same path, name and extension
 		// so using TreeSet, which sorts the files spares doing so here
@@ -110,17 +107,17 @@ public class FileUtil {
 			if (f1.isDirectory() && f2.isDirectory()) {
 				if (!dirsEqual(f1, f2)) {
 					SimilarityTestLogger.logDebugMsg(
-							"Directories " + f1.getName() + " and " + f2.getName() + " are not equal", this.getClass());
+							"Directories " + f1.getName() + " and " + f2.getName() + " are not equal", FileUtil.class);
 					return false;
 				}
 			} else if (f1.isFile() && f2.isFile()) {
 				if (!filesEqual(f1, f2)) {
 					SimilarityTestLogger.logDebugMsg(
-							"Files " + f1.getName() + " and " + f2.getName() + " are not equal", this.getClass());
+							"Files " + f1.getName() + " and " + f2.getName() + " are not equal", FileUtil.class);
 					return false;
 				}
 			} else {
-				SimilarityTestLogger.logErrorMsg("Unexpected case there is a file and a directory", this.getClass());
+				SimilarityTestLogger.logErrorMsg("Unexpected case there is a file and a directory", FileUtil.class);
 				return false;
 			}
 		}
@@ -135,14 +132,14 @@ public class FileUtil {
 	 * @param file The file or directory to delete
 	 * @see {@link File#deleteOnExit()}
 	 */
-	public void deleteAll(File file) {
+	public static void deleteAll(File file) {
 		if (file.exists()) {
 			if (file.isDirectory()) {
 				var children = file.listFiles();
 
 				if (children != null) {
 					for (var cf : children) {
-						this.deleteAll(cf);
+						deleteAll(cf);
 					}
 				}
 			}
@@ -156,7 +153,7 @@ public class FileUtil {
 	/**
 	 * A variant of {@link #deleteAll(File)} that converts the given path to a file.
 	 */
-	public void deleteAll(Path path) {
-		this.deleteAll(path.toFile());
+	public static void deleteAll(Path path) {
+		deleteAll(path.toFile());
 	}
 }

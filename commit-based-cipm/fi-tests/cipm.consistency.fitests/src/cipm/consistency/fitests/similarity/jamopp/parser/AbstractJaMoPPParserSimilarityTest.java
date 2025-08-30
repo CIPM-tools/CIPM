@@ -277,15 +277,6 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	}
 
 	/**
-	 * TODO Remove once FileUtil is a singleton
-	 * 
-	 * @return A utility object that can be used to perform file operations.
-	 */
-	protected FileUtil getFileUtil() {
-		return new FileUtil();
-	}
-
-	/**
 	 * @return A utility object, which encapsulates caching logic (for parsed
 	 *         models) and can be used to hasten tests.
 	 */

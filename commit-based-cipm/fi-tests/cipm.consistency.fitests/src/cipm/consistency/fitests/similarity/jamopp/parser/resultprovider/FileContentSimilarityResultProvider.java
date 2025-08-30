@@ -10,13 +10,9 @@ import cipm.consistency.fitests.similarity.jamopp.parser.FileUtil;
  * Provides expected similarity results for model resources by comparing their
  * respective model source files' (or model source file directories') content.
  * 
- * TODO Remove fileUtil once it is a singleton
- * 
  * @author Alp Torac Genc
  */
 public class FileContentSimilarityResultProvider implements IExpectedSimilarityResultProvider {
-	private FileUtil fileUtil = new FileUtil();
-
 	/**
 	 * @implSpec Determines the expected similarity result purely based on the given
 	 *           model source file (or model source file directory) paths. Compares
@@ -27,6 +23,6 @@ public class FileContentSimilarityResultProvider implements IExpectedSimilarityR
 	 */
 	@Override
 	public boolean getExpectedSimilarityResultFor(Resource lhsRes, Path lhsResPath, Resource rhsRes, Path rhsResPath) {
-		return fileUtil.areContentsEqual(lhsResPath, rhsResPath);
+		return FileUtil.areContentsEqual(lhsResPath, rhsResPath);
 	}
 }
