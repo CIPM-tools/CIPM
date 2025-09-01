@@ -37,15 +37,14 @@ public class RepoTestSimilarityValueEstimator {
 	 *                    commits C1 and C2
 	 * @return Whether model resources parsed from C1 and C2 are similar according
 	 *         to this instance
-	 * 
-	 *         TODO Fix the regex used in the "code" local variable
 	 */
 	public boolean getExpectedSimilarityValueFor(OutputStream os, DiffFormatter df, List<DiffEntry> diffEntries) {
 		try (var outputStream = os; var diffFormatter = df) {
 			for (var e : diffEntries) {
 				diffFormatter.format(e);
-				// Adapt all UNIX new lines to the current system
-				var code = this.getEffectiveLines(outputStream.toString().replaceAll("\\n", System.lineSeparator()));
+				// Adapt all new lines to the current system
+				var code = this
+						.getEffectiveLines(outputStream.toString().replaceAll("\\r?\\n", System.lineSeparator()));
 				var expectedSimVal = this.computeExpectedSimilarityValue(code);
 				if (!expectedSimVal)
 					return false;
