@@ -43,32 +43,6 @@ reaction CPRTriggered {
 	}
 }
 
-//reaction InsertionChange {
-//	after element EObject created
-//	call {
-//		logMessage(String.format("Change type: %s", createChange));
-//	}
-//}
-//reaction AddedBasicComponentToRepository {
-//	after element pcm::BasicComponent inserted in pcm::Repository[components__Repository]
-//	call {
-//		logMessage("AddedBasicComponentToRepository");
-//	}
-//}
-//
-//reaction RemovedBasicComponentFromRepository {
-//	after element pcm::BasicComponent removed from pcm::Repository[components__Repository]
-//	call {
-//		logMessage("RemovedBasicComponentFromRepository");
-//	}
-//}
-//
-//reaction AddedCompositeComponentToRepository {
-//	after element pcm::CompositeComponent inserted in pcm::Repository[components__Repository]
-//	call {
-//		logMessage("AddedCompositeComponentToRepository");
-//	}
-//}
 routine logMessage(String message) {
 	update {
 		Logger.getLogger(PcmMinimalTest).debug(message);

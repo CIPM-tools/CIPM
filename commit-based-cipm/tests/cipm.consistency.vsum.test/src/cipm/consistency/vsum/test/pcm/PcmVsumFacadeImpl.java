@@ -1,9 +1,9 @@
 package cipm.consistency.vsum.test.pcm;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -13,8 +13,6 @@ import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 
 import cipm.consistency.models.ModelFacade;
@@ -255,7 +253,8 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 		var roots = view.getRootObjects();
 		for (var r : roots) {
 			var rRes = r.eResource();
-			if (rRes != null) rRes.getContents().clear();
+			if (rRes != null)
+				rRes.getContents().clear();
 		}
 		/*
 		 * FIXME The version below is problematic, because it effectively REMOVES ele
@@ -265,7 +264,13 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 		 * can still be found under resource.getContents()
 		 */
 //		new ArrayList<>(resource.getContents()).forEach(ele -> view.registerRoot(ele, actualtargetUri));
-		new ArrayList<>(resource.getContents()).forEach(ele -> view.registerRoot(EcoreUtil.copy(ele), actualtargetUri));
+
+		var contentsToShift = new HashMap<EObject, EObject>();
+		new ArrayList<>(resource.getContents()).forEach(ele -> {
+			var eleDup = EcoreUtil.copy(ele);
+			view.registerRoot(eleDup, actualtargetUri);
+			contentsToShift.put(ele, eleDup);
+		});
 
 		/*
 		 * Find all modified resource contents and replace them
@@ -308,6 +313,15 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 		propagation.setException(exception);
 
 		logPropagatedChanges(resource, propagation);
+
+		/*
+		 * FIXME Remove the duplicate to avoid doubling all affected content
+		 * 
+		 * Check if this can be spared
+		 */
+		contentsToShift.forEach((original, duplicate) -> {
+			original.eResource().getContents().remove(duplicate);
+		});
 
 		return propagation;
 	}

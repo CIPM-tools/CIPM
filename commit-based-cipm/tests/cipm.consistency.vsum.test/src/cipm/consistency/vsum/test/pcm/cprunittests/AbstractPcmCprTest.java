@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
+import cipm.consistency.models.ModelFacade;
 import cipm.consistency.models.pcm.PcmFacade;
 import cipm.consistency.vsum.Propagation;
 import cipm.consistency.vsum.test.appspace.LoggingSetup;
@@ -30,6 +32,7 @@ import cipm.consistency.vsum.test.pcm.PcmVsumFacadeImpl;
 import jamopp.resource.JavaResource2Factory;
 import mir.reactions.dummyPCMCPRs.DummyPCMCPRsChangePropagationSpecification;
 import tools.vitruv.change.atomic.EChange;
+import tools.vitruv.change.propagation.ChangePropagationSpecification;
 
 public abstract class AbstractPcmCprTest {
 	private static final Logger LOGGER = Logger.getLogger(AbstractPcmCprTest.class);
@@ -48,18 +51,17 @@ public abstract class AbstractPcmCprTest {
 	private static final Path propagatedModelsRootPath = rootPath.resolve("propagatedModels");
 
 	protected static final String repositoryFileName = "Repository.repository";
-	
+
 	private PcmVsumFacade vsumFacade;
 	private PcmFacade pcmFacade;
 
 	@BeforeEach
 	public void setup() {
-		LoggingSetup.setMinLogLevel(Level.DEBUG);
 		this.setupModelResources();
 		this.copyOldModelFilesToPropagatedModelFiles();
 
 		pcmFacade = this.setupPcmFacade();
-		vsumFacade = this.setupVsumFacade(pcmFacade);
+		vsumFacade = this.setupVsumFacade();
 	}
 
 	@AfterEach
@@ -92,10 +94,12 @@ public abstract class AbstractPcmCprTest {
 	}
 
 	/**
-	 * Sets up the necessary resource factory registries
+	 * Sets up the necessary resource factory registries and loggers
 	 */
 	@BeforeAll
 	public static void setupBeforeAll() {
+		LoggingSetup.setMinLogLevel(Level.DEBUG);
+
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("java", new JavaResource2Factory());
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("javaxmi", new JavaResource2Factory());
 
@@ -113,10 +117,15 @@ public abstract class AbstractPcmCprTest {
 	 * avoid possible side effects. If only a minimal PCM is desired, the super
 	 * method can be used.
 	 * 
+	 * @implSpec AbstractPcmCprTest: Creates a minimal PCM without any
+	 *           correspondences by default
+	 * 
 	 * @return The PCM facade that will be used within this test.
 	 */
 	protected PcmFacade setupPcmFacade() {
-		return new PcmFacade();
+		var pcmFacade = new PcmFacade();
+		pcmFacade.initialize(this.getPropagatedModelsRootPath());
+		return pcmFacade;
 	}
 
 	/**
@@ -127,13 +136,22 @@ public abstract class AbstractPcmCprTest {
 	 * avoid possible side effects. If only a minimal PCM without correspondences is
 	 * desired, the super method can be used.
 	 * 
-	 * @param pcmFacade The underlying PcmFacade created by
-	 *                  {@link #setupPcmFacade()} or by other ways.
 	 * @return The VSUM facade for the PCM that will be used in this test.
 	 */
-	protected PcmVsumFacade setupVsumFacade(PcmFacade pcmFacade) {
-		return new PcmVsumFacadeImpl(this.getRootPath(), List.of(pcmFacade),
-				List.of(new DummyPCMCPRsChangePropagationSpecification()));
+	protected PcmVsumFacade setupVsumFacade() {
+		return new PcmVsumFacadeImpl(this.getRootPath(), this.getVsumFacadeModels(), this.getCPRs());
+	}
+
+	protected List<ModelFacade> getVsumFacadeModels() {
+		var list = new ArrayList<ModelFacade>();
+		list.add(pcmFacade);
+		return list;
+	}
+
+	protected List<ChangePropagationSpecification> getCPRs() {
+		var list = new ArrayList<ChangePropagationSpecification>();
+		list.add(new DummyPCMCPRsChangePropagationSpecification());
+		return list;
 	}
 
 	/**

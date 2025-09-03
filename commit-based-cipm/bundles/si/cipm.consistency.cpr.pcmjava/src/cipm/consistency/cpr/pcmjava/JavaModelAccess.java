@@ -71,4 +71,15 @@ public final class JavaModelAccess {
 			throw new IllegalArgumentException(e);
 		}
 	}
+
+	public static void setJavaModel(Resource javaModelResource) {
+		javaModel = javaModelResource;
+	}
+
+	/**
+	 * @return The currently loaded Java model resource
+	 */
+	public static Resource getJavaModel() {
+		return javaModel;
+	}
 }

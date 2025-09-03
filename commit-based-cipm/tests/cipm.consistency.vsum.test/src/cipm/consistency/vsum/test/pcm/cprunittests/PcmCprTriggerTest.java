@@ -13,23 +13,10 @@ import org.junit.jupiter.api.Test;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
 
-import cipm.consistency.models.pcm.PcmFacade;
 import tools.vitruv.change.atomic.feature.attribute.AttributeFactory;
 import tools.vitruv.change.atomic.feature.attribute.ReplaceSingleValuedEAttribute;
 
 public class PcmCprTriggerTest extends AbstractPcmCprTest {
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @implSpec Creates a minimal PCM without any correspondences
-	 */
-	@Override
-	protected PcmFacade setupPcmFacade() {
-		var pcmFacade = super.setupPcmFacade();
-		pcmFacade.initialize(this.getPropagatedModelsRootPath());
-		return pcmFacade;
-	}
-
 	@Test
 	public void testCprTrigger_OnDifferentResourceInstance_WithoutView() {
 		var repoRes = this.getNewInstanceForResourceFromPcmFacade(AbstractPcmCprTest.repositoryFileName);
@@ -47,9 +34,6 @@ public class PcmCprTriggerTest extends AbstractPcmCprTest {
 
 		var attrChange = AttributeFactory.eINSTANCE.createReplaceSingleValuedEAttribute();
 		attrChange.setAffectedEObject(repoEObj);
-
-		// TODO Clarify why only repoEObjURIWithIndex works as affectedEObjectID and not
-		// repoEObjURI or repoEObjFragment
 		attrChange.setAffectedEObjectID(repoEObjURIWithIndex);
 		var attr = (EAttribute) repoEObj.eClass().getEStructuralFeature(RepositoryPackage.REPOSITORY__ENTITY_NAME);
 		attrChange.setAffectedFeature(attr);
@@ -104,9 +88,6 @@ public class PcmCprTriggerTest extends AbstractPcmCprTest {
 
 		var attrChange = AttributeFactory.eINSTANCE.createReplaceSingleValuedEAttribute();
 		attrChange.setAffectedEObject(repoEObj);
-
-		// TODO Clarify why only repoEObjURIWithIndex works as affectedEObjectID and not
-		// repoEObjURI or repoEObjFragment
 		attrChange.setAffectedEObjectID(repoEObjURIWithIndex);
 		var attr = (EAttribute) repoEObj.eClass().getEStructuralFeature(RepositoryPackage.REPOSITORY__ENTITY_NAME);
 		attrChange.setAffectedFeature(attr);

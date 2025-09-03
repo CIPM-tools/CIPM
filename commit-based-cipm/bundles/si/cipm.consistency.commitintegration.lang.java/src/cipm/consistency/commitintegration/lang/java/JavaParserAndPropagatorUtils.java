@@ -61,8 +61,12 @@ public final class JavaParserAndPropagatorUtils {
 		
 		JaMoPPJDTSingleFileParser parser = new JaMoPPJDTSingleFileParser();
 		parser.setResourceSet(new ResourceSetImpl());
-		parser.setExclusionPatterns(CommitIntegrationSettingsContainer.getSettingsContainer()
-				.getProperty(SettingKeys.JAVA_PARSER_EXCLUSION_PATTERNS).split(";"));
+		
+		var epProperty = CommitIntegrationSettingsContainer.getSettingsContainer()
+				.getProperty(SettingKeys.JAVA_PARSER_EXCLUSION_PATTERNS);
+		if (epProperty != null) {
+			parser.setExclusionPatterns(epProperty.split(";"));
+		}
 		LOGGER.debug("Parsing " + dir.toString());
 		ResourceSet resourceSet = parser.parseDirectory(dir);
 		
