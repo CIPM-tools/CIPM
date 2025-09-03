@@ -13,6 +13,8 @@ import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryFactory;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
 
+import tools.vitruv.framework.views.changederivation.DefaultStateBasedChangeResolutionStrategy;
+
 public class PcmJavaCprCorrespondenceTest extends AbstractPcmJavaCprTest {
 	@Test
 	public void testJavaPCMCorrespondence() {
@@ -23,16 +25,22 @@ public class PcmJavaCprCorrespondenceTest extends AbstractPcmJavaCprTest {
 		final var pcmInterface = RepositoryFactory.eINSTANCE.createOperationInterface();
 		pcmInterface.setEntityName(pcmInterfaceName);
 		var mods = new HashMap<URI, Consumer<Resource>>();
-		var repoRes = this.getResourceFromPcmFacade(AbstractPcmCprTest.repositoryFileName);
+		var repoRes = this.getResourceFromPcmFacade(repositoryFileName);
 		mods.put(repoRes.getURI(), (r) -> {
-			var repoEObj = (Repository) repoRes.getContents().get(0);
-			repoEObj.getInterfaces__Repository().add(pcmInterface);
+			var rRepoEObj = (Repository) r.getContents().get(0);
+			rRepoEObj.getInterfaces__Repository().add(pcmInterface);
 		});
+//		var propList = this.getPcmVsumFacade().modifyEObjects(getPcmFacade(), mods);
 
-		var propList = this.getPcmVsumFacade().modifyEObjects(getPcmFacade(), mods);
+		var newRes = this.getNewInstanceForResourceFromPcmFacade(repositoryFileName);
+		mods.get(newRes.getURI()).accept(newRes);
+		var d = new DefaultStateBasedChangeResolutionStrategy();
+		var changes = d.getChangeSequenceBetween(newRes, repoRes);
+		this.getPcmVsumFacade().addChanges(changes.getEChanges());
+		var prop = this.getPcmVsumFacade().propagateResource(repoRes);
 
-		Assertions.assertEquals(1, propList.size());
-		var prop = propList.iterator().next();
+//		Assertions.assertEquals(1, propList.size());
+//		var prop = propList.iterator().next();
 		Assertions.assertNull(prop.getException());
 		this.logPropagatedChanges(prop);
 
@@ -41,7 +49,7 @@ public class PcmJavaCprCorrespondenceTest extends AbstractPcmJavaCprTest {
 //		Assertions.assertTrue(ReplaceSingleValuedEAttribute.class.isAssignableFrom(change.getClass()));
 
 		// Ensure that the change was actually applied to PCM
-		var propagatedResource = this.getResourceFromPcmFacade(AbstractPcmCprTest.repositoryFileName);
+		var propagatedResource = this.getResourceFromPcmFacade(repositoryFileName);
 		Assertions.assertEquals(1, propagatedResource.getContents().size());
 		var propagatedRepoEObj = propagatedResource.getContents().get(0);
 		Assertions.assertEquals(1, propagatedRepoEObj.eContents().size());
@@ -63,6 +71,7 @@ public class PcmJavaCprCorrespondenceTest extends AbstractPcmJavaCprTest {
 		Assertions.assertTrue(EcoreUtil.equals(resRepoInterface, propagatedRepoInterface));
 
 		// Ensure that consequential changes to Java are done too
+		this.removePlaceholderInJavaModelResource();
 		Assertions.assertEquals(1, javaResource.getContents().size());
 		var javaInterface = javaResource.getContents().get(0);
 		Assertions.assertEquals(pcmInterfaceName,
