@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emftext.language.java.classifiers.ClassifiersFactory;
 import org.junit.jupiter.api.Assertions;
@@ -21,6 +22,7 @@ import tools.vitruv.change.propagation.ChangePropagationSpecification;
 public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 	private static final Path javaCommitIntegrationSettingsContainer = Path.of("javaSettings.txt");
 	private JavaModelFacade javaFacade;
+	private EObject placeholder;
 
 	@BeforeEach
 	public void setup() {
@@ -68,11 +70,11 @@ public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 		model.initialize(this.getPropagatedModelsRootPath());
 		model.parseSourceCodeDir(this.getPropagatedModelsRootPath());
 		Assertions.assertTrue(model.existsOnDisk());
-		// Ensure that the Java resource is not empty
+		// FIXME Ensure that the Java resource is not empty
 		// Otherwise it will be deleted (by Vitruvius)
 		JavaModelAccess.setJavaModel(model.getResource());
-		var placeholder = ClassifiersFactory.eINSTANCE.createClass();
-		placeholder.setName("abc");
+		placeholder = ClassifiersFactory.eINSTANCE.createClass();
+//		placeholder.setName("abc");
 		JavaModelAccess.getJavaModel().getContents().add(placeholder);
 		try {
 			JavaModelAccess.getJavaModel().save(null);
@@ -80,7 +82,18 @@ public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 			this.failTest(e);
 		}
 		model.reload();
+		placeholder = model.getResource().getContents().get(0);
 		return model;
+	}
+
+	/**
+	 * TODO Remove after fixing the issue with empty Java model Resources getting
+	 * deleted by Vitruvius
+	 */
+	protected void removePlaceholderInJavaModelResource() {
+		if (this.placeholder != null && this.placeholder.eResource() != null) {
+			this.placeholder.eResource().getContents().remove(placeholder);
+		}
 	}
 
 	@Override
