@@ -319,9 +319,9 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 		 * 
 		 * Check if this can be spared
 		 */
-//		contentsToShift.forEach((original, duplicate) -> {
-//			original.eResource().getContents().remove(duplicate);
-//		});
+		contentsToShift.forEach((original, duplicate) -> {
+			original.eResource().getContents().remove(duplicate);
+		});
 
 		return propagation;
 	}
