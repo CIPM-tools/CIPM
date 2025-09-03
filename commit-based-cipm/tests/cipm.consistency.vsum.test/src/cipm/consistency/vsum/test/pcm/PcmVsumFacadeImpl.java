@@ -1,15 +1,20 @@
 package cipm.consistency.vsum.test.pcm;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
+import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 
 import cipm.consistency.models.ModelFacade;
@@ -23,6 +28,7 @@ import tools.vitruv.change.correspondence.Correspondence;
 import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
 import tools.vitruv.change.interaction.UserInteractionFactory;
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
+import tools.vitruv.framework.views.CommittableView;
 import tools.vitruv.framework.views.ViewTypeFactory;
 import tools.vitruv.framework.vsum.VirtualModelBuilder;
 import tools.vitruv.framework.vsum.internal.InternalVirtualModel;
@@ -100,6 +106,7 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 		loadModels(this.models, true);
 	}
 
+	@Override
 	public IChangeAcceptingView getChangeAcceptingView() {
 		var viewType = ViewTypeFactory.createIdentityMappingViewType("myRecordingView");
 		var viewSelector = viewType.createSelector(vsum);
@@ -196,10 +203,22 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 	public Propagation propagateResource(Resource resource, URI targetUri) {
 		var view = getChangeAcceptingView();
 
+		var propagation = this.propagateResource(resource, targetUri, view);
+
+		// Remove propagated changes from changesToPropagate
+		for (var propagatedEChange : view.getAllChanges()) {
+			this.removeChange(propagatedEChange);
+		}
+
+		logPropagatedChanges(resource, propagation);
+
+		return propagation;
+	}
+
+	private Propagation propagateResource(Resource resource, URI targetUri, CommittableView view) {
 		if (targetUri == null) {
 			targetUri = resource.getURI();
 		}
-
 		final URI actualtargetUri = targetUri;
 
 		// try to resolve all proxies in the resource
@@ -218,14 +237,64 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 			return null;
 		}
 
+		/*
+		 * FIXME Possible issue here:
+		 * 
+		 * This only clears one Resource within the view. However, views may have
+		 * multiple Resource instances (such as PCM).
+		 * 
+		 * For ChangeDerivingView, this is not a problem, as no changes are created for
+		 * the same EObjects. It is problematic for ChangeRecordingView, because all
+		 * root objects are deleted and re-added.
+		 */
+//		var roots = view.getRootObjects();
+//		if (!roots.isEmpty()) {
+//			var first = roots.iterator().next();
+//			first.eResource().getContents().clear();
+//		}
 		var roots = view.getRootObjects();
-		if (!roots.isEmpty()) {
-			var first = roots.iterator().next();
-			first.eResource().getContents().clear();
+		for (var r : roots) {
+			var rRes = r.eResource();
+			if (rRes != null) rRes.getContents().clear();
 		}
-		new ArrayList<>(resource.getContents()).forEach(ele -> view.registerRoot(ele, actualtargetUri));
+		/*
+		 * FIXME The version below is problematic, because it effectively REMOVES ele
+		 * from its original resource and adds them to the view. This causes ele to
+		 * resolve to null while changes are applied, because it cannot be found under
+		 * its resource. Copying ele seems to solve this issue, since the "original" ele
+		 * can still be found under resource.getContents()
+		 */
+//		new ArrayList<>(resource.getContents()).forEach(ele -> view.registerRoot(ele, actualtargetUri));
+		new ArrayList<>(resource.getContents()).forEach(ele -> view.registerRoot(EcoreUtil.copy(ele), actualtargetUri));
 
-		List<PropagatedChange> changeList = null;
+		/*
+		 * Find all modified resource contents and replace them
+		 */
+//		var roots = view.getRootObjects();
+//		ResourceSet resSet = null;
+//		if (!roots.isEmpty()) {
+//			resSet = roots.iterator().next().eResource().getResourceSet();
+//		}
+//
+//		var contents = resource.getContents().toArray(EObject[]::new);
+//		for (var content : contents) {
+//			var contentURI = EcoreUtil.getURI(content);
+//			var contentResURI = contentURI.trimFragment();
+//
+//			if (resSet != null) {
+//				var contentInView = resSet.getEObject(contentURI, false);
+//				if (contentInView != null) {
+//					var res = contentInView.eResource();
+//					res.getContents().remove(contentInView);
+//				}
+//				view.registerRoot(content, contentURI);
+//			} else {
+//				view.registerRoot(content, contentURI);
+//				resSet = content.eResource().getResourceSet();
+//			}
+//		}
+
+		List<PropagatedChange> changeList = List.of();
 		IllegalStateException exception = null;
 
 		try {
@@ -235,14 +304,7 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 			exception = e;
 		}
 
-		// Propagation constructor handles null parameters
 		var propagation = new Propagation(changeList);
-
-		// Remove propagated changes from changesToPropagate
-		for (var propagatedEChange : view.getAllChanges()) {
-			this.removeChange(propagatedEChange);
-		}
-
 		propagation.setException(exception);
 
 		logPropagatedChanges(resource, propagation);
@@ -294,5 +356,60 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 	@Override
 	public void cleanChanges() {
 		this.changesToPropagate.clear();
+	}
+
+	@Override
+	public Collection<Propagation> modifyEObjects(ModelFacade modelFacade, Map<URI, Consumer<Resource>> modifications) {
+		if (!this.models.contains(modelFacade)) {
+			throw new IllegalArgumentException("PCM Vsum does not contain the given model");
+		}
+
+		var props = new ArrayList<Propagation>();
+
+		for (var e : modifications.entrySet()) {
+			var targetResourceURI = e.getKey();
+			var funcs = e.getValue();
+
+			final Resource[] targetedModelResource = new Resource[1];
+
+			var singleModelRes = modelFacade.getResource();
+			var multipleModelRes = modelFacade.getResources();
+			if (singleModelRes != null && singleModelRes.getURI().equals(targetResourceURI)) {
+				targetedModelResource[0] = modelFacade.getResource();
+			} else if (multipleModelRes != null) {
+				var possibleTargetModelRes = multipleModelRes.stream()
+						.filter((r) -> r.getURI().equals(targetResourceURI)).toArray(Resource[]::new);
+				if (possibleTargetModelRes.length == 1) {
+					targetedModelResource[0] = possibleTargetModelRes[0];
+				}
+			}
+			if (targetedModelResource[0] == null) {
+				throw new IllegalArgumentException(
+						"The given model facade does not contain all targeted resources, missing: "
+								+ targetResourceURI);
+			}
+
+//			var targetedModelResourceInstanceDuplicate = new ResourceSetImpl()
+//					.createResource(targetedModelResource[0].getURI());
+//			try {
+//				targetedModelResourceInstanceDuplicate.load(null);
+//			} catch (IOException e1) {
+//				e1.printStackTrace();
+//				throw new IllegalStateException("Could not load resource: " + targetedModelResource[0].getURI(), e1);
+//			}
+
+			var propTarget = targetedModelResource[0];
+			var viewType = ViewTypeFactory.createIdentityMappingViewType("myRecordingView");
+			var viewSelector = viewType.createSelector(vsum);
+			viewSelector.getSelectableElements().stream()
+					// Ensure that only the modified Resource's elements are considered
+					.filter((elem) -> propTarget.getContents().contains(elem))
+					.forEach(ele -> viewSelector.setSelected(ele, true));
+			var view = viewSelector.createView().withChangeDerivingTrait();
+			funcs.accept(propTarget);
+			props.add(this.propagateResource(propTarget, targetResourceURI, view));
+		}
+
+		return props;
 	}
 }
