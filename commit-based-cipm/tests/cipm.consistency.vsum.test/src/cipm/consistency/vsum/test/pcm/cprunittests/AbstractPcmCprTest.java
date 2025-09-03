@@ -288,6 +288,21 @@ public abstract class AbstractPcmCprTest {
 	}
 
 	/**
+	 * The return value is the result of loading
+	 * {@link #getResourceFromPcmFacade(String)} into a separate Resource instance.
+	 * This should be the propagation target, as propagating and modifying the same
+	 * Resource instance results in issues (due to concurrent changes (?)).
+	 * 
+	 * TODO Clarify whether this is true
+	 * 
+	 * @return A loaded "copy" of the Resource with the given file name inside the
+	 *         PcmFacade
+	 */
+	protected Resource getNewInstanceForResourceFromPcmFacade(Resource resourceInPCMModelFacade) {
+		return this.getNewInstanceForResourceFromPcmFacade(resourceInPCMModelFacade.getURI().lastSegment());
+	}
+
+	/**
 	 * @return The path, under which all files regarding this test reside.
 	 */
 	public Path getRootPath() {

@@ -2,8 +2,6 @@ package cipm.consistency.vsum.test.pcm;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -15,7 +13,6 @@ import cipm.consistency.vsum.test.pcm.newviews.IChangeAcceptingView;
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.correspondence.Correspondence;
 import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
-import tools.vitruv.framework.views.CommittableView;
 import tools.vitruv.framework.vsum.internal.InternalVirtualModel;
 
 @SuppressWarnings("restriction")
@@ -70,8 +67,6 @@ public interface PcmVsumFacade {
 	EditableCorrespondenceModelView<Correspondence> getCorrespondenceView();
 
 	IChangeAcceptingView getChangeAcceptingView();
-
-	Collection<Propagation> modifyEObjects(ModelFacade modelFacade, Map<URI, Consumer<Resource>> modifications);
 
 	VsumDirLayout getDirLayout();
 }

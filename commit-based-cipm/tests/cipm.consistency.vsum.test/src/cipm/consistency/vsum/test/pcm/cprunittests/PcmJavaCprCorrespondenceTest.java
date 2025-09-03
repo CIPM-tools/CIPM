@@ -1,10 +1,5 @@
 package cipm.consistency.vsum.test.pcm.cprunittests;
 
-import java.util.HashMap;
-import java.util.function.Consumer;
-
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emftext.language.java.classifiers.ClassifiersPackage;
 import org.junit.jupiter.api.Assertions;
@@ -13,34 +8,25 @@ import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryFactory;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
 
-import tools.vitruv.framework.views.changederivation.DefaultStateBasedChangeResolutionStrategy;
-
 public class PcmJavaCprCorrespondenceTest extends AbstractPcmJavaCprTest {
 	@Test
 	public void testJavaPCMCorrespondence() {
-		var javaResource = this.getJavaModelResource();
+		var javaResource = this.getJavaModelResourceFromJavaFacade();
 //		Assertions.assertEquals(0, javaResource.getContents().size());
 
 		final var pcmInterfaceName = "pcmifc";
-		final var pcmInterface = RepositoryFactory.eINSTANCE.createOperationInterface();
-		pcmInterface.setEntityName(pcmInterfaceName);
-		var mods = new HashMap<URI, Consumer<Resource>>();
-		var repoRes = this.getResourceFromPcmFacade(repositoryFileName);
-		mods.put(repoRes.getURI(), (r) -> {
+
+		var priginalRepoRes = this.getResourceFromPcmFacade(repositoryFileName);
+
+		var changes = this.getEChangesFor(priginalRepoRes, (r) -> {
+			final var pcmInterface = RepositoryFactory.eINSTANCE.createOperationInterface();
+			pcmInterface.setEntityName(pcmInterfaceName);
 			var rRepoEObj = (Repository) r.getContents().get(0);
 			rRepoEObj.getInterfaces__Repository().add(pcmInterface);
 		});
-//		var propList = this.getPcmVsumFacade().modifyEObjects(getPcmFacade(), mods);
 
-		var newRes = this.getNewInstanceForResourceFromPcmFacade(repositoryFileName);
-		mods.get(newRes.getURI()).accept(newRes);
-		var d = new DefaultStateBasedChangeResolutionStrategy();
-		var changes = d.getChangeSequenceBetween(newRes, repoRes);
-		this.getPcmVsumFacade().addChanges(changes.getEChanges());
-		var prop = this.getPcmVsumFacade().propagateResource(repoRes);
-
-//		Assertions.assertEquals(1, propList.size());
-//		var prop = propList.iterator().next();
+		this.getPcmVsumFacade().addChanges(changes);
+		var prop = this.getPcmVsumFacade().propagateResource(priginalRepoRes);
 		Assertions.assertNull(prop.getException());
 		this.logPropagatedChanges(prop);
 
@@ -76,5 +62,19 @@ public class PcmJavaCprCorrespondenceTest extends AbstractPcmJavaCprTest {
 		var javaInterface = javaResource.getContents().get(0);
 		Assertions.assertEquals(pcmInterfaceName,
 				javaInterface.eGet(javaInterface.eClass().getEStructuralFeature(ClassifiersPackage.INTERFACE__NAME)));
+
+		// Ensure that correspondences are persistent
+		var persistedPcmI = this.getResourceFromPcmFacade(repositoryFileName).getContents().get(0).eContents().get(0);
+		var persistedJavaI = this.getJavaModelResourceFromJavaFacade().getContents().get(0);
+		Assertions.assertEquals(1,
+				this.getPcmVsumFacade().getCorrespondenceView().getCorrespondingEObjects(persistedPcmI).size());
+		var javaCorrespondent = this.getPcmVsumFacade().getCorrespondenceView().getCorrespondingEObjects(persistedPcmI)
+				.iterator().next();
+		Assertions.assertEquals(persistedJavaI, javaCorrespondent);
+		Assertions.assertEquals(1,
+				this.getPcmVsumFacade().getCorrespondenceView().getCorrespondingEObjects(persistedJavaI).size());
+		var pcmCorrespondent = this.getPcmVsumFacade().getCorrespondenceView().getCorrespondingEObjects(persistedJavaI)
+				.iterator().next();
+		Assertions.assertEquals(persistedPcmI, pcmCorrespondent);
 	}
 }

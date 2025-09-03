@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -17,7 +18,9 @@ import cipm.consistency.commitintegration.settings.CommitIntegrationSettingsCont
 import cipm.consistency.cpr.pcmjava.JavaModelAccess;
 import cipm.consistency.models.ModelFacade;
 import mir.reactions.dummyPCMJavaCorrespondenceCPRs.DummyPCMJavaCorrespondenceCPRsChangePropagationSpecification;
+import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
+import tools.vitruv.framework.views.changederivation.DefaultStateBasedChangeResolutionStrategy;
 
 public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 	private static final Path javaCommitIntegrationSettingsContainer = Path.of("javaSettings.txt");
@@ -96,6 +99,17 @@ public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 		}
 	}
 
+	protected List<EChange> getEChangesFor(Resource resourceInModelFacade, Consumer<Resource> modifications) {
+		var newRes = this.getNewInstanceForResourceFromPcmFacade(resourceInModelFacade);
+		modifications.accept(newRes);
+		var d = new DefaultStateBasedChangeResolutionStrategy();
+		return d.getChangeSequenceBetween(newRes, resourceInModelFacade).getEChanges();
+	}
+
+	protected List<EChange> getEChangesFor(String resourceInModelFacade, Consumer<Resource> modifications) {
+		return this.getEChangesFor(this.getResourceFromPcmFacade(resourceInModelFacade), modifications);
+	}
+
 	@Override
 	protected List<ModelFacade> getVsumFacadeModels() {
 		var list = super.getVsumFacadeModels();
@@ -118,5 +132,9 @@ public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 
 	protected Resource getJavaModelResource() {
 		return JavaModelAccess.getJavaModel();
+	}
+
+	protected Resource getJavaModelResourceFromJavaFacade() {
+		return this.javaFacade.getResource();
 	}
 }

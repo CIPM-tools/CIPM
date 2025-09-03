@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -370,60 +368,5 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 	@Override
 	public void cleanChanges() {
 		this.changesToPropagate.clear();
-	}
-
-	@Override
-	public Collection<Propagation> modifyEObjects(ModelFacade modelFacade, Map<URI, Consumer<Resource>> modifications) {
-		if (!this.models.contains(modelFacade)) {
-			throw new IllegalArgumentException("PCM Vsum does not contain the given model");
-		}
-
-		var props = new ArrayList<Propagation>();
-
-		for (var e : modifications.entrySet()) {
-			var targetResourceURI = e.getKey();
-			var funcs = e.getValue();
-
-			final Resource[] targetedModelResource = new Resource[1];
-
-			var singleModelRes = modelFacade.getResource();
-			var multipleModelRes = modelFacade.getResources();
-			if (singleModelRes != null && singleModelRes.getURI().equals(targetResourceURI)) {
-				targetedModelResource[0] = modelFacade.getResource();
-			} else if (multipleModelRes != null) {
-				var possibleTargetModelRes = multipleModelRes.stream()
-						.filter((r) -> r.getURI().equals(targetResourceURI)).toArray(Resource[]::new);
-				if (possibleTargetModelRes.length == 1) {
-					targetedModelResource[0] = possibleTargetModelRes[0];
-				}
-			}
-			if (targetedModelResource[0] == null) {
-				throw new IllegalArgumentException(
-						"The given model facade does not contain all targeted resources, missing: "
-								+ targetResourceURI);
-			}
-
-//			var targetedModelResourceInstanceDuplicate = new ResourceSetImpl()
-//					.createResource(targetedModelResource[0].getURI());
-//			try {
-//				targetedModelResourceInstanceDuplicate.load(null);
-//			} catch (IOException e1) {
-//				e1.printStackTrace();
-//				throw new IllegalStateException("Could not load resource: " + targetedModelResource[0].getURI(), e1);
-//			}
-
-			var propTarget = targetedModelResource[0];
-			var viewType = ViewTypeFactory.createIdentityMappingViewType("myRecordingView");
-			var viewSelector = viewType.createSelector(vsum);
-			viewSelector.getSelectableElements().stream()
-					// Ensure that only the modified Resource's elements are considered
-					.filter((elem) -> propTarget.getContents().contains(elem))
-					.forEach(ele -> viewSelector.setSelected(ele, true));
-			var view = viewSelector.createView().withChangeDerivingTrait();
-			funcs.accept(propTarget);
-			props.add(this.propagateResource(propTarget, targetResourceURI, view));
-		}
-
-		return props;
 	}
 }
