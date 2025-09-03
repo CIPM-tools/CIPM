@@ -16,9 +16,9 @@ public class PcmJavaCprCorrespondenceTest extends AbstractPcmJavaCprTest {
 
 		final var pcmInterfaceName = "pcmifc";
 
-		var priginalRepoRes = this.getResourceFromPcmFacade(repositoryFileName);
+		var originalRepoRes = this.getResourceFromPcmFacade(repositoryFileName);
 
-		var changes = this.getEChangesFor(priginalRepoRes, (r) -> {
+		var changes = this.getEChangesFor(originalRepoRes, (r) -> {
 			final var pcmInterface = RepositoryFactory.eINSTANCE.createOperationInterface();
 			pcmInterface.setEntityName(pcmInterfaceName);
 			var rRepoEObj = (Repository) r.getContents().get(0);
@@ -26,7 +26,7 @@ public class PcmJavaCprCorrespondenceTest extends AbstractPcmJavaCprTest {
 		});
 
 		this.getPcmVsumFacade().addChanges(changes);
-		var prop = this.getPcmVsumFacade().propagateResource(priginalRepoRes);
+		var prop = this.getPcmVsumFacade().propagateResource(originalRepoRes);
 		Assertions.assertNull(prop.getException());
 		this.logPropagatedChanges(prop);
 
