@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emftext.language.java.classifiers.ClassifiersFactory;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -17,6 +18,7 @@ import cipm.consistency.commitintegration.lang.java.JavaModelFacade;
 import cipm.consistency.commitintegration.settings.CommitIntegrationSettingsContainer;
 import cipm.consistency.cpr.pcmjava.JavaModelAccess;
 import cipm.consistency.models.ModelFacade;
+import cipm.consistency.vsum.test.pcm.userinteraction.PcmUserInteractionManager;
 import mir.reactions.dummyPCMJavaCorrespondenceCPRs.DummyPCMJavaCorrespondenceCPRsChangePropagationSpecification;
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
@@ -28,6 +30,7 @@ public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 	private EObject placeholder;
 
 	@BeforeEach
+	@Override
 	public void setup() {
 //		var settingsFile = this.createJavaSettingsFile();
 //		CommitIntegrationSettingsContainer.initialize(settingsFile.toPath());
@@ -35,6 +38,13 @@ public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 				.initialize(this.getPropagatedModelsRootPath().resolve(javaCommitIntegrationSettingsContainer));
 		javaFacade = this.setupJavaFacade();
 		super.setup();
+	}
+
+	@AfterEach
+	@Override
+	public void tearDown() {
+		PcmUserInteractionManager.reset();
+		super.tearDown();
 	}
 
 //	protected File createJavaSettingsFile() {
@@ -120,13 +130,6 @@ public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 	protected List<ComponentDetectionStrategy> getComponentDetectionStrategies() {
 		var list = new ArrayList<ComponentDetectionStrategy>();
 		list.add(new UnnamedModuleComponentDetectionStrategy());
-		return list;
-	}
-
-	@Override
-	protected List<ChangePropagationSpecification> getCPRs() {
-		var list = new ArrayList<ChangePropagationSpecification>();
-		list.add(new DummyPCMJavaCorrespondenceCPRsChangePropagationSpecification());
 		return list;
 	}
 

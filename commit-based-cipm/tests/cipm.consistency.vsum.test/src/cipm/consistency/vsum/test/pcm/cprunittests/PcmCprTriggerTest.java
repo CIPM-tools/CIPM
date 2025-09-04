@@ -1,5 +1,6 @@
 package cipm.consistency.vsum.test.pcm.cprunittests;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
@@ -13,10 +14,19 @@ import org.junit.jupiter.api.Test;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
 
+import mir.reactions.dummyPCMCPRs.DummyPCMCPRsChangePropagationSpecification;
 import tools.vitruv.change.atomic.feature.attribute.AttributeFactory;
 import tools.vitruv.change.atomic.feature.attribute.ReplaceSingleValuedEAttribute;
+import tools.vitruv.change.propagation.ChangePropagationSpecification;
 
 public class PcmCprTriggerTest extends AbstractPcmCprTest {
+	@Override
+	protected List<ChangePropagationSpecification> getCPRs() {
+		var list = new ArrayList<ChangePropagationSpecification>();
+		list.add(new DummyPCMCPRsChangePropagationSpecification());
+		return list;
+	}
+
 	@Test
 	public void testCprTrigger_OnDifferentResourceInstance_WithoutView() {
 		var repoRes = this.getNewInstanceForResourceFromPcmFacade(AbstractPcmCprTest.repositoryFileName);

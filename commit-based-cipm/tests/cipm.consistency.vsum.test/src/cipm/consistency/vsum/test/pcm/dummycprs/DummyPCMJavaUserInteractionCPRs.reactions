@@ -1,32 +1,36 @@
 import cipm.consistency.cpr.pcmjava.JavaModelAccess
 import cipm.consistency.vsum.test.pcm.cprunittests.PcmCPRTestConstants
+import cipm.consistency.vsum.test.pcm.userinteraction.PcmUserInteractionManager
+import cipm.consistency.vsum.test.pcm.userinteraction.NameUserInteraction
 
 import "http://www.emftext.org/java" as java
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
 
-reactions: dummyPCMJavaCorrespondenceCPRs
+reactions: dummyPCMJavaUserInteractionCPRs
 in reaction to changes in pcm
 execute actions in java
 
 import dummyPCMCPRCommons
 
-reaction AddedCorrespondenceTestInterface {
+reaction AddedUserInteractionTestInterface {
 	after element pcm::Interface inserted in pcm::Repository[interfaces__Repository]
-	with newValue.entityName == PcmCPRTestConstants.correspondenceTestInterfaceName
+	with newValue.entityName == PcmCPRTestConstants.userInteractionTestInterfaceName
 	call {
-		createCorrespondenceTestInterface(newValue)
+		createUserInteractionTestInterface(newValue)
 	}
 }
 
-routine createCorrespondenceTestInterface(pcm::Interface addedInterface) {
+routine createUserInteractionTestInterface(pcm::Interface addedInterface) {
 	match {
-		check addedInterface.entityName == PcmCPRTestConstants.correspondenceTestInterfaceName
+		check addedInterface.entityName == PcmCPRTestConstants.userInteractionTestInterfaceName
 	}
 	create {
 		val javaInterface = new java::Interface
 	}
 	update {
-		var javaInterfaceName = addedInterface.entityName
+		var ui = new NameUserInteraction(javaInterface)
+		PcmUserInteractionManager.addUserInteraction(ui)
+		var javaInterfaceName = PcmUserInteractionManager.getDesiredFeatureValue(ui.desiredFeatures.get(0)) as String
 		javaInterface.name = javaInterfaceName
 		logMessage("Java interface created: " + javaInterfaceName)
 		JavaModelAccess.javaModel.contents.add(javaInterface)

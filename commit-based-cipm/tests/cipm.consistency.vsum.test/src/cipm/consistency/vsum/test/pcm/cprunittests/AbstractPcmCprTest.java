@@ -148,11 +148,7 @@ public abstract class AbstractPcmCprTest {
 		return list;
 	}
 
-	protected List<ChangePropagationSpecification> getCPRs() {
-		var list = new ArrayList<ChangePropagationSpecification>();
-		list.add(new DummyPCMCPRsChangePropagationSpecification());
-		return list;
-	}
+	protected abstract List<ChangePropagationSpecification> getCPRs();
 
 	/**
 	 * Encapsulates the setup of all model resources (PCM, Java and/or IM). <br>

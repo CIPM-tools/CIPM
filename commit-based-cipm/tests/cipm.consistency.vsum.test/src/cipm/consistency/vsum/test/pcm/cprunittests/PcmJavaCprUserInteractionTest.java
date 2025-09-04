@@ -11,23 +11,25 @@ import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryFactory;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
 
-import mir.reactions.dummyPCMJavaCorrespondenceCPRs.DummyPCMJavaCorrespondenceCPRsChangePropagationSpecification;
+import cipm.consistency.vsum.test.pcm.userinteraction.DummyNameConflictResolutionStrategy;
+import cipm.consistency.vsum.test.pcm.userinteraction.PcmUserInteractionManager;
+import mir.reactions.dummyPCMJavaUserInteractionCPRs.DummyPCMJavaUserInteractionCPRsChangePropagationSpecification;
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
 
-public class PcmJavaCprCorrespondenceTest extends AbstractPcmJavaCprTest {
+public class PcmJavaCprUserInteractionTest extends AbstractPcmJavaCprTest {
 	@Override
 	protected List<ChangePropagationSpecification> getCPRs() {
 		var list = new ArrayList<ChangePropagationSpecification>();
-		list.add(new DummyPCMJavaCorrespondenceCPRsChangePropagationSpecification());
+		list.add(new DummyPCMJavaUserInteractionCPRsChangePropagationSpecification());
 		return list;
 	}
 
 	@Test
-	public void testJavaPCMCorrespondence() {
+	public void testJavaPCMUserInteraction_Manual() {
 		var javaResource = this.getJavaModelResourceFromJavaFacade();
 //		Assertions.assertEquals(0, javaResource.getContents().size());
 
-		final var pcmInterfaceName = PcmCPRTestConstants.correspondenceTestInterfaceName;
+		final var pcmInterfaceName = PcmCPRTestConstants.userInteractionTestInterfaceName;
 
 		var originalRepoRes = this.getResourceFromPcmFacade(repositoryFileName);
 
@@ -73,7 +75,9 @@ public class PcmJavaCprCorrespondenceTest extends AbstractPcmJavaCprTest {
 		this.removePlaceholderInJavaModelResource();
 		Assertions.assertEquals(1, javaResource.getContents().size());
 		var javaInterface = javaResource.getContents().get(0);
-		Assertions.assertEquals(pcmInterfaceName,
+		Assertions.assertEquals(
+				PcmUserInteractionManager.getDesiredFeatureValue(
+						javaInterface.eClass().getEStructuralFeature(CommonsPackage.NAMED_ELEMENT__NAME)),
 				javaInterface.eGet(javaInterface.eClass().getEStructuralFeature(CommonsPackage.NAMED_ELEMENT__NAME)));
 
 		// Ensure that correspondences are persistent
@@ -89,5 +93,13 @@ public class PcmJavaCprCorrespondenceTest extends AbstractPcmJavaCprTest {
 		var pcmCorrespondent = this.getPcmVsumFacade().getCorrespondenceView().getCorrespondingEObjects(persistedJavaI)
 				.iterator().next();
 		Assertions.assertEquals(persistedPcmI, pcmCorrespondent);
+	}
+
+	@Test
+	public void testJavaPCMUserInteraction_Intercepted() {
+		var mockedUserInput = "abc";
+		PcmUserInteractionManager
+				.addConflictResolutionStrategy(new DummyNameConflictResolutionStrategy(mockedUserInput));
+		testJavaPCMUserInteraction_Manual();
 	}
 }
