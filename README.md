@@ -2,6 +2,8 @@
 
 This repository provides the prototypical implementation for the change extraction, change propagation, incremental model update, and adaptive instrumentation of the [CIPM approach](https://sdq.kastel.kit.edu/wiki/CIPM).
 
+In particular, it contains data for an SSP paper under `data/state-based/`.
+
 # Setup
 
 This project requires Java 11 for all actions. In particular, if a script is executed in the following, it usually uses Maven to build projects. As a result, the `JAVA_HOME` environment variable must be set, pointing to a JDK 11 (the top-level JDK directory, not the `bin` folder so that Maven can find the Java executable in `%JAVA_HOME%\bin\java.exe`). Additionally, any script must be executed from the top-level directory of this repository (and not within the `scripts` directory).

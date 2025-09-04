@@ -1,0 +1,513 @@
+{
+  "cwa-server-3977e6-94bca6": {
+    "name": ["cwa-server-3977e6-94bca6"],
+    "stationarityTestResult": {
+      "pValue": [0.01],
+      "statistic": [-4.5844],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "iid": [true],
+    "n": [100],
+    "p25": [4270.25],
+    "median": [4361.5],
+    "p75": [4545.5],
+    "p99": [4816.75],
+    "iqr": [275.25],
+    "mad": [180.1359],
+    "qcd": [0.0312],
+    "normalTestResult": {
+      "pValue": [0.002],
+      "statistic": [0.9557],
+      "method": ["Shapiro-Wilk normality test"]
+    },
+    "lowerBound": [4313],
+    "upperBound": [4428],
+    "lowerError": [0.0111],
+    "upperError": [0.0152]
+  },
+  "cwa-server-7e1b61-7e1b61": {
+    "name": ["cwa-server-7e1b61-7e1b61"],
+    "stationarityTestResult": {
+      "pValue": [0.044],
+      "statistic": [-3.5188],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "stationarity": [false],
+    "kpss": [0.1]
+  },
+  "cwa-server-94bca6-3977e6": {
+    "name": ["cwa-server-94bca6-3977e6"],
+    "stationarityTestResult": {
+      "pValue": [0.01],
+      "statistic": [-4.6485],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "iid": [false]
+  },
+  "cwa-server-6e9702-6e9702": {
+    "name": ["cwa-server-6e9702-6e9702"],
+    "stationarityTestResult": {
+      "pValue": [0.0424],
+      "statistic": [-3.5367],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "stationarity": [false],
+    "kpss": [0.1]
+  },
+  "cwa-server-c22f93-33d1c9": {
+    "name": ["cwa-server-c22f93-33d1c9"],
+    "stationarityTestResult": {
+      "pValue": [0.01],
+      "statistic": [-4.808],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "iid": [false]
+  },
+  "teammates-48b67b-48b67b": {
+    "name": ["teammates-48b67b-48b67b"],
+    "stationarityTestResult": {
+      "pValue": [0.01],
+      "statistic": [-5.1133],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "iid": [false]
+  },
+  "cwa-server-3977e6-3977e6": {
+    "name": ["cwa-server-3977e6-3977e6"],
+    "stationarityTestResult": {
+      "pValue": [0.01],
+      "statistic": [-5.0897],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "iid": [false]
+  },
+  "cwa-server-206e8c-206e8c": {
+    "name": ["cwa-server-206e8c-206e8c"],
+    "stationarityTestResult": {
+      "pValue": [0.01],
+      "statistic": [-4.1068],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "iid": [true],
+    "n": [100],
+    "p25": [2070.75],
+    "median": [2145.5],
+    "p75": [2249.75],
+    "p99": [2487.02],
+    "iqr": [179],
+    "mad": [120.0906],
+    "qcd": [0.0414],
+    "normalTestResult": {
+      "pValue": [0],
+      "statistic": [0.9233],
+      "method": ["Shapiro-Wilk normality test"]
+    },
+    "lowerBound": [2108],
+    "upperBound": [2196],
+    "lowerError": [0.0175],
+    "upperError": [0.0235]
+  },
+  "teammates-48b67b-648425": {
+    "name": ["teammates-48b67b-648425"],
+    "stationarityTestResult": {
+      "pValue": [0.0111],
+      "statistic": [-4.0201],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "stationarity": [false],
+    "kpss": [0.1]
+  },
+  "teammates-83f518-f33d0b": {
+    "name": ["teammates-83f518-f33d0b"],
+    "stationarityTestResult": {
+      "pValue": [0.01],
+      "statistic": [-4.5754],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "iid": [true],
+    "n": [100],
+    "p25": [7883],
+    "median": [8073.5],
+    "p75": [8354],
+    "p99": [9056.71],
+    "iqr": [471],
+    "mad": [355.0827],
+    "qcd": [0.029],
+    "normalTestResult": {
+      "pValue": [0.0001],
+      "statistic": [0.9343],
+      "method": ["Shapiro-Wilk normality test"]
+    },
+    "lowerBound": [7983],
+    "upperBound": [8135],
+    "lowerError": [0.0112],
+    "upperError": [0.0076]
+  },
+  "teammates-ce4463-f33d0b": {
+    "name": ["teammates-ce4463-f33d0b"],
+    "stationarityTestResult": {
+      "pValue": [0.01],
+      "statistic": [-4.1933],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "iid": [true],
+    "n": [100],
+    "p25": [8175.5],
+    "median": [8313],
+    "p75": [8665.25],
+    "p99": [9093.57],
+    "iqr": [489.75],
+    "mad": [313.5699],
+    "qcd": [0.0291],
+    "normalTestResult": {
+      "pValue": [0],
+      "statistic": [0.9291],
+      "method": ["Shapiro-Wilk normality test"]
+    },
+    "lowerBound": [8263],
+    "upperBound": [8410],
+    "lowerError": [0.006],
+    "upperError": [0.0117]
+  },
+  "cwa-server-33d1c9-c22f93": {
+    "name": ["cwa-server-33d1c9-c22f93"],
+    "stationarityTestResult": {
+      "pValue": [0.01],
+      "statistic": [-4.1297],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "iid": [false]
+  },
+  "cwa-server-c22f93-6e9702": {
+    "name": ["cwa-server-c22f93-6e9702"],
+    "stationarityTestResult": {
+      "pValue": [0.0178],
+      "statistic": [-3.8804],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "stationarity": [false],
+    "kpss": [0.1]
+  },
+  "cwa-server-9323b8-33d1c9": {
+    "name": ["cwa-server-9323b8-33d1c9"],
+    "stationarityTestResult": {
+      "pValue": [0.01],
+      "statistic": [-4.6344],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "iid": [false]
+  },
+  "cwa-server-c22f93-c22f93": {
+    "name": ["cwa-server-c22f93-c22f93"],
+    "stationarityTestResult": {
+      "pValue": [0.0152],
+      "statistic": [-3.9353],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "stationarity": [false],
+    "kpss": [0.1]
+  },
+  "cwa-server-206e8c-3977e6": {
+    "name": ["cwa-server-206e8c-3977e6"],
+    "stationarityTestResult": {
+      "pValue": [0.01],
+      "statistic": [-4.6622],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "iid": [true],
+    "n": [100],
+    "p25": [4261.75],
+    "median": [4399.5],
+    "p75": [4629.25],
+    "p99": [4907.33],
+    "iqr": [367.5],
+    "mad": [251.3007],
+    "qcd": [0.0413],
+    "normalTestResult": {
+      "pValue": [0.0001],
+      "statistic": [0.9358],
+      "method": ["Shapiro-Wilk normality test"]
+    },
+    "lowerBound": [4322],
+    "upperBound": [4472],
+    "lowerError": [0.0176],
+    "upperError": [0.0165]
+  },
+  "teammates-648425-648425": {
+    "name": ["teammates-648425-648425"],
+    "stationarityTestResult": {
+      "pValue": [0.01],
+      "statistic": [-4.959],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "iid": [true],
+    "n": [100],
+    "p25": [3518.25],
+    "median": [3629],
+    "p75": [3763.25],
+    "p99": [4181.95],
+    "iqr": [245],
+    "mad": [171.2403],
+    "qcd": [0.0336],
+    "normalTestResult": {
+      "pValue": [8.662e-09],
+      "statistic": [0.8463],
+      "method": ["Shapiro-Wilk normality test"]
+    },
+    "lowerBound": [3604],
+    "upperBound": [3658],
+    "lowerError": [0.0069],
+    "upperError": [0.008]
+  },
+  "teammates-ce4463-ce4463": {
+    "name": ["teammates-ce4463-ce4463"],
+    "stationarityTestResult": {
+      "pValue": [0.01],
+      "statistic": [-4.5948],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "iid": [false]
+  },
+  "teammates-648425-48b67b": {
+    "name": ["teammates-648425-48b67b"],
+    "stationarityTestResult": {
+      "pValue": [0.01],
+      "statistic": [-4.8128],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "iid": [true],
+    "n": [100],
+    "p25": [7857],
+    "median": [8064.5],
+    "p75": [8405.75],
+    "p99": [9026.62],
+    "iqr": [548.75],
+    "mad": [369.9087],
+    "qcd": [0.0337],
+    "normalTestResult": {
+      "pValue": [8.6803e-09],
+      "statistic": [0.8463],
+      "method": ["Shapiro-Wilk normality test"]
+    },
+    "lowerBound": [7953],
+    "upperBound": [8194],
+    "lowerError": [0.0138],
+    "upperError": [0.0161]
+  },
+  "cwa-server-7e1b61-6e9702": {
+    "name": ["cwa-server-7e1b61-6e9702"],
+    "stationarityTestResult": {
+      "pValue": [0.01],
+      "statistic": [-4.8089],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "iid": [false]
+  },
+  "cwa-server-206e8c-9323b8": {
+    "name": ["cwa-server-206e8c-9323b8"],
+    "stationarityTestResult": {
+      "pValue": [0.0326],
+      "statistic": [-3.6456],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "stationarity": [false],
+    "kpss": [0.1]
+  },
+  "cwa-server-94bca6-94bca6": {
+    "name": ["cwa-server-94bca6-94bca6"],
+    "stationarityTestResult": {
+      "pValue": [0.0172],
+      "statistic": [-3.8922],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "stationarity": [false],
+    "kpss": [0.1]
+  },
+  "teammates-83f518-83f518": {
+    "name": ["teammates-83f518-83f518"],
+    "stationarityTestResult": {
+      "pValue": [0.01],
+      "statistic": [-4.1532],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "iid": [false]
+  },
+  "teammates-f33d0b-ce4463": {
+    "name": ["teammates-f33d0b-ce4463"],
+    "stationarityTestResult": {
+      "pValue": [0.01],
+      "statistic": [-4.648],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "iid": [false]
+  },
+  "cwa-server-6e9702-c22f93": {
+    "name": ["cwa-server-6e9702-c22f93"],
+    "stationarityTestResult": {
+      "pValue": [0.01],
+      "statistic": [-5.4029],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "iid": [false]
+  },
+  "teammates-48b67b-83f518": {
+    "name": ["teammates-48b67b-83f518"],
+    "stationarityTestResult": {
+      "pValue": [0.01],
+      "statistic": [-4.1092],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "iid": [false]
+  },
+  "teammates-f33d0b-83f518": {
+    "name": ["teammates-f33d0b-83f518"],
+    "stationarityTestResult": {
+      "pValue": [0.01],
+      "statistic": [-5.139],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "iid": [false]
+  },
+  "teammates-83f518-48b67b": {
+    "name": ["teammates-83f518-48b67b"],
+    "stationarityTestResult": {
+      "pValue": [0.01],
+      "statistic": [-5.3688],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "iid": [false]
+  },
+  "cwa-server-6e9702-7e1b61": {
+    "name": ["cwa-server-6e9702-7e1b61"],
+    "stationarityTestResult": {
+      "pValue": [0.01],
+      "statistic": [-4.2609],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "iid": [false]
+  },
+  "cwa-server-9323b8-206e8c": {
+    "name": ["cwa-server-9323b8-206e8c"],
+    "stationarityTestResult": {
+      "pValue": [0.0578],
+      "statistic": [-3.4041],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "stationarity": [false],
+    "kpss": [0.1]
+  },
+  "cwa-server-33d1c9-9323b8": {
+    "name": ["cwa-server-33d1c9-9323b8"],
+    "stationarityTestResult": {
+      "pValue": [0.01],
+      "statistic": [-4.1305],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "iid": [true],
+    "n": [100],
+    "p25": [4225.5],
+    "median": [4367.5],
+    "p75": [4501.75],
+    "p99": [5003.33],
+    "iqr": [276.25],
+    "mad": [213.4944],
+    "qcd": [0.0317],
+    "normalTestResult": {
+      "pValue": [0.0007],
+      "statistic": [0.949],
+      "method": ["Shapiro-Wilk normality test"]
+    },
+    "lowerBound": [4281],
+    "upperBound": [4421],
+    "lowerError": [0.0198],
+    "upperError": [0.0122]
+  },
+  "cwa-server-3977e6-206e8c": {
+    "name": ["cwa-server-3977e6-206e8c"],
+    "stationarityTestResult": {
+      "pValue": [0.01],
+      "statistic": [-4.7305],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "iid": [false]
+  },
+  "cwa-server-9323b8-9323b8": {
+    "name": ["cwa-server-9323b8-9323b8"],
+    "stationarityTestResult": {
+      "pValue": [0.01],
+      "statistic": [-4.2065],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "iid": [false]
+  },
+  "teammates-f33d0b-f33d0b": {
+    "name": ["teammates-f33d0b-f33d0b"],
+    "stationarityTestResult": {
+      "pValue": [0.01],
+      "statistic": [-4.1006],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "iid": [false]
+  },
+  "cwa-server-33d1c9-33d1c9": {
+    "name": ["cwa-server-33d1c9-33d1c9"],
+    "stationarityTestResult": {
+      "pValue": [0.01],
+      "statistic": [-4.8564],
+      "parameter": [4],
+      "method": ["Augmented Dickey-Fuller Test"]
+    },
+    "iid": [true],
+    "n": [100],
+    "p25": [2003.5],
+    "median": [2052.5],
+    "p75": [2164],
+    "p99": [2310.13],
+    "iqr": [160.5],
+    "mad": [97.1103],
+    "qcd": [0.0385],
+    "normalTestResult": {
+      "pValue": [0],
+      "statistic": [0.9253],
+      "method": ["Shapiro-Wilk normality test"]
+    },
+    "lowerBound": [2035],
+    "upperBound": [2109],
+    "lowerError": [0.0085],
+    "upperError": [0.0275]
+  }
+}
