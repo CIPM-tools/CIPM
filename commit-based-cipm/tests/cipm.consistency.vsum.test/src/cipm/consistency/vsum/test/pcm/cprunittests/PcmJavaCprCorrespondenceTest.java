@@ -14,7 +14,7 @@ public class PcmJavaCprCorrespondenceTest extends AbstractPcmJavaCprTest {
 		var javaResource = this.getJavaModelResourceFromJavaFacade();
 //		Assertions.assertEquals(0, javaResource.getContents().size());
 
-		final var pcmInterfaceName = "pcmifc";
+		final var pcmInterfaceName = PcmCPRTestConstants.correspondenceTestInterfaceName;
 
 		var originalRepoRes = this.getResourceFromPcmFacade(repositoryFileName);
 
