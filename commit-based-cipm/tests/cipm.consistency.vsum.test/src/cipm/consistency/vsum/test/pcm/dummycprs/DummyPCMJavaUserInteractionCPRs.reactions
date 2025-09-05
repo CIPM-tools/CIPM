@@ -3,6 +3,10 @@ import cipm.consistency.vsum.test.pcm.cprunittests.PcmCPRTestConstants
 import cipm.consistency.vsum.test.pcm.userinteraction.PcmUserInteractionManager
 import cipm.consistency.vsum.test.pcm.userinteraction.NameUserInteraction
 import org.emftext.language.java.classifiers.Classifier
+import cipm.consistency.vsum.test.pcm.userinteraction.DistributionUserInteraction
+import java.util.ArrayList
+import java.util.List
+import org.eclipse.emf.ecore.EObject
 
 import "http://www.emftext.org/java" as java
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
@@ -55,8 +59,24 @@ routine removeUserInteractionTestComponent(pcm::BasicComponent cmp) {
 		check cmp.entityName == PcmCPRTestConstants.componentContentDistributionTestDeletedComponentName
 	}
 	update {
-		val javaCorrespondents = getCorrespondingElements(cmp, Classifier, null, "")
-		if(javaCorrespondents.empty) return
+		val correspondents = getCorrespondingElements(cmp, EObject, null, "")
+		val javaCorrespondents = new ArrayList<EObject>()
+		for (obj : correspondents) {
+			javaCorrespondents.add(obj)
+		}
 
+		val possibleDistributionTargets = new ArrayList<EObject>(
+			cmp.repository__RepositoryComponent.components__Repository)
+		possibleDistributionTargets.remove(cmp)
+
+		PcmUserInteractionManager.addUserInteraction(
+			new DistributionUserInteraction(cmp, new ArrayList(javaCorrespondents), possibleDistributionTargets,
+				correspondenceModel)
+		)
+		for (obj : correspondents) {
+			val cor = PcmUserInteractionManager.getDesiredCorrespondence(obj, "", true)
+			// TODO Fix
+			correspondenceModel.addCorrespondenceBetween(obj, cor.element2, "")
+		}
 	}
 }

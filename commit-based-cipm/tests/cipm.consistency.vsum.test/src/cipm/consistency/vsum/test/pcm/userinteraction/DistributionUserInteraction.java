@@ -33,19 +33,19 @@ public class DistributionUserInteraction extends AbstractUserInteraction {
 
 		for (var contentToDistribute : this.correspondingContentsToDistribute) {
 			if (this.isDesiredCorrespondencePresent(contentToDistribute, correspondenceTag)) {
-				if (this.correspondenceModel.getCorrespondingEObjects(contentToDistribute, correspondenceTag).stream()
-						.noneMatch((otherSide) -> possibleDistributionTargets.contains(otherSide))) {
-					var cor = this.retrieveDesiredCorrespondenceIfPresent(contentToDistribute, correspondenceTag);
-					var os = cor.getElement1() == contentToDistribute ? cor.getElement2() : cor.getElement1();
-					this.correspondenceModel.addCorrespondenceBetween(contentToDistribute, os, correspondenceTag);
-				}
+//				if (this.correspondenceModel.getCorrespondingEObjects(contentToDistribute, correspondenceTag).stream()
+//						.noneMatch((otherSide) -> possibleDistributionTargets.contains(otherSide))) {
+//					var cor = this.retrieveDesiredCorrespondenceIfPresent(contentToDistribute, correspondenceTag);
+//					var os = cor.getElement1() == contentToDistribute ? cor.getElement2() : cor.getElement1();
+//					this.correspondenceModel.addCorrespondenceBetween(contentToDistribute, os, correspondenceTag);
+//				}
 				continue;
 			}
 			var choice = UserInteractionFactory.instance.createDialogUserInteractor().getSingleSelectionDialogBuilder()
 					.message(String.format("Where should %s be moved?", contentToDistribute)).choices(choices)
 					.startInteraction();
 			var otherSide = possibleDistributionTargets.get(choice);
-			this.correspondenceModel.addCorrespondenceBetween(contentToDistribute, otherSide, correspondenceTag);
+//			this.correspondenceModel.addCorrespondenceBetween(contentToDistribute, otherSide, correspondenceTag);
 			this.reportDesiredCorrespondence(contentToDistribute, otherSide, correspondenceTag);
 		}
 	}
