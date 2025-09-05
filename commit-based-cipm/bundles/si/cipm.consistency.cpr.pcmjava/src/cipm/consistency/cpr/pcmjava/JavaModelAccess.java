@@ -73,7 +73,10 @@ public final class JavaModelAccess {
 	}
 
 	public static void setJavaModel(Resource javaModelResource) {
-		javaModel = javaModelResource;
+		if (javaModel != null) {
+			unloadJavaModel();
+		}
+		loadJavaModel(javaModelResource.getURI());
 	}
 
 	/**

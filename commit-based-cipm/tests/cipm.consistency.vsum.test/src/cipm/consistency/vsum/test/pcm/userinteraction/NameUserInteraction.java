@@ -1,6 +1,12 @@
 package cipm.consistency.vsum.test.pcm.userinteraction;
 
+import java.util.List;
+import java.util.Set;
+
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.net4j.util.collection.Pair;
+import org.eclipse.net4j.util.collection.Triplet;
 import org.emftext.language.java.commons.CommonsPackage;
 import org.emftext.language.java.commons.NamedElement;
 
@@ -14,7 +20,6 @@ public class NameUserInteraction extends AbstractUserInteraction {
 		super();
 		this.toBeNamed = toBeNamed;
 		this.nameField = this.toBeNamed.eClass().getEStructuralFeature(CommonsPackage.NAMED_ELEMENT__NAME);
-		this.getModifiableDesiredFeaturesList().add(this.nameField);
 	}
 
 	@Override
@@ -38,5 +43,29 @@ public class NameUserInteraction extends AbstractUserInteraction {
 
 	private boolean checkNameValue(Object name) {
 		return name instanceof String && !((String) name).isBlank();
+	}
+
+	@Override
+	public boolean hasDesiredFeature(EStructuralFeature feat) {
+		return this.nameField == feat;
+	}
+
+	@Override
+	public List<EStructuralFeature> getDesiredFeatures() {
+		return List.of(this.nameField);
+	}
+
+	@Override
+	public Set<Pair<EObject, String>> getDesiredCorrespondences() {
+		return Set.of();
+	}
+
+	@Override
+	public void getDesiredCorrespondenceChange(EObject knownSide, EObject otherSide, String correspondenceTag) {
+	}
+
+	@Override
+	public boolean hasDesiredCorrespondence(EObject knownSide, String correspondenceTag) {
+		return false;
 	}
 }

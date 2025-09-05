@@ -4,13 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emftext.language.java.classifiers.ClassifiersFactory;
 import org.emftext.language.java.commons.CommonsPackage;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.palladiosimulator.pcm.repository.BasicComponent;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryFactory;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
 
+import cipm.consistency.cpr.pcmjava.JavaModelAccess;
 import cipm.consistency.vsum.test.pcm.userinteraction.DummyNameConflictResolutionStrategy;
 import cipm.consistency.vsum.test.pcm.userinteraction.PcmUserInteractionManager;
 import mir.reactions.dummyPCMJavaUserInteractionCPRs.DummyPCMJavaUserInteractionCPRsChangePropagationSpecification;
@@ -24,6 +28,7 @@ public class PcmJavaCprUserInteractionTest extends AbstractPcmJavaCprTest {
 		return list;
 	}
 
+	@Disabled("Enable if manual user interaction is to be tested")
 	@Test
 	public void testJavaPCMUserInteraction_Manual() {
 		var javaResource = this.getJavaModelResourceFromJavaFacade();
@@ -77,7 +82,7 @@ public class PcmJavaCprUserInteractionTest extends AbstractPcmJavaCprTest {
 		var javaInterface = javaResource.getContents().get(0);
 		Assertions.assertEquals(
 				PcmUserInteractionManager.getDesiredFeatureValue(
-						javaInterface.eClass().getEStructuralFeature(CommonsPackage.NAMED_ELEMENT__NAME)),
+						javaInterface.eClass().getEStructuralFeature(CommonsPackage.NAMED_ELEMENT__NAME), true),
 				javaInterface.eGet(javaInterface.eClass().getEStructuralFeature(CommonsPackage.NAMED_ELEMENT__NAME)));
 
 		// Ensure that correspondences are persistent
@@ -101,5 +106,71 @@ public class PcmJavaCprUserInteractionTest extends AbstractPcmJavaCprTest {
 		PcmUserInteractionManager
 				.addConflictResolutionStrategy(new DummyNameConflictResolutionStrategy(mockedUserInput));
 		testJavaPCMUserInteraction_Manual();
+	}
+
+	@Test
+	public void testJavaPCMUserInteraction_CmpContentDistribution() {
+		// Setup of PCM
+		var pcmRes = this.getResourceFromPcmFacade(repositoryFileName);
+
+		var cmpToBeDeleted = RepositoryFactory.eINSTANCE.createBasicComponent();
+		cmpToBeDeleted.setEntityName(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentName);
+		pcmRes.getContents().add(cmpToBeDeleted);
+
+		var cmpToPersistOne = RepositoryFactory.eINSTANCE.createBasicComponent();
+		cmpToPersistOne.setEntityName(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentOneName);
+		pcmRes.getContents().add(cmpToPersistOne);
+
+		var cmpToPersistTwo = RepositoryFactory.eINSTANCE.createBasicComponent();
+		cmpToPersistTwo.setEntityName(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentTwoName);
+		pcmRes.getContents().add(cmpToPersistTwo);
+		this.getPcmFacade().saveToDisk();
+		this.getPcmFacade().reload();
+
+		pcmRes = this.getResourceFromPcmFacade(repositoryFileName);
+		cmpToBeDeleted = (BasicComponent) pcmRes.getContents().get(0);
+		Assertions.assertEquals(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentName,
+				cmpToBeDeleted.getEntityName());
+		cmpToPersistOne = (BasicComponent) pcmRes.getContents().get(1);
+		Assertions.assertEquals(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentOneName,
+				cmpToPersistOne.getEntityName());
+		cmpToPersistTwo = (BasicComponent) pcmRes.getContents().get(2);
+		Assertions.assertEquals(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentTwoName,
+				cmpToPersistTwo.getEntityName());
+
+		//
+		// Setup of Java
+		//
+		var javaResource = this.getJavaModelResourceFromJavaFacade();
+		var cls1 = ClassifiersFactory.eINSTANCE.createClass();
+		cls1.setName(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentClassOneName);
+		javaResource.getContents().add(cls1);
+
+		var cls2 = ClassifiersFactory.eINSTANCE.createClass();
+		cls2.setName(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentClassTwoName);
+		javaResource.getContents().add(cls2);
+		this.getJavaFacade().saveAndReload();
+
+		javaResource = this.getJavaModelResourceFromJavaFacade();
+		cls1 = (org.emftext.language.java.classifiers.Class) javaResource.getContents().get(0);
+		Assertions.assertEquals(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentClassOneName,
+				cls1.getName());
+		cls2 = (org.emftext.language.java.classifiers.Class) javaResource.getContents().get(1);
+		Assertions.assertEquals(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentClassTwoName,
+				cls2.getName());
+
+		JavaModelAccess.setJavaModel(javaResource);
+		
+		//
+		// Setup of correspondences
+		//
+		this.getPcmVsumFacade().getCorrespondenceView().addCorrespondenceBetween(cls1, cmpToBeDeleted, "");
+		this.getPcmVsumFacade().getCorrespondenceView().addCorrespondenceBetween(cls2, cmpToBeDeleted, "");
+		
+		//
+		// Actual test
+		//
+		
+		
 	}
 }

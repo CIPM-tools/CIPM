@@ -127,6 +127,22 @@ public class JavaModelFacade implements CodeModelFacade {
 		return copyPath;
 	}
 
+	public void saveToDisk() {
+		if (this.currentResource != null) {
+			try {
+				this.currentResource.save(null);
+			} catch (IOException e) {
+				LOGGER.error("Could not save current resource: " + e.getMessage());
+				throw new IllegalStateException(e);
+			}
+		}
+	}
+
+	public void saveAndReload() {
+		this.saveToDisk();
+		this.reload();
+	}
+
 	@Override
 	public void reload() {
 		this.currentResource.unload();
