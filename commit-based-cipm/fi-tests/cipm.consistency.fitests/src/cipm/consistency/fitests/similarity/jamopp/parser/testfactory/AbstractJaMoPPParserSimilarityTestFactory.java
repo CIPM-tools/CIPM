@@ -9,6 +9,7 @@ import cipm.consistency.fitests.similarity.jamopp.parser.resultprovider.IExpecte
 import cipm.consistency.fitests.similarity.jamopp.parser.resultprovider.ResourceReferenceEqualitySimilarityResultProvider;
 import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.GeneralTimeMeasurementTag;
 import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.ParserTestTimeMeasurementKeyBuilder;
+import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.ParserTestTimeMeasurementKeyUtil;
 import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.ParserTestTimeMeasurer;
 
 /**
@@ -118,19 +119,23 @@ public abstract class AbstractJaMoPPParserSimilarityTestFactory {
 				this.getExpectedSimilarityResultProvider().getClass().getSimpleName());
 
 		if (lhsModelResource != null) {
-			keyBuilder.withParsedLeftModelLocation(lhsModelResource.getURI().toString());
+			keyBuilder.withParsedLeftModelLocation(
+					ParserTestTimeMeasurementKeyUtil.getAdaptedURIString(lhsModelResource.getURI()));
 		}
 
 		if (lhsModelSourceFileDirPath != null) {
-			keyBuilder.withOriginalLeftModelLocation(lhsModelSourceFileDirPath.toString());
+			keyBuilder.withOriginalLeftModelLocation(
+					ParserTestTimeMeasurementKeyUtil.getAdaptedPathString(lhsModelSourceFileDirPath));
 		}
 
 		if (rhsModelResource != null) {
-			keyBuilder.withParsedRightModelLocation(rhsModelResource.getURI().toString());
+			keyBuilder.withParsedRightModelLocation(
+					ParserTestTimeMeasurementKeyUtil.getAdaptedURIString(rhsModelResource.getURI()));
 		}
 
 		if (rhsModelSourceFileDirPath != null) {
-			keyBuilder.withOriginalRightModelLocation(rhsModelSourceFileDirPath.toString());
+			keyBuilder.withOriginalRightModelLocation(
+					ParserTestTimeMeasurementKeyUtil.getAdaptedPathString(rhsModelSourceFileDirPath));
 		}
 
 		return keyBuilder;

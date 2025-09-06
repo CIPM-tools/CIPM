@@ -15,6 +15,7 @@ import cipm.consistency.fitests.similarity.jamopp.parser.testfactory.ReflexiveSy
 import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.GeneralTimeMeasurementTag;
 import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.ITimeMeasurementTag;
 import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.ParserTestTimeMeasurementKeyBuilder;
+import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.ParserTestTimeMeasurementKeyUtil;
 import cipm.consistency.fitests.similarity.jamopp.parser.JaMoPPModelResourceWrapper;
 
 import java.io.BufferedReader;
@@ -68,7 +69,7 @@ public abstract class AbstractJaMoPPParserRepoTest extends AbstractJaMoPPParserS
 
 	/**
 	 * The pattern of "gradle-wrapper.jar" file path, which should be excluded when
-	 * parsing model resources to avoid IOExceptions.
+	 * parsing Java model resources to avoid IOExceptions.
 	 */
 	private static final String gradleWrapperJarPathPattern = ".*?/gradle-wrapper\\.jar";
 
@@ -225,7 +226,7 @@ public abstract class AbstractJaMoPPParserRepoTest extends AbstractJaMoPPParserS
 
 	/**
 	 * Prepares model resources and expected similarity results needed by tests and
-	 * caches them. Must be executed before all tests.
+	 * caches them. Must be executed before dynamic tests.
 	 * 
 	 * @return The cached model resources parsed from {@link #getCommitIDs()}
 	 * @see {@link #getCommitIDs()}
@@ -291,7 +292,8 @@ public abstract class AbstractJaMoPPParserRepoTest extends AbstractJaMoPPParserS
 				var cachedCommitURI = this.getTestFileLayout().getModelResourceSaveURIForCommit(cID);
 				var res = new JaMoPPModelResourceWrapper();
 				this.startTimeMeasurement(
-						getTimeMeasurementKeyBuilder().withParsedModelLocation(cachedCommitURI.toString()),
+						getTimeMeasurementKeyBuilder().withParsedModelLocation(
+								ParserTestTimeMeasurementKeyUtil.getAdaptedURIString(cachedCommitURI)),
 						GeneralTimeMeasurementTag.LOAD_MODEL_RESOURCE);
 				res.loadModelResource(cachedCommitURI);
 				this.stopTimeMeasurement();
@@ -557,8 +559,8 @@ public abstract class AbstractJaMoPPParserRepoTest extends AbstractJaMoPPParserS
 	}
 
 	/**
-	 * Extends the super method by preparing repository clones before generating
-	 * dynamic tests. <br>
+	 * Extends the super method by parsing and caching model resources from the
+	 * local repository clone before generating dynamic tests. <br>
 	 * <br>
 	 * {@inheritDoc}
 	 */
