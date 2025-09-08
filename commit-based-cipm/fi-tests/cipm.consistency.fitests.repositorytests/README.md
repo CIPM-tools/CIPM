@@ -1,0 +1,3 @@
+Tests under cipm.consistency.fitests.repositorytests package and its sub-packages are referred to as repository parser tests. They are a variant of parser tests, which consider Java code repositories (only GIT repositories at the time of writing this file) and parse EMF-based Java model Resources from them using JaMoPP. To this end, certain commits are checked out and then Java model Resources are parsed for each considered commit. To estimate expected similarity results in tests during run time, GIT diff patches between commits are analyzed for code changes.
+
+Refer to the README of [cipm.consistency.fitests](../cipm.consistency.fitests/README.md) for related tests and terminology.
