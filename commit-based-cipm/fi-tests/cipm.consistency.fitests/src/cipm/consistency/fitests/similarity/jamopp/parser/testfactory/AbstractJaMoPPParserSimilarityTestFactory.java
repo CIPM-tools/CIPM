@@ -119,22 +119,22 @@ public abstract class AbstractJaMoPPParserSimilarityTestFactory {
 				this.getExpectedSimilarityResultProvider().getClass().getSimpleName());
 
 		if (lhsModelResource != null) {
-			keyBuilder.withParsedLeftModelLocation(
+			keyBuilder.withLeftModelResourceLocation(
 					ParserTestTimeMeasurementKeyUtil.getAdaptedURIString(lhsModelResource.getURI()));
 		}
 
 		if (lhsModelSourceFileDirPath != null) {
-			keyBuilder.withOriginalLeftModelLocation(
+			keyBuilder.withLeftModelSourceFileDirLocation(
 					ParserTestTimeMeasurementKeyUtil.getAdaptedPathString(lhsModelSourceFileDirPath));
 		}
 
 		if (rhsModelResource != null) {
-			keyBuilder.withParsedRightModelLocation(
+			keyBuilder.withRightModelResourceLocation(
 					ParserTestTimeMeasurementKeyUtil.getAdaptedURIString(rhsModelResource.getURI()));
 		}
 
 		if (rhsModelSourceFileDirPath != null) {
-			keyBuilder.withOriginalRightModelLocation(
+			keyBuilder.withRightModelSourceFileDirLocation(
 					ParserTestTimeMeasurementKeyUtil.getAdaptedPathString(rhsModelSourceFileDirPath));
 		}
 

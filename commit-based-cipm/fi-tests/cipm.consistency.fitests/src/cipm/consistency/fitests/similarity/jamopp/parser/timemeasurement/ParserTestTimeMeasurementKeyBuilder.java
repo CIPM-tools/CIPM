@@ -80,78 +80,61 @@ public class ParserTestTimeMeasurementKeyBuilder {
 	}
 
 	/**
-	 * The location, under which all original model files can be found. These files
-	 * were parsed to create the corresponding model resource. The location can be
-	 * any form of String that can be used to navigate (ex: Path.toString() or
-	 * URI.toString()). <br>
+	 * The location of the model source file directory, under which all model source
+	 * files can be found. The location can be any form of String that can be used
+	 * to navigate (ex: Path.toString() or URI.toString()). <br>
 	 * <br>
 	 * Use this, if only one model is considered.
 	 */
-	public ParserTestTimeMeasurementKeyBuilder withOriginalModelLocation(String originalModelLocation) {
-		this.keyMap.put(ParserTestTimeMeasurerKeyType.ORIGINAL_MODEL_LOCATION, originalModelLocation);
+	public ParserTestTimeMeasurementKeyBuilder withModelSourceFileDirLocation(String modelSourceFileDirLocation) {
+		this.keyMap.put(ParserTestTimeMeasurerKeyType.MODEL_SOURCE_FILE_DIR_LOCATION, modelSourceFileDirLocation);
 		return this;
 	}
 
 	/**
-	 * The location, under which the parsed model resource can be found. The
-	 * location can be any form of String that can be used to navigate (ex:
-	 * Path.toString() or URI.toString()). <br>
+	 * The location of the model resource. The location can be any form of String
+	 * that can be used to navigate (ex: Path.toString() or URI.toString()). <br>
 	 * <br>
 	 * Use this, if only one model is considered.
 	 */
-	public ParserTestTimeMeasurementKeyBuilder withParsedModelLocation(String parsedModelLocation) {
-		this.keyMap.put(ParserTestTimeMeasurerKeyType.PARSED_MODEL_LOCATION, parsedModelLocation);
+	public ParserTestTimeMeasurementKeyBuilder withModelResourceLocation(String modelResourceLocation) {
+		this.keyMap.put(ParserTestTimeMeasurerKeyType.MODEL_RESOURCE_LOCATION, modelResourceLocation);
 		return this;
 	}
 
 	/**
-	 * The path, under which all (left hand side) original model files can be found.
-	 * These files were parsed to create the corresponding model resource. The
-	 * location can be any form of String that can be used to navigate (ex:
-	 * Path.toString() or URI.toString()). <br>
-	 * <br>
-	 * Use this, if two models are considered.
+	 * {@link #withModelSourceFileDirLocation(String)} for the left hand side model
+	 * for cases, where two models are considered.
 	 */
-	public ParserTestTimeMeasurementKeyBuilder withOriginalLeftModelLocation(String originalModelLocation) {
-		this.keyMap.put(ParserTestTimeMeasurerKeyType.ORIGINAL_LEFT_MODEL_LOCATION, originalModelLocation);
+	public ParserTestTimeMeasurementKeyBuilder withLeftModelSourceFileDirLocation(String modelSourceFileDirLocation) {
+		this.keyMap.put(ParserTestTimeMeasurerKeyType.LEFT_MODEL_SOURCE_FILE_DIR_LOCATION, modelSourceFileDirLocation);
 		return this;
 	}
 
 	/**
-	 * The location, under which the (left hand side) parsed model resource can be
-	 * found. The location can be any form of String that can be used to navigate
-	 * (ex: Path.toString() or URI.toString()). <br>
-	 * <br>
-	 * Use this, if two models are considered.
+	 * {@link #withModelSourceFileDirLocation(String)} for the right hand side model
+	 * for cases, where two models are considered.
 	 */
-	public ParserTestTimeMeasurementKeyBuilder withParsedLeftModelLocation(String parsedModelLocation) {
-		this.keyMap.put(ParserTestTimeMeasurerKeyType.PARSED_LEFT_MODEL_LOCATION, parsedModelLocation);
+	public ParserTestTimeMeasurementKeyBuilder withRightModelSourceFileDirLocation(String modelSourceFileDirLocation) {
+		this.keyMap.put(ParserTestTimeMeasurerKeyType.RIGHT_MODEL_SOURCE_FILE_DIR_LOCATION, modelSourceFileDirLocation);
 		return this;
 	}
 
 	/**
-	 * The path, under which all (right hand side) original model files can be
-	 * found. These files were parsed to create the corresponding model resource.The
-	 * location can be any form of String that can be used to navigate (ex:
-	 * Path.toString() or URI.toString()). <br>
-	 * <br>
-	 * <br>
-	 * Use this, if two models are considered.
+	 * {@link #withModelResourceLocation(String)} for the left hand side model for
+	 * cases, where two models are considered.
 	 */
-	public ParserTestTimeMeasurementKeyBuilder withOriginalRightModelLocation(String originalModelLocation) {
-		this.keyMap.put(ParserTestTimeMeasurerKeyType.ORIGINAL_RIGHT_MODEL_LOCATION, originalModelLocation);
+	public ParserTestTimeMeasurementKeyBuilder withLeftModelResourceLocation(String modelResourceLocation) {
+		this.keyMap.put(ParserTestTimeMeasurerKeyType.LEFT_MODEL_RESOURCE_LOCATION, modelResourceLocation);
 		return this;
 	}
 
 	/**
-	 * The location, under which the (right hand side) parsed model resource can be
-	 * found. The location can be any form of String that can be used to navigate
-	 * (ex: Path.toString() or URI.toString()). <br>
-	 * <br>
-	 * Use this, if two models are considered.
+	 * {@link #withModelResourceLocation(String)} for the right hand side model for
+	 * cases, where two models are considered.
 	 */
-	public ParserTestTimeMeasurementKeyBuilder withParsedRightModelLocation(String parsedModelLocation) {
-		this.keyMap.put(ParserTestTimeMeasurerKeyType.PARSED_RIGHT_MODEL_LOCATION, parsedModelLocation);
+	public ParserTestTimeMeasurementKeyBuilder withRightModelResourceLocation(String modelResourceLocation) {
+		this.keyMap.put(ParserTestTimeMeasurerKeyType.RIGHT_MODEL_RESOURCE_LOCATION, modelResourceLocation);
 		return this;
 	}
 
@@ -184,7 +167,8 @@ public class ParserTestTimeMeasurementKeyBuilder {
 	}
 
 	/**
-	 * The name of the repository that is considered in the test class. <br>
+	 * The name of the repository that is considered in the test class, from which
+	 * model resource was parsed. <br>
 	 * <br>
 	 * Use this, if only one repository/commit is considered.
 	 */
@@ -214,9 +198,8 @@ public class ParserTestTimeMeasurementKeyBuilder {
 	}
 
 	/**
-	 * The name of the (left-hand-side) repository. <br>
-	 * <br>
-	 * Use this, if two repositories/commits are considered.
+	 * {@link #withRepositoryName(String)} for the repository of the left hand side
+	 * model for cases, where two repositories/commits are considered.
 	 */
 	public ParserTestTimeMeasurementKeyBuilder withLeftRepositoryName(String leftRepositoryName) {
 		this.keyMap.put(ParserTestTimeMeasurerKeyType.LEFT_REPOSITORY_NAME, leftRepositoryName);
@@ -224,19 +207,8 @@ public class ParserTestTimeMeasurementKeyBuilder {
 	}
 
 	/**
-	 * The URI to the (left-hand-side) repository. <br>
-	 * <br>
-	 * Use this, if two repositories/commits are considered.
-	 */
-	public ParserTestTimeMeasurementKeyBuilder withLeftRepositoryURI(String leftRepositoryURI) {
-		this.keyMap.put(ParserTestTimeMeasurerKeyType.LEFT_REPOSITORY_URI, leftRepositoryURI);
-		return this;
-	}
-
-	/**
-	 * The name of the (right-hand-side) repository. <br>
-	 * <br>
-	 * Use this, if two repositories/commits are considered.
+	 * {@link #withRepositoryName(String)} for the repository of the right hand side
+	 * model for cases, where two repositories/commits are considered.
 	 */
 	public ParserTestTimeMeasurementKeyBuilder withRightRepositoryName(String rightRepositoryName) {
 		this.keyMap.put(ParserTestTimeMeasurerKeyType.RIGHT_REPOSITORY_NAME, rightRepositoryName);
@@ -244,9 +216,17 @@ public class ParserTestTimeMeasurementKeyBuilder {
 	}
 
 	/**
-	 * The URI to the (right-hand-side) repository. <br>
-	 * <br>
-	 * Use this, if two repositories/commits are considered.
+	 * {@link #withRepositoryURI(String)} for the repository URI of the left hand
+	 * side model for cases, where two repositories/commits are considered.
+	 */
+	public ParserTestTimeMeasurementKeyBuilder withLeftRepositoryURI(String leftRepositoryURI) {
+		this.keyMap.put(ParserTestTimeMeasurerKeyType.LEFT_REPOSITORY_URI, leftRepositoryURI);
+		return this;
+	}
+
+	/**
+	 * {@link #withRepositoryURI(String)} for the repository URI of the right hand
+	 * side model for cases, where two repositories/commits are considered.
 	 */
 	public ParserTestTimeMeasurementKeyBuilder withRightRepositoryURI(String rightRepositoryURI) {
 		this.keyMap.put(ParserTestTimeMeasurerKeyType.RIGHT_REPOSITORY_URI, rightRepositoryURI);
@@ -254,9 +234,8 @@ public class ParserTestTimeMeasurementKeyBuilder {
 	}
 
 	/**
-	 * The hash of the (left-hand-side) commit that is currently considered. <br>
-	 * <br>
-	 * Use this, if two commits are considered.
+	 * {@link #withCommitID(String)} for the commit ID of the left hand side model
+	 * for cases, where two repositories/commits are considered.
 	 */
 	public ParserTestTimeMeasurementKeyBuilder withLeftCommitID(String leftCommitID) {
 		this.keyMap.put(ParserTestTimeMeasurerKeyType.LEFT_COMMIT_ID, leftCommitID);
@@ -264,9 +243,8 @@ public class ParserTestTimeMeasurementKeyBuilder {
 	}
 
 	/**
-	 * The hash of the (right-hand-side) commit that is currently considered. <br>
-	 * <br>
-	 * Use this, if two commits are considered.
+	 * {@link #withCommitID(String)} for the commit ID of the right hand side model
+	 * for cases, where two repositories/commits are considered.
 	 */
 	public ParserTestTimeMeasurementKeyBuilder withRightCommitID(String rightCommitID) {
 		this.keyMap.put(ParserTestTimeMeasurerKeyType.RIGHT_COMMIT_ID, rightCommitID);

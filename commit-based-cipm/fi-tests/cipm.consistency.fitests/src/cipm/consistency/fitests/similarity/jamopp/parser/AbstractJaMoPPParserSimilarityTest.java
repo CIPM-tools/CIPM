@@ -147,7 +147,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 			SimilarityTestLogger.logDebugMsg("Saving all cached resources after parser test", this.getClass());
 			cachedResources.forEach((res) -> {
 				this.startTimeMeasurement(
-						getTimeMeasurementKeyBuilder().withParsedModelLocation(
+						getTimeMeasurementKeyBuilder().withModelResourceLocation(
 								ParserTestTimeMeasurementKeyUtil.getAdaptedURIString(res.getModelResource().getURI())),
 						GeneralTimeMeasurementTag.SAVE_MODEL_RESOURCE);
 				res.saveResources();
@@ -160,7 +160,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 			SimilarityTestLogger.logDebugMsg("Deleting all cached resources after parser test", this.getClass());
 			cachedResources.forEach((res) -> {
 				this.startTimeMeasurement(
-						getTimeMeasurementKeyBuilder().withParsedModelLocation(
+						getTimeMeasurementKeyBuilder().withModelResourceLocation(
 								ParserTestTimeMeasurementKeyUtil.getAdaptedURIString(res.getModelResource().getURI())),
 						GeneralTimeMeasurementTag.DELETE_MODEL_RESOURCE);
 				res.deleteResources();
@@ -171,7 +171,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 			SimilarityTestLogger.logDebugMsg("Unloading all cached resources after parser test", this.getClass());
 			cachedResources.forEach((res) -> {
 				this.startTimeMeasurement(
-						getTimeMeasurementKeyBuilder().withParsedModelLocation(
+						getTimeMeasurementKeyBuilder().withModelResourceLocation(
 								ParserTestTimeMeasurementKeyUtil.getAdaptedURIString(res.getModelResource().getURI())),
 						GeneralTimeMeasurementTag.UNLOAD_MODEL_RESOURCE);
 				res.unloadResources();
@@ -338,7 +338,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	protected IModelResourceWrapper parseModelWithoutCaching(Path modelSourceFileDirPath) {
 		this.startTimeMeasurement(
 				getTimeMeasurementKeyBuilder()
-						.withOriginalModelLocation(
+						.withModelSourceFileDirLocation(
 								ParserTestTimeMeasurementKeyUtil.getAdaptedPathString(modelSourceFileDirPath))
 						.withResourceParsingStrategyClassName(
 								this.getResourceParsingStrategy().getClass().getSimpleName()),
@@ -385,9 +385,9 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 			String modelResourceCacheKey) {
 		this.startTimeMeasurement(
 				getTimeMeasurementKeyBuilder()
-						.withOriginalModelLocation(
+						.withModelSourceFileDirLocation(
 								ParserTestTimeMeasurementKeyUtil.getAdaptedPathString(modelSourceFileDirPath))
-						.withParsedModelLocation(
+						.withModelResourceLocation(
 								ParserTestTimeMeasurementKeyUtil.getAdaptedURIString(modelResourceCachedURI)),
 				GeneralTimeMeasurementTag.MODEL_RESOURCE_CACHE_ACCESS);
 		var cache = this.getCacheUtil();
@@ -410,9 +410,9 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 				if (!resWrapper.isModelResourceLoaded()) {
 					this.startTimeMeasurement(
 							getTimeMeasurementKeyBuilder()
-									.withOriginalModelLocation(ParserTestTimeMeasurementKeyUtil
+									.withModelSourceFileDirLocation(ParserTestTimeMeasurementKeyUtil
 											.getAdaptedPathString(modelSourceFileDirPath))
-									.withParsedModelLocation(ParserTestTimeMeasurementKeyUtil
+									.withModelResourceLocation(ParserTestTimeMeasurementKeyUtil
 											.getAdaptedURIString(modelResourceCachedURI)),
 							GeneralTimeMeasurementTag.LOAD_MODEL_RESOURCE);
 					resWrapper.loadParsedResources();
@@ -425,9 +425,9 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 				resWrapper = new JaMoPPModelResourceWrapper();
 				this.startTimeMeasurement(
 						getTimeMeasurementKeyBuilder()
-								.withOriginalModelLocation(
+								.withModelSourceFileDirLocation(
 										ParserTestTimeMeasurementKeyUtil.getAdaptedPathString(modelSourceFileDirPath))
-								.withParsedModelLocation(
+								.withModelResourceLocation(
 										ParserTestTimeMeasurementKeyUtil.getAdaptedURIString(modelResourceCachedURI)),
 						GeneralTimeMeasurementTag.LOAD_MODEL_RESOURCE);
 				resWrapper.loadModelResource(modelResourceCachedURI);

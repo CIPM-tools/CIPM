@@ -292,7 +292,7 @@ public abstract class AbstractJaMoPPParserRepoTest extends AbstractJaMoPPParserS
 				var cachedCommitURI = this.getTestFileLayout().getModelResourceSaveURIForCommit(cID);
 				var res = new JaMoPPModelResourceWrapper();
 				this.startTimeMeasurement(
-						getTimeMeasurementKeyBuilder().withParsedModelLocation(
+						getTimeMeasurementKeyBuilder().withModelResourceLocation(
 								ParserTestTimeMeasurementKeyUtil.getAdaptedURIString(cachedCommitURI)),
 						GeneralTimeMeasurementTag.LOAD_MODEL_RESOURCE);
 				res.loadModelResource(cachedCommitURI);
