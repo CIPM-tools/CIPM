@@ -39,8 +39,8 @@ public class ResourceContentSimilarityResultProvider implements IExpectedSimilar
 	 * Checks if both sides' contents ({@code res.getAllContents()}) are similar, if
 	 * their order does not matter.
 	 * 
-	 * @return Whether all contents of lhs and rhs are similar, i.e. if all contents
-	 *         of lhs have a corresponding similar content on rhs.
+	 * @return Whether all contents of lhs and rhs are similar (up to order), i.e.
+	 *         if all contents of lhs have a corresponding similar content on rhs.
 	 */
 	private boolean contentwiseSimilar(Resource lhs, Resource rhs) {
 		var lhsContent = new ArrayList<EObject>();
@@ -55,8 +55,8 @@ public class ResourceContentSimilarityResultProvider implements IExpectedSimilar
 	 * Checks if both sides' contents ({@code obj.eAllContents()}) are similar, if
 	 * their order does not matter.
 	 * 
-	 * @return Whether all contents of lhs and rhs are similar, i.e. if all contents
-	 *         of lhs have a corresponding similar content on rhs.
+	 * @return Whether all contents of lhs and rhs are similar (up to order), i.e.
+	 *         if all contents of lhs have a corresponding similar content on rhs.
 	 */
 	private boolean contentwiseSimilar(EObject lhs, EObject rhs) {
 		if (!this.scc.isSimilar(lhs, rhs) || !this.scc.isSimilar(rhs, lhs)) {
@@ -102,19 +102,34 @@ public class ResourceContentSimilarityResultProvider implements IExpectedSimilar
 	}
 
 	/**
+	 * Checks if both sides' contents ({@code res.getAllContents()}) are pairwise
+	 * similar. Accounts for the order of contents too.
+	 * 
+	 * @return Whether all contents of lhs and rhs are similar
+	 */
+	private boolean contentPairwiseSimilar(Resource lhs, Resource rhs) {
+		var lhsContent = new ArrayList<EObject>();
+		lhs.getAllContents().forEachRemaining((e) -> lhsContent.add(e));
+		var rhsContent = new ArrayList<EObject>();
+		rhs.getAllContents().forEachRemaining((e) -> rhsContent.add(e));
+
+		return this.scc.areSimilar(lhsContent, rhsContent);
+	}
+
+	/**
 	 * @implSpec Determines expected similarity results based on the given
 	 *           {@link ISimilarityCheckerContainer} and content order (if desired
 	 *           in
 	 *           {@link #ResourceContentSimilarityResultProvider(ISimilarityCheckerContainer, boolean)}).
 	 *           If both paths are equal, the resources are expected to be similar.
-	 *           If the paths are different, TODO Fix this method by adding
-	 *           FileContentSimilarityResultProvider to !this.contentOrderSimilar
-	 *           case
+	 *           Otherwise, all contents of the given Resources will be compared
+	 *           while also accounting / not accounting for content order.
 	 */
 	@Override
 	public boolean getExpectedSimilarityResultFor(Resource lhsModelResource, Path lhsModelSourceFileDirPath,
 			Resource rhsModelResource, Path rhsModelSourceFileDirPath) {
 		var pathsEqual = lhsModelSourceFileDirPath.toString().equals(rhsModelSourceFileDirPath.toString());
-		return pathsEqual || (!this.contentOrderMatters && this.contentwiseSimilar(lhsModelResource, rhsModelResource));
+		return pathsEqual || (!this.contentOrderMatters && this.contentwiseSimilar(lhsModelResource, rhsModelResource))
+				|| (this.contentOrderMatters && this.contentPairwiseSimilar(lhsModelResource, rhsModelResource));
 	}
 }
