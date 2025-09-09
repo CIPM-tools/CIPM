@@ -19,6 +19,8 @@ public class DummyDistributionConflictResolutionStrategy extends ConflictResolut
 	@Override
 	public void applyFor(AbstractUserInteraction userInteraction) {
 		if (userInteraction instanceof DistributionUserInteraction
+		// FIXME Find a way to pinpoint the related DistributionUserInteraction
+		// FIXME EcoreUtil is too strict here, since some derivable attributes change
 //				&& EcoreUtil
 //				.equals(((DistributionUserInteraction) userInteraction).getDeletedElement(), this.deletedElement)
 		) {

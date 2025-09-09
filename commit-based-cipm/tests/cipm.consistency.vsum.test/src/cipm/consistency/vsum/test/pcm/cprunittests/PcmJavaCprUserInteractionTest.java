@@ -310,5 +310,7 @@ public class PcmJavaCprUserInteractionTest extends AbstractPcmJavaCprTest {
 		var prop = this.getPcmVsumFacade().propagateResource(pcmRes);
 		Assertions.assertNull(prop.getException());
 		this.logPropagatedChanges(prop);
+
+		// TODO Implement correspondence tests to automatically verify their correctness
 	}
 }
