@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -121,6 +122,16 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 		return view;
 	}
 
+	public CommittableView getChangeRecordingView() {
+		var viewType = ViewTypeFactory.createIdentityMappingViewType("myRecordingView");
+		var viewSelector = viewType.createSelector(vsum);
+
+		// Selecting all elements here
+		viewSelector.getSelectableElements().forEach(ele -> viewSelector.setSelected(ele, true));
+
+		return viewSelector.createView().withChangeRecordingTrait();
+	}
+
 	private VirtualModelBuilder getVsumBuilder() {
 		return new VirtualModelBuilder().withStorageFolder(dirLayout.getRootDirPath())
 				.withUserInteractor(UserInteractionFactory.instance.createDialogUserInteractor())
@@ -211,6 +222,32 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 		return propagation;
 	}
 
+	@Override
+	public Propagation propagateResource(URI targetUri, Consumer<Resource> modifications) {
+		var view = getChangeRecordingView();
+		var resource = view.getRootObjects().stream().map((ro) -> ro.eResource())
+				.filter((ro) -> ro != null && ro.getURI().equals(targetUri)).findFirst().get();
+
+		modifications.accept(resource);
+
+		List<PropagatedChange> changeList = List.of();
+		IllegalStateException exception = null;
+
+		try {
+			changeList = view.commitChangesAndUpdate();
+		} catch (IllegalStateException e) {
+			LOGGER.error(e.getMessage());
+			exception = e;
+		}
+
+		var propagation = new Propagation(changeList);
+		propagation.setException(exception);
+
+		logPropagatedChanges(resource, propagation);
+
+		return propagation;
+	}
+
 	private Propagation propagateResource(Resource resource, URI targetUri, CommittableView view) {
 		if (targetUri == null) {
 			targetUri = resource.getURI();
@@ -251,7 +288,7 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 		var roots = view.getRootObjects();
 		for (var r : roots) {
 			var rRes = r.eResource();
-			if (rRes != null)
+			if (rRes != null && rRes.getURI() != null && rRes.getURI().equals(resource.getURI()))
 				rRes.getContents().clear();
 		}
 		/*
@@ -263,39 +300,10 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 		 */
 //		new ArrayList<>(resource.getContents()).forEach(ele -> view.registerRoot(ele, actualtargetUri));
 
-		var contentsToShift = new HashMap<EObject, EObject>();
 		new ArrayList<>(resource.getContents()).forEach(ele -> {
 			var eleDup = EcoreUtil.copy(ele);
 			view.registerRoot(eleDup, actualtargetUri);
-			contentsToShift.put(ele, eleDup);
 		});
-
-		/*
-		 * Find all modified resource contents and replace them
-		 */
-//		var roots = view.getRootObjects();
-//		ResourceSet resSet = null;
-//		if (!roots.isEmpty()) {
-//			resSet = roots.iterator().next().eResource().getResourceSet();
-//		}
-//
-//		var contents = resource.getContents().toArray(EObject[]::new);
-//		for (var content : contents) {
-//			var contentURI = EcoreUtil.getURI(content);
-//			var contentResURI = contentURI.trimFragment();
-//
-//			if (resSet != null) {
-//				var contentInView = resSet.getEObject(contentURI, false);
-//				if (contentInView != null) {
-//					var res = contentInView.eResource();
-//					res.getContents().remove(contentInView);
-//				}
-//				view.registerRoot(content, contentURI);
-//			} else {
-//				view.registerRoot(content, contentURI);
-//				resSet = content.eResource().getResourceSet();
-//			}
-//		}
 
 		List<PropagatedChange> changeList = List.of();
 		IllegalStateException exception = null;
@@ -311,15 +319,6 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 		propagation.setException(exception);
 
 		logPropagatedChanges(resource, propagation);
-
-		/*
-		 * FIXME Remove the duplicate to avoid doubling all affected content
-		 * 
-		 * Check if this can be spared
-		 */
-//		contentsToShift.forEach((original, duplicate) -> {
-//			original.eResource().getContents().remove(duplicate);
-//		});
 
 		return propagation;
 	}

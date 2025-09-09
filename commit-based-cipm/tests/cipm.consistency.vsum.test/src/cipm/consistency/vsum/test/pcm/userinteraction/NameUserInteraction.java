@@ -6,7 +6,6 @@ import java.util.Set;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.net4j.util.collection.Pair;
-import org.eclipse.net4j.util.collection.Triplet;
 import org.emftext.language.java.commons.CommonsPackage;
 import org.emftext.language.java.commons.NamedElement;
 
@@ -15,9 +14,10 @@ import tools.vitruv.change.interaction.UserInteractionFactory;
 public class NameUserInteraction extends AbstractUserInteraction {
 	private EStructuralFeature nameField;
 	private NamedElement toBeNamed;
+	private EObject triggeringElement;
 
-	public NameUserInteraction(NamedElement toBeNamed) {
-		super();
+	public NameUserInteraction(EObject triggeringElement, NamedElement toBeNamed) {
+		this.triggeringElement = triggeringElement;
 		this.toBeNamed = toBeNamed;
 		this.nameField = this.toBeNamed.eClass().getEStructuralFeature(CommonsPackage.NAMED_ELEMENT__NAME);
 	}
@@ -29,7 +29,6 @@ public class NameUserInteraction extends AbstractUserInteraction {
 				.startInteraction();
 
 		if (this.checkNameValue(name)) {
-			this.toBeNamed.setName(name);
 			this.reportDesiredFeatureValue(nameField, name);
 		}
 	}
@@ -67,5 +66,13 @@ public class NameUserInteraction extends AbstractUserInteraction {
 	@Override
 	public boolean hasDesiredCorrespondence(EObject knownSide, String correspondenceTag) {
 		return false;
+	}
+
+	public EObject getTriggeringElement() {
+		return this.triggeringElement;
+	}
+
+	public NamedElement getElementToBeNamed() {
+		return this.toBeNamed;
 	}
 }

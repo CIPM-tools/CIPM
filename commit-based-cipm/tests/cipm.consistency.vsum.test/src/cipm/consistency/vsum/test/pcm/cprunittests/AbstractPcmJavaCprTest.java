@@ -19,15 +19,14 @@ import cipm.consistency.commitintegration.settings.CommitIntegrationSettingsCont
 import cipm.consistency.cpr.pcmjava.JavaModelAccess;
 import cipm.consistency.models.ModelFacade;
 import cipm.consistency.vsum.test.pcm.userinteraction.PcmUserInteractionManager;
-import mir.reactions.dummyPCMJavaCorrespondenceCPRs.DummyPCMJavaCorrespondenceCPRsChangePropagationSpecification;
 import tools.vitruv.change.atomic.EChange;
-import tools.vitruv.change.propagation.ChangePropagationSpecification;
 import tools.vitruv.framework.views.changederivation.DefaultStateBasedChangeResolutionStrategy;
 
 public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 	private static final Path javaCommitIntegrationSettingsContainer = Path.of("javaSettings.txt");
 	private JavaModelFacade javaFacade;
 	private EObject placeholder;
+	private static final String placeholderName = "placeholder";
 
 	@BeforeEach
 	@Override
@@ -87,7 +86,7 @@ public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 		// Otherwise it will be deleted (by Vitruvius)
 		JavaModelAccess.setJavaModel(model.getResource());
 		placeholder = ClassifiersFactory.eINSTANCE.createClass();
-//		placeholder.setName("abc");
+		((org.emftext.language.java.classifiers.Class) placeholder).setName(placeholderName);
 		JavaModelAccess.getJavaModel().getContents().add(placeholder);
 		try {
 			JavaModelAccess.getJavaModel().save(null);

@@ -47,7 +47,8 @@ public abstract class AbstractUserInteraction {
 		PcmUserInteractionManager.removeUserInteraction(this);
 	}
 
-	protected Triplet<EObject, EObject, String> retrieveDesiredCorrespondenceIfPresent(EObject knownSide, String correspondenceTag) {
+	protected Triplet<EObject, EObject, String> retrieveDesiredCorrespondenceIfPresent(EObject knownSide,
+			String correspondenceTag) {
 		return PcmUserInteractionManager.getDesiredCorrespondence(knownSide, correspondenceTag, false);
 	}
 }

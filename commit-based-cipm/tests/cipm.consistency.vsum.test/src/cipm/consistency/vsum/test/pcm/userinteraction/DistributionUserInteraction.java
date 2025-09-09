@@ -8,7 +8,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.net4j.util.collection.Pair;
 
-import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
 import tools.vitruv.change.interaction.UserInteractionFactory;
 
 public class DistributionUserInteraction extends AbstractUserInteraction {
@@ -16,14 +15,12 @@ public class DistributionUserInteraction extends AbstractUserInteraction {
 	private final EObject deletedElement;
 	private final List<EObject> correspondingContentsToDistribute;
 	private final List<EObject> possibleDistributionTargets;
-	private final EditableCorrespondenceModelView<?> correspondenceModel;
 
 	public DistributionUserInteraction(EObject deletedElement, List<EObject> correspondingContentsToDistribute,
-			List<EObject> possibleDistributionTargets, EditableCorrespondenceModelView<?> correspondenceModel) {
+			List<EObject> possibleDistributionTargets) {
 		this.deletedElement = deletedElement;
 		this.correspondingContentsToDistribute = correspondingContentsToDistribute;
 		this.possibleDistributionTargets = possibleDistributionTargets;
-		this.correspondenceModel = correspondenceModel;
 	}
 
 	@Override
@@ -33,19 +30,13 @@ public class DistributionUserInteraction extends AbstractUserInteraction {
 
 		for (var contentToDistribute : this.correspondingContentsToDistribute) {
 			if (this.isDesiredCorrespondencePresent(contentToDistribute, correspondenceTag)) {
-//				if (this.correspondenceModel.getCorrespondingEObjects(contentToDistribute, correspondenceTag).stream()
-//						.noneMatch((otherSide) -> possibleDistributionTargets.contains(otherSide))) {
-//					var cor = this.retrieveDesiredCorrespondenceIfPresent(contentToDistribute, correspondenceTag);
-//					var os = cor.getElement1() == contentToDistribute ? cor.getElement2() : cor.getElement1();
-//					this.correspondenceModel.addCorrespondenceBetween(contentToDistribute, os, correspondenceTag);
-//				}
 				continue;
 			}
 			var choice = UserInteractionFactory.instance.createDialogUserInteractor().getSingleSelectionDialogBuilder()
 					.message(String.format("Where should %s be moved?", contentToDistribute)).choices(choices)
 					.startInteraction();
 			var otherSide = possibleDistributionTargets.get(choice);
-//			this.correspondenceModel.addCorrespondenceBetween(contentToDistribute, otherSide, correspondenceTag);
+
 			this.reportDesiredCorrespondence(contentToDistribute, otherSide, correspondenceTag);
 		}
 	}
@@ -82,5 +73,17 @@ public class DistributionUserInteraction extends AbstractUserInteraction {
 	public boolean hasDesiredCorrespondence(EObject knownSide, String correspondenceTag) {
 		return this.correspondingContentsToDistribute.contains(knownSide)
 				&& correspondenceTag.equals(DistributionUserInteraction.correspondenceTag);
+	}
+
+	public EObject getDeletedElement() {
+		return deletedElement;
+	}
+
+	public List<EObject> getCorrespondingContentsToDistribute() {
+		return List.copyOf(correspondingContentsToDistribute);
+	}
+
+	public List<EObject> getPossibleDistributionTargets() {
+		return List.copyOf(possibleDistributionTargets);
 	}
 }

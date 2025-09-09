@@ -11,9 +11,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.net4j.util.collection.Triplet;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-
 public final class PcmUserInteractionManager {
 	private static final Object unsetKey = new Object();
 

@@ -2,6 +2,7 @@ package cipm.consistency.vsum.test.pcm;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -69,4 +70,6 @@ public interface PcmVsumFacade {
 	IChangeAcceptingView getChangeAcceptingView();
 
 	VsumDirLayout getDirLayout();
+
+	Propagation propagateResource(URI targetUri, Consumer<Resource> modifications);
 }
