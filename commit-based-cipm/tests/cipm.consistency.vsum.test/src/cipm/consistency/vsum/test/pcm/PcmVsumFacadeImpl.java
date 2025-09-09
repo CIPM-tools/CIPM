@@ -3,14 +3,12 @@ package cipm.consistency.vsum.test.pcm;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 
@@ -122,6 +120,7 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 		return view;
 	}
 
+	// FIXME Clarify whether ChangeRecordingView can be used like this
 	public CommittableView getChangeRecordingView() {
 		var viewType = ViewTypeFactory.createIdentityMappingViewType("myRecordingView");
 		var viewSelector = viewType.createSelector(vsum);
@@ -139,6 +138,9 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 	}
 
 	private void checkResourceForProxies(Resource res) {
+		if (res.getContents().isEmpty())
+			return;
+
 		// try to resolve all proxies before checking for unresolved ones
 		EcoreUtil.resolveAll(res);
 
@@ -155,11 +157,6 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 	}
 
 	private boolean checkPropagationPreconditions(Resource res) {
-		if (res.getContents().size() == 0) {
-			LOGGER.error(String.format("Resource has no contents: %s", res.getURI()));
-			return false;
-		}
-
 		if (res.getErrors().size() > 0) {
 			LOGGER.error(String.format("Resource contains %d errors:", res.getErrors().size()));
 			var i = 0;
@@ -222,6 +219,7 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 		return propagation;
 	}
 
+	// FIXME Clarify whether ChangeRecordingView can be used like this
 	@Override
 	public Propagation propagateResource(URI targetUri, Consumer<Resource> modifications) {
 		var view = getChangeRecordingView();
@@ -252,7 +250,6 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 		if (targetUri == null) {
 			targetUri = resource.getURI();
 		}
-		final URI actualtargetUri = targetUri;
 
 		// try to resolve all proxies in the resource
 		EcoreUtil.resolveAll(resource);
@@ -264,46 +261,6 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 		}
 
 		LOGGER.trace(String.format("Propagating resource: %s", resource.getURI().toString()));
-
-		if (resource.getContents().size() == 0) {
-			LOGGER.debug(String.format("Not propagating empty resource: %s", resource.getURI()));
-			return null;
-		}
-
-		/*
-		 * FIXME Possible issue here:
-		 * 
-		 * This only clears one Resource within the view. However, views may have
-		 * multiple Resource instances (such as PCM).
-		 * 
-		 * For ChangeDerivingView, this is not a problem, as no changes are created for
-		 * the same EObjects. It is problematic for ChangeRecordingView, because all
-		 * root objects are deleted and re-added.
-		 */
-//		var roots = view.getRootObjects();
-//		if (!roots.isEmpty()) {
-//			var first = roots.iterator().next();
-//			first.eResource().getContents().clear();
-//		}
-		var roots = view.getRootObjects();
-		for (var r : roots) {
-			var rRes = r.eResource();
-			if (rRes != null && rRes.getURI() != null && rRes.getURI().equals(resource.getURI()))
-				rRes.getContents().clear();
-		}
-		/*
-		 * FIXME The version below is problematic, because it effectively REMOVES ele
-		 * from its original resource and adds them to the view. This causes ele to
-		 * resolve to null while changes are applied, because it cannot be found under
-		 * its resource. Copying ele seems to solve this issue, since the "original" ele
-		 * can still be found under resource.getContents()
-		 */
-//		new ArrayList<>(resource.getContents()).forEach(ele -> view.registerRoot(ele, actualtargetUri));
-
-		new ArrayList<>(resource.getContents()).forEach(ele -> {
-			var eleDup = EcoreUtil.copy(ele);
-			view.registerRoot(eleDup, actualtargetUri);
-		});
 
 		List<PropagatedChange> changeList = List.of();
 		IllegalStateException exception = null;
@@ -347,6 +304,39 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 			return vsum.getCorrespondenceModel();
 		}
 		return null;
+	}
+
+	/**
+	 * Saving correspondences directly is currently not possible. It only triggers
+	 * during change propagation. So, perform changes that do not lead to any
+	 * effective changes and propagate them.
+	 */
+	@Override
+	public void saveCorrespondences() {
+		Resource nonEmptyResource = null;
+		var modelIt = this.models.iterator();
+		while (nonEmptyResource == null && modelIt.hasNext()) {
+			var m = modelIt.next();
+			var mSingleRes = m.getResource();
+			var mMultRes = m.getResources();
+			if (mSingleRes != null && !mSingleRes.getContents().isEmpty()) {
+				nonEmptyResource = mSingleRes;
+				break;
+			}
+			if (mMultRes != null && !mMultRes.isEmpty()) {
+				var optRes = mMultRes.stream().filter((r) -> !r.getContents().isEmpty()).findFirst();
+				if (optRes.isPresent()) {
+					nonEmptyResource = optRes.get();
+					break;
+				}
+			}
+		}
+		this.propagateResource(nonEmptyResource.getURI(), (r) -> {
+			var rObj = r.getContents().get(0);
+			var rObjDupl = EcoreUtil.copy(rObj);
+			r.getContents().add(rObjDupl);
+			r.getContents().remove(rObjDupl);
+		});
 	}
 
 	@Override

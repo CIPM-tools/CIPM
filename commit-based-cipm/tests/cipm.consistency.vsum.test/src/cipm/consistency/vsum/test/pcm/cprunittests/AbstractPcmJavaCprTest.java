@@ -6,12 +6,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.eclipse.emf.compare.utils.UseIdentifiers;
+import org.eclipse.emf.ecore.EModelElement;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emftext.language.java.classifiers.ClassifiersFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.palladiosimulator.pcm.repository.Repository;
+import org.palladiosimulator.pcm.repository.util.RepositoryResourceImpl;
 
 import cipm.consistency.commitintegration.lang.detection.strategy.ComponentDetectionStrategy;
 import cipm.consistency.commitintegration.lang.java.JavaModelFacade;
@@ -19,7 +25,10 @@ import cipm.consistency.commitintegration.settings.CommitIntegrationSettingsCont
 import cipm.consistency.cpr.pcmjava.JavaModelAccess;
 import cipm.consistency.models.ModelFacade;
 import cipm.consistency.vsum.test.pcm.userinteraction.PcmUserInteractionManager;
+import tools.vitruv.change.atomic.AtomicPackage;
 import tools.vitruv.change.atomic.EChange;
+import tools.vitruv.change.atomic.eobject.DeleteEObject;
+import tools.vitruv.change.atomic.feature.reference.ReplaceSingleValuedEReference;
 import tools.vitruv.framework.views.changederivation.DefaultStateBasedChangeResolutionStrategy;
 
 public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
@@ -80,21 +89,26 @@ public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 		var model = new JavaModelFacade();
 		model.setComponentDetectionStrategies(getComponentDetectionStrategies());
 		model.initialize(this.getPropagatedModelsRootPath());
-		model.parseSourceCodeDir(this.getPropagatedModelsRootPath());
+		if (model.getResource() == null) {
+			model.parseSourceCodeDir(this.getPropagatedModelsRootPath());
+		}
 		Assertions.assertTrue(model.existsOnDisk());
 		// FIXME Ensure that the Java resource is not empty
 		// Otherwise it will be deleted (by Vitruvius)
-		JavaModelAccess.setJavaModel(model.getResource());
-		placeholder = ClassifiersFactory.eINSTANCE.createClass();
-		((org.emftext.language.java.classifiers.Class) placeholder).setName(placeholderName);
-		JavaModelAccess.getJavaModel().getContents().add(placeholder);
-		try {
-			JavaModelAccess.getJavaModel().save(null);
-		} catch (IOException e) {
-			this.failTest(e);
+		var modelRes = model.getResource();
+		if (modelRes.getContents().isEmpty()) {
+			placeholder = ClassifiersFactory.eINSTANCE.createClass();
+			((org.emftext.language.java.classifiers.Class) placeholder).setName(placeholderName);
+			modelRes.getContents().add(placeholder);
+			try {
+				modelRes.save(null);
+			} catch (IOException e) {
+				this.failTest(e);
+			}
+			model.reload();
+			placeholder = model.getResource().getContents().get(0);
 		}
-		model.reload();
-		placeholder = model.getResource().getContents().get(0);
+		JavaModelAccess.setJavaModel(modelRes);
 		return model;
 	}
 
@@ -109,10 +123,42 @@ public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 	}
 
 	protected List<EChange> getEChangesFor(Resource resourceInModelFacade, Consumer<Resource> modifications) {
-		var newRes = this.getNewInstanceForResourceFromPcmFacade(resourceInModelFacade);
-		modifications.accept(newRes);
-		var d = new DefaultStateBasedChangeResolutionStrategy();
-		return d.getChangeSequenceBetween(newRes, resourceInModelFacade).getEChanges();
+		var unmodifiedResDupl = this.getNewInstanceForResourceFromPcmFacade(resourceInModelFacade);
+		var modifiedResDupl = this.getNewInstanceForResourceFromPcmFacade(resourceInModelFacade);
+		modifications.accept(modifiedResDupl);
+		var d = new DefaultStateBasedChangeResolutionStrategy(UseIdentifiers.NEVER);
+		var changes = d.getChangeSequenceBetween(modifiedResDupl, unmodifiedResDupl).getEChanges();
+//		for (var c : changes) {
+//			for (var feat : c.eClass().getEAllReferences()) {
+//				var val = (EObject) c.eGet(feat);
+//				if (!(val instanceof EModelElement)) {
+//					var it = resourceInModelFacade.getAllContents();
+//					while (it.hasNext()) {
+//						var elem = it.next();
+//						if (EcoreUtil.equals(c, elem)) {
+//							c.eSet(feat, elem);
+//							break;
+//						}
+//					}
+//				}
+//			}
+//		}
+
+//		for (var c : changes) {
+//			if (c instanceof ReplaceSingleValuedEReference) {
+//				var cc = (ReplaceSingleValuedEReference) c;
+//				var repo = (Repository) resourceInModelFacade.getContents().get(0);
+//				var deletedCmp = repo.getComponents__Repository().get(0);
+//				cc.setAffectedEObject(deletedCmp);
+//				if (resourceInModelFacade
+//						.getEObject(resourceInModelFacade.getURIFragment(deletedCmp).toString()) == null)
+//					throw new IllegalStateException("");
+//
+//				cc.setAffectedEObjectID(resourceInModelFacade.getURI()
+//						.appendFragment(resourceInModelFacade.getURIFragment(deletedCmp)).toString());
+//			}
+//		}
+		return changes;
 	}
 
 	protected List<EChange> getEChangesFor(String resourceInModelFacade, Consumer<Resource> modifications) {
@@ -142,5 +188,11 @@ public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 
 	protected JavaModelFacade getJavaFacade() {
 		return this.javaFacade;
+	}
+
+	@Override
+	protected void reloadVsumFacade() {
+		javaFacade = this.setupJavaFacade();
+		super.reloadVsumFacade();
 	}
 }

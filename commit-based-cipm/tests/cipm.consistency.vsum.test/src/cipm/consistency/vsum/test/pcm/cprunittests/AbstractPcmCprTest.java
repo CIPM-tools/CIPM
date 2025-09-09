@@ -22,6 +22,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.palladiosimulator.pcm.allocation.util.AllocationResourceFactoryImpl;
+import org.palladiosimulator.pcm.repository.util.RepositoryResourceFactoryImpl;
+import org.palladiosimulator.pcm.resourceenvironment.util.ResourceenvironmentResourceFactoryImpl;
+import org.palladiosimulator.pcm.system.util.SystemResourceFactoryImpl;
+import org.palladiosimulator.pcm.usagemodel.util.UsagemodelResourceFactoryImpl;
 
 import cipm.consistency.models.ModelFacade;
 import cipm.consistency.models.pcm.PcmFacade;
@@ -100,11 +105,26 @@ public abstract class AbstractPcmCprTest {
 	public static void setupBeforeAll() {
 		LoggingSetup.setMinLogLevel(Level.DEBUG);
 
+		LOGGER.debug("Setting up resource extension to factory map");
+		// Added for Java extensions
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("java", new JavaResource2Factory());
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("javaxmi", new JavaResource2Factory());
 
-		// Added for .repository and .changes extensions
+		// Added for PCM extensions
+		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("repository",
+				new RepositoryResourceFactoryImpl());
+		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("allocation",
+				new AllocationResourceFactoryImpl());
+		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("system", new SystemResourceFactoryImpl());
+		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("usagemodel",
+				new UsagemodelResourceFactoryImpl());
+		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("resourceenvironment",
+				new ResourceenvironmentResourceFactoryImpl());
+
+		// Added for change extensions and others
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("*", new XMIResourceFactoryImpl());
+
+		LOGGER.debug("Set up resource extension to factory map");
 	}
 
 	/**
@@ -327,5 +347,10 @@ public abstract class AbstractPcmCprTest {
 
 	public PcmVsumFacade getPcmVsumFacade() {
 		return this.vsumFacade;
+	}
+
+	protected void reloadVsumFacade() {
+		pcmFacade = this.setupPcmFacade();
+		vsumFacade = this.setupVsumFacade();
 	}
 }

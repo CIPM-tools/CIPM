@@ -3,6 +3,7 @@ package cipm.consistency.vsum.test.pcm.userinteraction;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.net4j.util.collection.Triplet;
 
 public class DummyDistributionConflictResolutionStrategy extends ConflictResolutionStrategy {
@@ -18,7 +19,9 @@ public class DummyDistributionConflictResolutionStrategy extends ConflictResolut
 	@Override
 	public void applyFor(AbstractUserInteraction userInteraction) {
 		if (userInteraction instanceof DistributionUserInteraction
-				&& ((DistributionUserInteraction) userInteraction).getDeletedElement() == this.deletedElement) {
+//				&& EcoreUtil
+//				.equals(((DistributionUserInteraction) userInteraction).getDeletedElement(), this.deletedElement)
+		) {
 			for (var cor : this.correspondences) {
 				PcmUserInteractionManager.setDesiredCorrespondence(null, cor.getElement1(), cor.getElement2(),
 						cor.getElement3());

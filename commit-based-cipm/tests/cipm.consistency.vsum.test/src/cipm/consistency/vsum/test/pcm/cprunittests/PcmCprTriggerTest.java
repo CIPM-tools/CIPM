@@ -44,7 +44,7 @@ public class PcmCprTriggerTest extends AbstractPcmCprTest {
 
 		var attrChange = AttributeFactory.eINSTANCE.createReplaceSingleValuedEAttribute();
 		attrChange.setAffectedEObject(repoEObj);
-		attrChange.setAffectedEObjectID(repoEObjURIWithIndex);
+		attrChange.setAffectedEObjectID(repoEObjURI);
 		var attr = (EAttribute) repoEObj.eClass().getEStructuralFeature(RepositoryPackage.REPOSITORY__ENTITY_NAME);
 		attrChange.setAffectedFeature(attr);
 		attrChange.setOldValue(repoEObj.eGet(attr));
@@ -98,7 +98,7 @@ public class PcmCprTriggerTest extends AbstractPcmCprTest {
 
 		var attrChange = AttributeFactory.eINSTANCE.createReplaceSingleValuedEAttribute();
 		attrChange.setAffectedEObject(repoEObj);
-		attrChange.setAffectedEObjectID(repoEObjURIWithIndex);
+		attrChange.setAffectedEObjectID(repoEObjURI);
 		var attr = (EAttribute) repoEObj.eClass().getEStructuralFeature(RepositoryPackage.REPOSITORY__ENTITY_NAME);
 		attrChange.setAffectedFeature(attr);
 		attrChange.setOldValue(repoEObj.eGet(attr));

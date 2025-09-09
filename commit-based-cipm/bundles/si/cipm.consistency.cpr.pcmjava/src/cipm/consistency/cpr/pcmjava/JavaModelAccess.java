@@ -73,10 +73,15 @@ public final class JavaModelAccess {
 	}
 
 	public static void setJavaModel(Resource javaModelResource) {
-		if (javaModel != null) {
-			unloadJavaModel();
+		javaModel = javaModelResource;
+		if (javaModel != null && !javaModel.isLoaded()) {
+			try {
+				javaModel.load(null);
+			} catch (IOException e) {
+				e.printStackTrace();
+				throw new IllegalArgumentException(e);
+			}
 		}
-		loadJavaModel(javaModelResource.getURI());
 	}
 
 	/**

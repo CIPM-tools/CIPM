@@ -71,5 +71,13 @@ public interface PcmVsumFacade {
 
 	VsumDirLayout getDirLayout();
 
+	// FIXME Clarify whether ChangeRecordingView can be used like this
 	Propagation propagateResource(URI targetUri, Consumer<Resource> modifications);
+
+	/**
+	 * Saving correspondences directly is currently not possible. It only triggers
+	 * during change propagation. So, perform changes that do not lead to any
+	 * effective changes and propagate them.
+	 */
+	void saveCorrespondences();
 }

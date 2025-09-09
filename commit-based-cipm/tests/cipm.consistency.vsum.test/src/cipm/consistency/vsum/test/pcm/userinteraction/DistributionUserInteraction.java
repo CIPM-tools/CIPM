@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.net4j.util.collection.Pair;
+import org.eclipse.net4j.util.collection.Triplet;
 
 import tools.vitruv.change.interaction.UserInteractionFactory;
 
@@ -56,8 +56,9 @@ public class DistributionUserInteraction extends AbstractUserInteraction {
 	}
 
 	@Override
-	public Set<Pair<EObject, String>> getDesiredCorrespondences() {
-		return this.correspondingContentsToDistribute.stream().map((c) -> new Pair<>(c, correspondenceTag))
+	public Set<Triplet<EObject, EObject, String>> getDesiredCorrespondences() {
+		return this.correspondingContentsToDistribute.stream()
+				.map((c) -> new Triplet<EObject, EObject, String>(c, null, correspondenceTag))
 				.collect(Collectors.toUnmodifiableSet());
 	}
 

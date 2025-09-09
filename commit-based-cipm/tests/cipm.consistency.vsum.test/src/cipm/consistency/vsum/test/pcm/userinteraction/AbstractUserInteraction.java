@@ -5,7 +5,6 @@ import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.net4j.util.collection.Pair;
 import org.eclipse.net4j.util.collection.Triplet;
 
 public abstract class AbstractUserInteraction {
@@ -21,7 +20,7 @@ public abstract class AbstractUserInteraction {
 
 	public abstract List<EStructuralFeature> getDesiredFeatures();
 
-	public abstract Set<Pair<EObject, String>> getDesiredCorrespondences();
+	public abstract Set<Triplet<EObject, EObject, String>> getDesiredCorrespondences();
 
 	protected boolean isDesiredFeatureValuePresent(EStructuralFeature feat) {
 		return PcmUserInteractionManager.hasDesiredFeatureValue(feat);

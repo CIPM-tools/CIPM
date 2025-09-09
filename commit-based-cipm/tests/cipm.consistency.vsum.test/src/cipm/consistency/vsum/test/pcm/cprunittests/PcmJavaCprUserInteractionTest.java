@@ -1,5 +1,6 @@
 package cipm.consistency.vsum.test.pcm.cprunittests;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +26,9 @@ import cipm.consistency.vsum.test.pcm.userinteraction.DummyNameConflictResolutio
 import cipm.consistency.vsum.test.pcm.userinteraction.PcmUserInteractionManager;
 import mir.reactions.dummyPCMJavaUserInteractionCPRs.DummyPCMJavaUserInteractionCPRsChangePropagationSpecification;
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
+import tools.vitruv.dsls.reactions.runtime.correspondence.CorrespondenceFactory;
+import tools.vitruv.dsls.reactions.runtime.correspondence.ReactionsCorrespondence;
+import tools.vitruv.dsls.reactions.runtime.correspondence.impl.ReactionsCorrespondenceImpl;
 
 public class PcmJavaCprUserInteractionTest extends AbstractPcmJavaCprTest {
 	@Override
@@ -186,38 +190,43 @@ public class PcmJavaCprUserInteractionTest extends AbstractPcmJavaCprTest {
 
 	@Test
 	public void testJavaPCMUserInteraction_CmpContentDistribution() {
+		//
 		// Setup of PCM
-		var pcmRes = this.getResourceFromPcmFacade(repositoryFileName);
-		var repoObj = (Repository) pcmRes.getContents().get(0);
+		//
 
-		var cmpToBeDeleted = RepositoryFactory.eINSTANCE.createBasicComponent();
-		cmpToBeDeleted.setEntityName(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentName);
-		repoObj.getComponents__Repository().add(cmpToBeDeleted);
+		this.getPcmVsumFacade().propagateResource(this.getResourceFromPcmFacade(repositoryFileName).getURI(), (r) -> {
+			var repoObj = (Repository) r.getContents().get(0);
 
-		var cmpToPersistOne = RepositoryFactory.eINSTANCE.createBasicComponent();
-		cmpToPersistOne.setEntityName(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentOneName);
-		repoObj.getComponents__Repository().add(cmpToPersistOne);
+			var cmpToBeDeleted = RepositoryFactory.eINSTANCE.createBasicComponent();
+			cmpToBeDeleted.setEntityName(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentName);
+			repoObj.getComponents__Repository().add(cmpToBeDeleted);
 
-		var cmpToPersistTwo = RepositoryFactory.eINSTANCE.createBasicComponent();
-		cmpToPersistTwo.setEntityName(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentTwoName);
-		repoObj.getComponents__Repository().add(cmpToPersistTwo);
-		this.getPcmFacade().saveToDisk();
-		this.getPcmFacade().reload();
+			var cmpToPersistOne = RepositoryFactory.eINSTANCE.createBasicComponent();
+			cmpToPersistOne
+					.setEntityName(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentOneName);
+			repoObj.getComponents__Repository().add(cmpToPersistOne);
 
-		pcmRes = this.getResourceFromPcmFacade(repositoryFileName);
-		repoObj = (Repository) pcmRes.getContents().get(0);
-		cmpToBeDeleted = (BasicComponent) repoObj.getComponents__Repository().stream()
-				.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
-						.equals(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentName))
-				.findFirst().get();
-		cmpToPersistOne = (BasicComponent) repoObj.getComponents__Repository().stream()
-				.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
-						.equals(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentOneName))
-				.findFirst().get();
-		cmpToPersistTwo = (BasicComponent) repoObj.getComponents__Repository().stream()
-				.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
-						.equals(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentTwoName))
-				.findFirst().get();
+			var cmpToPersistTwo = RepositoryFactory.eINSTANCE.createBasicComponent();
+			cmpToPersistTwo
+					.setEntityName(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentTwoName);
+			repoObj.getComponents__Repository().add(cmpToPersistTwo);
+		});
+
+//		var pcmRes = this.getResourceFromPcmFacade(repositoryFileName);
+//		var repoObj = (Repository) pcmRes.getContents().get(0);
+//
+//		var cmpToBeDeleted = RepositoryFactory.eINSTANCE.createBasicComponent();
+//		cmpToBeDeleted.setEntityName(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentName);
+//		repoObj.getComponents__Repository().add(cmpToBeDeleted);
+//
+//		var cmpToPersistOne = RepositoryFactory.eINSTANCE.createBasicComponent();
+//		cmpToPersistOne.setEntityName(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentOneName);
+//		repoObj.getComponents__Repository().add(cmpToPersistOne);
+//
+//		var cmpToPersistTwo = RepositoryFactory.eINSTANCE.createBasicComponent();
+//		cmpToPersistTwo.setEntityName(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentTwoName);
+//		repoObj.getComponents__Repository().add(cmpToPersistTwo);
+//		this.getPcmFacade().saveToDisk();
 
 		//
 		// Setup of Java
@@ -230,29 +239,50 @@ public class PcmJavaCprUserInteractionTest extends AbstractPcmJavaCprTest {
 		var cls2 = ClassifiersFactory.eINSTANCE.createClass();
 		cls2.setName(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentClassTwoName);
 		javaResource.getContents().add(cls2);
-		this.getJavaFacade().saveAndReload();
+		this.getJavaFacade().saveToDisk();
 
-		javaResource = this.getJavaModelResourceFromJavaFacade();
-		cls1 = (org.emftext.language.java.classifiers.Class) javaResource.getContents().stream()
-				.filter((c) -> c instanceof org.emftext.language.java.classifiers.Class
-						&& ((org.emftext.language.java.classifiers.Class) c).getName().equals(
-								PcmCPRTestConstants.componentContentDistributionTestDeletedComponentClassOneName))
+		//
+		// Reload VSUM and re-locate resources and their content
+		//
+
+		var pcmRes = this.getResourceFromPcmFacade(repositoryFileName);
+		var repoObj = (Repository) pcmRes.getContents().get(0);
+		var cmpToBeDeleted = (BasicComponent) repoObj.getComponents__Repository().stream()
+				.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
+						.equals(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentName))
 				.findFirst().get();
-		cls2 = (org.emftext.language.java.classifiers.Class) javaResource.getContents().stream()
-				.filter((c) -> c instanceof org.emftext.language.java.classifiers.Class
-						&& ((org.emftext.language.java.classifiers.Class) c).getName().equals(
-								PcmCPRTestConstants.componentContentDistributionTestDeletedComponentClassTwoName))
+		var cmpToPersistOne = (BasicComponent) repoObj.getComponents__Repository().stream()
+				.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
+						.equals(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentOneName))
+				.findFirst().get();
+		var cmpToPersistTwo = (BasicComponent) repoObj.getComponents__Repository().stream()
+				.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
+						.equals(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentTwoName))
 				.findFirst().get();
 
-		JavaModelAccess.setJavaModel(javaResource);
-
-		this.getPcmVsumFacade().forceReload();
+//		javaResource = this.getJavaModelResourceFromJavaFacade();
+//		cls1 = (org.emftext.language.java.classifiers.Class) javaResource.getContents().stream()
+//				.filter((c) -> c instanceof org.emftext.language.java.classifiers.Class
+//						&& ((org.emftext.language.java.classifiers.Class) c).getName().equals(
+//								PcmCPRTestConstants.componentContentDistributionTestDeletedComponentClassOneName))
+//				.findFirst().get();
+//		cls2 = (org.emftext.language.java.classifiers.Class) javaResource.getContents().stream()
+//				.filter((c) -> c instanceof org.emftext.language.java.classifiers.Class
+//						&& ((org.emftext.language.java.classifiers.Class) c).getName().equals(
+//								PcmCPRTestConstants.componentContentDistributionTestDeletedComponentClassTwoName))
+//				.findFirst().get();
 
 		//
 		// Setup of correspondences
 		//
-		this.getPcmVsumFacade().getCorrespondenceView().addCorrespondenceBetween(cls1, cmpToBeDeleted, "");
-		this.getPcmVsumFacade().getCorrespondenceView().addCorrespondenceBetween(cls2, cmpToBeDeleted, "");
+		var corView = this.getPcmVsumFacade().getCorrespondenceView().getEditableView(ReactionsCorrespondence.class,
+				() -> {
+					return CorrespondenceFactory.eINSTANCE.createReactionsCorrespondence();
+				});
+		corView.addCorrespondenceBetween(cls1, cmpToBeDeleted, "");
+		corView.addCorrespondenceBetween(cls2, cmpToBeDeleted, "");
+		this.getPcmVsumFacade().saveCorrespondences();
+		this.reloadVsumFacade();
 
 		//
 		// Conflict resolution strategy setup
@@ -266,17 +296,18 @@ public class PcmJavaCprUserInteractionTest extends AbstractPcmJavaCprTest {
 		//
 		// Actual test
 		//
-		var prop = this.getPcmVsumFacade().propagateResource(pcmRes.getURI(), (r) -> {
+		pcmRes = this.getResourceFromPcmFacade(repositoryFileName);
+		var changes = this.getEChangesFor(pcmRes, (r) -> {
 			var rRepoObj = (Repository) r.getContents().get(0);
 			var cmpToDel = rRepoObj.getComponents__Repository().stream()
 					.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
 							.equals(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentName))
 					.findFirst().get();
-			// FIXME Swap between the 2 lines
-//			((Repository) getResourceFromPcmFacade(repositoryFileName).getContents().get(0)).getComponents__Repository()
-//					.add(cmpToDel);
-//			rRepoObj.getComponents__Repository().remove(cmpToDel);
+			rRepoObj.getComponents__Repository().remove(cmpToDel);
 		});
+
+		this.getPcmVsumFacade().addChanges(changes);
+		var prop = this.getPcmVsumFacade().propagateResource(pcmRes);
 		Assertions.assertNull(prop.getException());
 		this.logPropagatedChanges(prop);
 	}

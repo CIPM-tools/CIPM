@@ -2,7 +2,6 @@ package cipm.consistency.vsum.test.pcm.newviews;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -48,10 +47,6 @@ public class ChangeAcceptingView implements IChangeAcceptingView, CommittableVie
 	@Accessors({ AccessorType.PROTECTED_GETTER, AccessorType.PROTECTED_SETTER })
 	private ResourceSet viewResourceSet;
 
-	private ResourceSet originalStateViewResourceSet;
-
-	private HashMap<Resource, Resource> originalStateResourceMapping;
-
 	/*
 	 * TODO Remove the underlying view, make operations on vsum instead
 	 * 
@@ -78,6 +73,7 @@ public class ChangeAcceptingView implements IChangeAcceptingView, CommittableVie
 	// TODO Change to VitruviusChange once composite changes are supported
 	private final Collection<EChange> changes = new ArrayList<EChange>();
 
+	// Mostly copied from BasicView
 	public ChangeAcceptingView(final InternalVirtualModel vsum, final ViewType<? extends ViewSelector> viewType,
 			final ViewSelection selection) {
 		Preconditions.checkArgument((viewType != null), "view type must not be null");
@@ -88,47 +84,16 @@ public class ChangeAcceptingView implements IChangeAcceptingView, CommittableVie
 		this.vsum = vsum;
 		this.vsum.addChangePropagationListener(this);
 		this.viewResourceSet = ResourceSetUtil.withGlobalFactories(new ResourceSetImpl());
-		this.setupReferenceState();
 		this.update();
 	}
 
-	private void setupReferenceState() {
-		ResourceSetImpl _resourceSetImpl = new ResourceSetImpl();
-		this.originalStateViewResourceSet = _resourceSetImpl;
-		ResourceCopier.copyViewResources(this.viewResourceSet.getResources(), this.originalStateViewResourceSet);
-		HashMap<Resource, Resource> _hashMap = new HashMap<Resource, Resource>();
-		this.originalStateResourceMapping = _hashMap;
-		final Consumer<Resource> _function = (Resource resource) -> {
-			final Function1<Resource, Boolean> _function_1 = (Resource it) -> {
-				URI _uRI = it.getURI();
-				URI _uRI_1 = resource.getURI();
-				return Boolean.valueOf((_uRI == _uRI_1));
-			};
-			this.originalStateResourceMapping.put(resource, IterableExtensions
-					.<Resource>findFirst(this.originalStateViewResourceSet.getResources(), _function_1));
-		};
-		this.viewResourceSet.getResources().forEach(_function);
-	}
-
+	// Mostly copied from BasicView
 	@Override
 	public void update() {
-		this.closeOriginalState();
-
-		// Copy paste of ViewCreatingViewType.updateView(this)
-		this.viewResourceSet.getResources().forEach(Resource::unload);
-		this.viewResourceSet.getResources().clear();
-		var viewSources = this.vsum.getViewSourceModels();
-		var resourcesWithSelectedElements = new ArrayList<Resource>();
-		viewSources.stream()
-				.filter((vs) -> vs.getContents().stream().anyMatch((c) -> this.getSelection().isViewObjectSelected(c)))
-				.forEach((r) -> resourcesWithSelectedElements.add(r));
-		ResourceCopier.copyViewSourceResources(resourcesWithSelectedElements, this.viewResourceSet,
-				(c) -> this.getSelection().isViewObjectSelected(c));
-
 		this.addChangeListeners(this.viewResourceSet);
-		this.setupReferenceState();
 	}
 
+	// Mostly copied from BasicView
 	private void addChangeListeners(final Notifier notifier) {
 		boolean _matched = false;
 		if (notifier instanceof ResourceSet) {
@@ -158,25 +123,20 @@ public class ChangeAcceptingView implements IChangeAcceptingView, CommittableVie
 		}
 	}
 
+	// Mostly copied from ChangeRecordingView
 	@Override
 	public List<PropagatedChange> commitChanges() {
 		if (this.changes.isEmpty())
 			return List.of();
 
+		var transactionalChange = VitruviusChangeFactory.getInstance().createTransactionalChange(this.changes);
+		
 		final List<PropagatedChange> propagatedChanges = vsum
-				.propagateChange(VitruviusChangeFactory.getInstance().createTransactionalChange(this.changes));
+				.propagateChange(transactionalChange);
 
 		this.cleanChanges();
 
 		return propagatedChanges;
-	}
-
-	private void closeOriginalState() {
-		final Consumer<Resource> _function = (Resource it) -> {
-			it.unload();
-		};
-		this.originalStateViewResourceSet.getResources().forEach(_function);
-		this.originalStateViewResourceSet.getResources().clear();
 	}
 
 	@Override
@@ -248,25 +208,9 @@ public class ChangeAcceptingView implements IChangeAcceptingView, CommittableVie
 	}
 
 	public void moveRoot(final EObject object, final URI newLocation) {
-		Preconditions.checkArgument((object != null), "object to move must not be null");
-		Preconditions.checkState(this.getRootObjects().contains(object), "view must contain element %s to move",
-				object);
-		Preconditions.checkArgument((newLocation != null), "URI for new location of root must not be null");
-		final Function1<Resource, Boolean> _function = (Resource it) -> {
-			return Boolean.valueOf(it.getContents().contains(object));
-		};
-		Resource _findFirst = IterableExtensions.<Resource>findFirst(this.viewResourceSet.getResources(), _function);
-		_findFirst.setURI(newLocation);
 	}
 
 	public void registerRoot(final EObject object, final URI persistAt) {
-		Preconditions.checkArgument((object != null), "object to register as root must not be null");
-		Preconditions.checkArgument((persistAt != null), "URI for root to register must not be null");
-		Resource viewResource = this.viewResourceSet.getResource(persistAt, false);
-		if ((viewResource == null)) {
-			viewResource = this.viewResourceSet.createResource(persistAt);
-		}
-		viewResource.getContents().add(object);
 	}
 
 	@Override
@@ -291,13 +235,9 @@ public class ChangeAcceptingView implements IChangeAcceptingView, CommittableVie
 
 	@Override
 	public void startedChangePropagation(VitruviusChange changeToPropagate) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void finishedChangePropagation(Iterable<PropagatedChange> propagatedChanges) {
-		// TODO Auto-generated method stub
-
 	}
 }
