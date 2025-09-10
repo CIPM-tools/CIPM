@@ -1,6 +1,5 @@
 package cipm.consistency.vsum.test.pcm.userinteraction;
 
-import java.util.List;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
@@ -28,13 +27,14 @@ public class NameUserInteraction extends AbstractUserInteraction {
 				.startInteraction();
 
 		if (this.checkNameValue(name)) {
-			this.reportDesiredFeatureValue(nameField, name);
+			var entry = new FeatureEntry(this.triggeringElement, nameField, name);
+			this.reportDesiredFeatureValue(entry);
 		}
 	}
 
 	@Override
-	public void getDesiredFeatureChangedValue(EStructuralFeature feat, Object newValues) {
-		if (feat == this.nameField && this.checkNameValue(newValues)) {
+	public void getDesiredFeatureChangedValue(FeatureEntry featEntry) {
+		if (featEntry.featureEquals(this.nameField) && this.checkNameValue(featEntry.getValue())) {
 			this.finaliseUserInteraction();
 		}
 	}
@@ -44,13 +44,13 @@ public class NameUserInteraction extends AbstractUserInteraction {
 	}
 
 	@Override
-	public boolean hasDesiredFeature(EStructuralFeature feat) {
+	public boolean hasDesiredFeature(EObject obj, EStructuralFeature feat) {
 		return this.nameField == feat;
 	}
 
 	@Override
-	public List<EStructuralFeature> getDesiredFeatures() {
-		return List.of(this.nameField);
+	public Set<FeatureEntry> getDesiredFeatures() {
+		return Set.of(new FeatureEntry(this.triggeringElement, this.nameField));
 	}
 
 	@Override

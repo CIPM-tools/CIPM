@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.palladiosimulator.pcm.repository.BasicComponent;
+import org.palladiosimulator.pcm.repository.Interface;
 import org.palladiosimulator.pcm.repository.OperationInterface;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryFactory;
@@ -39,14 +40,14 @@ public class PcmJavaCprUserInteractionTest extends AbstractPcmJavaCprTest {
 //		Assertions.assertEquals(0, javaResource.getContents().size());
 
 		final var pcmInterfaceName = PcmCPRTestConstants.userInteractionTestInterfaceName;
-
+		final var pcmInterface = new Interface[1];
 		var originalRepoRes = this.getResourceFromPcmFacade(repositoryFileName);
 
 		var changes = this.getEChangesFor(originalRepoRes, (r) -> {
-			final var pcmInterface = RepositoryFactory.eINSTANCE.createOperationInterface();
-			pcmInterface.setEntityName(pcmInterfaceName);
+			pcmInterface[0] = RepositoryFactory.eINSTANCE.createOperationInterface();
+			pcmInterface[0].setEntityName(pcmInterfaceName);
 			var rRepoEObj = (Repository) r.getContents().get(0);
-			rRepoEObj.getInterfaces__Repository().add(pcmInterface);
+			rRepoEObj.getInterfaces__Repository().add(pcmInterface[0]);
 		});
 
 		this.getPcmVsumFacade().addChanges(changes);
@@ -85,7 +86,7 @@ public class PcmJavaCprUserInteractionTest extends AbstractPcmJavaCprTest {
 		Assertions.assertEquals(1, javaResource.getContents().size());
 		var javaInterface = javaResource.getContents().get(0);
 		Assertions.assertEquals(
-				PcmUserInteractionManager.getDesiredFeatureValue(
+				PcmUserInteractionManager.getDesiredFeatureValue(pcmInterface[0],
 						javaInterface.eClass().getEStructuralFeature(CommonsPackage.NAMED_ELEMENT__NAME), true),
 				javaInterface.eGet(javaInterface.eClass().getEStructuralFeature(CommonsPackage.NAMED_ELEMENT__NAME)));
 
@@ -163,7 +164,7 @@ public class PcmJavaCprUserInteractionTest extends AbstractPcmJavaCprTest {
 		Assertions.assertEquals(1, javaResource.getContents().size());
 		var javaInterface = javaResource.getContents().get(0);
 		Assertions.assertEquals(
-				PcmUserInteractionManager.getDesiredFeatureValue(
+				PcmUserInteractionManager.getDesiredFeatureValue(createdInterface[0],
 						javaInterface.eClass().getEStructuralFeature(CommonsPackage.NAMED_ELEMENT__NAME), true),
 				javaInterface.eGet(javaInterface.eClass().getEStructuralFeature(CommonsPackage.NAMED_ELEMENT__NAME)));
 

@@ -42,17 +42,17 @@ public class DistributionUserInteraction extends AbstractUserInteraction {
 	}
 
 	@Override
-	public void getDesiredFeatureChangedValue(EStructuralFeature feat, Object newValues) {
+	public void getDesiredFeatureChangedValue(FeatureEntry featEntry) {
 	}
 
 	@Override
-	public boolean hasDesiredFeature(EStructuralFeature feat) {
+	public boolean hasDesiredFeature(EObject obj, EStructuralFeature feat) {
 		return false;
 	}
 
 	@Override
-	public List<EStructuralFeature> getDesiredFeatures() {
-		return List.of();
+	public Set<FeatureEntry> getDesiredFeatures() {
+		return Set.of();
 	}
 
 	@Override

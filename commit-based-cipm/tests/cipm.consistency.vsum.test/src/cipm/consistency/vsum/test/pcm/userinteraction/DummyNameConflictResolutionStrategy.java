@@ -16,8 +16,9 @@ public class DummyNameConflictResolutionStrategy extends ConflictResolutionStrat
 	public void applyFor(AbstractUserInteraction userInteraction) {
 		if (userInteraction instanceof NameUserInteraction && (EcoreUtil
 				.equals(((NameUserInteraction) userInteraction).getTriggeringElement(), this.triggeringElement))) {
-			PcmUserInteractionManager.setDesiredFeatureValue(null, userInteraction.getDesiredFeatures().get(0),
-					this.predefinedName);
+			var entry = userInteraction.getDesiredFeatures().iterator().next();
+			entry.setOrAddValue(predefinedName);
+			PcmUserInteractionManager.setDesiredFeatureValue(null, entry);
 		}
 	}
 }

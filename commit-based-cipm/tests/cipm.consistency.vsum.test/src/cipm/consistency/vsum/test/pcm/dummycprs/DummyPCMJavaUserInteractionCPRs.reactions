@@ -41,8 +41,8 @@ routine createUserInteractionTestInterface(pcm::Interface addedInterface) {
 	update {
 		var ui = new NameUserInteraction(addedInterface, javaInterface)
 		PcmUserInteractionManager.addUserInteraction(ui)
-		var javaInterfaceName = PcmUserInteractionManager.getDesiredFeatureValue(ui.desiredFeatures.get(0),
-			true) as String
+		var javaInterfaceName = PcmUserInteractionManager.getDesiredFeatureValue(addedInterface,
+			ui.desiredFeatures.get(0).feature, true) as String
 		javaInterface.name = javaInterfaceName
 		logMessage("Java interface created: " + javaInterfaceName)
 		JavaModelAccess.javaModel.contents.add(javaInterface)

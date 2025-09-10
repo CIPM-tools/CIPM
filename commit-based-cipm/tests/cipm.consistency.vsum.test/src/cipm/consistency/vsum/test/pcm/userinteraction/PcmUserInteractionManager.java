@@ -1,10 +1,8 @@
 package cipm.consistency.vsum.test.pcm.userinteraction;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -12,8 +10,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
 public final class PcmUserInteractionManager {
-	private static final Object unsetKey = new Object();
-
 	private static final List<AbstractUserInteraction> wrappers = new ArrayList<AbstractUserInteraction>();
 
 	private static final List<ConflictResolutionStrategy> resolutionStrats = new ArrayList<ConflictResolutionStrategy>();
@@ -21,25 +17,26 @@ public final class PcmUserInteractionManager {
 	 * Assumption: All features only have to be changed once at most after change
 	 * pre-processing
 	 */
-	private static final Map<EStructuralFeature, Object> desiredFeatureValues = new HashMap<EStructuralFeature, Object>();
+	private static final Set<FeatureEntry> desiredFeatureValues = new HashSet<FeatureEntry>();
 	private static final Set<CorrespondenceEntry> desiredCorrespondences = new HashSet<CorrespondenceEntry>();
 
 	public static void addUserInteraction(AbstractUserInteraction userInteraction) {
-		if (!desiredFeatureValues.keySet().containsAll(userInteraction.getDesiredFeatures())
+		if (!desiredFeatureValues.containsAll(userInteraction.getDesiredFeatures())
 				|| !desiredCorrespondences.containsAll(userInteraction.getDesiredCorrespondences())) {
 			resolutionStrats.forEach((s) -> s.applyFor(userInteraction));
 		}
 
 		// Split this part from conflict resolution, since they have to be applied first
-		if (!desiredFeatureValues.keySet().containsAll(userInteraction.getDesiredFeatures())) {
+		if (!desiredFeatureValues.containsAll(userInteraction.getDesiredFeatures())) {
 			if (!wrappers.contains(userInteraction)) {
 				wrappers.add(userInteraction);
 			}
-			userInteraction.getDesiredFeatures().forEach((f) -> {
-				if (!desiredFeatureValues.containsKey(f)) {
-					desiredFeatureValues.put(f, unsetKey);
-				} else if (desiredFeatureValues.get(f) != unsetKey) {
-					userInteraction.getDesiredFeatureChangedValue(f, desiredFeatureValues.get(f));
+			userInteraction.getDesiredFeatures().forEach((feat) -> {
+				var setVal = getSetDesiredFeatureEntry(feat.getEObject(), feat.getFeature());
+				if (setVal.isPresent()) {
+					userInteraction.getDesiredFeatureChangedValue(setVal.get());
+				} else if (getDesiredFeatureEntry(feat.getEObject(), feat.getFeature()).isEmpty()) {
+					desiredFeatureValues.add(feat);
 				}
 			});
 		}
@@ -53,8 +50,7 @@ public final class PcmUserInteractionManager {
 			userInteraction.getDesiredCorrespondences().forEach((cor) -> {
 				var completeCorOpt = getCompleteDesiredCorrespondence(cor.getKnownElement(), cor.getTag());
 				if (completeCorOpt.isPresent()) {
-					var completeCor = completeCorOpt.get();
-					userInteraction.getDesiredCorrespondenceChange(completeCor);
+					userInteraction.getDesiredCorrespondenceChange(completeCorOpt.get());
 				} else if (getDesiredCorrespondenceEntry(cor.getKnownElement(), cor.getTag()).isEmpty()) {
 					desiredCorrespondences.add(cor);
 				}
@@ -66,45 +62,71 @@ public final class PcmUserInteractionManager {
 		wrappers.remove(userInteraction);
 	}
 
-	public static Object getDesiredFeatureValue(EStructuralFeature feat, boolean computeIfAbsent) {
-		var val = desiredFeatureValues.containsKey(feat) ? desiredFeatureValues.get(feat) : unsetKey;
-		if (computeIfAbsent && val == unsetKey) {
+	public static Object getDesiredFeatureValue(EObject obj, EStructuralFeature feat, boolean computeIfAbsent) {
+		FeatureEntry entry = null;
+		var valOpt = getSetDesiredFeatureEntry(obj, feat);
+		if (valOpt.isPresent()) {
+			entry = valOpt.get();
+		} else if ((valOpt = getDesiredFeatureEntry(obj, feat)).isPresent()) {
+			entry = valOpt.get();
+		} else {
+			entry = new FeatureEntry(obj, feat);
+			desiredFeatureValues.add(entry);
+		}
+
+		if (!entry.hasAssignedValue() && computeIfAbsent) {
 			var it = new ArrayList<>(wrappers).iterator();
 
-			while (it.hasNext() && val == unsetKey) {
+			while (it.hasNext() && !entry.hasAssignedValue()) {
 				var currentW = it.next();
-				if (!currentW.hasDesiredFeature(feat)) {
+				if (!currentW.hasDesiredFeature(obj, feat)) {
 					continue;
 				} else {
 					currentW.performManualUserInteraction();
-					val = desiredFeatureValues.get(feat);
+					// Manual interaction should update entry
 				}
 			}
 		}
-		return val != unsetKey ? val : null;
+		return entry.hasAssignedValue() ? entry.getValue() : null;
 	}
 
-	public static boolean hasDesiredFeatureValue(EStructuralFeature feat) {
-		if (desiredFeatureValues.containsKey(feat)) {
-			return desiredFeatureValues.get(feat) != unsetKey;
+	public static boolean hasDesiredFeatureValue(EObject obj, EStructuralFeature feat) {
+		return getSetDesiredFeatureEntry(obj, feat).isPresent();
+	}
+
+	public static Object removeDesiredFeatureValue(EObject obj, EStructuralFeature feat, Object value) {
+		var valOpt = getSetDesiredFeatureEntry(obj, feat);
+		if (valOpt.isEmpty())
+			return null;
+
+		var val = valOpt.get();
+
+		if (val.hasValue(value)) {
+			val.unsetOrRemoveValue(value);
+			return value;
 		}
-		return false;
+
+		return null;
 	}
 
-	public static Object removeDesiredFeatureValue(EStructuralFeature feat) {
-		return desiredFeatureValues.containsKey(feat) ? desiredFeatureValues.remove(feat) : unsetKey;
-	}
-
-	public static void setDesiredFeatureValue(AbstractUserInteraction userInteraction, EStructuralFeature feat,
-			Object value) {
-		desiredFeatureValues.put(feat, value);
-		if (value != unsetKey) {
-			wrappers.forEach((w) -> {
-				if (w != userInteraction) {
-					w.getDesiredFeatureChangedValue(feat, value);
-				}
-			});
+	public static void setDesiredFeatureValue(AbstractUserInteraction userInteraction, FeatureEntry featEntry) {
+		var valOpt = getSetDesiredFeatureEntry(featEntry.getEObject(), featEntry.getFeature());
+		if (valOpt.isPresent()) {
+			valOpt.get().setValuesFrom(featEntry);
+		} else if ((valOpt = getDesiredFeatureEntry(featEntry.getEObject(), featEntry.getFeature())).isPresent()) {
+			valOpt.get().setValuesFrom(featEntry);
+		} else {
+			desiredFeatureValues.add(featEntry);
 		}
+	}
+
+	private static Optional<FeatureEntry> getDesiredFeatureEntry(EObject obj, EStructuralFeature feat) {
+		return desiredFeatureValues.stream().filter((e) -> e.isFeatureEntryFor(obj, feat)).findFirst();
+	}
+
+	private static Optional<FeatureEntry> getSetDesiredFeatureEntry(EObject obj, EStructuralFeature feat) {
+		return desiredFeatureValues.stream().filter((e) -> e.isFeatureEntryFor(obj, feat) && e.hasAssignedValue())
+				.findFirst();
 	}
 
 	private static Optional<CorrespondenceEntry> getDesiredCorrespondenceEntry(EObject knownSide,
