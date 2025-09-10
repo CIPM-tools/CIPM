@@ -65,6 +65,10 @@ public class CorrespondenceEntry {
 		return result;
 	}
 
+	public int getCorrespondenceCount() {
+		return this.correspondents.size();
+	}
+
 	public boolean addCorrespondent(EObject correspondent) {
 		if (eObjectEquals(knownElement, correspondent) || hasCorrespondent(correspondent))
 			return false;

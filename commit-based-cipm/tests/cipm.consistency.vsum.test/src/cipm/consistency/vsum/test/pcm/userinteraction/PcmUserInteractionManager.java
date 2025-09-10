@@ -119,6 +119,13 @@ public final class PcmUserInteractionManager {
 				.filter((t) -> t.hasAnyCompleteCorrespondencesWith(knownSide, correspondenceTag)).findFirst();
 	}
 
+	private static Optional<CorrespondenceEntry> getCompleteDesiredCorrespondence(EObject knownSide, EObject otherSide,
+			String correspondenceTag) {
+		return desiredCorrespondences.stream()
+				.filter((t) -> t.hasCorrespondence(knownSide, otherSide) && t.isTagEqual(correspondenceTag))
+				.findFirst();
+	}
+
 	public static CorrespondenceEntry getDesiredCorrespondence(EObject knownSide, String correspondenceTag,
 			boolean computeIfAbsent) {
 		var optCompleteCor = getCompleteDesiredCorrespondence(knownSide, correspondenceTag);
@@ -153,9 +160,18 @@ public final class PcmUserInteractionManager {
 	}
 
 	public static Object removeDesiredCorrespondence(EObject knownSide, EObject otherSide, String correspondenceTag) {
-		// TODO Fix
-		var cor = getDesiredCorrespondence(knownSide, correspondenceTag, true);
-		return cor != null ? desiredCorrespondences.remove(cor) : null;
+		var optCor = getCompleteDesiredCorrespondence(knownSide, otherSide, correspondenceTag);
+		if (optCor.isEmpty())
+			return null;
+
+		var cor = optCor.get();
+		cor.removeCorrespondent(otherSide);
+
+		if (!cor.hasAnyCompleteCorrespondences()) {
+			desiredCorrespondences.remove(cor);
+		}
+
+		return cor;
 	}
 
 	public static void setDesiredCorrespondence(AbstractUserInteraction userInteraction, CorrespondenceEntry corEntry) {
