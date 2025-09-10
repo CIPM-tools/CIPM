@@ -1,6 +1,5 @@
 package cipm.consistency.vsum.test.pcm.cprunittests;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +7,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.net4j.util.collection.Triplet;
 import org.emftext.language.java.classifiers.ClassifiersFactory;
-import org.emftext.language.java.classifiers.Interface;
 import org.emftext.language.java.commons.CommonsPackage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
@@ -19,8 +17,6 @@ import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryFactory;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
 
-import cipm.consistency.cpr.pcmjava.JavaModelAccess;
-import cipm.consistency.models.pcm.PcmFacade;
 import cipm.consistency.vsum.test.pcm.userinteraction.DummyDistributionConflictResolutionStrategy;
 import cipm.consistency.vsum.test.pcm.userinteraction.DummyNameConflictResolutionStrategy;
 import cipm.consistency.vsum.test.pcm.userinteraction.PcmUserInteractionManager;
@@ -28,7 +24,6 @@ import mir.reactions.dummyPCMJavaUserInteractionCPRs.DummyPCMJavaUserInteraction
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
 import tools.vitruv.dsls.reactions.runtime.correspondence.CorrespondenceFactory;
 import tools.vitruv.dsls.reactions.runtime.correspondence.ReactionsCorrespondence;
-import tools.vitruv.dsls.reactions.runtime.correspondence.impl.ReactionsCorrespondenceImpl;
 
 public class PcmJavaCprUserInteractionTest extends AbstractPcmJavaCprTest {
 	@Override
@@ -282,7 +277,6 @@ public class PcmJavaCprUserInteractionTest extends AbstractPcmJavaCprTest {
 		corView.addCorrespondenceBetween(cls1, cmpToBeDeleted, "");
 		corView.addCorrespondenceBetween(cls2, cmpToBeDeleted, "");
 		this.getPcmVsumFacade().saveCorrespondences();
-		this.reloadVsumFacade();
 
 		//
 		// Conflict resolution strategy setup
