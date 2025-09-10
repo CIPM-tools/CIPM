@@ -308,15 +308,14 @@ public class PcmJavaCprUserInteractionTest extends AbstractPcmJavaCprTest {
 		var postPropCorView = this.getPcmVsumFacade().getCorrespondenceView();
 		for (var cor : correspondences) {
 			var cmp = cor.getKnownElement();
-			var cls = cor.getCorrespondentsFor(cmp).iterator().next();
 			var tag = cor.getTag();
 
 			var cmpCorrespondents = postPropCorView.getCorrespondingEObjects(cmp, tag);
-			var clsCorrespondents = postPropCorView.getCorrespondingEObjects(cls, tag);
-
 			Assertions.assertEquals(1, cmpCorrespondents.size());
+			var cls = cor.getCorrespondentsForKnownElement().iterator().next();
 			Assertions.assertTrue(EcoreUtil.equals(cls, cmpCorrespondents.iterator().next()));
 
+			var clsCorrespondents = postPropCorView.getCorrespondingEObjects(cls, tag);
 			Assertions.assertEquals(1, clsCorrespondents.size());
 			Assertions.assertTrue(EcoreUtil.equals(cmp, clsCorrespondents.iterator().next()));
 		}

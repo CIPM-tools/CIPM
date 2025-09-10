@@ -10,8 +10,10 @@ import java.util.Set;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 
+import com.google.common.base.Preconditions;
+
 public class CorrespondenceEntry {
-	private EObject knownElement;
+	private final EObject knownElement;
 	private final Set<EObject> correspondents;
 	private String tag;
 
@@ -24,10 +26,14 @@ public class CorrespondenceEntry {
 	}
 
 	public CorrespondenceEntry(EObject knownElement, Set<EObject> correspondents, String tag) {
+		Preconditions.checkArgument(knownElement != null, "knownElement cannot be null");
+		Preconditions.checkArgument(correspondents != null, "correspondents cannot be null");
+		Preconditions.checkArgument(tag != null, "tag cannot be null");
+
 		// Correspondences are supposed to be symmetric and handled as such
 		// Therefore, knownElement too belongs in correspondents
 		this.correspondents = new HashSet<>(correspondents);
-		this.setKnownElement(knownElement, false);
+		this.knownElement = knownElement;
 
 		this.tag = tag;
 	}
@@ -37,6 +43,7 @@ public class CorrespondenceEntry {
 	}
 
 	public void setTag(String tag) {
+		Preconditions.checkArgument(tag != null, "tag cannot be null");
 		this.tag = tag;
 	}
 
@@ -44,34 +51,22 @@ public class CorrespondenceEntry {
 		return knownElement;
 	}
 
-	public void setKnownElement(EObject newKnownElement, boolean removeCurrentKnownElement) {
-		if (eObjectEquals(this.knownElement, newKnownElement))
-			return;
-
-		if (removeCurrentKnownElement) {
-			this.correspondents.remove(this.knownElement);
-			this.knownElement = null;
-		}
-
-		this.knownElement = newKnownElement;
-		this.addCorrespondent(this.knownElement);
-	}
-
-	public EObject popKnownElement() {
-		var poppedElement = this.knownElement;
-		this.correspondents.remove(poppedElement);
-		this.knownElement = this.correspondents.iterator().next();
-		return poppedElement;
+	public Set<EObject> getCorrespondentsForKnownElement() {
+		return new HashSet<>(correspondents);
 	}
 
 	public Set<EObject> getCorrespondentsFor(EObject correspondent) {
-		var cors = new HashSet<>(correspondents);
-		cors.remove(correspondent);
-		return cors;
+		if (eObjectEquals(knownElement, correspondent))
+			return this.getCorrespondentsForKnownElement();
+
+		var result = new HashSet<EObject>();
+		if (this.hasCorrespondent(correspondent))
+			result.add(knownElement);
+		return result;
 	}
 
 	public boolean addCorrespondent(EObject correspondent) {
-		if (hasCorrespondent(correspondent))
+		if (eObjectEquals(knownElement, correspondent) || hasCorrespondent(correspondent))
 			return false;
 
 		return this.correspondents.add(correspondent);
@@ -108,11 +103,12 @@ public class CorrespondenceEntry {
 	}
 
 	public void clearCorrespondents() {
-		this.correspondents.removeIf((c) -> !eObjectEquals(knownElement, c));
+		this.correspondents.clear();
 	}
 
 	public boolean hasCorrespondence(EObject correspondent1, EObject correspondent2) {
-		return hasCorrespondent(correspondent1) && hasCorrespondent(correspondent2);
+		return eObjectEquals(knownElement, correspondent1) && hasCorrespondent(correspondent2)
+				|| eObjectEquals(knownElement, correspondent2) && hasCorrespondent(correspondent1);
 	}
 
 	public boolean hasCorrespondent(EObject correspondent) {
@@ -132,7 +128,7 @@ public class CorrespondenceEntry {
 	}
 
 	public boolean hasAnyCompleteCorrespondences() {
-		return this.correspondents.size() > 1;
+		return !this.correspondents.isEmpty();
 	}
 
 	public boolean hasAnyCompleteCorrespondences(String tag) {
@@ -140,7 +136,8 @@ public class CorrespondenceEntry {
 	}
 
 	public boolean hasAnyCompleteCorrespondencesWith(EObject correspondent) {
-		return hasCorrespondent(correspondent) && hasAnyCompleteCorrespondences();
+		return (eObjectEquals(knownElement, correspondent) && hasAnyCompleteCorrespondences())
+				|| (hasCorrespondent(correspondent));
 	}
 
 	public boolean hasAnyCompleteCorrespondencesWith(EObject correspondent, String tag) {
@@ -158,7 +155,8 @@ public class CorrespondenceEntry {
 
 		var castedO = (CorrespondenceEntry) obj;
 
-		return this.correspondents.size() == castedO.correspondents.size()
+		return eObjectEquals(this.knownElement, castedO.knownElement)
+				&& this.correspondents.size() == castedO.correspondents.size()
 				&& this.hasCorrespondents(castedO.correspondents);
 	}
 }
