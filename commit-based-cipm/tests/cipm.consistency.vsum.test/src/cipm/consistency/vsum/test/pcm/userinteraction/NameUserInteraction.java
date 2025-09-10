@@ -5,7 +5,6 @@ import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.net4j.util.collection.Triplet;
 import org.emftext.language.java.commons.CommonsPackage;
 import org.emftext.language.java.commons.NamedElement;
 
@@ -55,12 +54,12 @@ public class NameUserInteraction extends AbstractUserInteraction {
 	}
 
 	@Override
-	public Set<Triplet<EObject, EObject, String>> getDesiredCorrespondences() {
+	public Set<CorrespondenceEntry> getDesiredCorrespondences() {
 		return Set.of();
 	}
 
 	@Override
-	public void getDesiredCorrespondenceChange(EObject knownSide, EObject otherSide, String correspondenceTag) {
+	public void getDesiredCorrespondenceChange(CorrespondenceEntry corEntry) {
 	}
 
 	@Override

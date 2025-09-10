@@ -5,14 +5,13 @@ import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.net4j.util.collection.Triplet;
 
 public abstract class AbstractUserInteraction {
 	public abstract void performManualUserInteraction();
 
 	public abstract void getDesiredFeatureChangedValue(EStructuralFeature feat, Object newValues);
 
-	public abstract void getDesiredCorrespondenceChange(EObject knownSide, EObject otherSide, String correspondenceTag);
+	public abstract void getDesiredCorrespondenceChange(CorrespondenceEntry corEntry);
 
 	public abstract boolean hasDesiredFeature(EStructuralFeature feat);
 
@@ -20,7 +19,7 @@ public abstract class AbstractUserInteraction {
 
 	public abstract List<EStructuralFeature> getDesiredFeatures();
 
-	public abstract Set<Triplet<EObject, EObject, String>> getDesiredCorrespondences();
+	public abstract Set<CorrespondenceEntry> getDesiredCorrespondences();
 
 	protected boolean isDesiredFeatureValuePresent(EStructuralFeature feat) {
 		return PcmUserInteractionManager.hasDesiredFeatureValue(feat);
@@ -38,16 +37,15 @@ public abstract class AbstractUserInteraction {
 		return PcmUserInteractionManager.hasDesiredCorrespondence(knownSide, correspondenceTag);
 	}
 
-	protected void reportDesiredCorrespondence(EObject knownSide, EObject otherSide, String correspondenceTag) {
-		PcmUserInteractionManager.setDesiredCorrespondence(this, knownSide, otherSide, correspondenceTag);
+	protected void reportDesiredCorrespondence(CorrespondenceEntry corEntry) {
+		PcmUserInteractionManager.setDesiredCorrespondence(this, corEntry);
 	}
 
 	protected void finaliseUserInteraction() {
 		PcmUserInteractionManager.removeUserInteraction(this);
 	}
 
-	protected Triplet<EObject, EObject, String> retrieveDesiredCorrespondenceIfPresent(EObject knownSide,
-			String correspondenceTag) {
+	protected CorrespondenceEntry retrieveDesiredCorrespondenceIfPresent(EObject knownSide, String correspondenceTag) {
 		return PcmUserInteractionManager.getDesiredCorrespondence(knownSide, correspondenceTag, false);
 	}
 }

@@ -10,8 +10,6 @@ import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.net4j.util.collection.Triplet;
 
 public final class PcmUserInteractionManager {
 	private static final Object unsetKey = new Object();
@@ -24,7 +22,7 @@ public final class PcmUserInteractionManager {
 	 * pre-processing
 	 */
 	private static final Map<EStructuralFeature, Object> desiredFeatureValues = new HashMap<EStructuralFeature, Object>();
-	private static final Set<Triplet<EObject, EObject, String>> desiredCorrespondences = new HashSet<Triplet<EObject, EObject, String>>();
+	private static final Set<CorrespondenceEntry> desiredCorrespondences = new HashSet<CorrespondenceEntry>();
 
 	public static void addUserInteraction(AbstractUserInteraction userInteraction) {
 		if (!desiredFeatureValues.keySet().containsAll(userInteraction.getDesiredFeatures())
@@ -53,12 +51,11 @@ public final class PcmUserInteractionManager {
 				wrappers.add(userInteraction);
 			}
 			userInteraction.getDesiredCorrespondences().forEach((cor) -> {
-				var completeCorOpt = getCompleteDesiredCorrespondence(cor.getElement1(), cor.getElement3());
+				var completeCorOpt = getCompleteDesiredCorrespondence(cor.getKnownElement(), cor.getTag());
 				if (completeCorOpt.isPresent()) {
 					var completeCor = completeCorOpt.get();
-					userInteraction.getDesiredCorrespondenceChange(completeCor.getElement1(), completeCor.getElement2(),
-							completeCor.getElement3());
-				} else if (getDesiredCorrespondenceEntry(cor.getElement1(), cor.getElement3()).isEmpty()) {
+					userInteraction.getDesiredCorrespondenceChange(completeCor);
+				} else if (getDesiredCorrespondenceEntry(cor.getKnownElement(), cor.getTag()).isEmpty()) {
 					desiredCorrespondences.add(cor);
 				}
 			});
@@ -110,25 +107,20 @@ public final class PcmUserInteractionManager {
 		}
 	}
 
-	private static Optional<Triplet<EObject, EObject, String>> getDesiredCorrespondenceEntry(EObject knownSide,
-			String correspondenceTag) {
-		return desiredCorrespondences.stream().filter(
-				(t) -> (EcoreUtil.equals(t.getElement1(), knownSide) && EcoreUtil.equals(t.getElement2(), knownSide))
-						&& t.getElement3().equals(correspondenceTag))
-				.findFirst();
-	}
-
-	private static Optional<Triplet<EObject, EObject, String>> getCompleteDesiredCorrespondence(EObject knownSide,
+	private static Optional<CorrespondenceEntry> getDesiredCorrespondenceEntry(EObject knownSide,
 			String correspondenceTag) {
 		return desiredCorrespondences.stream()
-				.filter((t) -> (EcoreUtil.equals(t.getElement1(), knownSide) && t.getElement2() != null
-						|| EcoreUtil.equals(t.getElement2(), knownSide) && t.getElement1() != null)
-						&& t.getElement3().equals(correspondenceTag))
-				.findFirst();
+				.filter((t) -> t.hasCorrespondent(knownSide) && t.isTagEqual(correspondenceTag)).findFirst();
 	}
 
-	public static Triplet<EObject, EObject, String> getDesiredCorrespondence(EObject knownSide,
-			String correspondenceTag, boolean computeIfAbsent) {
+	private static Optional<CorrespondenceEntry> getCompleteDesiredCorrespondence(EObject knownSide,
+			String correspondenceTag) {
+		return desiredCorrespondences.stream()
+				.filter((t) -> t.hasAnyCompleteCorrespondencesWith(knownSide, correspondenceTag)).findFirst();
+	}
+
+	public static CorrespondenceEntry getDesiredCorrespondence(EObject knownSide, String correspondenceTag,
+			boolean computeIfAbsent) {
 		var optCompleteCor = getCompleteDesiredCorrespondence(knownSide, correspondenceTag);
 		if (optCompleteCor.isPresent())
 			return optCompleteCor.get();
@@ -137,7 +129,7 @@ public final class PcmUserInteractionManager {
 			return null;
 
 		if (getDesiredCorrespondenceEntry(knownSide, correspondenceTag).isEmpty()) {
-			desiredCorrespondences.add(new Triplet<>(knownSide, null, correspondenceTag));
+			desiredCorrespondences.add(new CorrespondenceEntry(knownSide, correspondenceTag));
 		}
 
 		var it = new ArrayList<>(wrappers).iterator();
@@ -166,17 +158,13 @@ public final class PcmUserInteractionManager {
 		return cor != null ? desiredCorrespondences.remove(cor) : null;
 	}
 
-	public static void setDesiredCorrespondence(AbstractUserInteraction userInteraction, EObject knownSide,
-			EObject otherSide, String correspondenceTag) {
-		var corEntryOpt = getDesiredCorrespondenceEntry(knownSide, correspondenceTag);
-		var corEntry = corEntryOpt.orElseGet(() -> null);
-		if (corEntry != null) {
-			if (EcoreUtil.equals(corEntry.getElement1(), knownSide))
-				corEntry.setElement2(otherSide);
-			if (EcoreUtil.equals(corEntry.getElement2(), knownSide))
-				corEntry.setElement1(otherSide);
+	public static void setDesiredCorrespondence(AbstractUserInteraction userInteraction, CorrespondenceEntry corEntry) {
+		var corEntryOpt = getDesiredCorrespondenceEntry(corEntry.getKnownElement(), corEntry.getTag());
+		var ce = corEntryOpt.orElseGet(() -> null);
+		if (ce != null) {
+			ce.addCorrespondences(corEntry);
 		} else {
-			desiredCorrespondences.add(new Triplet<EObject, EObject, String>(knownSide, otherSide, correspondenceTag));
+			desiredCorrespondences.add(corEntry);
 		}
 	}
 

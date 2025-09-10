@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.net4j.util.collection.Triplet;
 
 import tools.vitruv.change.interaction.UserInteractionFactory;
 
@@ -37,7 +36,8 @@ public class DistributionUserInteraction extends AbstractUserInteraction {
 					.startInteraction();
 			var otherSide = possibleDistributionTargets.get(choice);
 
-			this.reportDesiredCorrespondence(contentToDistribute, otherSide, correspondenceTag);
+			this.reportDesiredCorrespondence(
+					new CorrespondenceEntry(contentToDistribute, otherSide, correspondenceTag));
 		}
 	}
 
@@ -56,14 +56,13 @@ public class DistributionUserInteraction extends AbstractUserInteraction {
 	}
 
 	@Override
-	public Set<Triplet<EObject, EObject, String>> getDesiredCorrespondences() {
-		return this.correspondingContentsToDistribute.stream()
-				.map((c) -> new Triplet<EObject, EObject, String>(c, null, correspondenceTag))
+	public Set<CorrespondenceEntry> getDesiredCorrespondences() {
+		return this.correspondingContentsToDistribute.stream().map((c) -> new CorrespondenceEntry(c, correspondenceTag))
 				.collect(Collectors.toUnmodifiableSet());
 	}
 
 	@Override
-	public void getDesiredCorrespondenceChange(EObject knownSide, EObject otherSide, String correspondenceTag) {
+	public void getDesiredCorrespondenceChange(CorrespondenceEntry corEntry) {
 		if (this.correspondingContentsToDistribute.stream()
 				.allMatch((c) -> isDesiredCorrespondencePresent(c, correspondenceTag))) {
 			this.finaliseUserInteraction();

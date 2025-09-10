@@ -3,9 +3,7 @@ package cipm.consistency.vsum.test.pcm.cprunittests;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.net4j.util.collection.Triplet;
 import org.emftext.language.java.classifiers.ClassifiersFactory;
 import org.emftext.language.java.commons.CommonsPackage;
 import org.junit.jupiter.api.Assertions;
@@ -17,6 +15,7 @@ import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryFactory;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
 
+import cipm.consistency.vsum.test.pcm.userinteraction.CorrespondenceEntry;
 import cipm.consistency.vsum.test.pcm.userinteraction.DummyDistributionConflictResolutionStrategy;
 import cipm.consistency.vsum.test.pcm.userinteraction.DummyNameConflictResolutionStrategy;
 import cipm.consistency.vsum.test.pcm.userinteraction.PcmUserInteractionManager;
@@ -281,8 +280,8 @@ public class PcmJavaCprUserInteractionTest extends AbstractPcmJavaCprTest {
 		//
 		// Conflict resolution strategy setup
 		//
-		List<Triplet<EObject, EObject, String>> correspondences = List.of(new Triplet<>(cmpToPersistOne, cls1, ""),
-				new Triplet<>(cmpToPersistTwo, cls2, ""));
+		List<CorrespondenceEntry> correspondences = List.of(new CorrespondenceEntry(cmpToPersistOne, cls1, ""),
+				new CorrespondenceEntry(cmpToPersistTwo, cls2, ""));
 
 		PcmUserInteractionManager.addConflictResolutionStrategy(
 				new DummyDistributionConflictResolutionStrategy(cmpToBeDeleted, correspondences));
@@ -308,9 +307,9 @@ public class PcmJavaCprUserInteractionTest extends AbstractPcmJavaCprTest {
 		// Correspondence tests
 		var postPropCorView = this.getPcmVsumFacade().getCorrespondenceView();
 		for (var cor : correspondences) {
-			var cmp = cor.getElement1();
-			var cls = cor.getElement2();
-			var tag = cor.getElement3();
+			var cmp = cor.getKnownElement();
+			var cls = cor.getCorrespondentsFor(cmp).iterator().next();
+			var tag = cor.getTag();
 
 			var cmpCorrespondents = postPropCorView.getCorrespondingEObjects(cmp, tag);
 			var clsCorrespondents = postPropCorView.getCorrespondingEObjects(cls, tag);

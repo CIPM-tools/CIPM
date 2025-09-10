@@ -5,7 +5,6 @@ import cipm.consistency.vsum.test.pcm.userinteraction.NameUserInteraction
 import cipm.consistency.vsum.test.pcm.userinteraction.DistributionUserInteraction
 import java.util.ArrayList
 import org.eclipse.emf.ecore.EObject
-import org.eclipse.emf.ecore.util.EcoreUtil
 
 import "http://www.emftext.org/java" as java
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
@@ -59,11 +58,7 @@ routine removeUserInteractionTestComponent(pcm::BasicComponent cmp, pcm::Reposit
 		check cmp.entityName == PcmCPRTestConstants.componentContentDistributionTestDeletedComponentName
 	}
 	update {
-		val correspondents = correspondenceModel.getCorrespondingEObjects(cmp)
-		val javaCorrespondents = new ArrayList<EObject>()
-		for (obj : correspondents) {
-			javaCorrespondents.add(obj)
-		}
+		val javaCorrespondents = new ArrayList<EObject>(correspondenceModel.getCorrespondingEObjects(cmp))
 
 		val possibleDistributionTargets = new ArrayList<EObject>(repo.components__Repository)
 		possibleDistributionTargets.remove(cmp)
@@ -71,14 +66,10 @@ routine removeUserInteractionTestComponent(pcm::BasicComponent cmp, pcm::Reposit
 		PcmUserInteractionManager.addUserInteraction(
 			new DistributionUserInteraction(cmp, new ArrayList(javaCorrespondents), possibleDistributionTargets)
 		)
-		for (obj : correspondents) {
-			val cor = PcmUserInteractionManager.getDesiredCorrespondence(obj, "", true)
-			if (EcoreUtil.equals(cor.element1, obj)) {
-				correspondenceModel.addCorrespondenceBetween(obj, cor.element2, "")
-			} else if (EcoreUtil.equals(cor.element2, obj)) {
-				correspondenceModel.addCorrespondenceBetween(obj, cor.element1, "")
-			} else {
-				throw new IllegalStateException("Inconsistent correspondences")
+		for (javaObj : javaCorrespondents) {
+			val cor = PcmUserInteractionManager.getDesiredCorrespondence(javaObj, "", true)
+			for (pcmObj : cor.getCorrespondentsFor(javaObj)) {
+				addCorrespondenceBetween(javaObj, pcmObj, "")
 			}
 		}
 	}
