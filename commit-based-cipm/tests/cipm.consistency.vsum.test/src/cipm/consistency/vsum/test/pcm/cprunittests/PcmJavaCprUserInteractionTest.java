@@ -305,6 +305,21 @@ public class PcmJavaCprUserInteractionTest extends AbstractPcmJavaCprTest {
 		Assertions.assertNull(prop.getException());
 		this.logPropagatedChanges(prop);
 
-		// TODO Implement correspondence tests to automatically verify their correctness
+		// Correspondence tests
+		var postPropCorView = this.getPcmVsumFacade().getCorrespondenceView();
+		for (var cor : correspondences) {
+			var cmp = cor.getElement1();
+			var cls = cor.getElement2();
+			var tag = cor.getElement3();
+
+			var cmpCorrespondents = postPropCorView.getCorrespondingEObjects(cmp, tag);
+			var clsCorrespondents = postPropCorView.getCorrespondingEObjects(cls, tag);
+
+			Assertions.assertEquals(1, cmpCorrespondents.size());
+			Assertions.assertTrue(EcoreUtil.equals(cls, cmpCorrespondents.iterator().next()));
+
+			Assertions.assertEquals(1, clsCorrespondents.size());
+			Assertions.assertTrue(EcoreUtil.equals(cmp, clsCorrespondents.iterator().next()));
+		}
 	}
 }
