@@ -30,7 +30,11 @@ public abstract class AbstractJaMoPPParserSimilarityTestFactory {
 
 	/**
 	 * Since there should always be a way to determine the expected similarity
-	 * results, this method is implemented to provide a default way to do so. <br>
+	 * results, this method is implemented to provide a default way to do so. The
+	 * default value (return value) of this method will be used, unless another
+	 * IExpectedSimilarityResultProvider is set via
+	 * {@link #setExpectedSimilarityResultProvider(IExpectedSimilarityResultProvider)}.
+	 * <br>
 	 * <br>
 	 * Defaults to {@link ResourceReferenceEqualitySimilarityResultProvider}. <br>
 	 * <br>

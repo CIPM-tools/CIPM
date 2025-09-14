@@ -19,11 +19,11 @@ public interface IJaMoPPParserTestGenerationStrategy {
 	 * concrete implementor uses. The returned iterator {@code it} will return an
 	 * int array of size 2 upon {@code idxs = it.next()}, until all intended dynamic
 	 * tests are generated. Ints stored in {@code idxs} stand for the indices of
-	 * elements in resArr and pathArr, which are to be used in the current dynamic
-	 * test. In other words, the current dynamic test will use the
-	 * {@code idxs[0]}-th elements for the left hand side (lhs) and
-	 * {@code idxs[1]}-th elements for the right hand side (rhs) in the current
-	 * dynamic test.
+	 * elements in the model resource and model source file directory path arrays,
+	 * which are to be used in the current dynamic test. More precisely, the current
+	 * dynamic test will use the {@code idxs[0]}-th elements for the left hand side
+	 * (lhs) and {@code idxs[1]}-th elements for the right hand side (rhs) in the
+	 * current dynamic test.
 	 * 
 	 * @param testResourceCount The amount of test resources that are present. Used
 	 *                          to mark when the returned iterator finishes,

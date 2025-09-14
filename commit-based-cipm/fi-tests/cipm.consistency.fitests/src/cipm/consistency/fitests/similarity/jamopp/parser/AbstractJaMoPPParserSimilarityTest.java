@@ -79,8 +79,9 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	private static final String timeMeasurementSaveFolderPrefix = "Test run - ";
 	/**
 	 * The amount of saved time measurement folders under
-	 * {@link #timeMeasurementsSaveRootPath} from previous test runs. Used to
-	 * compute {@link ParserTestFileLayout#setTimeMeasurementsFileSavePath(Path)}
+	 * {@link #timeMeasurementsSaveRootPath} from previous test runs (starts with 1,
+	 * not 0, hence the "+1" in its declaration). Used to compute
+	 * {@link ParserTestFileLayout#setTimeMeasurementsFileSavePath(Path)}
 	 * <p>
 	 * Computed here as a static final variable, so that the current test run uses
 	 * the same folder across all concrete test classes
@@ -106,8 +107,10 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	 * <br>
 	 * {@link AbstractJaMoPPParserSimilarityTest}: Sets up the file layout for the
 	 * test {@link #getTestFileLayout()} and the time measuring mechanism
-	 * {@link #setupForTimeMeasurements()}. See
-	 * {@link AbstractJaMoPPParserSimilarityTest} for more information.
+	 * {@link #setupForTimeMeasurements()}. <b><i>Set up logging before
+	 * {@code super.setUp()} and takes a time measurement for this method</i></b>.
+	 * See {@link AbstractJaMoPPParserSimilarityTest} for more information on the
+	 * interactions between this method and the dynamic tests.
 	 */
 	@BeforeEach
 	@Override
@@ -131,9 +134,11 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	 * {@link AbstractJaMoPPParserSimilarityTest}: Performs various operations on
 	 * model resources that were parsed in the dynamic tests, according to the
 	 * preferences that are encoded in {@link #getResourceTestOptions()}, such as
-	 * {@link ParserTestOptions#shouldSaveCachedModelResources()}. It then finishes
+	 * {@link ParserTestOptions#shouldSaveCachedModelResources()}. Takes a time
+	 * measurement for this method. <b><i> After {@code super.tearDown()}, finishes
 	 * time measurement taking and saves the time measurements from the current test
-	 * class. See {@link AbstractJaMoPPParserSimilarityTest} for more information.
+	 * class</b></i>. See {@link AbstractJaMoPPParserSimilarityTest} for more
+	 * information on the interactions between this method and the dynamic tests.
 	 */
 	@AfterEach
 	@Override
@@ -569,7 +574,6 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	 * @see {@link #discoverModelSourceFileDirsAt(Path)} and
 	 *      {@link #discoverModelSourceParentDirsAt(Path)} for finding models to
 	 *      parse
-	 * @see {@link TestFactory} for what tests are to be generated
 	 */
 	@TestFactory
 	public Collection<DynamicNode> createTests() {
@@ -670,7 +674,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	 * Dynamic tests will be generated for each strategy in the returned collection,
 	 * regardless of what dynamic tests where generated previously. <br>
 	 * <br>
-	 * This method allows splitting dynamic test generation; with respect to what
+	 * This method allows splitting dynamic test generation, with respect to what
 	 * model resources will be compared to which ones, and in what order.
 	 * 
 	 * @return A collection of test generation strategies, which encapsulate how

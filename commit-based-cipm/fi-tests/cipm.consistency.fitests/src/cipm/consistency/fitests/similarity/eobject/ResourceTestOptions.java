@@ -50,7 +50,8 @@ public class ResourceTestOptions {
 	/**
 	 * Copies all options from the given instance; i.e. after calling this method,
 	 * all options inside the given instance will override the corresponding options
-	 * in this.
+	 * in this. All sub-types should implement a version of this method for their
+	 * own type, in order to enable partially copying options from super-types.
 	 */
 	public void copyOptionsFrom(ResourceTestOptions opts) {
 		this.shouldUnloadAllModelResources = opts.shouldUnloadAllModelResources;

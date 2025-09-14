@@ -22,18 +22,31 @@ import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.ParserT
  * {@link Comparison} objects. <br>
  * <br>
  * The difference between this and {@link EAllContentSimilarityTestFactory} is
- * that the comparison here is much more detailed.
+ * that the comparison here is much more detailed. <br>
+ * <br>
+ * Currently, {@link JavaModelComparator} is used for model comparison.
  * 
  * @author Alp Torac Genc
  */
 public class ModelComparisonTestFactory extends AbstractJaMoPPParserSimilarityTestFactory {
 	private static final String description = "Java model comparison on both sides";
+	/**
+	 * Whether the order of model resource contents should matter in model
+	 * comparison
+	 */
 	private boolean contentOrderMatters;
 
+	/**
+	 * Constructs an instance, for which {@code contentOrderMatters == true}
+	 */
 	public ModelComparisonTestFactory() {
 		this(true);
 	}
 
+	/**
+	 * @param contentOrderMatters Whether the order of model resource contents
+	 *                            should matter in model comparison
+	 */
 	public ModelComparisonTestFactory(boolean contentOrderMatters) {
 		this.contentOrderMatters = contentOrderMatters;
 	}
@@ -69,8 +82,8 @@ public class ModelComparisonTestFactory extends AbstractJaMoPPParserSimilarityTe
 	 * Asserts that the result of similarity checking via model comparison results
 	 * in differences or not (denoted by expectedResult). <br>
 	 * <br>
-	 * Compares lhsModelResource and rhsModelResource, as well as rhsModelResource
-	 * and lhsModelResource; in order to ensure that the comparison is symmetric.
+	 * Compares lhsModelResource to rhsModelResource, as well as rhsModelResource to
+	 * lhsModelResource; in order to ensure that the comparison is symmetric.
 	 */
 	protected void testSimilarityWithModelComparison(Resource lhsModelResource, Resource rhsModelResource,
 			Boolean expectedResult) {

@@ -22,7 +22,8 @@ import cipm.consistency.fitests.repositorytests.util.difffilter.DiffFilter;
  * re-using various GIT elements.<br>
  * <br>
  * Uses {@link QuickCommentRemover}, which removes commentaries in an
- * approximative fashion. Therefore, the computed results may be inaccurate.
+ * approximative fashion. Therefore, the computed results may not always be
+ * fully accurate.
  * 
  * @author Alp Torac Genc
  */

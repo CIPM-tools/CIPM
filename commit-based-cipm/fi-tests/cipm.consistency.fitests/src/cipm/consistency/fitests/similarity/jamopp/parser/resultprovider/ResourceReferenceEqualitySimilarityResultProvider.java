@@ -6,7 +6,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 
 /**
  * Provides expected similarity results based on the reference equality of model
- * resources.
+ * resources (i.e. {@code modelResource1 == modelResource2}).
  * 
  * @author Alp Torac Genc
  */

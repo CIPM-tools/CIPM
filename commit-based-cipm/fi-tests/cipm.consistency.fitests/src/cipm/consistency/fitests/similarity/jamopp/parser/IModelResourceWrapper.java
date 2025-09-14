@@ -24,9 +24,8 @@ import org.eclipse.emf.ecore.resource.Resource;
  */
 public interface IModelResourceWrapper {
 	/**
-	 * Parses all Java-Model source files under the given model source file
-	 * directory. The parsed model resource can be accessed via
-	 * {@link #getModelResource()}.
+	 * Parses all model source files under the given model source file directory.
+	 * The parsed model resource can be accessed via {@link #getModelResource()}.
 	 * 
 	 * @param modelDir         A model source file directory
 	 * @param modelResourceURI The URI that the parsed model resource will reside
@@ -81,14 +80,15 @@ public interface IModelResourceWrapper {
 	 * Loads all parsed model resources.
 	 * 
 	 * @return Whether all parsed model resources have been loaded. If no resources
-	 *         have been parsed, no resource will be loaded.
+	 *         have been parsed, no resource will be loaded and this method will
+	 *         return true.
 	 */
 	public boolean loadParsedResources();
 
 	/**
-	 * Sets the URIs of all parsed resources with respect to the given URI, which
-	 * will be assigned to the parsed model resource that contains all direct
-	 * contents of the model source files.
+	 * Sets the URIs of all parsed resources according to the given URI, which will
+	 * be assigned to the parsed model resource that contains all direct contents of
+	 * the model source files.
 	 * 
 	 * @param newParsedModelResourceURI The new URI of the parsed model resource
 	 *                                  ({@link #getModelResource()} in this case)

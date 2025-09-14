@@ -115,11 +115,13 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper {
 	 * proxy objects within directModelResources, as well as the native Java library
 	 * resources that are needed by modelResourceSet. <br>
 	 * <br>
-	 * If {@link #isSplitArtificialResource()}, moves all non-direct model resources
-	 * (i.e. model resources that are not a part of directModelResources), into the
-	 * created ArtificialResource. This way, direct model resource contents inside
-	 * directModelResources can be compared more efficiently, since the non-direct
-	 * model resources will likely be excluded from the comparison.
+	 * If {@link #isSplitArtificialResource()} == true, moves all non-direct model
+	 * resources (i.e. model resources that are not a part of directModelResources),
+	 * into the created ArtificialResource. This way, direct model resource contents
+	 * inside directModelResources can be compared more efficiently, since the
+	 * non-direct model resources will likely be excluded from the comparison. If
+	 * {@link #isSplitArtificialResource()} == false, only performs TrivialRecovery
+	 * on modelResourceSet.
 	 * 
 	 * @param modelResourceSet      The model resource set that was the result of
 	 *                              parsing a model. An ArtificialResource will be
@@ -407,8 +409,8 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper {
 	}
 
 	/**
-	 * @return The merged model resource, which contains all contents of all
-	 *         (directly) parsed model source files
+	 * @return The merged model resource, which contains all (parsed) contents of
+	 *         all (directly) model source files
 	 */
 	@Override
 	public Resource getModelResource() {

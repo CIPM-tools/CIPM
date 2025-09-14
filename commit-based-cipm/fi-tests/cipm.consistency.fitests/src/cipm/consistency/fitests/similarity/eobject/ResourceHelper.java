@@ -20,14 +20,15 @@ import cipm.consistency.fitests.similarity.SimilarityTestLogger;
  */
 public class ResourceHelper {
 	/**
-	 * @return The resource registry, which will be modified by this instance.
+	 * @return The (singleton) resource registry, which will be modified by this
+	 *         instance.
 	 */
 	private static Resource.Factory.Registry getResourceRegistry() {
 		return Resource.Factory.Registry.INSTANCE;
 	}
 
 	/**
-	 * @return An empty {@link ResourceSetImpl}
+	 * @return An empty {@link ResourceSetImpl} instance
 	 */
 	public static ResourceSet createResourceSet() {
 		return new ResourceSetImpl();

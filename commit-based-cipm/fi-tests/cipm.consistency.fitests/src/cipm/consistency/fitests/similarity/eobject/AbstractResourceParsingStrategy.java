@@ -10,7 +10,7 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
 /**
  * An abstract class meant to be extended by classes that envelop the means to
- * parse Resource instances from model source files. <br>
+ * parse model Resource instances from model source files. <br>
  * <br>
  * Implementors are expected to:
  * <ul>

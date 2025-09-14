@@ -21,12 +21,15 @@ public abstract class AbstractSimilarityTest {
 	 * <br>
 	 * It is suggested to have a call to {@code super.setUp()} as the FIRST
 	 * statement in overriding implementations. Doing so circumvents potential
-	 * errors caused by the order of set up operations. <br>
+	 * errors caused by the order of set up operations, such as logging not working
+	 * as expected. <b><i>Sub-types are still allowed to perform other preparatory
+	 * steps prior to {@code super.setUp()}, however</b></i>. <br>
 	 * <br>
 	 * {@link AbstractSimilarityTest}: Sets up the underlying
 	 * {@link ISimilarityCheckerContainer}, which will be used for similarity
 	 * checking through {@link #isSimilar(Object, Object)} and
-	 * {@link #areSimilar(Collection, Collection)}.
+	 * {@link #areSimilar(Collection, Collection)}. Also sets up logging via
+	 * {@link SimilarityTestLogger#setUpLogger()}.
 	 */
 	@BeforeEach
 	public void setUp() {
@@ -41,7 +44,9 @@ public abstract class AbstractSimilarityTest {
 	 * <br>
 	 * It is suggested to have a call to {@code super.tearDown()} as the LAST
 	 * statement in overriding implementations. Doing so circumvents potential
-	 * errors caused by the order of clean up operations. <br>
+	 * errors caused by the order of clean up operations. <b><i> Sub-types are still
+	 * allowed to perform other finalisation steps after {@code super.tearDown()},
+	 * however </b></i>. <br>
 	 * <br>
 	 * {@link AbstractSimilarityTest}: Cleans up the underlying
 	 * {@link ISimilarityCheckerContainer}

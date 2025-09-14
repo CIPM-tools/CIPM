@@ -21,7 +21,8 @@ public interface IExpectedSimilarityResultProvider {
 	 * Model resources and the respective paths should be provided via separate
 	 * parameters, as the original files that were parsed into model resources (i.e.
 	 * model source files / model source file directories) may reside under
-	 * different paths, which cannot be determined from the model resource alone.
+	 * different paths, which cannot always be determined from the model resource
+	 * alone.
 	 * 
 	 * @param lhsModelResource          Left-hand side model resource
 	 * @param lhsModelSourceFileDirPath The path that the resource lhsRes was
