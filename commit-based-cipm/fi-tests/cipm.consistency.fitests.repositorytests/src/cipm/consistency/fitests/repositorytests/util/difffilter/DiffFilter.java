@@ -77,6 +77,11 @@ public class DiffFilter {
 	 * The line separator used by the current OS.
 	 */
 	private static final String lineSeparator = System.lineSeparator();
+	/**
+	 * A regex (as string) for finding line separators in a less system dependent
+	 * way.
+	 */
+	private static final String lineSeparatorRegex = "\\r?\\n";
 
 	/**
 	 * @return Splits the given (multi-line) text into its lines, where lines are
@@ -87,7 +92,7 @@ public class DiffFilter {
 
 		// Do not use System.lineSeparator since GIT uses UNIX terminal
 		// UNIX terminal uses "\n" for new line
-		var diffLines = text.split("\\r?\\n");
+		var diffLines = text.split(lineSeparatorRegex);
 
 		for (var l : diffLines) {
 			lines.add(l);
@@ -97,8 +102,8 @@ public class DiffFilter {
 	}
 
 	/**
-	 * Concatenates the given lines into a single String by gluing them with the
-	 * line separator used by the system.
+	 * Concatenates the given lines into a single String by concatenating them with
+	 * the line separator used by the system.
 	 * 
 	 * @return All lines as one String. Returns empty String if lines is null.
 	 */
@@ -117,8 +122,8 @@ public class DiffFilter {
 	}
 
 	/**
-	 * Concatenates the given lines into a single String by gluing them with the
-	 * line separator used by the system.
+	 * Concatenates the given lines into a single String by concatenating them with
+	 * the line separator used by the system.
 	 * 
 	 * @return All lines as one String. Returns empty String if lines is null.
 	 */
