@@ -14,9 +14,9 @@ import cipm.consistency.fitests.similarity.eobject.ResourceHelper;
 import cipm.consistency.fitests.similarity.jamopp.JaMoPPResourceParsingStrategy;
 
 /**
- * A class that wraps a model resource, which is either already parsed or is to
- * be parsed. It encapsulates the desired model resource, as well as all other
- * resources it requires:
+ * A class that wraps a (merged) Java model resource, which is either already
+ * parsed or is to be parsed. It encapsulates the desired model resource, as
+ * well as all other resources it requires:
  * <ul>
  * <li>Merged model resource: Contains all direct contents of the model files
  * (i.e. the Java code directly present in model files)
@@ -28,8 +28,6 @@ import cipm.consistency.fitests.similarity.jamopp.JaMoPPResourceParsingStrategy;
  * </ul>
  * The main purpose of this class is to make operations on parsed model
  * resources, and other resources parsed in the process, tidier.
- * 
- * TODO Add override tags, remove redundant commentary
  * 
  * @author Alp Torac Genc
  */
@@ -52,26 +50,26 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper {
 	/**
 	 * @see {@link #JaMoPPModelResourceWrapper(AbstractResourceHelper, JaMoPPResourceParsingStrategy)}
 	 */
-	private JaMoPPResourceParsingStrategy parsingStrat;
+	private JaMoPPResourceParsingStrategy modelResourceParsingStrat;
 
 	/**
 	 * @see {@link #getModelResource()}
 	 */
 	private Resource mergedModelResource;
 	/**
-	 * The artificial resource, which contains all contents required by the merged
-	 * model resource that were not directly present in the model source files
+	 * @see {@link #prepareArtificialResource(ResourceSet, List, URI)}
 	 */
 	private Resource artificialResource;
 
 	/**
 	 * Constructs an instance.
 	 * 
-	 * @param parsingStrat The parser that will be used to parse the model resource
-	 *                     and all other necessary resources
+	 * @param modelResourceParsingStrat The parser that will be used to parse the
+	 *                                  model resource and all other necessary
+	 *                                  resources
 	 */
-	public JaMoPPModelResourceWrapper(JaMoPPResourceParsingStrategy parsingStrat) {
-		this.parsingStrat = parsingStrat;
+	public JaMoPPModelResourceWrapper(JaMoPPResourceParsingStrategy modelResourceParsingStrat) {
+		this.modelResourceParsingStrat = modelResourceParsingStrat;
 	}
 
 	/**
@@ -82,29 +80,31 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper {
 	}
 
 	/**
-	 * @param correspondingResourceFileNameWithoutExt The name of the model
-	 *                                                resource, whose corresponding
-	 *                                                ArtificialResource's name
-	 *                                                (without file extension) is to
-	 *                                                be computed
+	 * @param correspondingModelResourceFileNameWithoutExt The name of the model
+	 *                                                     resource, whose
+	 *                                                     corresponding
+	 *                                                     ArtificialResource's name
+	 *                                                     (without file extension)
+	 *                                                     is to be computed
 	 * @return The name of the ArtificialResource corresponding to the model
 	 *         resource with the given name.
 	 */
-	protected String getArtificialResourceFileName(String correspondingResourceFileNameWithoutExt) {
-		return correspondingResourceFileNameWithoutExt + artificialResourceName + "."
-				+ this.parsingStrat.getResourceFileExtension();
+	protected String getArtificialResourceFileName(String correspondingModelResourceFileNameWithoutExt) {
+		return correspondingModelResourceFileNameWithoutExt + artificialResourceName + "."
+				+ this.modelResourceParsingStrat.getResourceFileExtension();
 	}
 
 	/**
-	 * @param correspondingResourceURI The URI of the model resource, whose
-	 *                                 ArtificialResource's URI is to be computed
+	 * @param correspondingModelResourceURI The URI of the model resource, whose
+	 *                                      ArtificialResource's URI is to be
+	 *                                      computed
 	 * @return The URI of the ArtificialResource of the model resource with the
 	 *         given URI
 	 */
-	protected URI getArtificialResourceURI(URI correspondingResourceURI) {
-		var fileNameWithoutExt = correspondingResourceURI.trimFileExtension().lastSegment();
+	protected URI getArtificialResourceURI(URI correspondingModelResourceURI) {
+		var fileNameWithoutExt = correspondingModelResourceURI.trimFileExtension().lastSegment();
 		var arName = this.getArtificialResourceFileName(fileNameWithoutExt);
-		var arURI = correspondingResourceURI.trimSegments(1);
+		var arURI = correspondingModelResourceURI.trimSegments(1);
 		return arURI.appendSegment(arName);
 	}
 
@@ -138,7 +138,7 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper {
 	protected Resource prepareArtificialResource(ResourceSet modelResourceSet, List<Resource> directModelResources,
 			URI artificialResourceURI) {
 		// Create the ArtificialResource
-		parsingStrat.performTrivialRecovery(modelResourceSet);
+		modelResourceParsingStrat.performTrivialRecovery(modelResourceSet);
 
 		Resource artificialResourceForModelResSet = null;
 
@@ -215,7 +215,7 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper {
 
 		// Parser returns the same ResourceSet it was previously given
 		// via setResourceSet(...)
-		modelResourceSet = parsingStrat.parseModelResource(modelDir);
+		modelResourceSet = modelResourceParsingStrat.parseModelResource(modelDir);
 
 		var resCount = modelResourceSet.getResources().size();
 		SimilarityTestLogger.logDebugMsg(String.format("%d resources have been parsed under %s", resCount, modelDir),
@@ -280,19 +280,19 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper {
 	}
 
 	/**
-	 * Loads the merged model resource that was previously parsed.
-	 * 
-	 * @param modelResourceURI The URI, at which a previously parsed merged model
-	 *                         resource resides
+	 * @implSpec Loads the resource with the given URI as
+	 *           {@link #getModelResource()}
 	 */
+	@Override
 	public void loadModelResource(URI modelResourceURI) {
 		this.mergedModelResource = ResourceHelper.loadResource(modelResourceURI);
 	}
 
 	/**
-	 * @return Whether all parsed resources have been saved. If no resources have
-	 *         been parsed, no resources will be saved.
+	 * @implSpec Saves both {@link #getModelResource()} and the ArtificialResource
+	 *           (if existent, see {@link JaMoPPModelResourceWrapper})
 	 */
+	@Override
 	public boolean saveResources() {
 		var result = true;
 		if (mergedModelResource != null) {
@@ -311,9 +311,10 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper {
 	}
 
 	/**
-	 * @return Whether all parsed resources have been deleted. If no resources have
-	 *         been parsed, no resource will be deleted.
+	 * @implSpec Deletes both {@link #getModelResource()} and the ArtificialResource
+	 *           (if existent, see {@link JaMoPPModelResourceWrapper})
 	 */
+	@Override
 	public boolean deleteResources() {
 		var result = false;
 		if (mergedModelResource != null) {
@@ -333,9 +334,10 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper {
 	}
 
 	/**
-	 * @return Whether all parsed resources have been unloaded. If no resources have
-	 *         been parsed, no resource will be unloaded.
+	 * @implSpec Unloads both {@link #getModelResource()} and the ArtificialResource
+	 *           (if existent, see {@link JaMoPPModelResourceWrapper})
 	 */
+	@Override
 	public boolean unloadResources() {
 		var result = false;
 		if (mergedModelResource != null) {
@@ -355,31 +357,35 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper {
 	}
 
 	/**
-	 * Only checks whether the merged model resource is loaded, because other
-	 * resources will be automatically loaded on demand.
+	 * @implSpec Only checks whether the merged model resource is loaded, because
+	 *           other resources will be automatically loaded on demand.
 	 * 
 	 * @return Whether the merged model resource is loaded
 	 */
+	@Override
 	public boolean isModelResourceLoaded() {
 		return this.mergedModelResource != null && this.mergedModelResource.isLoaded();
 	}
 
 	/**
-	 * @return Whether all parsed model resources have been loaded. If no resources
-	 *         have been parsed, no resource will be loaded.
+	 * @implSpec Loads both {@link #getModelResource()} and the ArtificialResource
+	 *           (if existent, see {@link JaMoPPModelResourceWrapper})
 	 */
+	@Override
 	public boolean loadParsedResources() {
 		var result = true;
 		if (mergedModelResource != null && !this.mergedModelResource.isLoaded()) {
 			SimilarityTestLogger.logDebugMsg("Merged model resource exists, loading it now", this.getClass());
-			result = ResourceHelper.unloadResource(mergedModelResource);
+			ResourceHelper.loadResource(mergedModelResource);
+			result = mergedModelResource.isLoaded();
 			SimilarityTestLogger.logDebugMsg(String.format("%s merged model resource at %s",
 					result ? "Loaded" : "Could not load", mergedModelResource.getURI()), this.getClass());
 
 		}
 		if (artificialResource != null && !this.artificialResource.isLoaded()) {
-			SimilarityTestLogger.logDebugMsg("Artificial resource exists, unloading it now", this.getClass());
-			result = result && ResourceHelper.unloadResource(artificialResource);
+			SimilarityTestLogger.logDebugMsg("Artificial resource exists, loading it now", this.getClass());
+			ResourceHelper.loadResource(artificialResource);
+			result = artificialResource.isLoaded();
 			SimilarityTestLogger.logDebugMsg(String.format("%s artificial resource at %s",
 					result ? "Loaded" : "Could not load", artificialResource.getURI()), this.getClass());
 		}
@@ -387,13 +393,10 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper {
 	}
 
 	/**
-	 * Sets the URIs of all parsed resources with respect to the given URI, which
-	 * will be assigned to the parsed model resource that contains all direct
-	 * contents of the model source files.
-	 * 
-	 * @param newParsedModelResourceURI The new URI of the parsed model resource
-	 *                                  ({@link #getModelResource()} in this case)
+	 * @implSpec Sets the URI of {@link #getModelResource()} to the given URI, then
+	 *           sets URI of ArtificialResource accordingly (if existent).
 	 */
+	@Override
 	public void setModelResourcesURI(URI newParsedModelResourceURI) {
 		if (mergedModelResource != null) {
 			mergedModelResource.setURI(newParsedModelResourceURI);
@@ -407,6 +410,7 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper {
 	 * @return The merged model resource, which contains all contents of all
 	 *         (directly) parsed model source files
 	 */
+	@Override
 	public Resource getModelResource() {
 		return mergedModelResource;
 	}
@@ -415,6 +419,7 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper {
 	 * @return Whether there is a parsed model resource
 	 *         ({@link #getModelResource()}) saved in this instance.
 	 */
+	@Override
 	public boolean modelResourceExists() {
 		return this.getModelResource() != null;
 	}
