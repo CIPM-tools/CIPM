@@ -42,6 +42,7 @@ public class GSONPersistingStrategy implements ITimeMeasurementPersistingStrateg
 		this.fileContentTimePattern = fileContentTimePattern;
 	}
 
+	@Override
 	public void save(ITimeMeasurementDataStructure dataStructure, Path measurementsSavePath) {
 		// Ensure that all necessary parent directories exist prior to saving
 		var measurementsFile = measurementsSavePath.toFile();

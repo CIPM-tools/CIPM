@@ -192,6 +192,7 @@ public class QuickCommentRemover implements ICommentRemover {
 	 * 
 	 * @see {@link QuickCommentRemover} for more information.
 	 */
+	@Override
 	public String removeComments(String text) {
 		var result = "";
 
@@ -247,6 +248,7 @@ public class QuickCommentRemover implements ICommentRemover {
 	 * <br>
 	 * Does not account for the broken comments to be a part of a multi-line string.
 	 */
+	@Override
 	public boolean hasLeadingBrokenComment(String text) {
 		var blockCommentStartIdx = text.indexOf(blockCommentStart);
 		var blockCommentEndIdx = text.indexOf(blockCommentEnd);
@@ -260,6 +262,7 @@ public class QuickCommentRemover implements ICommentRemover {
 	 * <br>
 	 * Does not account for the broken comments to be a part of a multi-line string.
 	 */
+	@Override
 	public boolean hasTrailingBrokenComment(String text) {
 		var blockCommentStartIdx = text.lastIndexOf(blockCommentStart);
 		var blockCommentEndIdx = text.lastIndexOf(blockCommentEnd);

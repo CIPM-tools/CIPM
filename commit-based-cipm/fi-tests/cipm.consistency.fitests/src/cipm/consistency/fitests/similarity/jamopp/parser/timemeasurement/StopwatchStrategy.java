@@ -57,6 +57,7 @@ public class StopwatchStrategy implements ITimeMeasuringStrategy {
 	 *           call is the time measurement. Not using them similar to brackets
 	 *           will result in problems.
 	 */
+	@Override
 	public void startTimeMeasurement(ParserTestTimeMeasurementKey key, ITimeMeasurementTag tag) {
 		/*
 		 * Suspends the potential outer method's Stopwatch, so that time measurements do
@@ -85,6 +86,7 @@ public class StopwatchStrategy implements ITimeMeasuringStrategy {
 	 *           method call and this method call is the time measurement. Not using
 	 *           them similar to brackets will result in inaccurate measurements.
 	 */
+	@Override
 	public TimeMeasurementEntry stopTimeMeasurement() {
 		var currentMethodPair = watchEntryPairs.pop();
 		var watch = currentMethodPair.getWatch();
