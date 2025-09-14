@@ -25,10 +25,12 @@ public class FileUtil {
 	}
 
 	/**
-	 * Reads the given file and removes line breaks and whitespaces. <br>
+	 * Reads the effective text in the given file. <br>
 	 * <br>
 	 * If the given file cannot be read (due to IOException), returns an empty
 	 * string.
+	 * 
+	 * @see {@link #getEffectiveText(String)}
 	 */
 	public static String readEffectiveText(File f) {
 		var content = "";
@@ -40,7 +42,17 @@ public class FileUtil {
 					String.format("Could not read: %s, returning empty string", f.toPath().toString()), FileUtil.class);
 		}
 
-		return content.replaceAll("\\n", "").replaceAll("\\r", "").replaceAll("\\s", "");
+		return getEffectiveText(content);
+	}
+
+	/**
+	 * @return The given text without line breaks and whitespaces. Returns empty
+	 *         string ("") if the given text is null.
+	 */
+	public static String getEffectiveText(String text) {
+		if (text == null)
+			return "";
+		return text.replaceAll("\\n", "").replaceAll("\\r", "").replaceAll("\\s", "");
 	}
 
 	/**
