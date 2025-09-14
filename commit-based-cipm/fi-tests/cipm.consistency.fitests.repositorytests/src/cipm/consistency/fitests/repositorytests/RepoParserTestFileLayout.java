@@ -33,14 +33,6 @@ public class RepoParserTestFileLayout extends ParserTestFileLayout {
 	 */
 	private String repoName;
 
-	public RepoParserTestFileLayout() {
-		super();
-	}
-
-	public RepoParserTestFileLayout(ParserTestFileLayout layout) {
-		super(layout);
-	}
-
 	/**
 	 * Sets the name of the repository that will be locally cloned and used in tests
 	 */
@@ -122,5 +114,18 @@ public class RepoParserTestFileLayout extends ParserTestFileLayout {
 	@Override
 	public Path getModelSourceParentRootDirPath() {
 		return this.getRepoCloneRootDirPath().resolve(this.repoName);
+	}
+
+	/**
+	 * Copies the attributes of the given layout instance. All sub-types should
+	 * implement a version of this method for their own type, in order to enable
+	 * partially copying attributes from super-types.
+	 */
+	public void copyLayoutFrom(RepoParserTestFileLayout layout) {
+		super.copyLayoutFrom(layout);
+		this.expectedSimilarityResultCacheDirName = layout.expectedSimilarityResultCacheDirName;
+		this.expectedSimilarityResultCacheFileName = layout.expectedSimilarityResultCacheFileName;
+		this.repoCloneRootDirName = layout.repoCloneRootDirName;
+		this.repoName = layout.repoName;
 	}
 }

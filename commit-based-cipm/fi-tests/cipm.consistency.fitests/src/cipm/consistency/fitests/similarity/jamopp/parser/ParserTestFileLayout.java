@@ -39,21 +39,6 @@ public class ParserTestFileLayout {
 	 */
 	private String modelResourceFileExtension;
 
-	public ParserTestFileLayout() {
-	}
-
-	/**
-	 * Constructs a new instance and copies the attributes of the given layout
-	 * instance.
-	 */
-	public ParserTestFileLayout(ParserTestFileLayout layout) {
-		this.testModelResourceFilesSaveDirPath = layout.testModelResourceFilesSaveDirPath;
-		this.cacheSaveDirPath = layout.cacheSaveDirPath;
-		this.timeMeasurementsFileSavePath = layout.timeMeasurementsFileSavePath;
-		this.timeMeasurementFileExtension = layout.timeMeasurementFileExtension;
-		this.modelResourceFileExtension = layout.modelResourceFileExtension;
-	}
-
 	/**
 	 * {@link #getModelSourceFileRootDirPath(Path)}
 	 */
@@ -220,5 +205,18 @@ public class ParserTestFileLayout {
 	 */
 	private Path getAbsoluteCurrentDirectory() {
 		return new File("").getAbsoluteFile().toPath();
+	}
+
+	/**
+	 * Copies the attributes of the given layout instance. All sub-types should
+	 * implement a version of this method for their own type, in order to enable
+	 * partially copying attributes from super-types.
+	 */
+	public void copyLayoutFrom(ParserTestFileLayout layout) {
+		this.testModelResourceFilesSaveDirPath = layout.testModelResourceFilesSaveDirPath;
+		this.cacheSaveDirPath = layout.cacheSaveDirPath;
+		this.timeMeasurementsFileSavePath = layout.timeMeasurementsFileSavePath;
+		this.timeMeasurementFileExtension = layout.timeMeasurementFileExtension;
+		this.modelResourceFileExtension = layout.modelResourceFileExtension;
 	}
 }

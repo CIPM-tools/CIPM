@@ -99,7 +99,8 @@ public abstract class AbstractJaMoPPParserRepoTest extends AbstractJaMoPPParserS
 	 * <br>
 	 * {@link AbstractJaMoPPParserRepoTest}: Loads expected similarity results
 	 * needed by tests, if their file exists. See
-	 * {@link AbstractJaMoPPParserRepoTest} for more information.
+	 * {@link AbstractJaMoPPParserRepoTest} for more information on the interactions
+	 * between this method and the dynamic tests.
 	 */
 	@BeforeEach
 	@Override
@@ -140,7 +141,8 @@ public abstract class AbstractJaMoPPParserRepoTest extends AbstractJaMoPPParserS
 	 * <br>
 	 * {@link AbstractJaMoPPParserRepoTest}: Saves the computed expected similarity
 	 * results needed by tests and deletes the local repository clone, if desired.
-	 * See {@link AbstractJaMoPPParserRepoTest} for more information.
+	 * See {@link AbstractJaMoPPParserRepoTest} for more information on the
+	 * interactions between this method and the dynamic tests.
 	 */
 	@AfterEach
 	@Override
@@ -201,7 +203,10 @@ public abstract class AbstractJaMoPPParserRepoTest extends AbstractJaMoPPParserS
 	@Override
 	protected RepoParserTestFileLayout initParserTestFileLayout() {
 		var parserTestLayout = super.initParserTestFileLayout();
-		var layout = new RepoParserTestFileLayout(parserTestLayout);
+		var layout = new RepoParserTestFileLayout();
+
+		layout.copyLayoutFrom(parserTestLayout);
+
 		layout.setRepoName(this.getRepoName());
 		layout.setExpectedSimilarityResultCacheDirName(expectedSimilarityResultCacheDirName);
 		layout.setExpectedSimilarityResultCacheFileName(expectedSimilarityResultCacheFileName);
