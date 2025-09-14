@@ -22,8 +22,7 @@ import cipm.consistency.fitests.repositorytests.util.difffilter.DiffFilter;
  * re-using various GIT elements.<br>
  * <br>
  * Uses {@link QuickCommentRemover}, which removes commentaries in an
- * approximative fashion. Therefore, <b><i>the computed results may be
- * misleading</i></b>.
+ * approximative fashion. Therefore, the computed results may be inaccurate.
  * 
  * @author Alp Torac Genc
  */
@@ -36,7 +35,10 @@ public class RepoTestSimilarityValueEstimator {
 	 * @param df          The {@link DiffFormatter} that created diffEntries
 	 * @param diffEntries A list of {@link DiffEntry} instances from diffing 2
 	 *                    commits C1 and C2
-	 * @return Whether model resources parsed from C1 and C2 are similar
+	 * @return Whether model resources parsed from C1 and C2 are similar according
+	 *         to this instance
+	 * 
+	 *         TODO Fix the regex used in the "code" local variable
 	 */
 	public boolean getExpectedSimilarityValueFor(OutputStream os, DiffFormatter df, List<DiffEntry> diffEntries) {
 		try (var outputStream = os; var diffFormatter = df) {
@@ -59,7 +61,8 @@ public class RepoTestSimilarityValueEstimator {
 	/**
 	 * @param diffEntries A list of {@link DiffEntry} instances from diffing 2
 	 *                    commits C1 and C2
-	 * @return Whether model resources parsed from C1 and C2 are similar
+	 * @return Whether model resources parsed from C1 and C2 are similar according
+	 *         to this instance
 	 */
 	public boolean getExpectedSimilarityValueFor(List<DiffEntry> diffEntries) {
 		try (var os = new ByteArrayOutputStream()) {
@@ -101,7 +104,8 @@ public class RepoTestSimilarityValueEstimator {
 	 *                  given commits
 	 * @param commitID1 A commit from git
 	 * @param commitID2 Another commit from git
-	 * @return Whether model resources parsed from the given commits are similar.
+	 * @return Whether model resources parsed from the given commits are similar
+	 *         according to this instance
 	 */
 	public boolean getExpectedSimilarityValueFor(Git git, String commitID1, String commitID2) {
 		try (var reader = git.getRepository().newObjectReader()) {
@@ -140,8 +144,13 @@ public class RepoTestSimilarityValueEstimator {
 
 	/**
 	 * Computes whether applying the changes in the given diff DOES NOT introduce
-	 * any changes to the effective code. Assuming the given diff is computed by
-	 * comparing the commits oldCommit and newCommit:
+	 * any changes to the effective code, i.e. code without commentary and without
+	 * whitespaces. This is the case, if all inserting lines combined and all
+	 * removing lines combined are textually equal, such that applying the diff
+	 * patch results in the same effective code. <br>
+	 * <br>
+	 * Assuming the given diff is computed by comparing the commits oldCommit and
+	 * newCommit:
 	 * <ul>
 	 * <li>true: oldCommit is still similar to newCommit, without applying the diff
 	 * patch script on oldCommit
@@ -149,7 +158,8 @@ public class RepoTestSimilarityValueEstimator {
 	 * that oldCommit and newCommit are not similar
 	 * </ul>
 	 * 
-	 * @param lines The lines from a given diff patch script, without any metadata
+	 * @param lines The effective code lines from a given diff patch script, without
+	 *              any metadata
 	 */
 	public boolean computeExpectedSimilarityValue(List<String> lines) {
 		var added = new ArrayList<String>();
@@ -179,10 +189,7 @@ public class RepoTestSimilarityValueEstimator {
 	}
 
 	/**
-	 * Sets the number of context lines that will be considered while diffing, if no
-	 * {@link DiffFormatter} is explicitly provided. Defaults to
-	 * {@value #defaultContextLineCount}, unless re-set via
-	 * {@link #setContextLineCount(int)}.
+	 * {@link #getContextLineCount()}
 	 */
 	public void setContextLineCount(int contextLineCount) {
 		this.contextLineCount = contextLineCount;

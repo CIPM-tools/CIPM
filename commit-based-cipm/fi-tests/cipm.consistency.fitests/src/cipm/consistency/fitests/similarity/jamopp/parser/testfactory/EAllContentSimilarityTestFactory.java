@@ -54,11 +54,6 @@ public class EAllContentSimilarityTestFactory extends AbstractJaMoPPParserSimila
 		ParserTestTimeMeasurer.getInstance().stopTimeMeasurement();
 	}
 
-	/**
-	 * Ensures that all contents of the parsed models are only then similar
-	 * (accounting for their order too), if the content of their source files are
-	 * equal (in terms of code, not whitespace nor comments etc.).
-	 */
 	@Override
 	public DynamicNode createTestsFor(Resource res1, Path path1, Resource res2, Path path2) {
 		return DynamicTest.dynamicTest(String.format("%s vs %s", path1.getFileName(), path2.getFileName()), () -> {

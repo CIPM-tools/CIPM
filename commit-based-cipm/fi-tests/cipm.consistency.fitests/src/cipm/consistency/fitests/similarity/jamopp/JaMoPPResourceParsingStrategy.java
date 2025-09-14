@@ -14,11 +14,10 @@ import jamopp.resource.JavaResource2Factory;
 /**
  * A class that uses {@link JaMoPPJDTSingleFileParser} to parse Java model
  * Resources. Provides methods for performing {@link TrivialRecovery} in cases,
- * where bindings are used. <br>
- * <br>
+ * where bindings are used.
  * <ul>
- * <li>Given model paths should point at the top-most directory of the Java
- * project
+ * <li>Given model source file directory paths should point at the top-most
+ * directory of the Java project
  * <li>Supports Regex expressions for model paths as exclusion patterns
  * </ul>
  * 

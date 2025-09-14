@@ -29,8 +29,7 @@ public class RepoCacheSimilarityResultProvider implements IExpectedSimilarityRes
 	}
 
 	/**
-	 * @implSpec Determines the expected similarity result based on the given result
-	 *           cache.
+	 * @implSpec Determines the expected similarity result based on the given cache.
 	 */
 	@Override
 	public boolean getExpectedSimilarityResultFor(Resource lhsRes, Path lhsResPath, Resource rhsRes, Path rhsResPath) {

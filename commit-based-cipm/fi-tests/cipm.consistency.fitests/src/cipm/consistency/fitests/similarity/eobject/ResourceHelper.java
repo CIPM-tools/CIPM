@@ -72,7 +72,7 @@ public class ResourceHelper {
 	 * Adds the extension to factory mapping into
 	 * {@link Resource.Factory.Registry}.<br>
 	 * <br>
-	 * Said entry denotes that resources with the given extension are saved using
+	 * Said entry denotes that resources with the given extension are created using
 	 * the given factory.
 	 * 
 	 * @see {@link #setDefaultResourceRegistry()}
@@ -84,6 +84,8 @@ public class ResourceHelper {
 	/**
 	 * Attempts to save the given resource instance. Instead of throwing exceptions,
 	 * returns true/false to indicate success/failure.
+	 * 
+	 * TODO Log the error message
 	 */
 	public static boolean saveResource(Resource res) {
 		var uri = res.getURI();
@@ -113,6 +115,8 @@ public class ResourceHelper {
 
 	/**
 	 * Loads the given resource
+	 * 
+	 * TODO Log error message
 	 */
 	public static void loadResource(Resource res) {
 		try {
@@ -150,7 +154,7 @@ public class ResourceHelper {
 	}
 
 	/**
-	 * @param resSet      The resource ste, which will contain the created resource
+	 * @param resSet      The resource set, which will contain the created resource
 	 * @param resourceURI The URI, where the resource points at
 	 * @return An empty resource inside the given resource set, with the given URI
 	 */
@@ -160,7 +164,7 @@ public class ResourceHelper {
 
 	/**
 	 * @param resourceURI The URI, where the resource points at
-	 * @return An empty resource, inside a freshly created resource set, with the
+	 * @return An empty resource inside a freshly created resource set, with the
 	 *         given URI
 	 */
 	public static Resource createResource(URI resourceURI) {
@@ -186,6 +190,8 @@ public class ResourceHelper {
 
 	/**
 	 * Deletes the given resource
+	 * 
+	 * TODO Log error message
 	 * 
 	 * @return Whether the file of the given resource is deleted.
 	 */

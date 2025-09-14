@@ -6,11 +6,13 @@ import cipm.consistency.fitests.similarity.eobject.ResourceTestOptions;
  * A class that contains various options for test classes that parse
  * {@link Resource} instances and cache them:
  * <ul>
- * <li>shouldSaveCachedResources: Whether the cached resources should be saved
- * after tests
- * <li>shouldRemoveResourcesFromCache: Whether cached resources should be
+ * <li>shouldSaveCachedResources: Whether the cached model resources should be
+ * saved after tests
+ * <li>shouldRemoveResourcesFromCache: Whether cached model resources should be
  * removed after each test deleted after tests
  * </ul>
+ * 
+ * TODO Rename methods
  * 
  * @see {@link ResourceTestOptions} for other options
  * @author Alp Torac Genc

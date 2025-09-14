@@ -21,11 +21,15 @@ import cipm.consistency.fitests.similarity.jamopp.JaMoPPResourceParsingStrategy;
  * <li>Merged model resource: Contains all direct contents of the model files
  * (i.e. the Java code directly present in model files)
  * <li>Artificial resource: Contains all contents that are required by the
- * merged model resource, but are not directly present in model files, such as
- * contents of native Java libraries and synthetic elements.
+ * merged model resource, but are not directly present in model source files,
+ * such as contents of native Java libraries and synthetic elements. Whether
+ * Artificial resource is split from merged resource is controlled with
+ * {@link #setSplitArtificialResource(boolean)}.
  * </ul>
  * The main purpose of this class is to make operations on parsed model
  * resources, and other resources parsed in the process, tidier.
+ * 
+ * TODO Add override tags, remove redundant commentary
  * 
  * @author Alp Torac Genc
  */
@@ -56,7 +60,7 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper {
 	private Resource mergedModelResource;
 	/**
 	 * The artificial resource, which contains all contents required by the merged
-	 * model resource that were not directly present in the model files
+	 * model resource that were not directly present in the model source files
 	 */
 	private Resource artificialResource;
 
@@ -113,7 +117,7 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper {
 	 * <br>
 	 * If {@link #isSplitArtificialResource()}, moves all non-direct model resources
 	 * (i.e. model resources that are not a part of directModelResources), into the
-	 * created ArtificialResource. This way, direct model elements inside
+	 * created ArtificialResource. This way, direct model resource contents inside
 	 * directModelResources can be compared more efficiently, since the non-direct
 	 * model resources will likely be excluded from the comparison.
 	 * 
@@ -122,10 +126,10 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper {
 	 *                              created for this ResourceSet, within this
 	 *                              ResourceSet.
 	 * @param directModelResources  A list of model resources, which were directly
-	 *                              parsed from the contents of the model source
-	 *                              files. This list should not include any
-	 *                              dependency, which is not a direct part of the
-	 *                              model (such as Java native libraries).
+	 *                              parsed from model source files. This list should
+	 *                              not include any dependency, which is not a
+	 *                              direct part of the model (such as Java native
+	 *                              libraries).
 	 * @param artificialResourceURI The URI, which the created ArtificialResource
 	 *                              will have. ArtificialResource will be saved at
 	 *                              that URI, if desired.
@@ -192,14 +196,16 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper {
 	}
 
 	/**
-	 * Parses all Java-Model files under the given directory into a {@link Resource}
-	 * instance (merged model resource). Uses no means of caching. The parsed merged
-	 * model resource can be accessed via {@link #getModelResource()}. <br>
+	 * Parses all Java-Model source files under the given model source file
+	 * directory into a {@link Resource} instance (merged model resource). Uses no
+	 * means of caching. The parsed merged model resource can be accessed via
+	 * {@link #getModelResource()}. <br>
 	 * <br>
 	 * <b>Note: This method will parse ALL such files. Therefore, the given model
-	 * directory should only contain one Java-Model.</b>
+	 * source file directory should only contain one Java-Model.</b>
 	 * 
-	 * @param modelDir         A directory that contains all files of a model
+	 * @param modelDir         A model source file directory that contains all files
+	 *                         of a model
 	 * @param modelResourceURI The URI that the parsed model resource will reside
 	 *                         at, once saved
 	 */
@@ -383,7 +389,7 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper {
 	/**
 	 * Sets the URIs of all parsed resources with respect to the given URI, which
 	 * will be assigned to the parsed model resource that contains all direct
-	 * contents of the model files.
+	 * contents of the model source files.
 	 * 
 	 * @param newParsedModelResourceURI The new URI of the parsed model resource
 	 *                                  ({@link #getModelResource()} in this case)
@@ -399,7 +405,7 @@ public class JaMoPPModelResourceWrapper implements IModelResourceWrapper {
 
 	/**
 	 * @return The merged model resource, which contains all contents of all
-	 *         (directly) parsed model files
+	 *         (directly) parsed model source files
 	 */
 	public Resource getModelResource() {
 		return mergedModelResource;

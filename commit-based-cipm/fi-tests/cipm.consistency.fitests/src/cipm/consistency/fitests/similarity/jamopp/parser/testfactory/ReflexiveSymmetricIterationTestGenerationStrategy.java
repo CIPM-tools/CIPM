@@ -5,7 +5,10 @@ import java.util.Iterator;
 /**
  * An implementation of {@link IJaMoPPParserTestGenerationStrategy} that
  * provides an iterator, which denotes a linear and symmetric index sequence for
- * test resources.
+ * test resources. <br>
+ * <br>
+ * 
+ * @see {@link #getTestResourceIterator(int)} for more information.
  * 
  * @author Alp Torac Genc
  */
@@ -14,16 +17,27 @@ public class ReflexiveSymmetricIterationTestGenerationStrategy implements IJaMoP
 
 	/**
 	 * @implSpec Returns an iterator that helps generate dynamic tests by using test
-	 *           resources in an iterative, reflexive, symmetric way. If
-	 *           {@code testResourceCount = 3}, then the order denoted by the
-	 *           returned iterator will be as follows, where {@code (i, j)} stands
-	 *           for the indices of test resources that will be used in the current
-	 *           test: <br>
-	 *           <br>
+	 *           resources in an iterative, reflexive, symmetric way. The order
+	 *           denoted by the returned iterator will be as follows, where
+	 *           {@code (i, j)} stands for the indices of test resources that will
+	 *           be used in the current test:
+	 *           <ol>
+	 *           <li>Start with {@code currentIdx = 0}: In-place (currentIdx,
+	 *           currentIdx)
+	 *           <li>while {@code currentIdx < testResourceCount} :
+	 *           <ol>
+	 *           <li>Forward (currentIdx, currentIdx + 1)
+	 *           <li>Reverse (currentIdx + 1, currentIdx)
+	 *           <li>In-place (currentIdx + 1, currentIdx + 1)
+	 *           <li>{@code currentIdx++}
+	 *           </ol>
+	 *           </ol>
+	 *           Example with {@code testResourceCount = 3}:
 	 *           {@code (0,0); (0,1); (1,0); (1,1); (1,2); (2,1); (2,2)}
 	 * @implNote Assuming both arrays' length is {@code N}, then the returned
-	 *           iterator iterates {@code 3*N} times. As such, a maximum of
-	 *           {@code 3*N} dynamic tests can be generated.
+	 *           iterator iterates {@code 1 + 3*(N - 1)} times. As such, a maximum
+	 *           of {@code 1 + 3*(N - 1)} dynamic tests can be generated. In the
+	 *           example, {@code N = 3} and hence 7 dynamic tests are to be created.
 	 */
 	@Override
 	public Iterator<int[]> getTestResourceIterator(int testResourceCount) {

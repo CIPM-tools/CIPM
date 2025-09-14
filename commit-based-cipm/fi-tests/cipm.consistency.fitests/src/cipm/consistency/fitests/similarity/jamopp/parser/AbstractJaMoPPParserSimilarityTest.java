@@ -31,13 +31,23 @@ import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.Stopwat
 
 /**
  * An abstract test class, which can be used for implementing tests that involve
- * parsing models from Java-related files and checking their similarity. <br>
+ * parsing models from Java model source files and checking their similarity.
+ * <br>
  * <br>
  * It does not include any hard-coded model source file directory to allow
- * models at different locations to be usable in tests. If there is a group of
- * model source file directories, it is recommended to make an abstract test
- * class for them, in order to store details about the common sub-path of those
- * models and details on what directories contain model source files.
+ * models at different locations to be parsed and used in tests. If certain
+ * groups of model source file directories are to be used in tests, it is
+ * recommended to make an abstract test class for them for storing their common
+ * details. <br>
+ * <br>
+ * Note: Since dynamic tests are used here, the
+ * {@link org.junit.jupiter.api.BeforeEach} and
+ * {@link org.junit.jupiter.api.AfterEach} methods will be triggered <b><i> only
+ * once at the start / end of each test method annotated with
+ * {@link org.junit.jupiter.api.TestFactory} </i></b>, as opposed to before /
+ * after each dynamic test. In that sense, they are similar to their static
+ * versions {@link org.junit.jupiter.api.BeforeAll} and
+ * {@link org.junit.jupiter.api.AfterAll} method.
  * 
  * @author Alp Torac Genc
  * 
@@ -45,42 +55,43 @@ import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.Stopwat
  */
 public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPSimilarityTest {
 	/**
-	 * An object that caches and grants access to the parsed models, which were
-	 * cached after being parsed. <br>
+	 * An object that caches and grants access to parsed models, which were cached
+	 * after being parsed. <br>
 	 * <br>
-	 * Make sure that it persists throughout tests, which are supposed to make use
-	 * of it.
+	 * Make sure that the {@link CacheUtil} instance persists throughout tests,
+	 * which are supposed to make use of it.
 	 * 
 	 * @see {@link #parseModelsDirWithoutCaching(Path)}
 	 * @see {@link #parseModelsDirWithCaching(Path)}
 	 */
 	private static final CacheUtil resourceCache = new CacheUtil();
 
+	/**
+	 * @see {@link #getTestFileLayout()}
+	 */
 	private ParserTestFileLayout layout;
 
 	/**
-	 * The relative path to the directory, where parsed model resource files are to
-	 * be saved (if desired).
+	 * @see {@link ParserTestFileLayout#setTestModelResourceFilesSaveDirPath(Path)}
 	 */
 	private static final Path testModelResourceFilesSaveDirPath = Path.of("target", "testResources");
 
 	/**
-	 * The relative path to the directory, where the contents of
-	 * {@link #resourceCache} are to be saved (if desired).
+	 * @see {@link ParserTestFileLayout#setTestModelResourceFilesSaveDirPath(Path)}
 	 */
 	private static final Path cacheSaveDirPath = testModelResourceFilesSaveDirPath.resolve("testmodel-cache");
 
 	/**
-	 * The relative path to the directory, where time measurements are to be saved
-	 * (if desired).
+	 * @see {@link ParserTestFileLayout#setTimeMeasurementsFileSavePath(Path)}
 	 */
 	private static final Path timeMeasurementsFileSavePath = Path.of("target", "timeMeasurements");
 
 	/**
 	 * {@inheritDoc} <br>
 	 * <br>
-	 * {@link AbstractJaMoPPParserSimilarityTest}: Sets up the file layout
-	 * {@link ParserTestFileLayout}
+	 * {@link AbstractJaMoPPParserSimilarityTest}: Sets up the file layout for the
+	 * test {@link ParserTestFileLayout}. See
+	 * {@link AbstractJaMoPPParserSimilarityTest} for more information.
 	 */
 	@BeforeEach
 	@Override
@@ -99,14 +110,11 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	 * {@inheritDoc} <br>
 	 * <br>
 	 * {@link AbstractJaMoPPParserSimilarityTest}: Performs various operations on
-	 * the model resource files that were parsed in the dynamic tests, according to
-	 * the preferences that are encoded in the methods of this test, such as
+	 * model resources that were parsed in the dynamic tests, according to the
+	 * preferences that are encoded in the methods of this test, such as
 	 * {@link AbstractJaMoPPParserSimilarityTest#shouldSaveCachedResources()}. It
-	 * then saves the time measurements taken during the tests. <b><i>Note: Since
-	 * dynamic tests are used here, this method will be triggered only once at the
-	 * end of each test method annotated with
-	 * {@link org.junit.jupiter.api.TestFactory}, as opposed to after each dynamic
-	 * test. </i></b>
+	 * then saves the time measurements taken during the tests. See
+	 * {@link AbstractJaMoPPParserSimilarityTest} for more information.
 	 */
 	@AfterEach
 	@Override
@@ -171,10 +179,20 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 		SimilarityTestLogger.logDebugMsg("Tore down after parser test", this.getClass());
 	}
 
+	/**
+	 * Returns a builder for {@link ParserTestTimeMeasurementKey} instances, which
+	 * should be included to time measurements to describe what they are taken from.
+	 * 
+	 * @return An object that can be used to construct
+	 *         {@link ParserTestTimeMeasurementKey} instances
+	 */
 	protected ParserTestTimeMeasurementKeyBuilder getTimeMeasurementKeyBuilder() {
 		return new ParserTestTimeMeasurementKeyBuilder();
 	}
 
+	/**
+	 * @return Creates the value of {@link #getTestFileLayout()}
+	 */
 	protected ParserTestFileLayout initParserTestFileLayout() {
 		var layout = new ParserTestFileLayout();
 		layout.setModelSourceFileRootDirPath(new File("").getAbsoluteFile().toPath());
@@ -185,6 +203,9 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 		return layout;
 	}
 
+	/**
+	 * @return An object encapsulating the file layout for the test
+	 */
 	protected ParserTestFileLayout getTestFileLayout() {
 		return this.layout;
 	}
@@ -205,6 +226,10 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 		return this.getTestFileLayout().getTimeMeasurementsFileSavePath().resolve(fileName);
 	}
 
+	/**
+	 * Sets up {@link ParserTestTimeMeasurer} for taking time measurements. Should
+	 * be called prior to taking time measurements.
+	 */
 	protected void setupForTimeMeasurements() {
 		ParserTestTimeMeasurer.getInstance().setDataStructure(new DefaultTimeMeasurementDataStructure());
 		ParserTestTimeMeasurer.getInstance().setMeasuringStrat(new StopwatchStrategy());
@@ -213,8 +238,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	}
 
 	/**
-	 * Saves the time measurements taken during tests via
-	 * {@code startTimeMeasurement} and {@code stopTimeMeasurement} calls.
+	 * Saves the time measurements taken during tests.
 	 */
 	protected void saveTimeMeasurements() {
 		SimilarityTestLogger.logDebugMsg("Saving time measurements", this.getClass());
@@ -224,16 +248,11 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	}
 
 	/**
-	 * Delegates to the time measuring mechanism and signals that a time measurement
-	 * with the given parameters should be started. <br>
+	 * Delegates to {@link ParserTestTimeMeasurer}. Refer to the documentation of
+	 * {@link ParserTestTimeMeasurer} for more information. <br>
 	 * <br>
-	 * Refer to the documentation of {@link ParserTestTimeMeasurer} for more
-	 * information.
-	 * 
-	 * @param key The key of the taken time measurement, which describes what the
-	 *            time measurement is taken from
-	 * @param tag The tag of the time measurement, which is used to group time
-	 *            measurements
+	 * Complements the (so far) built {@link ParserTestTimeMeasurementKey} instance
+	 * with information about this test, finishes building it and delegates it.
 	 */
 	protected void startTimeMeasurement(ParserTestTimeMeasurementKeyBuilder keyBuilder, ITimeMeasurementTag tag) {
 		ParserTestTimeMeasurer.getInstance()
@@ -250,25 +269,16 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	}
 
 	/**
-	 * Delegates to the time measuring mechanism and signals that the most recently
-	 * started time measurement (via
-	 * {@link #startTimeMeasurement(String, ITimeMeasurementTag)}) should be
-	 * stopped. <br>
-	 * <br>
-	 * This method is to be seen as the closing bracket for the opening bracket
-	 * {@link #startTimeMeasurement(String, ITimeMeasurementTag)}, such that the
-	 * time elapsed while executing the lines between that method call and this
-	 * method call is the time measurement. Not using them similar to brackets will
-	 * result in inaccurate measurements. <br>
-	 * <br>
-	 * Refer to the documentation of {@link ParserTestTimeMeasurer} for more
-	 * information.
+	 * Delegates to {@link ParserTestTimeMeasurer}. Refer to the documentation of
+	 * {@link ParserTestTimeMeasurer} for more information.
 	 */
 	protected void stopTimeMeasurement() {
 		ParserTestTimeMeasurer.getInstance().stopTimeMeasurement();
 	}
 
 	/**
+	 * TODO Remove once FileUtil is a singleton
+	 * 
 	 * @return A utility object that can be used to perform file operations.
 	 */
 	protected FileUtil getFileUtil() {
@@ -284,13 +294,18 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	}
 
 	/**
-	 * Parses all Java-Model files under the given directory into a {@link Resource}
-	 * instance. Uses no means of caching. <br>
+	 * Parses all model source files under the given model source file directory
+	 * into a {@link Resource} instance. Uses no means of caching. <br>
 	 * <br>
-	 * <b>Note: This method will parse ALL such files. Therefore, the given model
-	 * directory should only contain one Java-Model.</b>
+	 * <b>Note: This method will only parse one model from all model source files.
+	 * Therefore, the given model source file directory should only belong to one
+	 * model.</b>
 	 * 
-	 * @param modelDir A directory that contains all files of a model
+	 * TODO Rename parameter and parameters of all variants TODO Rename method and
+	 * all variants of it (?)
+	 * 
+	 * @param modelDir A model source file directory that contains all model source
+	 *                 files of a (and only one) model
 	 * 
 	 * @see {@link #isResourceRelevant()}
 	 * @see {@link #prepareArtificialResource(Resource, URI)}
@@ -395,6 +410,8 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	}
 
 	/**
+	 * TODO Rename parameter
+	 * 
 	 * @param modelDir A directory that directly contains the Java-model files
 	 * @return The test display name for the given modelPath
 	 */
@@ -411,10 +428,10 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	 * Defaults to using {@link #isModelSourceFileDirectoryName(String)} on the file
 	 * name. Check the concrete implementation for more details.
 	 * 
-	 * @param f The file object representing the directory
+	 * @param f The file object representing the model source file directory
 	 * 
-	 * @return Whether a given directory contains any Java elements, from which a
-	 *         Java model can be parsed.
+	 * @return Whether a given (possible) model source file directory contains any
+	 *         Java elements, from which a Java model can be parsed.
 	 */
 	protected boolean isModelSourceFileDirectory(File f) {
 		return this.isModelSourceFileDirectoryName(f.getName());
@@ -440,7 +457,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	/**
 	 * Parses model resources (with caching) for each given path.
 	 * 
-	 * @param pathArr An array of paths to model directories
+	 * @param pathArr An array of paths to model source file directories
 	 * @return Dynamic test instances for the models under the given paths
 	 * @see {@link #createTests()}
 	 */
@@ -455,7 +472,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	}
 
 	/**
-	 * @param pathArr An array of paths to model directories
+	 * @param pathArr An array of paths to model source file directories
 	 * @param resArr  An array of parsed model resources
 	 * @return Dynamic test instances for the given model resources
 	 * @see {@link #createTests()}
@@ -486,9 +503,10 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	}
 
 	/**
-	 * Generates dynamic tests for each model directories based on the registered
-	 * {@link AbstractJaMoPPParserSimilarityTestFactory} instances. Implemented here
-	 * in efforts to have a unified template for dynamic test generation. <br>
+	 * Generates dynamic tests for each model source file directories based on the
+	 * registered {@link AbstractJaMoPPParserSimilarityTestFactory} instances.
+	 * Implemented here in efforts to have a unified template for dynamic test
+	 * generation. <br>
 	 * <br>
 	 * <b>Can be overridden in implementors; in order to add preparatory actions,
 	 * clean up actions or to change the default test generation. <i> DUE TO HOW
@@ -499,8 +517,8 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	 * {@link TestFactory}, which will run the tests generated here.
 	 * 
 	 * @see {@link #discoverModelSourceFileDirsAt(Path)} and
-	 *      {@link #discoverModelSourceParentDirsAt(Path)} for locating model
-	 *      directories
+	 *      {@link #discoverModelSourceParentDirsAt(Path)} for locating model source
+	 *      file directories
 	 * @see {@link TestFactory} for what tests are to be generated
 	 */
 	@TestFactory
@@ -542,14 +560,14 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	 * concrete implementors.
 	 * 
 	 * @return Factories of tests that should be generated for each relevant model
-	 *         directories.
+	 *         source file directories.
 	 */
 	protected abstract Collection<AbstractJaMoPPParserSimilarityTestFactory> getTestFactories();
 
 	/**
 	 * @param rootPath The top-most directory, whose contents should be scanned for
-	 *                 model directories
-	 * @return A collection of model directory paths under rootPath
+	 *                 model source file directories
+	 * @return A collection of model source file directory paths under rootPath
 	 */
 	protected Collection<Path> discoverModelSourceFileDirsAt(Path rootPath) {
 		var discoveryStrat = new ModelDirDiscoveryStrategy((f) -> this.isModelSourceFileDirectory(f));
@@ -563,8 +581,8 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 
 	/**
 	 * @param rootPath The top-most directory, whose contents should be scanned for
-	 *                 directories containing model directories.
-	 * @return A collection of paths of directories containing model directory under
+	 *                 directories containing model source parent directories.
+	 * @return A collection of paths of model source parent directories under
 	 *         rootPath
 	 */
 	protected Collection<Path> discoverModelSourceParentDirsAt(Path rootPath) {
@@ -580,8 +598,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	/**
 	 * Check the concrete implementation for more details.
 	 * 
-	 * @param dirName The name of the directory, which potentially contains files of
-	 *                a model
+	 * @param dirName The name of the potential model source file directory
 	 * 
 	 * @return Whether a given directory contains any Java elements, from which a
 	 *         Java model can be parsed.

@@ -8,12 +8,10 @@ import java.util.Map;
 import org.eclipse.emf.ecore.resource.Resource;
 
 /**
- * A utility object, which encapsulates caching logic (for parsed models) and
- * can be used to hasten tests. <br>
+ * Encapsulates caching logic for model resources and can be used to hasten
+ * tests. <br>
  * <br>
- * Only used to contain {@link Resource} instances with String keys. Does not
- * process the given resources in any other way, such as unloading or removing
- * them.
+ * Only used to contain {@link Resource} instances with String keys.
  * 
  * @author Alp Torac Genc
  */
@@ -27,7 +25,7 @@ public class CacheUtil {
 	/**
 	 * This is used from within the constructor.
 	 * 
-	 * @return The underlying map, which will be used to store the parsed models.
+	 * @return The underlying map, which will be used to store model resources.
 	 */
 	protected Map<String, IModelResourceWrapper> initResourceCache() {
 		return new HashMap<>();
@@ -43,34 +41,35 @@ public class CacheUtil {
 	}
 
 	/**
-	 * Adds the given resource wrapper with the given key to the cache. Replaces the
-	 * resource, if the key is already in the cache.
+	 * Adds the given model resource wrapper with the given key to the cache.
+	 * Replaces the resource, if the key is already in the cache.
 	 * 
 	 * @param key The key associated with the given resource wrapper
-	 * @param res A given resource
+	 * @param res A given model resource wrapper
 	 */
 	public void addToCache(String key, IModelResourceWrapper res) {
 		this.getResourceCache().put(key, res);
 	}
 
 	/**
-	 * @return Gets the wrapper of the resource associated with the given key from
-	 *         the cache. Null, if there is no such key in the cache.
+	 * @return Gets the model resource wrapper of the resource associated with the
+	 *         given key from the cache. Null, if there is no such key in the cache.
 	 */
 	public IModelResourceWrapper getFromCache(String key) {
 		return this.getResourceCache().get(key);
 	}
 
 	/**
-	 * @return Wrappers of all cached resources, without their corresponding keys
+	 * @return Wrappers of all cached model resources, without their corresponding
+	 *         keys
 	 */
 	public Collection<IModelResourceWrapper> getCachedResources() {
 		return new ArrayList<IModelResourceWrapper>(this.getResourceCache().values());
 	}
 
 	/**
-	 * @return All contents of the underlying cache (i.e. cached resources and their
-	 *         corresponding keys)
+	 * @return All contents of the underlying cache (i.e. cached model resources and
+	 *         their corresponding keys)
 	 */
 	public Map<String, IModelResourceWrapper> getAllCacheContent() {
 		return new HashMap<String, IModelResourceWrapper>(this.getResourceCache());
@@ -84,14 +83,14 @@ public class CacheUtil {
 	}
 
 	/**
-	 * Removes the cached resource associated with the given key.
+	 * Removes the cached model resource associated with the given key.
 	 */
 	public void removeFromCache(String key) {
 		this.getResourceCache().remove(key);
 	}
 
 	/**
-	 * Removes all entries from the cache.
+	 * Removes all model resources and their key from the cache.
 	 */
 	public void cleanCache() {
 		this.getResourceCache().clear();

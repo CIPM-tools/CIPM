@@ -40,7 +40,7 @@ public abstract class AbstractEObjectSimilarityTest extends AbstractSimilarityTe
 	/**
 	 * {@inheritDoc} <br>
 	 * <br>
-	 * {@link AbstractEObjectSimilarityTest}: Sets {@link #getResourceHelper()},
+	 * {@link AbstractEObjectSimilarityTest}: Sets
 	 * {@link #getResourceParsingStrategy()} and {@link #getResourceTestOptions()}
 	 * to null, in order to ensure that each test has freshly created instances.
 	 */
@@ -53,31 +53,59 @@ public abstract class AbstractEObjectSimilarityTest extends AbstractSimilarityTe
 		super.tearDown();
 	}
 
+	/**
+	 * @return An object that has the means to parse {@link ResourceSet} instances
+	 *         from model source files
+	 */
 	protected AbstractResourceParsingStrategy getResourceParsingStrategy() {
 		return this.parsingStrat;
 	}
 
+	/**
+	 * @param parsingStrat {@link #getResourceParsingStrategy()}
+	 */
 	protected void setResourceParsingStrategy(AbstractResourceParsingStrategy parsingStrat) {
 		this.parsingStrat = parsingStrat;
 	}
 
+	/**
+	 * @return An object that contains various test configurations, especially those
+	 *         concerning {@link Resource} instances
+	 */
 	protected ResourceTestOptions getResourceTestOptions() {
 		return this.resourceTestOptions;
 	}
 
+	/**
+	 * @param resourceTestOptions {@link #getResourceTestOptions()}
+	 */
 	protected void setResourceTestOptions(ResourceTestOptions resourceTestOptions) {
 		this.resourceTestOptions = resourceTestOptions;
 	}
 
+	/**
+	 * Cleans all status information regarding how {@link Resource} instances are
+	 * parsed from model source files
+	 */
 	protected void cleanUpResourceParsingStrategy() {
 		this.parsingStrat = null;
 	}
 
+	/**
+	 * Cleans all test configurations, especially those concerning {@link Resource}
+	 * instances
+	 */
 	protected void cleanUpResourceTestOptions() {
 		this.resourceTestOptions = null;
 	}
 
+	/**
+	 * @return {@link #getResourceTestOptions()}
+	 */
 	protected abstract ResourceTestOptions initResourceTestOptions();
 
+	/**
+	 * @return {@link #getResourceParsingStrategy()}
+	 */
 	protected abstract AbstractResourceParsingStrategy initResourceParsingStrategy();
 }

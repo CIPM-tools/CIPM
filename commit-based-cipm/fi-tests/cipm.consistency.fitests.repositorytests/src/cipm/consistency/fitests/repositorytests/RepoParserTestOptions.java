@@ -3,12 +3,12 @@ package cipm.consistency.fitests.repositorytests;
 import cipm.consistency.fitests.similarity.jamopp.parser.ParserTestOptions;
 
 /**
- * A class that contains various options for test classes that parse
- * {@link Resource} instances from GIT repositories, cache those resource
- * instances, as well as compute and cache expected similarity results:
+ * A class that contains various options for test classes that parse model
+ * resources from GIT repositories, cache those model resource instances, as
+ * well as compute and cache expected similarity results:
  * <ul>
- * <li>shouldDeleteRepositoryClones: Whether all cloned repositories should be
- * removed after tests
+ * <li>shouldDeleteRepositoryClones: Whether all locally cloned repositories
+ * should be removed after tests
  * <li>shouldSaveCachedExpectedSimilarityResults: Whether the cached expected
  * similarity results should be saved after tests
  * <li>shouldUseCachedExpectedSimilarityResults: Whether the cached expected

@@ -42,38 +42,38 @@ public class RepoParserTestFileLayout extends ParserTestFileLayout {
 	}
 
 	/**
-	 * Sets the name of the repository
+	 * Sets the name of the repository that will be locally cloned and used in tests
 	 */
 	public void setRepoName(String repoName) {
 		this.repoName = repoName;
 	}
 
 	/**
-	 * Sets the name of the root directory of the models
+	 * Sets the name of the root directory of local repository clones that will be
+	 * used in tests
 	 */
 	public void setRepoModelImplDirName(String repoModelImplDirName) {
 		this.repoModelImplDirName = repoModelImplDirName;
 	}
 
 	/**
-	 * Sets the name of the folder, where contents of {@link #resultCache} should be
-	 * saved. Note: This folder does not have to directly contain the contents of
-	 * {@link RepoTestResultCache}. They may be saved in sub-directories as well.
+	 * Sets the name of the folder, where cached expected similarity results should
+	 * be saved. Cached expected similarity results may be saved in sub-directories.
 	 */
 	public void setExpectedSimilarityResultCacheDirName(String expectedSimilarityResultCacheDirName) {
 		this.expectedSimilarityResultCacheDirName = expectedSimilarityResultCacheDirName;
 	}
 
 	/**
-	 * Sets the name of the file (with extension), where contents of
-	 * {@link RepoTestResultCache} should be saved.
+	 * Sets the name of the file (with extension), where cached expected similarity
+	 * results should be saved.
 	 */
 	public void setExpectedSimilarityResultCacheFileName(String expectedSimilarityResultCacheFileName) {
 		this.expectedSimilarityResultCacheFileName = expectedSimilarityResultCacheFileName;
 	}
 
 	/**
-	 * @return The path to the saved contents of {@link RepoTestResultCache}
+	 * @return The path, where cached expected similarity results should be saved
 	 */
 	public Path getExpectedSimilarityResultCachePath() {
 		return this.getTestFilesSavePath().resolve(expectedSimilarityResultCacheDirName).resolve(this.repoName)
@@ -81,7 +81,7 @@ public class RepoParserTestFileLayout extends ParserTestFileLayout {
 	}
 
 	/**
-	 * @return The URI, at which the parsed commit's resource will point at.
+	 * @return The URI, at which the parsed commit's model resource will point at.
 	 */
 	public URI getModelResourceSaveURIForCommit(String commitID) {
 		return URI.createFileURI(this.getModelResourceSaveRootDirectory().toString()).appendSegment(this.repoName)
@@ -113,8 +113,8 @@ public class RepoParserTestFileLayout extends ParserTestFileLayout {
 	}
 
 	/**
-	 * @implSpec Returns The path, at which the repository clone resides. Meant to
-	 *           be used for accessing the local repository clone. Use
+	 * @implSpec Returns The path, at which the local repository clone resides.
+	 *           Meant to be used for accessing the local repository clone. Use
 	 *           {@link #getRepoClonesDirPath()} while cloning instead, so that the
 	 *           top-most folder of the repository is not duplicated.
 	 */

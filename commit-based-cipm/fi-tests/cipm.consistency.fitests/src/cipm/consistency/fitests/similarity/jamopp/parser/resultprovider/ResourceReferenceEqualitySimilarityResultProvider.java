@@ -13,7 +13,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 public class ResourceReferenceEqualitySimilarityResultProvider implements IExpectedSimilarityResultProvider {
 	/**
 	 * @implSpec Determines expected similarity results based on the reference
-	 *           equality of model resources.
+	 *           equality of model resources, i.e. {@code lhsRes == rhsRes}
 	 */
 	@Override
 	public boolean getExpectedSimilarityResultFor(Resource lhsRes, Path lhsResPath, Resource rhsRes, Path rhsResPath) {

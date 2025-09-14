@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 /**
  * An interface meant for classes that encapsulate the logic on how to iterate
- * through the given Resource array, while generating dynamic tests. <br>
+ * through the given model Resource array, while generating dynamic tests. <br>
  * <br>
  * Does not directly generate dynamic tests, because the order of elements may
  * matter for other concerns as well. Therefore, implementors of this interface
@@ -22,8 +22,8 @@ public interface IJaMoPPParserTestGenerationStrategy {
 	 * elements in resArr and pathArr, which are to be used in the current dynamic
 	 * test. In other words, the current dynamic test will use the
 	 * {@code idxs[0]}-th elements for the left hand side (lhs) and
-	 * {@code idxs[1]}-th elements for the right hand side in the current dynamic
-	 * test.
+	 * {@code idxs[1]}-th elements for the right hand side (rhs) in the current
+	 * dynamic test.
 	 * 
 	 * @param testResourceCount The amount of test resources that are present. Used
 	 *                          to mark when the returned iterator finishes,

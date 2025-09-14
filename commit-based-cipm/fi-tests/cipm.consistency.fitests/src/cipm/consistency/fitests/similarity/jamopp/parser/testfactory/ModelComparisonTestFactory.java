@@ -90,10 +90,6 @@ public class ModelComparisonTestFactory extends AbstractJaMoPPParserSimilarityTe
 		ParserTestTimeMeasurer.getInstance().stopTimeMeasurement();
 	}
 
-	/**
-	 * Checks if parsed {@link Resource} instances are detected as similar. Checks
-	 * the similarity of res1 with res2.
-	 */
 	@Override
 	public DynamicNode createTestsFor(Resource res1, Path path1, Resource res2, Path path2) {
 		return DynamicTest.dynamicTest(String.format("%s vs %s", path1.getFileName(), path2.getFileName()), () -> {

@@ -17,7 +17,7 @@ import cipm.consistency.fitests.similarity.jamopp.parser.testfactory.ModelCompar
 public class TeammatesRepoTest extends AbstractJaMoPPParserRepoTest {
 	/**
 	 * The list of commits that will be parsed and compared to one another. All of
-	 * them are pairwise different, i.e. all of them introduce code changes that
+	 * them are pairwise non-similar, i.e. all of them introduce code changes that
 	 * break similarity (assuming test code is included).
 	 */
 	private static final List<String> commitIDs = List.of("648425746bb9434051647c8266dfab50a8f2d6a3",

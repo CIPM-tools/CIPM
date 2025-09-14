@@ -12,25 +12,25 @@ import org.eclipse.emf.ecore.resource.Resource;
  * <br>
  * Concrete implementors should consider only one primary model resource
  * (referred as model resource in methods), which contains all direct contents
- * of all model files, and grant access to it via {@link #getModelResource()}.
- * They may, however, choose to split contents that are required by the model
- * resource into separate Resources. Such Resources should also be parsed within
- * {@link #parseModelResource(Path, URI)}. They are then loaded automatically on
- * demand by the internals of EMF-Framework. Therefore,
- * {@link #loadModelResource(URI)} should only load the model resource.
+ * of all model source files, and grant access to it via
+ * {@link #getModelResource()}. They may, however, choose to split contents that
+ * are required by the model resource into separate Resources. Such Resources
+ * should also be parsed within {@link #parseModelResource(Path, URI)}. They are
+ * then loaded automatically on demand by the internals of EMF-Framework.
+ * Therefore, {@link #loadModelResource(URI)} should only load the model
+ * resource.
  * 
  * @author Alp Torac Genc
  */
 public interface IModelResourceWrapper {
 	/**
-	 * Parses all Java-Model files under the given directory. The parsed model
-	 * resource can be accessed via {@link #getModelResource()}.
+	 * Parses all Java-Model source files under the given model source file
+	 * directory. The parsed model resource can be accessed via
+	 * {@link #getModelResource()}.
 	 * 
-	 * @param modelDir         A directory that contains all files of a model
+	 * @param modelDir         A model source file directory
 	 * @param modelResourceURI The URI that the parsed model resource will reside
 	 *                         at, once saved
-	 * @param parser           The parser that will be used to parse the model
-	 *                         resource and all other necessary resources
 	 */
 	public void parseModelResource(Path modelDir, URI modelResourceURI);
 
@@ -88,7 +88,7 @@ public interface IModelResourceWrapper {
 	/**
 	 * Sets the URIs of all parsed resources with respect to the given URI, which
 	 * will be assigned to the parsed model resource that contains all direct
-	 * contents of the model files.
+	 * contents of the model source files.
 	 * 
 	 * @param newParsedModelResourceURI The new URI of the parsed model resource
 	 *                                  ({@link #getModelResource()} in this case)
@@ -96,8 +96,8 @@ public interface IModelResourceWrapper {
 	public void setModelResourcesURI(URI newParsedModelResourceURI);
 
 	/**
-	 * @return The model resource, which contains all contents of all (directly)
-	 *         parsed model files
+	 * @return The model resource, which contains all direct contents of all parsed
+	 *         model source files
 	 */
 	public Resource getModelResource();
 

@@ -25,12 +25,13 @@ import java.util.Stack;
  * <li>Transitivity: Assuming C1, C2 and C3 are different commits; if C1 and C2
  * are similar, C2 and C3 are similar; then C1 and C3 should also be similar.
  * <ul>
- * <li>Assuming C1, C2, ..., CN is commit chain; where for each sequential
+ * <li>Assuming C1, C2, ..., CN is commit chain, where for each sequential
  * commit pair {@code e_i = (C_i, C_i+1) = (C_i+1, C_i)} there are entries in
  * this instance; if any entry {@code e_i} has the expected result false (i.e.
  * non-similarity), the result computed via transitivity is considered invalid,
  * as there is no easy way to determine whether non-similar commits were
- * reverted at some point, so that similarity between C1 and CN is re-achieved.
+ * effectively reverted at some point, so that similarity between C1 and CN is
+ * re-achieved.
  * <li><b>It is further assumed that if an entry chain between 2 commits
  * consists only of entries indicating similarity (i.e. expectedResult = true),
  * all such entry chains will. <i>If this is not fulfilled, expected result
@@ -180,16 +181,16 @@ public class RepoTestResultCache {
 	 * upon finding any such entry chain, even if there are further chains, which
 	 * include entries indicating non-similarity.</i></b> <br>
 	 * <br>
-	 * Returns Boolean instead of boolean, because it is only possible to determine
-	 * similarity by using transitivity. In case of non-similarity, this method
+	 * Returns Boolean instead of boolean, because transitivity may only be used to
+	 * detect similarity, not non-similarity. In case of non-similarity, this method
 	 * returns NULL instead of FALSE, to signal that transitivity yields no accurate
 	 * result.
 	 * 
 	 * @return TRUE, if there exists a chain of entries between the given commits,
 	 *         such that all entries indicate similarity, or the given commits are
-	 *         equal. Said entry chain may also only consist of a single entry for
-	 *         the given commits. NULL, if there were no entry chains from commitID1
-	 *         to commitID2, where all entries indicate similarity.
+	 *         equal. Said entry chain may also only consist of a single, direct
+	 *         entry for the given commits. NULL, if there were no entry chains from
+	 *         commitID1 to commitID2, where all entries indicate similarity.
 	 */
 	public Boolean getTransitiveResult(String commitID1, String commitID2) {
 		if (commitID1.equals(commitID2)) {
@@ -328,8 +329,8 @@ public class RepoTestResultCache {
 	}
 
 	/**
-	 * @return The entry for the commits with the given commit IDs. Accounts for
-	 *         symmetry property.
+	 * @return The entry for the commits with the given commit IDs. Accounts only
+	 *         for the symmetry property.
 	 */
 	protected SimilarityResultEntry getEntryFor(String commitID1, String commitID2) {
 		var entryOpt = this.similarityResults.stream().filter((e) -> e.isEntryFor(commitID1, commitID2)).findFirst();

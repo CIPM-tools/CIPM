@@ -11,6 +11,8 @@ import cipm.consistency.fitests.similarity.SimilarityTestLogger;
 /**
  * A utility class that contains file-related operations.
  * 
+ * TODO Turn into a singleton
+ * 
  * @author Alp Torac Genc
  */
 public class FileUtil {
@@ -64,6 +66,8 @@ public class FileUtil {
 	}
 
 	/**
+	 * TODO Use Files.walk instead, if possible
+	 * 
 	 * Recursively checks the equality of the given directories, based on their
 	 * effective content (i.e. the files/sub-directories they contain and the
 	 * contents of those files without whitespaces).

@@ -8,12 +8,12 @@ package cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement;
  */
 public enum GeneralTimeMeasurementTag implements ITimeMeasurementTag {
 	/**
-	 * A tag meant for time measurements from discovering model source files
+	 * A tag meant for time measurements from discovering model source files, model
+	 * source file directories, model source parent directories.
 	 */
 	DISCOVER_MODEL_RESOURCES,
 	/**
-	 * A tag meant for time measurements from parsing model resources from model
-	 * source files
+	 * A tag meant for time measurements from parsing model resources
 	 */
 	PARSE_MODEL_RESOURCE,
 	/**
@@ -45,12 +45,14 @@ public enum GeneralTimeMeasurementTag implements ITimeMeasurementTag {
 
 	/**
 	 * A tag meant for time measurements from the test methods annotated with
-	 * {@link org.junit.jupiter.api.BeforeEach}
+	 * {@link org.junit.jupiter.api.BeforeEach} and
+	 * {@link org.junit.jupiter.api.BeforeAll}.
 	 */
 	TEST_BEFOREEACH,
 	/**
 	 * A tag meant for time measurements from the test methods annotated with
-	 * {@link org.junit.jupiter.api.AfterEach}
+	 * {@link org.junit.jupiter.api.AfterEach} and
+	 * {@link {@link org.junit.jupiter.api.AfterAll}}.
 	 */
 	TEST_AFTEREACH,
 	/**
@@ -60,8 +62,8 @@ public enum GeneralTimeMeasurementTag implements ITimeMeasurementTag {
 	DYNAMIC_TEST_CREATION,
 	/**
 	 * A tag meant for time measurements from miscellaneous preparation operations
-	 * (except those from {@link #TEST_BEFOREEACH} and {@link #TEST_AFTEREACH} ) in
-	 * tests that cannot be reasonably assigned to a more accurate tag
+	 * (except those from {@link #TEST_BEFOREEACH} and {@link #TEST_AFTEREACH}) in
+	 * tests that cannot be reasonably assigned to a more accurate tag.
 	 */
 	TEST_OVERHEAD,
 

@@ -10,7 +10,7 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
 /**
  * An abstract class meant to be extended by classes that envelop the means to
- * parse Resource instances from (original) model files. <br>
+ * parse Resource instances from model source files. <br>
  * <br>
  * Implementors are expected to:
  * <ul>
@@ -132,11 +132,13 @@ public abstract class AbstractResourceParsingStrategy {
 	/**
 	 * Parses a ResourceSet for the model at given path.
 	 * 
-	 * @param modelDir The path to a given model. Refer to the concrete
-	 *                 implementation for more information on where this path is
-	 *                 supposed to point at.
+	 * TODO Rename parameter
+	 * 
+	 * @param modelDir The path to a given model source file directory. Refer to the
+	 *                 concrete implementation for more information on where this
+	 *                 path is supposed to point at.
 	 * @return A ResourceSet that contains all parsed Resource instances for the
-	 *         given model path.
+	 *         given model source file directory path.
 	 */
 	public abstract ResourceSet parseModelResource(Path modelDir);
 

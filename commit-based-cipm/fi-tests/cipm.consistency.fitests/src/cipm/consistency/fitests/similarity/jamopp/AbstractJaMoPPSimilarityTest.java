@@ -5,9 +5,7 @@ import cipm.consistency.fitests.similarity.eobject.AbstractEObjectSimilarityTest
 
 /**
  * An abstract test class that extends {@link AbstractEObjectSimilarityTest}
- * with concrete method implementations for JaMoPP context, as well as static
- * methods that can be used in parameterised tests to generate initialiser
- * instances.
+ * with concrete method implementations for JaMoPP context.
  * 
  * @author Alp Torac Genc
  */

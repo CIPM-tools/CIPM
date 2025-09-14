@@ -15,6 +15,8 @@ import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.ParserT
  * An abstract class meant to be implemented by classes that encapsulate logic
  * about dynamic test generation.
  * 
+ * TODO Rename parameters
+ * 
  * @author Alp Torac Genc
  */
 public abstract class AbstractJaMoPPParserSimilarityTestFactory {
@@ -57,7 +59,7 @@ public abstract class AbstractJaMoPPParserSimilarityTestFactory {
 	}
 
 	/**
-	 * Changes how this instance provides expected similarity values to the dynamic
+	 * Changes how this instance provides expected similarity results to the dynamic
 	 * tests it generates. <br>
 	 * <br>
 	 * If the given provider is null, sets the current provider to
@@ -75,8 +77,8 @@ public abstract class AbstractJaMoPPParserSimilarityTestFactory {
 	 * Defaults to the name of the concrete implementing type. Can be overridden in
 	 * concrete implementors for a more accurate description.
 	 * 
-	 * @return A description for this test generation strategy, which may be added
-	 *         to test descriptions.
+	 * @return A description for this test generation factory, which may be added to
+	 *         test descriptions.
 	 */
 	public String getTestDescription() {
 		return this.getClass().getSimpleName();
@@ -137,7 +139,9 @@ public abstract class AbstractJaMoPPParserSimilarityTestFactory {
 	/**
 	 * The provided model resources are not assumed to have a certain order here,
 	 * because the concrete implementor could change what resources are checked for
-	 * similarity in which order.
+	 * similarity in which order. Refer to the concrete implementations of
+	 * {@link #getExpectedSimilarityResultProvider()} and
+	 * {@link #getDefaultExpectedSimilarityResultProvider()} for more information.
 	 * 
 	 * @return Dynamic tests generated based on the concrete implementor.
 	 */

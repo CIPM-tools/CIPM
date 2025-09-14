@@ -40,16 +40,24 @@ import com.google.gson.GsonBuilder;
 
 /**
  * An abstract test class, which can be used for implementing tests that involve
- * parsing models from GIT repositories and checking their similarity.
+ * parsing models from GIT repositories and checking their similarity. <br>
+ * <br>
+ * Note: Since dynamic tests are used here, the
+ * {@link org.junit.jupiter.api.BeforeEach} and
+ * {@link org.junit.jupiter.api.AfterEach} methods will be triggered <b><i> only
+ * once at the start / end of each test method annotated with
+ * {@link org.junit.jupiter.api.TestFactory} </i></b>, as opposed to before /
+ * after each dynamic test. In that sense, they are similar to their static
+ * versions {@link org.junit.jupiter.api.BeforeAll} and
+ * {@link org.junit.jupiter.api.AfterAll} method.
  * 
  * @author Alp Torac Genc
  * 
  * @see {@link AbstractJaMoPPParserSimilarityTest#createTests()}
  */
 public abstract class AbstractJaMoPPParserRepoTest extends AbstractJaMoPPParserSimilarityTest {
-
 	/**
-	 * Contains expected results of comparing model resources
+	 * Contains expected similarity results needed by tests
 	 */
 	private static RepoTestResultCache resultCache = new RepoTestResultCache();
 
@@ -60,7 +68,7 @@ public abstract class AbstractJaMoPPParserRepoTest extends AbstractJaMoPPParserS
 	private static final String gradleWrapperJarPathPattern = ".*?/gradle-wrapper\\.jar";
 
 	/**
-	 * The name of the root directory of the models
+	 * @see {@link RepoParserTestFileLayout#setRepoModelImplDirName(String)}
 	 */
 	private static final String repoModelImplDirName = "repo-clones";
 
@@ -71,25 +79,21 @@ public abstract class AbstractJaMoPPParserRepoTest extends AbstractJaMoPPParserS
 	private static final String repoURICommitSegment = "commit";
 
 	/**
-	 * The name of the folder, where contents of {@link #resultCache} should be
-	 * saved. <br>
-	 * <br>
-	 * Note: This folder does not have to directly contain the contents of
-	 * {@link #resultCache}. They may be saved in sub-directories as well.
+	 * @see {@link RepoParserTestFileLayout#setExpectedSimilarityResultCacheDirName(String)}
 	 */
 	private static final String expectedSimilarityResultCacheDirName = "results-cache";
 
 	/**
-	 * The name of the file (with extension), where contents of {@link #resultCache}
-	 * should be saved.
+	 * @see {@link RepoParserTestFileLayout#setExpectedSimilarityResultCacheFileName(String)}
 	 */
 	private static final String expectedSimilarityResultCacheFileName = "resultsCache.json";
 
 	/**
 	 * {@inheritDoc} <br>
 	 * <br>
-	 * {@link AbstractJaMoPPParserRepoTest}: Loads expected similarity checking
-	 * results, if their file exists.
+	 * {@link AbstractJaMoPPParserRepoTest}: Loads expected similarity results
+	 * needed by tests, if their file exists. See
+	 * {@link AbstractJaMoPPParserRepoTest} for more information.
 	 */
 	@BeforeEach
 	@Override
@@ -128,7 +132,8 @@ public abstract class AbstractJaMoPPParserRepoTest extends AbstractJaMoPPParserS
 	 * {@inheritDoc} <br>
 	 * <br>
 	 * {@link AbstractJaMoPPParserRepoTest}: Saves the computed expected similarity
-	 * results and deletes the local repository clone, if desired.
+	 * results needed by tests and deletes the local repository clone, if desired.
+	 * See {@link AbstractJaMoPPParserRepoTest} for more information.
 	 */
 	@AfterEach
 	@Override
@@ -203,17 +208,20 @@ public abstract class AbstractJaMoPPParserRepoTest extends AbstractJaMoPPParserS
 	}
 
 	/**
-	 * @return The expected similarity checking result for the given commits. Note
-	 *         that similarity checking is symmetric, meaning that swapping lhs and
-	 *         rhs commits should not change the return value.
+	 * Refer to {@link RepoTestResultCache} for more information on expected
+	 * similarity results.
+	 * 
+	 * @return The expected similarity checking result for the given commits.
 	 */
 	protected Boolean getExpectedResult(String lhsCommit, String rhsCommit) {
 		return resultCache.getResult(lhsCommit, rhsCommit);
 	}
 
 	/**
-	 * Adds model resources to {@link #resultCache} for all commits relevant for
-	 * this test. Must be executed before all tests.
+	 * TODO Rename to prepareTestResources or something similar
+	 * 
+	 * Prepares model resources and expected similarity results needed by tests and
+	 * caches them. Must be executed before all tests.
 	 * 
 	 * @see {@link #getCommitIDs()}
 	 */
@@ -316,6 +324,7 @@ public abstract class AbstractJaMoPPParserRepoTest extends AbstractJaMoPPParserS
 	}
 
 	/**
+	 * Computes and caches expected similarity results necessary for the tests.
 	 * 
 	 * @param git          The GIT object associated with the in-memory
 	 *                     representation of the GIT repository
@@ -515,20 +524,22 @@ public abstract class AbstractJaMoPPParserRepoTest extends AbstractJaMoPPParserS
 	protected abstract List<String> getCommitIDs();
 
 	/**
-	 * @return The URI to the repository, which will be used in tests.
+	 * @return The URI to the (remote) repository, which will be locally cloned and
+	 *         used in tests.
 	 */
 	protected abstract URI getRepoURI();
 
 	/**
-	 * @return The name of the repository that is used in this test.
+	 * @return The name of the (remote) repository, which will be locally cloned and
+	 *         used in tests.
 	 */
 	protected String getRepoName() {
 		return this.getRepoURI().lastSegment();
 	}
 
 	/**
-	 * @return An object that provides expected similarity results for parsed
-	 *         commits in tests.
+	 * @return An object that provides expected similarity results for model
+	 *         resources parsed from commits in tests.
 	 */
 	protected IExpectedSimilarityResultProvider getExpectedSimilarityResultProviderForCommits() {
 		return new RepoCacheSimilarityResultProvider(resultCache);

@@ -6,10 +6,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 /**
- * An abstract class for similarity checking tests to extend. <br>
- * <br>
- * Contains methods that provide information on the next test method to be run
- * and various delegation methods that spare call chains.
+ * An abstract class for similarity checking tests to extend.
  * 
  * @author Alp Torac Genc
  */
@@ -27,8 +24,8 @@ public abstract class AbstractSimilarityTest {
 	 * errors caused by the order of set up operations. <br>
 	 * <br>
 	 * {@link AbstractSimilarityTest}: Sets up the underlying
-	 * {@link ISimilarityCheckerContainer}, which will be used for
-	 * {@link #isSimilar(Object, Object)} and
+	 * {@link ISimilarityCheckerContainer}, which will be used for similarity
+	 * checking through {@link #isSimilar(Object, Object)} and
 	 * {@link #areSimilar(Collection, Collection)}.
 	 */
 	@BeforeEach
@@ -113,6 +110,9 @@ public abstract class AbstractSimilarityTest {
 	}
 
 	/**
+	 * Use this method to retrieve the currently running test class' name for
+	 * consistency.
+	 * 
 	 * @return The name of the currently running test class.
 	 */
 	public String getCurrentTestClassName() {

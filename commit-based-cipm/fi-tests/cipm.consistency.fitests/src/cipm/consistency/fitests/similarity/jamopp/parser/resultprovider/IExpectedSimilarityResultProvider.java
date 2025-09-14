@@ -14,22 +14,25 @@ import org.eclipse.emf.ecore.resource.Resource;
  * expected similarity results of others. How the expected similarity results
  * are derived and provided depends on the concrete implementor.
  * 
+ * TODO Rename parameters
+ * 
  * @author Alp Torac Genc
  */
 public interface IExpectedSimilarityResultProvider {
 	/**
-	 * Model resources and their paths should be provided via separate parameters,
-	 * as the original files that were parsed into model resources may reside under
+	 * Model resources and the respective paths should be provided via separate
+	 * parameters, as the original files that were parsed into model resources (i.e.
+	 * model source files / model source file directories) may reside under
 	 * different paths, which cannot be determined from the model resource alone.
 	 * 
 	 * @param lhsRes     Left-hand side resource
 	 * @param lhsResPath The path that the resource lhsRes was originally parsed
-	 *                   from, i.e. the path to the files that were parsed into
-	 *                   lhsRes.
+	 *                   from, i.e. the path to the model source file / model source
+	 *                   file directory.
 	 * @param rhsRes     Right-hand side resource
 	 * @param rhsResPath The path that the resource rhsRes was originally parsed
-	 *                   from, i.e. the path to the files that were parsed into
-	 *                   rhsRes.
+	 *                   from, i.e. the path to the model source file / model source
+	 *                   file directory.
 	 * @return The expected result of similarity checking the given resources,
 	 *         according to the concrete implementor.
 	 */

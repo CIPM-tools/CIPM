@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A class that contains information about time measurements. There is no
- * mandatory information that should be given to this class. <br>
+ * A class that contains information about time measurements in a map instance.
+ * There is no mandatory information that should be given to this class. <br>
  * <br>
  * For convenience and clarity, instances should be constructed via builder
  * classes such as {@link ParserTestTimeMeasurementKeyBuilder}. Its constructor

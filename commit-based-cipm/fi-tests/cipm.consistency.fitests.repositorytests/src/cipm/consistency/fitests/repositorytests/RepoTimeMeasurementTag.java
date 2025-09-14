@@ -30,12 +30,12 @@ public enum RepoTimeMeasurementTag implements ITimeMeasurementTag {
 
 	/**
 	 * A tag meant for time measurements from loading expected similarity results
-	 * for similarity checking commits
+	 * for similarity checking model resources of commits
 	 */
 	LOAD_EXPECTED_SIMILARITY_RESULTS,
 	/**
 	 * A tag meant for time measurements from saving expected similarity results for
-	 * similarity checking commits
+	 * similarity checking model resources of commits
 	 */
 	SAVE_EXPECTED_SIMILARITY_RESULTS,
 

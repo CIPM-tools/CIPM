@@ -20,8 +20,7 @@ import cipm.consistency.fitests.similarity.ISimilarityCheckerContainer;
 public class ResourceContentSimilarityResultProvider implements IExpectedSimilarityResultProvider {
 	private ISimilarityCheckerContainer scc;
 	/**
-	 * Whether the order of the contents of the model resources should be accounted
-	 * for
+	 * @see {@link #ResourceContentSimilarityResultProvider(ISimilarityCheckerContainer, boolean)}
 	 */
 	private boolean contentOrderMatters;
 
@@ -38,8 +37,7 @@ public class ResourceContentSimilarityResultProvider implements IExpectedSimilar
 
 	/**
 	 * Checks if both sides' contents ({@code res.getAllContents()}) are similar, if
-	 * their order does not matter. Makes sure that the result is the same as
-	 * {@code allContentSimilar(rhs, lhs)}.
+	 * their order does not matter.
 	 * 
 	 * @return Whether all contents of lhs and rhs are similar, i.e. if all contents
 	 *         of lhs have a corresponding similar content on rhs.
@@ -55,8 +53,7 @@ public class ResourceContentSimilarityResultProvider implements IExpectedSimilar
 
 	/**
 	 * Checks if both sides' contents ({@code obj.eAllContents()}) are similar, if
-	 * their order does not matter. Makes sure that the result is the same as
-	 * {@code allContentSimilar(rhs, lhs)}.
+	 * their order does not matter.
 	 * 
 	 * @return Whether all contents of lhs and rhs are similar, i.e. if all contents
 	 *         of lhs have a corresponding similar content on rhs.
@@ -109,6 +106,10 @@ public class ResourceContentSimilarityResultProvider implements IExpectedSimilar
 	 *           {@link ISimilarityCheckerContainer} and content order (if desired
 	 *           in
 	 *           {@link #ResourceContentSimilarityResultProvider(ISimilarityCheckerContainer, boolean)}).
+	 *           If both paths are equal, the resources are expected to be similar.
+	 *           If the paths are different, TODO Fix this method by adding
+	 *           FileContentSimilarityResultProvider to !this.contentOrderSimilar
+	 *           case
 	 */
 	@Override
 	public boolean getExpectedSimilarityResultFor(Resource lhsRes, Path lhsResPath, Resource rhsRes, Path rhsResPath) {
