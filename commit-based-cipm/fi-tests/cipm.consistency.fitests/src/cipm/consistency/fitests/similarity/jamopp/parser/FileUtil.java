@@ -15,7 +15,7 @@ import cipm.consistency.fitests.similarity.SimilarityTestLogger;
  */
 public class FileUtil {
 	/**
-	 * @return Whether the content of both dirs are similar.
+	 * @return Whether the content of both paths are similar.
 	 * 
 	 * @see {@link #filesEqual(File, File)}
 	 * @see {@link #dirsEqual(File, File)}
@@ -49,6 +49,9 @@ public class FileUtil {
 	 * <br>
 	 * If both files cannot be read, they are ignored and this method returns true.
 	 * 
+	 * @param f1 A file object. Must be a file, directories are not allowed
+	 * @param f2 Another file object. Must be a file, directories are not allowed
+	 * 
 	 * @see {@link #readEffectiveText(File)}
 	 */
 	public static boolean filesEqual(File f1, File f2) {
@@ -63,28 +66,32 @@ public class FileUtil {
 	}
 
 	/**
-	 * Recursively checks the equality of the given directories, based on their
+	 * Recursively checks the equality of the given file objects, based on their
 	 * effective content (i.e. the files/sub-directories they contain and the
-	 * contents of those files without whitespaces).
+	 * contents of those files without whitespaces). If the given file objects
+	 * represent files, delegates to {@link #filesEqual(File, File)} instead.
 	 * 
-	 * @see {@link #filesEqual(File, File)}, {@link #readEffectiveText(File)}
+	 * @param f1 A file object representing either a file or a directory
+	 * @param f2 Another file object representing either a file or a directory
+	 * 
+	 * @see {@link #filesEqual(File, File)}
 	 */
-	public static boolean dirsEqual(File dir1, File dir2) {
-		SimilarityTestLogger.logDebugMsg("Comparing: " + dir1.getName() + " and " + dir2.getName(), FileUtil.class);
+	public static boolean dirsEqual(File f1, File f2) {
+		SimilarityTestLogger.logDebugMsg("Comparing: " + f1.getName() + " and " + f2.getName(), FileUtil.class);
 
 		// There cannot be 2 files with the same path, name and extension
 		// so using TreeSet, which sorts the files spares doing so here
 		var files1 = new TreeSet<File>();
 		var files2 = new TreeSet<File>();
 
-		var dir1Files = dir1.listFiles();
+		var dir1Files = f1.listFiles();
 		if (dir1Files != null) {
 			for (var f : dir1Files) {
 				files1.add(f);
 			}
 		}
 
-		var dir2Files = dir2.listFiles();
+		var dir2Files = f2.listFiles();
 		if (dir2Files != null) {
 			for (var f : dir2Files) {
 				files2.add(f);
@@ -99,19 +106,20 @@ public class FileUtil {
 		var fileIter2 = files2.iterator();
 
 		for (int i = 0; i < files1.size(); i++) {
-			var f1 = fileIter1.next();
-			var f2 = fileIter2.next();
+			var file1 = fileIter1.next();
+			var file2 = fileIter2.next();
 
-			if (f1.isDirectory() && f2.isDirectory()) {
-				if (!dirsEqual(f1, f2)) {
+			if (file1.isDirectory() && file2.isDirectory()) {
+				if (!dirsEqual(file1, file2)) {
 					SimilarityTestLogger.logDebugMsg(
-							"Directories " + f1.getName() + " and " + f2.getName() + " are not equal", FileUtil.class);
+							"Directories " + file1.getName() + " and " + file2.getName() + " are not equal",
+							FileUtil.class);
 					return false;
 				}
-			} else if (f1.isFile() && f2.isFile()) {
-				if (!filesEqual(f1, f2)) {
+			} else if (file1.isFile() && file2.isFile()) {
+				if (!filesEqual(file1, file2)) {
 					SimilarityTestLogger.logDebugMsg(
-							"Files " + f1.getName() + " and " + f2.getName() + " are not equal", FileUtil.class);
+							"Files " + file1.getName() + " and " + file2.getName() + " are not equal", FileUtil.class);
 					return false;
 				}
 			} else {
