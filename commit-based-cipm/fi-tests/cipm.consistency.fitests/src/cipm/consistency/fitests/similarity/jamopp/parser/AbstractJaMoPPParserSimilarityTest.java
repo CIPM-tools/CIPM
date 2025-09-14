@@ -2,6 +2,7 @@ package cipm.consistency.fitests.similarity.jamopp.parser;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -19,10 +20,14 @@ import cipm.consistency.fitests.similarity.SimilarityTestLogger;
 import cipm.consistency.fitests.similarity.jamopp.AbstractJaMoPPSimilarityTest;
 import cipm.consistency.fitests.similarity.jamopp.parser.testfactory.AbstractJaMoPPParserSimilarityTestFactory;
 import cipm.consistency.fitests.similarity.jamopp.parser.testfactory.IJaMoPPParserTestGenerationStrategy;
+import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.DefaultTimeMeasurementDataStructure;
+import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.GSONPersistingStrategy;
 import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.GeneralTimeMeasurementTag;
 import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.ITimeMeasurementTag;
 import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.ParserTestTimeMeasurementKey;
+import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.ParserTestTimeMeasurementKeyBuilder;
 import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.ParserTestTimeMeasurer;
+import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.StopwatchStrategy;
 
 /**
  * An abstract test class, which can be used for implementing tests that involve
@@ -39,7 +44,6 @@ import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.ParserT
  * @see {@link #createTests()}
  */
 public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPSimilarityTest {
-
 	/**
 	 * An object that caches and grants access to the parsed models, which were
 	 * cached after being parsed. <br>
@@ -81,6 +85,8 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	@BeforeEach
 	@Override
 	public void setUp() {
+		this.setupForTimeMeasurements();
+		ParserTestTimeMeasurer.getInstance().startTimeMeasuring();
 		this.startTimeMeasurement(GeneralTimeMeasurementTag.TEST_BEFOREEACH);
 		super.setUp();
 
@@ -114,7 +120,8 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 			SimilarityTestLogger.logDebugMsg("Saving all cached resources after parser test", this.getClass());
 			cachedResources.forEach((res) -> {
 				this.startTimeMeasurement(
-						createTimeMeasurementKey().withParsedModelLocation(res.getModelResource().getURI().toString()),
+						getTimeMeasurementKeyBuilder()
+								.withParsedModelLocation(res.getModelResource().getURI().toString()),
 						GeneralTimeMeasurementTag.SAVE_MODEL_RESOURCE);
 				res.saveResources();
 				this.stopTimeMeasurement();
@@ -126,7 +133,8 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 			SimilarityTestLogger.logDebugMsg("Deleting all cached resources after parser test", this.getClass());
 			cachedResources.forEach((res) -> {
 				this.startTimeMeasurement(
-						createTimeMeasurementKey().withParsedModelLocation(res.getModelResource().getURI().toString()),
+						getTimeMeasurementKeyBuilder()
+								.withParsedModelLocation(res.getModelResource().getURI().toString()),
 						GeneralTimeMeasurementTag.DELETE_MODEL_RESOURCE);
 				res.deleteResources();
 				this.stopTimeMeasurement();
@@ -136,7 +144,8 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 			SimilarityTestLogger.logDebugMsg("Unloading all cached resources after parser test", this.getClass());
 			cachedResources.forEach((res) -> {
 				this.startTimeMeasurement(
-						createTimeMeasurementKey().withParsedModelLocation(res.getModelResource().getURI().toString()),
+						getTimeMeasurementKeyBuilder()
+								.withParsedModelLocation(res.getModelResource().getURI().toString()),
 						GeneralTimeMeasurementTag.UNLOAD_MODEL_RESOURCE);
 				res.unloadResources();
 				this.stopTimeMeasurement();
@@ -156,10 +165,14 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 
 		super.tearDown();
 		this.stopTimeMeasurement();
+		ParserTestTimeMeasurer.getInstance().finishTimeMeasuring();
 
 		this.saveTimeMeasurements();
-
 		SimilarityTestLogger.logDebugMsg("Tore down after parser test", this.getClass());
+	}
+
+	protected ParserTestTimeMeasurementKeyBuilder getTimeMeasurementKeyBuilder() {
+		return new ParserTestTimeMeasurementKeyBuilder();
 	}
 
 	protected ParserTestFileLayout initParserTestFileLayout() {
@@ -177,12 +190,36 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	}
 
 	/**
+	 * Can be overridden in sub-classes.
+	 * 
+	 * @return The path, at which time measurements of the currently running test
+	 *         class will be saved.
+	 */
+	protected Path getTimeMeasurementSavePathForCurrentTestClass() {
+		var dateFormatInFileName = DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss");
+		var startTime = ParserTestTimeMeasurer.getInstance().getDataStructure().getStartTime();
+		var endTime = ParserTestTimeMeasurer.getInstance().getDataStructure().getEndTime();
+
+		var fileName = String.format("%s___%s-%s.%s", dateFormatInFileName.format(startTime),
+				dateFormatInFileName.format(endTime), this.getCurrentTestClassName(), "json");
+		return this.getTestFileLayout().getTimeMeasurementsFileSavePath().resolve(fileName);
+	}
+
+	protected void setupForTimeMeasurements() {
+		ParserTestTimeMeasurer.getInstance().setDataStructure(new DefaultTimeMeasurementDataStructure());
+		ParserTestTimeMeasurer.getInstance().setMeasuringStrat(new StopwatchStrategy());
+		ParserTestTimeMeasurer.getInstance()
+				.setPersistingStrat(new GSONPersistingStrategy(DateTimeFormatter.ISO_DATE_TIME));
+	}
+
+	/**
 	 * Saves the time measurements taken during tests via
 	 * {@code startTimeMeasurement} and {@code stopTimeMeasurement} calls.
 	 */
 	protected void saveTimeMeasurements() {
 		SimilarityTestLogger.logDebugMsg("Saving time measurements", this.getClass());
-		ParserTestTimeMeasurer.getInstance().save(this.layout.getTimeMeasurementsFileSavePath());
+		ParserTestTimeMeasurer.getInstance().save(this.getTimeMeasurementSavePathForCurrentTestClass());
+		ParserTestTimeMeasurer.getInstance().reset();
 		SimilarityTestLogger.logDebugMsg("Saved time measurements", this.getClass());
 	}
 
@@ -198,9 +235,9 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	 * @param tag The tag of the time measurement, which is used to group time
 	 *            measurements
 	 */
-	protected void startTimeMeasurement(ParserTestTimeMeasurementKey key, ITimeMeasurementTag tag) {
-		ParserTestTimeMeasurer.getInstance().startTimeMeasurement(key.withTestClassName(getCurrentTestClassName()),
-				tag);
+	protected void startTimeMeasurement(ParserTestTimeMeasurementKeyBuilder keyBuilder, ITimeMeasurementTag tag) {
+		ParserTestTimeMeasurer.getInstance()
+				.startTimeMeasurement(keyBuilder.withTestClassName(getCurrentTestClassName()).createKey(), tag);
 	}
 
 	/**
@@ -209,11 +246,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	 * for the current concrete test class.
 	 */
 	protected void startTimeMeasurement(ITimeMeasurementTag tag) {
-		startTimeMeasurement(createTimeMeasurementKey(), tag);
-	}
-
-	protected ParserTestTimeMeasurementKey createTimeMeasurementKey() {
-		return new ParserTestTimeMeasurementKey();
+		startTimeMeasurement(getTimeMeasurementKeyBuilder(), tag);
 	}
 
 	/**
@@ -263,7 +296,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	 * @see {@link #prepareArtificialResource(Resource, URI)}
 	 */
 	protected IModelResourceWrapper parseModelsDirWithoutCaching(Path modelDir) {
-		this.startTimeMeasurement(createTimeMeasurementKey().withOriginalModelLocation(modelDir.toString())
+		this.startTimeMeasurement(getTimeMeasurementKeyBuilder().withOriginalModelLocation(modelDir.toString())
 				.withResourceParsingStrategyClassName(this.getResourceParsingStrategy().getClass().getSimpleName()),
 				GeneralTimeMeasurementTag.PARSE_MODEL_RESOURCE);
 		var wrapper = new JaMoPPModelResourceWrapper(this.getResourceParsingStrategy());
@@ -300,7 +333,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	 * parsed model resource to the cache under cacheKey.
 	 */
 	protected IModelResourceWrapper parseModelsDirWithCaching(Path modelDir, URI cachedModelURI, String cacheKey) {
-		this.startTimeMeasurement(createTimeMeasurementKey().withOriginalModelLocation(modelDir.toString())
+		this.startTimeMeasurement(getTimeMeasurementKeyBuilder().withOriginalModelLocation(modelDir.toString())
 				.withParsedModelLocation(cachedModelURI.toString()),
 				GeneralTimeMeasurementTag.MODEL_RESOURCE_CACHE_ACCESS);
 		var cache = this.getCacheUtil();
@@ -322,7 +355,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 				resWrapper = cache.getFromCache(cacheKey);
 				if (!resWrapper.isModelResourceLoaded()) {
 					this.startTimeMeasurement(
-							createTimeMeasurementKey().withOriginalModelLocation(modelDir.toString())
+							getTimeMeasurementKeyBuilder().withOriginalModelLocation(modelDir.toString())
 									.withParsedModelLocation(cachedModelURI.toString()),
 							GeneralTimeMeasurementTag.LOAD_MODEL_RESOURCE);
 					resWrapper.loadParsedResources();
@@ -334,7 +367,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 			if (resWrapper == null) {
 				resWrapper = new JaMoPPModelResourceWrapper();
 				this.startTimeMeasurement(
-						createTimeMeasurementKey().withOriginalModelLocation(modelDir.toString())
+						getTimeMeasurementKeyBuilder().withOriginalModelLocation(modelDir.toString())
 								.withParsedModelLocation(cachedModelURI.toString()),
 						GeneralTimeMeasurementTag.LOAD_MODEL_RESOURCE);
 				resWrapper.loadModelResource(cachedModelURI);
@@ -519,7 +552,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	 */
 	protected Collection<Path> discoverModelSourceFileDirsAt(Path rootPath) {
 		var discoveryStrat = new ModelDirDiscoveryStrategy((f) -> this.isModelSourceFileDirectory(f));
-		this.startTimeMeasurement(createTimeMeasurementKey().withModelDiscoveryPath(rootPath.toString())
+		this.startTimeMeasurement(getTimeMeasurementKeyBuilder().withModelDiscoveryPath(rootPath.toString())
 				.withModelDiscoveryClassName(discoveryStrat.getClass().getSimpleName()),
 				GeneralTimeMeasurementTag.DISCOVER_MODEL_RESOURCES);
 		var result = discoveryStrat.discoverModelSourceDirs(rootPath.toFile());
@@ -535,7 +568,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	 */
 	protected Collection<Path> discoverModelSourceParentDirsAt(Path rootPath) {
 		var discoveryStrat = new ModelDirDiscoveryStrategy((f) -> this.isModelSourceFileDirectory(f));
-		this.startTimeMeasurement(createTimeMeasurementKey().withModelDiscoveryPath(rootPath.toString())
+		this.startTimeMeasurement(getTimeMeasurementKeyBuilder().withModelDiscoveryPath(rootPath.toString())
 				.withModelDiscoveryClassName(discoveryStrat.getClass().getSimpleName()),
 				GeneralTimeMeasurementTag.DISCOVER_MODEL_RESOURCES);
 		var result = discoveryStrat.discoverModelSourceParentDirs(rootPath.toFile());

@@ -54,8 +54,8 @@ public class ModelComparisonTestFactory extends AbstractJaMoPPParserSimilarityTe
 	 */
 	protected Comparison compareModels(Resource res1, Resource res2) {
 		ParserTestTimeMeasurer.getInstance().startTimeMeasurement(
-				this.getTimeMeasurementKeyFor(res1, null, res2, null)
-						.withModelComparisonClassName(JavaModelComparator.class.getSimpleName()),
+				this.getTimeMeasurementKeyBuilderFor(res1, null, res2, null)
+						.withModelComparisonClassName(JavaModelComparator.class.getSimpleName()).createKey(),
 				GeneralTimeMeasurementTag.MODEL_RESOURCE_COMPARISON);
 		// TODO Integrate "this.scc" into the model comparator
 		var result = JavaModelComparator.compareJavaModels(res1, res2, null, null, null);
@@ -71,7 +71,8 @@ public class ModelComparisonTestFactory extends AbstractJaMoPPParserSimilarityTe
 	 * comparison is symmetric.
 	 */
 	protected void testSimilarityWithModelComparison(Resource res1, Resource res2, Boolean expectedResult) {
-		ParserTestTimeMeasurer.getInstance().startTimeMeasurement(this.getTimeMeasurementKeyFor(res1, null, res2, null),
+		ParserTestTimeMeasurer.getInstance().startTimeMeasurement(
+				this.getTimeMeasurementKeyBuilderFor(res1, null, res2, null).createKey(),
 				GeneralTimeMeasurementTag.TEST_OVERHEAD);
 
 		var cmp1To2 = this.compareModels(res1, res2);
@@ -79,7 +80,8 @@ public class ModelComparisonTestFactory extends AbstractJaMoPPParserSimilarityTe
 
 		ParserTestTimeMeasurer.getInstance().stopTimeMeasurement();
 
-		ParserTestTimeMeasurer.getInstance().startTimeMeasurement(this.getTimeMeasurementKeyFor(res2, null, res1, null),
+		ParserTestTimeMeasurer.getInstance().startTimeMeasurement(
+				this.getTimeMeasurementKeyBuilderFor(res2, null, res1, null).createKey(),
 				GeneralTimeMeasurementTag.TEST_OVERHEAD);
 
 		var cmp2To1 = this.compareModels(res2, res1);

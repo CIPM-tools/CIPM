@@ -8,7 +8,7 @@ import org.junit.jupiter.api.DynamicNode;
 import cipm.consistency.fitests.similarity.jamopp.parser.resultprovider.IExpectedSimilarityResultProvider;
 import cipm.consistency.fitests.similarity.jamopp.parser.resultprovider.ResourceReferenceEqualitySimilarityResultProvider;
 import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.GeneralTimeMeasurementTag;
-import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.ParserTestTimeMeasurementKey;
+import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.ParserTestTimeMeasurementKeyBuilder;
 import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.ParserTestTimeMeasurer;
 
 /**
@@ -90,7 +90,7 @@ public abstract class AbstractJaMoPPParserSimilarityTestFactory {
 	 */
 	public boolean getExpectedSimilarityResultFor(Resource lhsRes, Path lhsResPath, Resource rhsRes, Path rhsResPath) {
 		ParserTestTimeMeasurer.getInstance().startTimeMeasurement(
-				this.getTimeMeasurementKeyFor(lhsRes, lhsResPath, rhsRes, rhsResPath),
+				this.getTimeMeasurementKeyBuilderFor(lhsRes, lhsResPath, rhsRes, rhsResPath).createKey(),
 				GeneralTimeMeasurementTag.EXPECTED_SIMILARITY_RESULT_COMPUTATION);
 		var result = this.getExpectedSimilarityResultProvider().getExpectedSimilarityResultFor(lhsRes, lhsResPath,
 				rhsRes, rhsResPath);
@@ -99,40 +99,39 @@ public abstract class AbstractJaMoPPParserSimilarityTestFactory {
 	}
 
 	/**
-	 * @return Generates a time measurement key for the given parameters
+	 * The returned builder contains the preliminary key, which can be further built
+	 * upon. In the end, call
+	 * {@link ParserTestTimeMeasurementKeyBuilder#createKey()} to get the final key.
+	 * 
+	 * @return A {@link ParserTestTimeMeasurementKeyBuilder} that contains all the
+	 *         information regarding the time measurement, which is derivable from
+	 *         the given parameters.
 	 */
-	protected ParserTestTimeMeasurementKey getTimeMeasurementKeyFor(Resource lhsRes, Path lhsResPath, Resource rhsRes,
-			Path rhsResPath) {
-		var key = new ParserTestTimeMeasurementKey();
+	protected ParserTestTimeMeasurementKeyBuilder getTimeMeasurementKeyBuilderFor(Resource lhsRes, Path lhsResPath,
+			Resource rhsRes, Path rhsResPath) {
+		var keyBuilder = new ParserTestTimeMeasurementKeyBuilder();
 
-		key.withTestFactoryClassName(this.getClass().getSimpleName());
-		key.withExpectedSimilarityResultProviderClassName(this.getExpectedSimilarityResultProvider().getClass().getSimpleName());
-
-		// TODO Clean up or fix to set the repository name and commitID fields
-		// It is currently possible to derive them from the model resource URIs:
-		// modelRes.getURI() = ".../repositoryName/commitID.javaxmi"
+		keyBuilder.withTestFactoryClassName(this.getClass().getSimpleName());
+		keyBuilder.withExpectedSimilarityResultProviderClassName(
+				this.getExpectedSimilarityResultProvider().getClass().getSimpleName());
 
 		if (lhsRes != null) {
-			key.withParsedLeftModelLocation(lhsRes.getURI().toString());
-//					.withLeftRepositoryName(lhsRes.getURI().segment(lhsRes.getURI().segmentCount() - 2))
-//					.withLeftCommitID(lhsRes.getURI().lastSegment().split("\\.")[0])
+			keyBuilder.withParsedLeftModelLocation(lhsRes.getURI().toString());
 		}
 
 		if (lhsResPath != null) {
-			key.withOriginalLeftModelLocation(lhsResPath.toString());
+			keyBuilder.withOriginalLeftModelLocation(lhsResPath.toString());
 		}
 
 		if (rhsRes != null) {
-			key.withParsedRightModelLocation(rhsRes.getURI().toString());
-//					.withRightRepositoryName(rhsRes.getURI().segment(rhsRes.getURI().segmentCount() - 2))
-//					.withRightCommitID(rhsRes.getURI().lastSegment().split("\\.")[0])
+			keyBuilder.withParsedRightModelLocation(rhsRes.getURI().toString());
 		}
 
 		if (rhsResPath != null) {
-			key.withOriginalRightModelLocation(rhsResPath.toString());
+			keyBuilder.withOriginalRightModelLocation(rhsResPath.toString());
 		}
 
-		return key;
+		return keyBuilder;
 	}
 
 	/**
