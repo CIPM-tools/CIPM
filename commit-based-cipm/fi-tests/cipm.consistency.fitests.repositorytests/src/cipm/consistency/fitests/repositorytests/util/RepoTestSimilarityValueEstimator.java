@@ -17,9 +17,9 @@ import cipm.consistency.fitests.repositorytests.util.commentremoval.QuickComment
 import cipm.consistency.fitests.repositorytests.util.difffilter.DiffFilter;
 
 /**
- * A class that computes expected similarity checking results (or expected
- * similarity values) based on the given GIT-Diffs. Provides numerous variants
- * of its computation method to allow re-using various GIT elements.<br>
+ * A class that computes expected similarity checking results based on the given
+ * GIT-Diffs. Provides numerous variants of its computation method to allow
+ * re-using various GIT elements.<br>
  * <br>
  * Uses {@link QuickCommentRemover}, which removes commentaries in an
  * approximative fashion. Therefore, <b><i>the computed results may be
@@ -50,7 +50,7 @@ public class RepoTestSimilarityValueEstimator {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			throw new IllegalStateException("IOException occured while computing expected similarity value", e);
+			throw new IllegalStateException("IOException occured while computing expected similarity result", e);
 		}
 
 		return true;
@@ -66,7 +66,7 @@ public class RepoTestSimilarityValueEstimator {
 			return this.getExpectedSimilarityValueFor(os, new DiffFormatter(os), diffEntries);
 		} catch (IOException e) {
 			e.printStackTrace();
-			throw new IllegalStateException("IOException occured while computing expected similarity value", e);
+			throw new IllegalStateException("IOException occured while computing expected similarity result", e);
 		}
 	}
 
@@ -92,7 +92,7 @@ public class RepoTestSimilarityValueEstimator {
 			return this.getExpectedSimilarityValueFor(os, df, entries);
 		} catch (IOException e) {
 			e.printStackTrace();
-			throw new IllegalStateException("IOException occured while computing expected similarity value", e);
+			throw new IllegalStateException("IOException occured while computing expected similarity result", e);
 		}
 	}
 
@@ -116,7 +116,7 @@ public class RepoTestSimilarityValueEstimator {
 			return this.getExpectedSimilarityValueFor(git, oldTreeIter, newTreeIter);
 		} catch (IOException e) {
 			e.printStackTrace();
-			throw new IllegalStateException("IOException occured while computing expected similarity value", e);
+			throw new IllegalStateException("IOException occured while computing expected similarity result", e);
 		}
 	}
 
