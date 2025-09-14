@@ -22,7 +22,8 @@ public class FileContentSimilarityResultProvider implements IExpectedSimilarityR
 	 *           similar.
 	 */
 	@Override
-	public boolean getExpectedSimilarityResultFor(Resource lhsRes, Path lhsResPath, Resource rhsRes, Path rhsResPath) {
-		return FileUtil.areContentsEqual(lhsResPath, rhsResPath);
+	public boolean getExpectedSimilarityResultFor(Resource lhsModelResource, Path lhsModelSourceFileDirPath,
+			Resource rhsModelResource, Path rhsModelSourceFileDirPath) {
+		return FileUtil.areContentsEqual(lhsModelSourceFileDirPath, rhsModelSourceFileDirPath);
 	}
 }

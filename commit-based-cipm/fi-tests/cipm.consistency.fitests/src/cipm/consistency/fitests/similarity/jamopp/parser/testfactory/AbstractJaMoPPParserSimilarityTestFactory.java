@@ -15,8 +15,6 @@ import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.ParserT
  * An abstract class meant to be implemented by classes that encapsulate logic
  * about dynamic test generation.
  * 
- * TODO Rename parameters
- * 
  * @author Alp Torac Genc
  */
 public abstract class AbstractJaMoPPParserSimilarityTestFactory {
@@ -90,12 +88,14 @@ public abstract class AbstractJaMoPPParserSimilarityTestFactory {
 	 * 
 	 * @see {@link #getExpectedSimilarityResultProvider()}
 	 */
-	public boolean getExpectedSimilarityResultFor(Resource lhsRes, Path lhsResPath, Resource rhsRes, Path rhsResPath) {
+	public boolean getExpectedSimilarityResultFor(Resource lhsModelResource, Path lhsModelSourceFileDirPath,
+			Resource rhsModelResource, Path rhsModelSourceFileDirPath) {
 		ParserTestTimeMeasurer.getInstance().startTimeMeasurement(
-				this.getTimeMeasurementKeyBuilderFor(lhsRes, lhsResPath, rhsRes, rhsResPath).createKey(),
+				this.getTimeMeasurementKeyBuilderFor(lhsModelResource, lhsModelSourceFileDirPath, rhsModelResource,
+						rhsModelSourceFileDirPath).createKey(),
 				GeneralTimeMeasurementTag.EXPECTED_SIMILARITY_RESULT_COMPUTATION);
-		var result = this.getExpectedSimilarityResultProvider().getExpectedSimilarityResultFor(lhsRes, lhsResPath,
-				rhsRes, rhsResPath);
+		var result = this.getExpectedSimilarityResultProvider().getExpectedSimilarityResultFor(lhsModelResource,
+				lhsModelSourceFileDirPath, rhsModelResource, rhsModelSourceFileDirPath);
 		ParserTestTimeMeasurer.getInstance().stopTimeMeasurement();
 		return result;
 	}
@@ -109,28 +109,28 @@ public abstract class AbstractJaMoPPParserSimilarityTestFactory {
 	 *         information regarding the time measurement, which is derivable from
 	 *         the given parameters.
 	 */
-	protected ParserTestTimeMeasurementKeyBuilder getTimeMeasurementKeyBuilderFor(Resource lhsRes, Path lhsResPath,
-			Resource rhsRes, Path rhsResPath) {
+	protected ParserTestTimeMeasurementKeyBuilder getTimeMeasurementKeyBuilderFor(Resource lhsModelResource,
+			Path lhsModelSourceFileDirPath, Resource rhsModelResource, Path rhsModelSourceFileDirPath) {
 		var keyBuilder = new ParserTestTimeMeasurementKeyBuilder();
 
 		keyBuilder.withTestFactoryClassName(this.getClass().getSimpleName());
 		keyBuilder.withExpectedSimilarityResultProviderClassName(
 				this.getExpectedSimilarityResultProvider().getClass().getSimpleName());
 
-		if (lhsRes != null) {
-			keyBuilder.withParsedLeftModelLocation(lhsRes.getURI().toString());
+		if (lhsModelResource != null) {
+			keyBuilder.withParsedLeftModelLocation(lhsModelResource.getURI().toString());
 		}
 
-		if (lhsResPath != null) {
-			keyBuilder.withOriginalLeftModelLocation(lhsResPath.toString());
+		if (lhsModelSourceFileDirPath != null) {
+			keyBuilder.withOriginalLeftModelLocation(lhsModelSourceFileDirPath.toString());
 		}
 
-		if (rhsRes != null) {
-			keyBuilder.withParsedRightModelLocation(rhsRes.getURI().toString());
+		if (rhsModelResource != null) {
+			keyBuilder.withParsedRightModelLocation(rhsModelResource.getURI().toString());
 		}
 
-		if (rhsResPath != null) {
-			keyBuilder.withOriginalRightModelLocation(rhsResPath.toString());
+		if (rhsModelSourceFileDirPath != null) {
+			keyBuilder.withOriginalRightModelLocation(rhsModelSourceFileDirPath.toString());
 		}
 
 		return keyBuilder;
@@ -145,5 +145,6 @@ public abstract class AbstractJaMoPPParserSimilarityTestFactory {
 	 * 
 	 * @return Dynamic tests generated based on the concrete implementor.
 	 */
-	public abstract DynamicNode createTestsFor(Resource res1, Path path1, Resource res2, Path path2);
+	public abstract DynamicNode createTestsFor(Resource lhsModelResource, Path lhsModelSourceFileDirPath,
+			Resource rhsModelResource, Path rhsModelSourceFileDirPath);
 }

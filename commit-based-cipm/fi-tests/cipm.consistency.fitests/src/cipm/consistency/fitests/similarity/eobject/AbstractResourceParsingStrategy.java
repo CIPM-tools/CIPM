@@ -132,15 +132,14 @@ public abstract class AbstractResourceParsingStrategy {
 	/**
 	 * Parses a ResourceSet for the model at given path.
 	 * 
-	 * TODO Rename parameter
-	 * 
-	 * @param modelDir The path to a given model source file directory. Refer to the
-	 *                 concrete implementation for more information on where this
-	 *                 path is supposed to point at.
+	 * @param modelSourceFileDirPath The path to a given model source file
+	 *                               directory. Refer to the concrete implementation
+	 *                               for more information on where this path is
+	 *                               supposed to point at.
 	 * @return A ResourceSet that contains all parsed Resource instances for the
 	 *         given model source file directory path.
 	 */
-	public abstract ResourceSet parseModelResource(Path modelDir);
+	public abstract ResourceSet parseModelResource(Path modelSourceFileDirPath);
 
 	/**
 	 * @return The extension of the {@link Resource} files, if they are saved.

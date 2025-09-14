@@ -6,47 +6,45 @@ import cipm.consistency.fitests.similarity.eobject.ResourceTestOptions;
  * A class that contains various options for test classes that parse
  * {@link Resource} instances and cache them:
  * <ul>
- * <li>shouldSaveCachedResources: Whether the cached model resources should be
- * saved after tests
- * <li>shouldRemoveResourcesFromCache: Whether cached model resources should be
- * removed after each test deleted after tests
+ * <li>shouldSaveCachedModelResources: Whether the cached model resources should
+ * be saved after tests
+ * <li>shouldRemoveModelResourcesFromCache: Whether cached model resources
+ * should be removed after each test deleted after tests
  * </ul>
- * 
- * TODO Rename methods
  * 
  * @see {@link ResourceTestOptions} for other options
  * @author Alp Torac Genc
  */
 public class ParserTestOptions extends ResourceTestOptions {
-	private boolean shouldSaveCachedResources;
-	private boolean shouldRemoveResourcesFromCache;
+	private boolean shouldSaveCachedModelResources;
+	private boolean shouldRemoveModelResourcesFromCache;
 
 	/**
 	 * @see {@link ParserTestOptions}
 	 */
-	public void setShouldSaveCachedResources(boolean shouldSaveCachedResources) {
-		this.shouldSaveCachedResources = shouldSaveCachedResources;
+	public void setShouldSaveCachedModelResources(boolean shouldSaveCachedModelResources) {
+		this.shouldSaveCachedModelResources = shouldSaveCachedModelResources;
 	}
 
 	/**
 	 * @see {@link ParserTestOptions}
 	 */
-	public void setShouldRemoveResourcesFromCache(boolean shouldRemoveResourcesFromCache) {
-		this.shouldRemoveResourcesFromCache = shouldRemoveResourcesFromCache;
+	public void setShouldRemoveModelResourcesFromCache(boolean shouldRemoveModelResourcesFromCache) {
+		this.shouldRemoveModelResourcesFromCache = shouldRemoveModelResourcesFromCache;
 	}
 
 	/**
 	 * @see {@link ParserTestOptions}
 	 */
-	public boolean shouldSaveCachedResources() {
-		return shouldSaveCachedResources;
+	public boolean shouldSaveCachedModelResources() {
+		return shouldSaveCachedModelResources;
 	}
 
 	/**
 	 * @see {@link ParserTestOptions}
 	 */
-	public boolean shouldRemoveResourcesFromCache() {
-		return shouldRemoveResourcesFromCache;
+	public boolean shouldRemoveModelResourcesFromCache() {
+		return shouldRemoveModelResourcesFromCache;
 	}
 
 	/**
@@ -56,7 +54,7 @@ public class ParserTestOptions extends ResourceTestOptions {
 	 */
 	public void copyOptionsFrom(ParserTestOptions opts) {
 		super.copyOptionsFrom(opts);
-		this.shouldSaveCachedResources = opts.shouldSaveCachedResources;
-		this.shouldRemoveResourcesFromCache = opts.shouldRemoveResourcesFromCache;
+		this.shouldSaveCachedModelResources = opts.shouldSaveCachedModelResources;
+		this.shouldRemoveModelResourcesFromCache = opts.shouldRemoveModelResourcesFromCache;
 	}
 }

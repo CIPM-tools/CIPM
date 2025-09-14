@@ -18,7 +18,7 @@ import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.ParserT
 /**
  * A test class factory, which generates dynamic tests that check the similarity
  * of all contents ({@code res.getAllContents()}) of the given Resources
- * {@code res1, res2} pairwise.
+ * {@code lhsModelResource, rhsModelResource} pairwise.
  * 
  * @author Alp Torac Genc
  */
@@ -36,18 +36,19 @@ public class EAllContentSimilarityTestFactory extends AbstractJaMoPPParserSimila
 	 * {@code res_i.getAllContents()}. The order of the direct contents is also
 	 * considered and will impact the result.
 	 */
-	protected void testSimilarityOfAllContents(Resource res1, Resource res2, Boolean expectedResult) {
+	protected void testSimilarityOfAllContents(Resource lhsModelResource, Resource rhsModelResource,
+			Boolean expectedResult) {
 		ParserTestTimeMeasurer.getInstance().startTimeMeasurement(
-				this.getTimeMeasurementKeyBuilderFor(res1, null, res2, null).createKey(),
+				this.getTimeMeasurementKeyBuilderFor(lhsModelResource, null, rhsModelResource, null).createKey(),
 				GeneralTimeMeasurementTag.TEST_OVERHEAD);
 		var list1 = new ArrayList<EObject>();
 		var list2 = new ArrayList<EObject>();
 
-		res1.getAllContents().forEachRemaining((o) -> list1.add(o));
-		res2.getAllContents().forEachRemaining((o) -> list2.add(o));
+		lhsModelResource.getAllContents().forEachRemaining((o) -> list1.add(o));
+		rhsModelResource.getAllContents().forEachRemaining((o) -> list2.add(o));
 
 		ParserTestTimeMeasurer.getInstance().startTimeMeasurement(
-				this.getTimeMeasurementKeyBuilderFor(res1, null, res2, null).createKey(),
+				this.getTimeMeasurementKeyBuilderFor(lhsModelResource, null, rhsModelResource, null).createKey(),
 				GeneralTimeMeasurementTag.SIMILARITY_CHECKING);
 		Assertions.assertEquals(expectedResult, this.scc.areSimilar(list1, list2));
 		ParserTestTimeMeasurer.getInstance().stopTimeMeasurement();
@@ -55,10 +56,14 @@ public class EAllContentSimilarityTestFactory extends AbstractJaMoPPParserSimila
 	}
 
 	@Override
-	public DynamicNode createTestsFor(Resource res1, Path path1, Resource res2, Path path2) {
-		return DynamicTest.dynamicTest(String.format("%s vs %s", path1.getFileName(), path2.getFileName()), () -> {
-			this.testSimilarityOfAllContents(res1, res2, this.getExpectedSimilarityResultFor(res1, path1, res2, path2));
-		});
+	public DynamicNode createTestsFor(Resource lhsModelResource, Path lhsModelSourceFileDirPath,
+			Resource rhsModelResource, Path rhsModelSourceFileDirPath) {
+		return DynamicTest.dynamicTest(String.format("%s vs %s", lhsModelSourceFileDirPath.getFileName(),
+				rhsModelSourceFileDirPath.getFileName()), () -> {
+					this.testSimilarityOfAllContents(lhsModelResource, rhsModelResource,
+							this.getExpectedSimilarityResultFor(lhsModelResource, lhsModelSourceFileDirPath,
+									rhsModelResource, rhsModelSourceFileDirPath));
+				});
 	}
 
 	@Override

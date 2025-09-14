@@ -61,8 +61,8 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	 * Make sure that the {@link CacheUtil} instance persists throughout tests,
 	 * which are supposed to make use of it.
 	 * 
-	 * @see {@link #parseModelsDirWithoutCaching(Path)}
-	 * @see {@link #parseModelsDirWithCaching(Path)}
+	 * @see {@link #parseModelWithoutCaching(Path)}
+	 * @see {@link #parseModelWithCaching(Path)}
 	 */
 	private static final CacheUtil resourceCache = new CacheUtil();
 
@@ -112,7 +112,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	 * {@link AbstractJaMoPPParserSimilarityTest}: Performs various operations on
 	 * model resources that were parsed in the dynamic tests, according to the
 	 * preferences that are encoded in the methods of this test, such as
-	 * {@link AbstractJaMoPPParserSimilarityTest#shouldSaveCachedResources()}. It
+	 * {@link AbstractJaMoPPParserSimilarityTest#shouldSaveCachedModelResources()}. It
 	 * then saves the time measurements taken during the tests. See
 	 * {@link AbstractJaMoPPParserSimilarityTest} for more information.
 	 */
@@ -124,7 +124,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 		this.startTimeMeasurement(GeneralTimeMeasurementTag.TEST_AFTEREACH);
 		var cachedResources = resourceCache.getCachedResources();
 
-		if (this.getResourceTestOptions().shouldSaveCachedResources()) {
+		if (this.getResourceTestOptions().shouldSaveCachedModelResources()) {
 			SimilarityTestLogger.logDebugMsg("Saving all cached resources after parser test", this.getClass());
 			cachedResources.forEach((res) -> {
 				this.startTimeMeasurement(
@@ -137,7 +137,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 			SimilarityTestLogger.logDebugMsg("Saved all cached resources after parser test", this.getClass());
 		}
 
-		if (this.getResourceTestOptions().shouldDeleteAllResources()) {
+		if (this.getResourceTestOptions().shouldDeleteAllModelResources()) {
 			SimilarityTestLogger.logDebugMsg("Deleting all cached resources after parser test", this.getClass());
 			cachedResources.forEach((res) -> {
 				this.startTimeMeasurement(
@@ -148,7 +148,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 				this.stopTimeMeasurement();
 			});
 			SimilarityTestLogger.logDebugMsg("Deleted all cached resources after parser test", this.getClass());
-		} else if (this.getResourceTestOptions().shouldUnloadAllResources()) {
+		} else if (this.getResourceTestOptions().shouldUnloadAllModelResources()) {
 			SimilarityTestLogger.logDebugMsg("Unloading all cached resources after parser test", this.getClass());
 			cachedResources.forEach((res) -> {
 				this.startTimeMeasurement(
@@ -161,7 +161,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 			SimilarityTestLogger.logDebugMsg("Unloaded all cached resources after parser test", this.getClass());
 		}
 
-		if (this.getResourceTestOptions().shouldRemoveResourcesFromCache()) {
+		if (this.getResourceTestOptions().shouldRemoveModelResourcesFromCache()) {
 			SimilarityTestLogger.logDebugMsg("Removing all cached resources from cache after parser test",
 					this.getClass());
 			this.startTimeMeasurement(GeneralTimeMeasurementTag.MODEL_RESOURCE_CACHE_ACCESS);
@@ -195,7 +195,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	 */
 	protected ParserTestFileLayout initParserTestFileLayout() {
 		var layout = new ParserTestFileLayout();
-		layout.setModelSourceFileRootDirPath(new File("").getAbsoluteFile().toPath());
+		layout.setModelSourceParentRootDirPath(new File("").getAbsoluteFile().toPath());
 		layout.setTestModelResourceFilesSaveDirPath(testModelResourceFilesSaveDirPath);
 		layout.setCacheSaveDirPath(cacheSaveDirPath);
 		layout.setTimeMeasurementsFileSavePath(timeMeasurementsFileSavePath);
@@ -292,59 +292,65 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	 * Therefore, the given model source file directory should only belong to one
 	 * model.</b>
 	 * 
-	 * TODO Rename parameter and parameters of all variants TODO Rename method and
-	 * all variants of it (?)
-	 * 
-	 * @param modelDir A model source file directory that contains all model source
-	 *                 files of a (and only one) model
+	 * @param modelSourceFileDirPath Path to a model source file directory that
+	 *                               contains all model source files of a (and only
+	 *                               one) model
 	 * 
 	 * @see {@link #isResourceRelevant()}
 	 * @see {@link #prepareArtificialResource(Resource, URI)}
 	 */
-	protected IModelResourceWrapper parseModelsDirWithoutCaching(Path modelDir) {
-		this.startTimeMeasurement(getTimeMeasurementKeyBuilder().withOriginalModelLocation(modelDir.toString())
-				.withResourceParsingStrategyClassName(this.getResourceParsingStrategy().getClass().getSimpleName()),
+	protected IModelResourceWrapper parseModelWithoutCaching(Path modelSourceFileDirPath) {
+		this.startTimeMeasurement(
+				getTimeMeasurementKeyBuilder().withOriginalModelLocation(modelSourceFileDirPath.toString())
+						.withResourceParsingStrategyClassName(
+								this.getResourceParsingStrategy().getClass().getSimpleName()),
 				GeneralTimeMeasurementTag.PARSE_MODEL_RESOURCE);
 		var wrapper = new JaMoPPModelResourceWrapper(this.getResourceParsingStrategy());
-		wrapper.parseModelResource(modelDir, this.getTestFileLayout().getModelResourceURI(modelDir));
+		wrapper.parseModelResource(modelSourceFileDirPath,
+				this.getTestFileLayout().getModelResourceURI(modelSourceFileDirPath));
 		this.stopTimeMeasurement();
 		return wrapper;
 	}
 
 	/**
-	 * A variant of {@link #parseModelsDirWithCaching(Path, URI, String)} that uses
-	 * the given path as cache key (converts it to string via
-	 * {@code path.toString()})
+	 * A variant of {@link #parseModelWithCaching(Path, URI, String)} that uses the
+	 * given path model source file directory as cache key (converts it to string
+	 * via {@code path.toString()})
 	 */
-	protected IModelResourceWrapper parseModelsDirWithCaching(Path modelDir) {
-		return this.parseModelsDirWithCaching(modelDir, modelDir.toString());
+	protected IModelResourceWrapper parseModelWithCaching(Path modelSourceFileDirPath) {
+		return this.parseModelWithCaching(modelSourceFileDirPath, modelSourceFileDirPath.toString());
 	}
 
 	/**
-	 * A variant of {@link #parseModelsDirWithCaching(Path, URI, String)} that uses
-	 * {@code this.getModelResourceURI(modelDir)} as cached model URI.
+	 * A variant of {@link #parseModelWithCaching(Path, URI, String)} that uses
+	 * {@link ParserTestFileLayout#getModelResourceURI(Path)} as cached model
+	 * resource URI.
 	 */
-	protected IModelResourceWrapper parseModelsDirWithCaching(Path modelDir, String cacheKey) {
-		return this.parseModelsDirWithCaching(modelDir, this.getTestFileLayout().getModelResourceURI(modelDir),
-				cacheKey);
+	protected IModelResourceWrapper parseModelWithCaching(Path modelSourceFileDirPath, String modelResourceCacheKey) {
+		return this.parseModelWithCaching(modelSourceFileDirPath,
+				this.getTestFileLayout().getModelResourceURI(modelSourceFileDirPath), modelResourceCacheKey);
 	}
 
 	/**
-	 * Works similar to {@link #parseModelsDirWithCaching(Path)}, except for the
-	 * caching part: <br>
+	 * Works similar to {@link #parseModelWithCaching(Path)}, except for the caching
+	 * part: <br>
 	 * <br>
-	 * Checks the cache first for previously parsed model resources, if cacheKey is
-	 * not null. If a model resource from the given path was previously parsed and
-	 * cached under cacheKey, returns the cached model resource (at cachedModelURI)
-	 * instead. If there were no cached model resources for the given path, adds the
-	 * parsed model resource to the cache under cacheKey.
+	 * Checks the cache first for previously parsed model resources, if
+	 * modelResourceCacheKey is not null. If a model resource from the given path
+	 * model source file directory was previously parsed and cached under
+	 * modelResourceCacheKey, returns the cached model resource (at
+	 * modelResourceCachedURI) instead. If there were no cached model resources for
+	 * the given path, adds the parsed model resource to the cache under
+	 * modelResourceCacheKey.
 	 */
-	protected IModelResourceWrapper parseModelsDirWithCaching(Path modelDir, URI cachedModelURI, String cacheKey) {
-		this.startTimeMeasurement(getTimeMeasurementKeyBuilder().withOriginalModelLocation(modelDir.toString())
-				.withParsedModelLocation(cachedModelURI.toString()),
+	protected IModelResourceWrapper parseModelWithCaching(Path modelSourceFileDirPath, URI modelResourceCachedURI,
+			String modelResourceCacheKey) {
+		this.startTimeMeasurement(
+				getTimeMeasurementKeyBuilder().withOriginalModelLocation(modelSourceFileDirPath.toString())
+						.withParsedModelLocation(modelResourceCachedURI.toString()),
 				GeneralTimeMeasurementTag.MODEL_RESOURCE_CACHE_ACCESS);
 		var cache = this.getCacheUtil();
-		var modelName = this.getDisplayNameForModelDir(modelDir);
+		var modelName = this.getDisplayNameForModelSourceFileDir(modelSourceFileDirPath);
 
 		IModelResourceWrapper resWrapper = null;
 
@@ -354,16 +360,16 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 		 * automatically loaded in the background when needed.
 		 */
 
-		if (cacheKey != null) {
+		if (modelResourceCacheKey != null) {
 			// Search for the resource in the cache
-			if (cache.isInCache(cacheKey)) {
+			if (cache.isInCache(modelResourceCacheKey)) {
 				SimilarityTestLogger.logDebugMsg(String.format("%s is in cache, using cached version", modelName),
 						this.getClass());
-				resWrapper = cache.getFromCache(cacheKey);
+				resWrapper = cache.getFromCache(modelResourceCacheKey);
 				if (!resWrapper.isModelResourceLoaded()) {
 					this.startTimeMeasurement(
-							getTimeMeasurementKeyBuilder().withOriginalModelLocation(modelDir.toString())
-									.withParsedModelLocation(cachedModelURI.toString()),
+							getTimeMeasurementKeyBuilder().withOriginalModelLocation(modelSourceFileDirPath.toString())
+									.withParsedModelLocation(modelResourceCachedURI.toString()),
 							GeneralTimeMeasurementTag.LOAD_MODEL_RESOURCE);
 					resWrapper.loadParsedResources();
 					this.stopTimeMeasurement();
@@ -374,10 +380,10 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 			if (resWrapper == null) {
 				resWrapper = new JaMoPPModelResourceWrapper();
 				this.startTimeMeasurement(
-						getTimeMeasurementKeyBuilder().withOriginalModelLocation(modelDir.toString())
-								.withParsedModelLocation(cachedModelURI.toString()),
+						getTimeMeasurementKeyBuilder().withOriginalModelLocation(modelSourceFileDirPath.toString())
+								.withParsedModelLocation(modelResourceCachedURI.toString()),
 						GeneralTimeMeasurementTag.LOAD_MODEL_RESOURCE);
-				resWrapper.loadModelResource(cachedModelURI);
+				resWrapper.loadModelResource(modelResourceCachedURI);
 				this.stopTimeMeasurement();
 				if (resWrapper.isModelResourceLoaded()) {
 					SimilarityTestLogger.logDebugMsg(String.format("Loaded %s from its resource file", modelName),
@@ -388,31 +394,29 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 
 		// Resource is completely new, parse it from scratch
 		if (resWrapper == null || !resWrapper.isModelResourceLoaded()) {
-			resWrapper = this.parseModelsDirWithoutCaching(modelDir);
+			resWrapper = this.parseModelWithoutCaching(modelSourceFileDirPath);
 		}
 
-		var key = cacheKey != null ? cacheKey : modelDir.toString();
+		var key = modelResourceCacheKey != null ? modelResourceCacheKey : modelSourceFileDirPath.toString();
 		cache.addToCache(key, resWrapper);
 		this.stopTimeMeasurement();
 
-		SimilarityTestLogger.logDebugMsg(
-				String.format("%s parsed (with caching)", this.getDisplayNameForModelDir(modelDir)), this.getClass());
+		SimilarityTestLogger.logDebugMsg(String.format("%s parsed (with caching)",
+				this.getDisplayNameForModelSourceFileDir(modelSourceFileDirPath)), this.getClass());
 		return resWrapper;
 	}
 
 	/**
-	 * TODO Rename parameter
-	 * 
-	 * @param modelDir A directory that directly contains the Java-model files
-	 * @return The test display name for the given modelPath
+	 * @param modelSourceFileDirPath Path to the model source file directory
+	 * @return The test display name for the given path
 	 */
-	protected String getDisplayNameForModelDir(Path modelPath) {
-		var nameCount = modelPath.getNameCount();
+	protected String getDisplayNameForModelSourceFileDir(Path modelSourceFileDirPath) {
+		var nameCount = modelSourceFileDirPath.getNameCount();
 
 		var startIndex = nameCount > 2 ? nameCount - 2 : nameCount - 1;
 		var endIndex = nameCount;
 
-		return modelPath.subpath(startIndex, endIndex).toString();
+		return modelSourceFileDirPath.subpath(startIndex, endIndex).toString();
 	}
 
 	/**
@@ -429,64 +433,72 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	}
 
 	/**
-	 * Derives the path to the model resources from their URI.
+	 * Derives the path to the model resources from their URI. Assumes that the URI
+	 * of the provided resources point at the model source file directory.
 	 * 
-	 * @param resArr An array of parsed model resources
+	 * @param modelResources An array of parsed model resources
 	 * @return Dynamic test instances for the given model resources
 	 * @see {@link #createTests()}
 	 */
-	public Collection<DynamicNode> createTests(Resource[] resArr) {
-		var pathArr = new Path[resArr.length];
+	public Collection<DynamicNode> createTests(Resource[] modelResources) {
+		var pathArr = new Path[modelResources.length];
 
 		for (int i = 0; i < pathArr.length; i++) {
-			pathArr[i] = Path.of(resArr[i].getURI().path());
+			pathArr[i] = Path.of(modelResources[i].getURI().path());
 		}
 
-		return this.createTests(pathArr, resArr);
+		return this.createTests(pathArr, modelResources);
 	}
 
 	/**
-	 * Parses model resources (with caching) for each given path.
+	 * Parses model resources (with caching) for each given model source file
+	 * directory path.
 	 * 
-	 * @param pathArr An array of paths to model source file directories
+	 * @param modelSourceFileDirPaths An array of paths to model source file
+	 *                                directories
 	 * @return Dynamic test instances for the models under the given paths
 	 * @see {@link #createTests()}
 	 */
-	public Collection<DynamicNode> createTests(Path[] pathArr) {
-		var resArr = new Resource[pathArr.length];
+	public Collection<DynamicNode> createTests(Path[] modelSourceFileDirPaths) {
+		var resArr = new Resource[modelSourceFileDirPaths.length];
 
 		for (int i = 0; i < resArr.length; i++) {
-			resArr[i] = this.parseModelsDirWithCaching(pathArr[i]).getModelResource();
+			resArr[i] = this.parseModelWithCaching(modelSourceFileDirPaths[i]).getModelResource();
 		}
 
-		return this.createTests(pathArr, resArr);
+		return this.createTests(modelSourceFileDirPaths, resArr);
 	}
 
 	/**
-	 * @param pathArr An array of paths to model source file directories
-	 * @param resArr  An array of parsed model resources
+	 * Paths to model source file directories and corresponding parsed model
+	 * resources should be provided in the same order.
+	 * 
+	 * @param modelSourceFileDirPaths An array of paths to model source file
+	 *                                directories
+	 * @param modelResources          An array of parsed model resources
 	 * @return Dynamic test instances for the given model resources
 	 * @see {@link #createTests()}
 	 */
-	public Collection<DynamicNode> createTests(Path[] pathArr, Resource[] resArr) {
-		if (pathArr.length != resArr.length) {
+	public Collection<DynamicNode> createTests(Path[] modelSourceFileDirPaths, Resource[] modelResources) {
+		if (modelSourceFileDirPaths.length != modelResources.length) {
 			Assertions.fail("Lengths of path and resource arrays do not match");
 		}
 
 		var tests = new ArrayList<DynamicNode>();
 
-		this.getTestGenerationStrategies().forEach((testStrat) -> {
+		this.getTestGenerationStrategies().forEach((testGenStrat) -> {
 			this.getTestFactories().forEach((tf) -> {
-				var testsForModelDirs = new ArrayList<DynamicNode>();
-				testStrat.getTestResourceIterator(resArr.length).forEachRemaining((idxs) -> {
-					var path1 = pathArr[idxs[0]];
-					var res1 = resArr[idxs[0]];
-					var path2 = pathArr[idxs[1]];
-					var res2 = resArr[idxs[1]];
-					testsForModelDirs.add(tf.createTestsFor(res1, path1, res2, path2));
+				var testsForModelSourceFileDirs = new ArrayList<DynamicNode>();
+				testGenStrat.getTestResourceIterator(modelResources.length).forEachRemaining((idxs) -> {
+					var modelSourceFileDirPath1 = modelSourceFileDirPaths[idxs[0]];
+					var modelResource1 = modelResources[idxs[0]];
+					var modelSourceFileDirPath2 = modelSourceFileDirPaths[idxs[1]];
+					var modelResource2 = modelResources[idxs[1]];
+					testsForModelSourceFileDirs.add(tf.createTestsFor(modelResource1, modelSourceFileDirPath1,
+							modelResource2, modelSourceFileDirPath2));
 				});
 				tests.add(DynamicContainer.dynamicContainer(String.format("%s (with %s)", tf.getTestDescription(),
-						testStrat.getTestGenerationStrategyDescription()), testsForModelDirs));
+						testGenStrat.getTestGenerationStrategyDescription()), testsForModelSourceFileDirs));
 			});
 		});
 
@@ -494,7 +506,7 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	}
 
 	/**
-	 * Generates dynamic tests for each model source file directories based on the
+	 * Generates dynamic tests for each model source file directory based on the
 	 * registered {@link AbstractJaMoPPParserSimilarityTestFactory} instances.
 	 * Implemented here in efforts to have a unified template for dynamic test
 	 * generation. <br>
@@ -508,39 +520,39 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	 * {@link TestFactory}, which will run the tests generated here.
 	 * 
 	 * @see {@link #discoverModelSourceFileDirsAt(Path)} and
-	 *      {@link #discoverModelSourceParentDirsAt(Path)} for locating model source
-	 *      file directories
+	 *      {@link #discoverModelSourceParentDirsAt(Path)} for finding models to
+	 *      parse
 	 * @see {@link TestFactory} for what tests are to be generated
 	 */
 	@TestFactory
 	public Collection<DynamicNode> createTests() {
 		this.startTimeMeasurement(GeneralTimeMeasurementTag.DYNAMIC_TEST_CREATION);
 
-		var modelSourceFileRootDirPath = this.getTestFileLayout().getModelSourceFileRootDirPath();
+		var modelSourceParentRootDirPath = this.getTestFileLayout().getModelSourceParentRootDirPath();
 
 		var tests = new ArrayList<DynamicNode>();
 
-		var modelParentDirs = this.discoverModelSourceParentDirsAt(modelSourceFileRootDirPath);
-		var modelDirMap = new HashMap<Path, Collection<Path>>();
+		var modelSourceParentDirs = this.discoverModelSourceParentDirsAt(modelSourceParentRootDirPath);
+		var modelSourceFileDirMap = new HashMap<Path, Collection<Path>>();
 
-		for (var parentDir : modelParentDirs) {
-			modelDirMap.put(parentDir, this.discoverModelSourceFileDirsAt(parentDir));
+		for (var modelSourceParentDir : modelSourceParentDirs) {
+			modelSourceFileDirMap.put(modelSourceParentDir, this.discoverModelSourceFileDirsAt(modelSourceParentDir));
 		}
 
-		var testsForModelParentDirs = new ArrayList<DynamicNode>();
-		modelParentDirs.forEach((md) -> {
-			final var modelDirs = modelDirMap.get(md);
+		var testsForModelSourceParentDirs = new ArrayList<DynamicNode>();
+		modelSourceParentDirs.forEach((md) -> {
+			final var modelSourceFileDirs = modelSourceFileDirMap.get(md);
 
-			var testsForModelDirs = this.createTests(modelDirs.toArray(Path[]::new));
+			var testsForModelSourceFileDirs = this.createTests(modelSourceFileDirs.toArray(Path[]::new));
 
-			testsForModelParentDirs.add(DynamicContainer.dynamicContainer(
+			testsForModelSourceParentDirs.add(DynamicContainer.dynamicContainer(
 					String.format("model = %s", this.getTestFileLayout().getRelativeModelSourceParentDirPath(md)),
-					testsForModelDirs));
+					testsForModelSourceFileDirs));
 		});
 
 		tests.add(DynamicContainer.dynamicContainer(
-				String.format("root = %s", this.getTestFileLayout().getRelativeModelSourceFileRootDirPath()),
-				testsForModelParentDirs));
+				String.format("root = %s", this.getTestFileLayout().getRelativeModelSourceParentRootDirPath()),
+				testsForModelSourceParentDirs));
 
 		this.stopTimeMeasurement();
 		return tests;
@@ -556,32 +568,37 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 	protected abstract Collection<AbstractJaMoPPParserSimilarityTestFactory> getTestFactories();
 
 	/**
-	 * @param rootPath The top-most directory, whose contents should be scanned for
-	 *                 model source file directories
-	 * @return A collection of model source file directory paths under rootPath
+	 * @param modelSourceParentDirPath A potential model source parent directory
+	 *                                 path, whose contents should be scanned for
+	 *                                 model source file directories
+	 * @return A collection of model source file directory paths under
+	 *         modelSourceParentDirPath
 	 */
-	protected Collection<Path> discoverModelSourceFileDirsAt(Path rootPath) {
-		var discoveryStrat = new ModelDirDiscoveryStrategy((f) -> this.isModelSourceFileDirectory(f));
-		this.startTimeMeasurement(getTimeMeasurementKeyBuilder().withModelDiscoveryPath(rootPath.toString())
-				.withModelDiscoveryClassName(discoveryStrat.getClass().getSimpleName()),
+	protected Collection<Path> discoverModelSourceFileDirsAt(Path modelSourceParentDirPath) {
+		var modelDiscoveryStrat = new ModelDiscoveryStrategy((f) -> this.isModelSourceFileDirectory(f));
+		this.startTimeMeasurement(
+				getTimeMeasurementKeyBuilder().withModelDiscoveryPath(modelSourceParentDirPath.toString())
+						.withModelDiscoveryClassName(modelDiscoveryStrat.getClass().getSimpleName()),
 				GeneralTimeMeasurementTag.DISCOVER_MODEL_RESOURCES);
-		var result = discoveryStrat.discoverModelSourceDirs(rootPath.toFile());
+		var result = modelDiscoveryStrat.discoverModelSourceFileDirs(modelSourceParentDirPath.toFile());
 		this.stopTimeMeasurement();
 		return result;
 	}
 
 	/**
-	 * @param rootPath The top-most directory, whose contents should be scanned for
-	 *                 directories containing model source parent directories.
+	 * @param modelSourceParentRootPath The top-most directory, whose contents
+	 *                                  should be scanned for directories containing
+	 *                                  model source parent directories.
 	 * @return A collection of paths of model source parent directories under
-	 *         rootPath
+	 *         modelSourceParentRootPath
 	 */
-	protected Collection<Path> discoverModelSourceParentDirsAt(Path rootPath) {
-		var discoveryStrat = new ModelDirDiscoveryStrategy((f) -> this.isModelSourceFileDirectory(f));
-		this.startTimeMeasurement(getTimeMeasurementKeyBuilder().withModelDiscoveryPath(rootPath.toString())
-				.withModelDiscoveryClassName(discoveryStrat.getClass().getSimpleName()),
+	protected Collection<Path> discoverModelSourceParentDirsAt(Path modelSourceParentRootPath) {
+		var modelDiscoveryStrat = new ModelDiscoveryStrategy((f) -> this.isModelSourceFileDirectory(f));
+		this.startTimeMeasurement(
+				getTimeMeasurementKeyBuilder().withModelDiscoveryPath(modelSourceParentRootPath.toString())
+						.withModelDiscoveryClassName(modelDiscoveryStrat.getClass().getSimpleName()),
 				GeneralTimeMeasurementTag.DISCOVER_MODEL_RESOURCES);
-		var result = discoveryStrat.discoverModelSourceParentDirs(rootPath.toFile());
+		var result = modelDiscoveryStrat.discoverModelSourceParentDirs(modelSourceParentRootPath.toFile());
 		this.stopTimeMeasurement();
 		return result;
 	}
@@ -631,11 +648,11 @@ public abstract class AbstractJaMoPPParserSimilarityTest extends AbstractJaMoPPS
 		 * Parser tests require the created resource files to persist across tests, as
 		 * they are cached.
 		 */
-		opts.setShouldDeleteAllResources(false);
-		opts.setShouldUnloadAllResources(false);
+		opts.setShouldDeleteAllModelResources(false);
+		opts.setShouldUnloadAllModelResources(false);
 
-		opts.setShouldSaveCachedResources(true);
-		opts.setShouldRemoveResourcesFromCache(false);
+		opts.setShouldSaveCachedModelResources(true);
+		opts.setShouldRemoveModelResourcesFromCache(false);
 		return opts;
 	}
 

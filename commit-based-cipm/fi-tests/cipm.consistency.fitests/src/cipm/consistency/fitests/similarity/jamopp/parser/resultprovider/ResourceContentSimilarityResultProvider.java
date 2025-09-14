@@ -112,8 +112,9 @@ public class ResourceContentSimilarityResultProvider implements IExpectedSimilar
 	 *           case
 	 */
 	@Override
-	public boolean getExpectedSimilarityResultFor(Resource lhsRes, Path lhsResPath, Resource rhsRes, Path rhsResPath) {
-		var pathsEqual = lhsResPath.toString().equals(rhsResPath.toString());
-		return pathsEqual || (!this.contentOrderMatters && this.contentwiseSimilar(lhsRes, rhsRes));
+	public boolean getExpectedSimilarityResultFor(Resource lhsModelResource, Path lhsModelSourceFileDirPath,
+			Resource rhsModelResource, Path rhsModelSourceFileDirPath) {
+		var pathsEqual = lhsModelSourceFileDirPath.toString().equals(rhsModelSourceFileDirPath.toString());
+		return pathsEqual || (!this.contentOrderMatters && this.contentwiseSimilar(lhsModelResource, rhsModelResource));
 	}
 }

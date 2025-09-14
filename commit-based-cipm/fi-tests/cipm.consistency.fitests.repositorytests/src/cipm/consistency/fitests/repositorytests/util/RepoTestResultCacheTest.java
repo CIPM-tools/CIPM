@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * A test class for {@link RepoTestResultCache}, which ensures that it works as
+ * A test class for {@link RepoTestSimilarityResultCache}, which ensures that it works as
  * expected and that its properties hold.
  * 
  * @author Alp Torac Genc
@@ -18,16 +18,16 @@ public class RepoTestResultCacheTest {
 	private static final String cID5 = "cID5";
 	private static final String cID6 = "cID6";
 
-	private RepoTestResultCache cache;
+	private RepoTestSimilarityResultCache cache;
 
 	@BeforeEach
 	public void setUp() {
-		cache = new RepoTestResultCache();
+		cache = new RepoTestSimilarityResultCache();
 	}
 
 	/**
 	 * Makes the necessary assertions for
-	 * {@link RepoTestResultCache#getDirectResult(String, String)}.
+	 * {@link RepoTestSimilarityResultCache#getDirectResult(String, String)}.
 	 */
 	private void testDirectCacheResult(String commitID1, String commitID2, Boolean expectedSimilarityResult) {
 		Assertions.assertEquals(Boolean.TRUE, cache.getDirectResult(commitID1, commitID1));
@@ -39,7 +39,7 @@ public class RepoTestResultCacheTest {
 
 	/**
 	 * Makes the necessary assertions for
-	 * {@link RepoTestResultCache#isInCache(String, String)}.
+	 * {@link RepoTestSimilarityResultCache#isInCache(String, String)}.
 	 */
 	private void testIsInCache(String commitID1, String commitID2, boolean shouldBeInCache) {
 		Assertions.assertEquals(false, cache.isInCache(commitID1, commitID1));
@@ -51,7 +51,7 @@ public class RepoTestResultCacheTest {
 
 	/**
 	 * Makes the necessary assertions for
-	 * {@link RepoTestResultCache#getTransitiveResult(String, String)}.
+	 * {@link RepoTestSimilarityResultCache#getTransitiveResult(String, String)}.
 	 */
 	private void testTransitiveCacheResult(String commitID1, String commitID2, Boolean expectedTransitiveResult) {
 		Assertions.assertEquals(expectedTransitiveResult, cache.getTransitiveResult(commitID1, commitID2));
@@ -60,9 +60,9 @@ public class RepoTestResultCacheTest {
 
 	/**
 	 * Makes the necessary assertions for
-	 * {@link RepoTestResultCache#getDirectResult(String, String)},
-	 * {@link RepoTestResultCache#getTransitiveResult(String, String)} and
-	 * {@link RepoTestResultCache#getResult(String, String)}.
+	 * {@link RepoTestSimilarityResultCache#getDirectResult(String, String)},
+	 * {@link RepoTestSimilarityResultCache#getTransitiveResult(String, String)} and
+	 * {@link RepoTestSimilarityResultCache#getResult(String, String)}.
 	 */
 	private void testCacheResult(String commitID1, String commitID2, Boolean expectedDirectSimilarityResult,
 			Boolean expectedTransitiveResult) {

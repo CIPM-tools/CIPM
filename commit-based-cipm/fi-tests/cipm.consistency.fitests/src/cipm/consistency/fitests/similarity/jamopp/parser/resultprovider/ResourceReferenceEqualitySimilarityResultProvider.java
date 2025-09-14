@@ -13,10 +13,12 @@ import org.eclipse.emf.ecore.resource.Resource;
 public class ResourceReferenceEqualitySimilarityResultProvider implements IExpectedSimilarityResultProvider {
 	/**
 	 * @implSpec Determines expected similarity results based on the reference
-	 *           equality of model resources, i.e. {@code lhsRes == rhsRes}
+	 *           equality of model resources, i.e.
+	 *           {@code lhsModelResource == rhsModelResource}
 	 */
 	@Override
-	public boolean getExpectedSimilarityResultFor(Resource lhsRes, Path lhsResPath, Resource rhsRes, Path rhsResPath) {
-		return lhsRes == rhsRes;
+	public boolean getExpectedSimilarityResultFor(Resource lhsModelResource, Path lhsModelSourceFileDirPath,
+			Resource rhsModelResource, Path rhsModelSourceFileDirPath) {
+		return lhsModelResource == rhsModelResource;
 	}
 }

@@ -12,9 +12,9 @@ import cipm.consistency.fitests.similarity.jamopp.parser.resultprovider.IExpecte
  * @author Alp Torac Genc
  */
 public class RepoCacheSimilarityResultProvider implements IExpectedSimilarityResultProvider {
-	private final RepoTestResultCache cache;
+	private final RepoTestSimilarityResultCache cache;
 
-	public RepoCacheSimilarityResultProvider(RepoTestResultCache cache) {
+	public RepoCacheSimilarityResultProvider(RepoTestSimilarityResultCache cache) {
 		this.cache = cache;
 	}
 

@@ -48,20 +48,20 @@ import java.util.Stack;
  * 
  * @author Alp Torac Genc
  */
-public class RepoTestResultCache {
+public class RepoTestSimilarityResultCache {
 	private final Collection<SimilarityResultEntry> similarityResults = new ArrayList<SimilarityResultEntry>();
 
 	/**
 	 * Constructs an instance with no similarity results.
 	 */
-	public RepoTestResultCache() {
+	public RepoTestSimilarityResultCache() {
 	}
 
 	/**
 	 * Constructs an instance and copies the contents of the given cache into this
 	 * cache.
 	 */
-	public RepoTestResultCache(RepoTestResultCache cache) {
+	public RepoTestSimilarityResultCache(RepoTestSimilarityResultCache cache) {
 		this.copyResultsOf(cache, true);
 	}
 
@@ -71,7 +71,7 @@ public class RepoTestResultCache {
 	 * @param overrideResultIfPresent Whether the copied expected similarity results
 	 *                                should override any potentially existing ones
 	 */
-	public void copyResultsOf(RepoTestResultCache cache, boolean overrideResultIfPresent) {
+	public void copyResultsOf(RepoTestSimilarityResultCache cache, boolean overrideResultIfPresent) {
 		this.similarityResults.addAll(cache.similarityResults);
 	}
 
@@ -115,7 +115,7 @@ public class RepoTestResultCache {
 
 	/**
 	 * Uses the reflexivity, symmetry and transitivity assumptions in
-	 * {@link RepoTestResultCache}. Transitivity property will be utilised last,
+	 * {@link RepoTestSimilarityResultCache}. Transitivity property will be utilised last,
 	 * i.e. entry chains will only be considered, if there are no direct entries in
 	 * this instance or the given commit IDs are equal. <br>
 	 * <br>
@@ -309,7 +309,7 @@ public class RepoTestResultCache {
 	}
 
 	/**
-	 * See {@link RepoTestResultCache} for assumptions on expected similarity
+	 * See {@link RepoTestSimilarityResultCache} for assumptions on expected similarity
 	 * results.
 	 * 
 	 * @return Whether the expected similarity result for the given commits can be

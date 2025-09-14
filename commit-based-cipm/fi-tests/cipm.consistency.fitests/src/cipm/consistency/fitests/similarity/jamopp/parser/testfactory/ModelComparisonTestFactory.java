@@ -17,8 +17,9 @@ import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.ParserT
 
 /**
  * A test class factory, which generates dynamic tests that performs
- * hierarchical similarity checking on the given Resources {@code res1, res2}
- * and returns the result in form of {@link Comparison} objects. <br>
+ * hierarchical similarity checking on the given Resources
+ * {@code lhsModelResource, rhsModelResource} and returns the result in form of
+ * {@link Comparison} objects. <br>
  * <br>
  * The difference between this and {@link EAllContentSimilarityTestFactory} is
  * that the comparison here is much more detailed.
@@ -45,20 +46,21 @@ public class ModelComparisonTestFactory extends AbstractJaMoPPParserSimilarityTe
 	 * result, since reaching from one side to the other will require "opposite"
 	 * operations.
 	 * 
-	 * @param res1 The new state
-	 * @param res2 The old state
-	 * @return Result of comparing {@code res2} to {@code res1}, i.e. what needs to
-	 *         be done to {@code res2} to get to {@code res1}.
+	 * @param lhsModelResource The new state
+	 * @param rhsModelResource The old state
+	 * @return Result of comparing {@code rhsModelResource} to
+	 *         {@code lhsModelResource}, i.e. what needs to be done to
+	 *         {@code rhsModelResource} to get to {@code lhsModelResource}.
 	 * 
 	 * @see {@link #getSCC()}
 	 */
-	protected Comparison compareModels(Resource res1, Resource res2) {
+	protected Comparison compareModels(Resource lhsModelResource, Resource rhsModelResource) {
 		ParserTestTimeMeasurer.getInstance().startTimeMeasurement(
-				this.getTimeMeasurementKeyBuilderFor(res1, null, res2, null)
+				this.getTimeMeasurementKeyBuilderFor(lhsModelResource, null, rhsModelResource, null)
 						.withModelComparisonClassName(JavaModelComparator.class.getSimpleName()).createKey(),
 				GeneralTimeMeasurementTag.MODEL_RESOURCE_COMPARISON);
 		// TODO Integrate "this.scc" into the model comparator
-		var result = JavaModelComparator.compareJavaModels(res1, res2, null, null, null);
+		var result = JavaModelComparator.compareJavaModels(lhsModelResource, rhsModelResource, null, null, null);
 		ParserTestTimeMeasurer.getInstance().stopTimeMeasurement();
 		return result;
 	}
@@ -67,35 +69,39 @@ public class ModelComparisonTestFactory extends AbstractJaMoPPParserSimilarityTe
 	 * Asserts that the result of similarity checking via model comparison results
 	 * in differences or not (denoted by expectedResult). <br>
 	 * <br>
-	 * Compares res1 and res2, as well as res2 and res1; in order to ensure that the
-	 * comparison is symmetric.
+	 * Compares lhsModelResource and rhsModelResource, as well as rhsModelResource
+	 * and lhsModelResource; in order to ensure that the comparison is symmetric.
 	 */
-	protected void testSimilarityWithModelComparison(Resource res1, Resource res2, Boolean expectedResult) {
+	protected void testSimilarityWithModelComparison(Resource lhsModelResource, Resource rhsModelResource,
+			Boolean expectedResult) {
 		ParserTestTimeMeasurer.getInstance().startTimeMeasurement(
-				this.getTimeMeasurementKeyBuilderFor(res1, null, res2, null).createKey(),
+				this.getTimeMeasurementKeyBuilderFor(lhsModelResource, null, rhsModelResource, null).createKey(),
 				GeneralTimeMeasurementTag.TEST_OVERHEAD);
 
-		var cmp1To2 = this.compareModels(res1, res2);
+		var cmp1To2 = this.compareModels(lhsModelResource, rhsModelResource);
 		Assertions.assertEquals(expectedResult, cmp1To2.getDifferences().size() == 0);
 
 		ParserTestTimeMeasurer.getInstance().stopTimeMeasurement();
 
 		ParserTestTimeMeasurer.getInstance().startTimeMeasurement(
-				this.getTimeMeasurementKeyBuilderFor(res2, null, res1, null).createKey(),
+				this.getTimeMeasurementKeyBuilderFor(rhsModelResource, null, lhsModelResource, null).createKey(),
 				GeneralTimeMeasurementTag.TEST_OVERHEAD);
 
-		var cmp2To1 = this.compareModels(res2, res1);
+		var cmp2To1 = this.compareModels(rhsModelResource, lhsModelResource);
 		Assertions.assertEquals(expectedResult, cmp2To1.getDifferences().size() == 0);
 
 		ParserTestTimeMeasurer.getInstance().stopTimeMeasurement();
 	}
 
 	@Override
-	public DynamicNode createTestsFor(Resource res1, Path path1, Resource res2, Path path2) {
-		return DynamicTest.dynamicTest(String.format("%s vs %s", path1.getFileName(), path2.getFileName()), () -> {
-			this.testSimilarityWithModelComparison(res1, res2,
-					this.getExpectedSimilarityResultFor(res1, path1, res2, path2));
-		});
+	public DynamicNode createTestsFor(Resource lhsModelResource, Path lhsModelSourceFileDirPath,
+			Resource rhsModelResource, Path rhsModelSourceFileDirPath) {
+		return DynamicTest.dynamicTest(String.format("%s vs %s", lhsModelSourceFileDirPath.getFileName(),
+				rhsModelSourceFileDirPath.getFileName()), () -> {
+					this.testSimilarityWithModelComparison(lhsModelResource, rhsModelResource,
+							this.getExpectedSimilarityResultFor(lhsModelResource, lhsModelSourceFileDirPath,
+									rhsModelResource, rhsModelSourceFileDirPath));
+				});
 	}
 
 	@Override
