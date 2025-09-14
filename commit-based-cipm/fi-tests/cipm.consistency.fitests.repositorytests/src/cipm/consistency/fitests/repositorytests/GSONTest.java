@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import cipm.consistency.fitests.similarity.jamopp.parser.FileUtil;
 import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.DefaultTimeMeasurementDataStructure;
 import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.GSONLoadingStrategy;
 import cipm.consistency.fitests.similarity.jamopp.parser.timemeasurement.GSONPersistingStrategy;
@@ -163,11 +164,30 @@ public class GSONTest {
 		this.persistTimeMeasurement(formerTimeMeasurements, newTimeMeasurementPath);
 
 		var newFileContent = this.readTimeMeasurement(newTimeMeasurementPath);
-		// Enable if GSON serialises Long instances with trailing zeroes (".0")
-		// newFileContent = newFileContent.replaceAll("\\.0,", ",");
 
-		// Ensure that serialising produces the same file
-		Assertions.assertEquals(formerFileContent, newFileContent);
+		/*
+		 * Remove redundant training zeroes comparing to address cases, where GSON
+		 * serialises Long instances as Double instances, i.e. with trailing zeroes
+		 * (".0").
+		 * 
+		 * Make sure to match the comma after the trailing zero too, so that start and
+		 * end times are not affected, as their formatting may include decimal numbers.
+		 */
+		newFileContent = newFileContent.replaceAll("\\.0,", ",");
+
+		/*
+		 * Ensure that serialising produces the same file
+		 * 
+		 * Remove all white-spaces from the read file content to avoid cross-platform
+		 * issues, especially due to the differing line separators.
+		 * 
+		 * This is particularly important, if the time measurement sample file at
+		 * gsonTestResourceRootPath is included into the GIT repository, as GIT may
+		 * replace existing line separators with the one for UNIX systems or add a line
+		 * break to the end of the file.
+		 */
+		Assertions.assertEquals(FileUtil.getEffectiveText(formerFileContent),
+				FileUtil.getEffectiveText(newFileContent));
 
 		var newTimeMeasurements = this.loadTimeMeasurement(newTimeMeasurementPath);
 
