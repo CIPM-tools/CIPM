@@ -19,8 +19,7 @@ public class NamespaceUserInteraction extends AbstractUserInteraction {
 	public NamespaceUserInteraction(EObject triggeringElement, NamespaceAwareElement toBeAssignedNamespace) {
 		this.triggeringElement = triggeringElement;
 		this.toBeAssignedNamespace = toBeAssignedNamespace;
-		this.namespaceField = this.toBeAssignedNamespace.eClass()
-				.getEStructuralFeature(CommonsPackage.NAMESPACE_AWARE_ELEMENT__NAMESPACES);
+		this.namespaceField = CommonsPackage.Literals.NAMESPACE_AWARE_ELEMENT__NAMESPACES;
 	}
 
 	@Override
@@ -61,7 +60,7 @@ public class NamespaceUserInteraction extends AbstractUserInteraction {
 
 	@Override
 	public Set<FeatureEntry> getDesiredFeatures() {
-		return Set.of(new FeatureEntry(this.toBeAssignedNamespace, this.namespaceField));
+		return Set.of(new FeatureEntry(triggeringElement, namespaceField));
 	}
 
 	@Override
@@ -69,7 +68,26 @@ public class NamespaceUserInteraction extends AbstractUserInteraction {
 		return Set.of();
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public List<String> getNamespaces() {
+		return isResolved() ? (List) retrieveDesiredFeatureValueIfPresent(triggeringElement, namespaceField) : null;
+	}
+
+	public EObject getTriggeringElement() {
+		return this.triggeringElement;
+	}
+
 	private boolean checkNameValue(Object namespaces) {
 		return namespaces instanceof List;
+	}
+
+	@Override
+	public boolean isResolved() {
+		return isDesiredFeatureValuePresent(triggeringElement, namespaceField);
+	}
+
+	@Override
+	public void resolveAll() {
+		resolveForFeature(triggeringElement, namespaceField);
 	}
 }

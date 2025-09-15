@@ -1,6 +1,8 @@
 package cipm.consistency.vsum.test.pcm.userinteraction;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -85,5 +87,33 @@ public class DistributionUserInteraction extends AbstractUserInteraction {
 
 	public List<EObject> getPossibleDistributionTargets() {
 		return List.copyOf(possibleDistributionTargets);
+	}
+
+	public Map<EObject, Set<EObject>> getCorrespondences() {
+		if (!isResolved())
+			return null;
+		var result = new HashMap<EObject, Set<EObject>>();
+		for (var ks : this.correspondingContentsToDistribute) {
+			result.put(ks,
+					retrieveDesiredCorrespondenceIfPresent(ks, correspondenceTag).getCorrespondentsForKnownElement());
+		}
+		return result;
+	}
+
+	public String getCorrespondenceTag() {
+		return correspondenceTag;
+	}
+
+	@Override
+	public boolean isResolved() {
+		return this.correspondingContentsToDistribute.stream()
+				.allMatch((c) -> isDesiredCorrespondencePresent(c, correspondenceTag));
+	}
+
+	@Override
+	public void resolveAll() {
+		for (var c : this.correspondingContentsToDistribute) {
+			resolveForCorrespondence(c, correspondenceTag);
+		}
 	}
 }

@@ -11,6 +11,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.palladiosimulator.pcm.core.entity.EntityPackage;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
 
@@ -45,7 +46,7 @@ public class PcmCprTriggerTest extends AbstractPcmCprTest {
 		var attrChange = AttributeFactory.eINSTANCE.createReplaceSingleValuedEAttribute();
 		attrChange.setAffectedEObject(repoEObj);
 		attrChange.setAffectedEObjectID(repoEObjURI);
-		var attr = (EAttribute) repoEObj.eClass().getEStructuralFeature(RepositoryPackage.REPOSITORY__ENTITY_NAME);
+		var attr = EntityPackage.Literals.NAMED_ELEMENT__ENTITY_NAME;
 		attrChange.setAffectedFeature(attr);
 		attrChange.setOldValue(repoEObj.eGet(attr));
 		attrChange.setNewValue(newEntityName);
@@ -99,7 +100,7 @@ public class PcmCprTriggerTest extends AbstractPcmCprTest {
 		var attrChange = AttributeFactory.eINSTANCE.createReplaceSingleValuedEAttribute();
 		attrChange.setAffectedEObject(repoEObj);
 		attrChange.setAffectedEObjectID(repoEObjURI);
-		var attr = (EAttribute) repoEObj.eClass().getEStructuralFeature(RepositoryPackage.REPOSITORY__ENTITY_NAME);
+		var attr = EntityPackage.Literals.NAMED_ELEMENT__ENTITY_NAME;
 		attrChange.setAffectedFeature(attr);
 		attrChange.setOldValue(repoEObj.eGet(attr));
 		attrChange.setNewValue(newEntityName);
@@ -166,7 +167,7 @@ public class PcmCprTriggerTest extends AbstractPcmCprTest {
 //		Assertions.assertEquals(1, propagatedResource.getContents().size());
 //		var propagatedRepoEObj = propagatedResource.getContents().get(0);
 //		Assertions.assertEquals(newEntityName, propagatedRepoEObj
-//				.eGet(propagatedRepoEObj.eClass().getEStructuralFeature(RepositoryPackage.REPOSITORY__ENTITY_NAME)));
+//				.eGet(EntityPackage.Literals.NAMED_ELEMENT__ENTITY_NAME));
 //
 //		// Ensure that the Resource is saved after changes are applied
 //		var res = this.loadNewResourceInstance(propagatedResource);
@@ -176,6 +177,6 @@ public class PcmCprTriggerTest extends AbstractPcmCprTest {
 //		var resRepoEObj = res.getContents().get(0);
 //		Assertions.assertTrue(EcoreUtil.equals(resRepoEObj, propagatedRepoEObj));
 //		Assertions.assertEquals(newEntityName, resRepoEObj
-//				.eGet(resRepoEObj.eClass().getEStructuralFeature(RepositoryPackage.REPOSITORY__ENTITY_NAME)));
+//				.eGet(EntityPackage.Literals.NAMED_ELEMENT__ENTITY_NAME));
 //	}
 }

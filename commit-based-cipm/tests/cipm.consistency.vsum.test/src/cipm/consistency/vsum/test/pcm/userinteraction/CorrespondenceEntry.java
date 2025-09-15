@@ -76,18 +76,21 @@ public class CorrespondenceEntry {
 		return this.correspondents.add(correspondent);
 	}
 
-	public boolean addCorrespondence(EObject correspondent1, EObject correspondent2) {
-		this.addCorrespondent(correspondent1);
-		this.addCorrespondent(correspondent2);
-		return hasCorrespondence(correspondent1, correspondent2);
-	}
-
 	public List<EObject> addCorrespondences(CorrespondenceEntry entry) {
+		if (!isTagEqual(entry.tag)) {
+			return null;
+		}
+
 		var addedCors = new ArrayList<EObject>();
-		for (var cor : entry.correspondents) {
-			if (this.addCorrespondent(cor)) {
-				addedCors.add(cor);
+		if (eObjectEquals(knownElement, entry.knownElement)) {
+			for (var cor : entry.correspondents) {
+				if (this.addCorrespondent(cor)) {
+					addedCors.add(cor);
+				}
 			}
+		} else if (entry.hasElement(knownElement)) {
+			this.addCorrespondent(entry.knownElement);
+			addedCors.add(entry.knownElement);
 		}
 		return addedCors;
 	}
@@ -119,6 +122,10 @@ public class CorrespondenceEntry {
 		return this.getCorrespondentFor(correspondent).isPresent();
 	}
 
+	public boolean hasElement(EObject element) {
+		return eObjectEquals(knownElement, element) || hasCorrespondent(element);
+	}
+
 	public boolean hasCorrespondents(Collection<EObject> correspondents) {
 		return correspondents.stream().allMatch((cc) -> hasCorrespondent(cc));
 	}
@@ -140,8 +147,8 @@ public class CorrespondenceEntry {
 	}
 
 	public boolean hasAnyCompleteCorrespondencesWith(EObject correspondent) {
-		return (eObjectEquals(knownElement, correspondent) && hasAnyCompleteCorrespondences())
-				|| (hasCorrespondent(correspondent));
+		return hasCorrespondent(correspondent)
+				|| (eObjectEquals(knownElement, correspondent) && hasAnyCompleteCorrespondences());
 	}
 
 	public boolean hasAnyCompleteCorrespondencesWith(EObject correspondent, String tag) {
@@ -161,6 +168,6 @@ public class CorrespondenceEntry {
 
 		return eObjectEquals(this.knownElement, castedO.knownElement)
 				&& this.correspondents.size() == castedO.correspondents.size()
-				&& this.hasCorrespondents(castedO.correspondents);
+				&& this.hasCorrespondents(castedO.correspondents) && this.tag.equals(castedO.tag);
 	}
 }

@@ -1,8 +1,12 @@
 package cipm.consistency.vsum.test.pcm.cprunittests;
 
+import java.util.List;
+
 public final class PcmCPRTestConstants {
-	public static final String correspondenceTestInterfaceName = "pcmifc";
-	public static final String userInteractionTestInterfaceName = "userInteractionPcmifc";
+	public static final String correspondenceTestPCMInterfaceName = "pcmIfc";
+
+	public static final String userInteractionTestPCMInterfaceName = "userInteractionPcmIfc";
+	public static final String userInteractionTestJavaInterfaceName = "userInteractionJavaIfc";
 
 	public static final String componentContentDistributionTestDeletedComponentName = "toBeDeletedCMP";
 	public static final String componentContentDistributionTestDeletedComponentClassOneName = "cls1";
@@ -11,5 +15,7 @@ public final class PcmCPRTestConstants {
 	public static final String componentContentDistributionTestPersistingComponentTwoName = "cmp2";
 
 	public static final String namespaceTestComponentName = "pcmNsCmp";
-	public static final String namespaceTestComponentNamespaces = "pcmNsCmpNs1.pcmNsCmpNs2.pcmNsCmpNs3";
+	public static final String namespaceTestComponentModuleName = "pcmNsCmpMod";
+	public static final List<String> namespaceTestComponentModuleNamespaces = List.of("pcmNsCmpModNs1",
+			"pcmNsCmpModNs2", "pcmNsCmpModNs3");
 }

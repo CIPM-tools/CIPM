@@ -18,7 +18,7 @@ import dummyPCMCPRCommons
 
 reaction AddedUserInteractionTestInterface {
 	after element pcm::Interface inserted in pcm::Repository[interfaces__Repository]
-	with newValue.entityName == PcmCPRTestConstants.userInteractionTestInterfaceName
+	with newValue.entityName == PcmCPRTestConstants.userInteractionTestPCMInterfaceName
 	call {
 		createUserInteractionTestInterface(newValue)
 	}
@@ -42,7 +42,7 @@ reaction AddedUserInteractionNamespaceTestModule {
 
 routine createUserInteractionTestInterface(pcm::Interface addedInterface) {
 	match {
-		check addedInterface.entityName == PcmCPRTestConstants.userInteractionTestInterfaceName
+		check addedInterface.entityName == PcmCPRTestConstants.userInteractionTestPCMInterfaceName
 	}
 	create {
 		val javaInterface = new java::Interface
@@ -50,8 +50,8 @@ routine createUserInteractionTestInterface(pcm::Interface addedInterface) {
 	update {
 		var ui = new NameUserInteraction(addedInterface, javaInterface)
 		PcmUserInteractionManager.addUserInteraction(ui)
-		var javaInterfaceName = PcmUserInteractionManager.getDesiredFeatureValue(addedInterface,
-			ui.desiredFeatures.get(0).feature, true) as String
+		ui.resolveAll
+		var javaInterfaceName = ui.name
 		javaInterface.name = javaInterfaceName
 		logMessage("Java interface created: " + javaInterfaceName)
 		JavaModelAccess.javaModel.contents.add(javaInterface)
@@ -68,19 +68,27 @@ routine removeUserInteractionTestComponent(pcm::BasicComponent cmp, pcm::Reposit
 	}
 	update {
 		val javaCorrespondents = new ArrayList<EObject>(correspondenceModel.getCorrespondingEObjects(cmp))
+		javaCorrespondents.forEach[removeCorrespondenceBetween(cmp, it)]
 
 		val possibleDistributionTargets = new ArrayList<EObject>(repo.components__Repository)
 		possibleDistributionTargets.remove(cmp)
 
-		PcmUserInteractionManager.addUserInteraction(
-			new DistributionUserInteraction(cmp, new ArrayList(javaCorrespondents), possibleDistributionTargets)
-		)
-		for (javaObj : javaCorrespondents) {
-			val cor = PcmUserInteractionManager.getDesiredCorrespondence(javaObj, "", true)
-			for (pcmObj : cor.getCorrespondentsFor(javaObj)) {
-				addCorrespondenceBetween(javaObj, pcmObj, "")
+		val ui = new DistributionUserInteraction(cmp, new ArrayList(javaCorrespondents), possibleDistributionTargets)
+		PcmUserInteractionManager.addUserInteraction(ui)
+		ui.resolveAll
+
+		for (cor : ui.correspondences.entrySet) {
+			for (pcmElem : cor.value) {
+				addCorrespondenceBetween(cor.key, pcmElem, ui.correspondenceTag)
 			}
 		}
+
+//		for (javaObj : javaCorrespondents) {
+//			val cor = PcmUserInteractionManager.getDesiredCorrespondence(javaObj, "", true)
+//			for (pcmObj : cor.getCorrespondentsFor(javaObj)) {
+//				addCorrespondenceBetween(javaObj, pcmObj, "")
+//			}
+//		}
 	}
 }
 
@@ -94,18 +102,15 @@ routine createUserInteractionNamespaceTestInterface(pcm::BasicComponent cmp) {
 	update {
 		var nameUI = new NameUserInteraction(cmp, javaMod)
 		PcmUserInteractionManager.addUserInteraction(nameUI)
-		var javaInterfaceName = PcmUserInteractionManager.getDesiredFeatureValue(cmp,
-			nameUI.desiredFeatures.get(0).feature, true) as String
-		javaMod.name = javaInterfaceName
+		nameUI.resolveAll
+		javaMod.name = nameUI.name
 
 		JavaModelAccess.javaModel.contents.add(javaMod)
 		addCorrespondenceBetween(javaMod, cmp)
-		
+
 		var namespaceUI = new NamespaceUserInteraction(cmp, javaMod)
 		PcmUserInteractionManager.addUserInteraction(namespaceUI)
-		var javaInterfaceNamespaces = PcmUserInteractionManager.getDesiredFeatureValue(cmp,
-			namespaceUI.desiredFeatures.get(0).feature, true) as String
-
-		javaMod.namespaces += javaInterfaceNamespaces
+		namespaceUI.resolveAll
+		javaMod.namespaces += namespaceUI.namespaces
 	}
 }

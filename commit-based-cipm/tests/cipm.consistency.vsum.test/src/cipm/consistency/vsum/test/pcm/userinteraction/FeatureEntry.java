@@ -2,6 +2,7 @@ package cipm.consistency.vsum.test.pcm.userinteraction;
 
 import java.util.List;
 
+import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -30,7 +31,7 @@ public class FeatureEntry {
 	}
 
 	@SuppressWarnings("unchecked")
-	public FeatureEntry(EObject obj, EStructuralFeature feature, List<Object> values) {
+	public FeatureEntry(EObject obj, EStructuralFeature feature, List<?> values) {
 		this.obj = obj;
 		this.feature = feature;
 		var val = this.getDefaultValueForMultiValued();
@@ -52,7 +53,7 @@ public class FeatureEntry {
 	}
 
 	@SuppressWarnings("unchecked")
-	public boolean hasValues(List<Object> values) {
+	public boolean hasValues(List<?> values) {
 		var val = this.getCurrentMultiValue();
 		return val.size() == values.size() && val.containsAll(values);
 	}
@@ -73,7 +74,12 @@ public class FeatureEntry {
 	@SuppressWarnings("rawtypes")
 	private List getCurrentMultiValue() {
 		if (!this.hasAssignedValue()) {
-			this.value = this.getDefaultValueForMultiValued();
+			var defaultVal = this.getDefaultValueForMultiValued();
+			if (defaultVal != null) {
+				this.value = defaultVal;
+			} else {
+				this.value = new BasicEList();
+			}
 		}
 		return (List) this.value;
 	}
@@ -84,18 +90,18 @@ public class FeatureEntry {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void setMultipleValues(List<Object> values) {
+	public void setMultipleValues(List<?> values) {
 		Preconditions.checkArgument(feature.isMany(), "Cannot assign multiple values to a single-valued feature");
 		var valueList = this.getCurrentMultiValue();
 		valueList.addAll(values);
 	}
 
-	public void addValues(List<Object> values) {
+	public void addValues(List<?> values) {
 		Preconditions.checkArgument(feature.isMany(), "Cannot add values from a single-valued feature");
 		values.forEach((v) -> this.addValue(v));
 	}
 
-	public void removeValues(List<Object> values) {
+	public void removeValues(List<?> values) {
 		Preconditions.checkArgument(feature.isMany(), "Cannot remove values from a single-valued feature");
 		values.forEach((v) -> this.removeValue(v));
 	}
@@ -155,7 +161,6 @@ public class FeatureEntry {
 		this.value = entry.value;
 	}
 
-	@SuppressWarnings("unchecked")
 	public void copyValuesFrom(FeatureEntry entry) {
 		if (this.feature.isMany()) {
 			this.addValues(entry.getCurrentMultiValue());

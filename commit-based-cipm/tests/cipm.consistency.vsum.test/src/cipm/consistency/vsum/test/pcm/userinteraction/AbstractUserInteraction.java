@@ -47,4 +47,16 @@ public abstract class AbstractUserInteraction {
 	protected CorrespondenceEntry retrieveDesiredCorrespondenceIfPresent(EObject knownSide, String correspondenceTag) {
 		return PcmUserInteractionManager.getDesiredCorrespondence(knownSide, correspondenceTag, false);
 	}
+
+	public abstract boolean isResolved();
+
+	public abstract void resolveAll();
+
+	public Object resolveForFeature(EObject obj, EStructuralFeature feat) {
+		return PcmUserInteractionManager.getDesiredFeatureValue(obj, feat, true);
+	}
+
+	public Object resolveForCorrespondence(EObject knownSide, String correspondenceTag) {
+		return PcmUserInteractionManager.getDesiredCorrespondence(knownSide, correspondenceTag, true);
+	}
 }

@@ -12,7 +12,7 @@ import dummyPCMCPRCommons
 
 reaction AddedCorrespondenceTestInterface {
 	after element pcm::Interface inserted in pcm::Repository[interfaces__Repository]
-	with newValue.entityName == PcmCPRTestConstants.correspondenceTestInterfaceName
+	with newValue.entityName == PcmCPRTestConstants.correspondenceTestPCMInterfaceName
 	call {
 		createCorrespondenceTestInterface(newValue)
 	}
@@ -20,7 +20,7 @@ reaction AddedCorrespondenceTestInterface {
 
 routine createCorrespondenceTestInterface(pcm::Interface addedInterface) {
 	match {
-		check addedInterface.entityName == PcmCPRTestConstants.correspondenceTestInterfaceName
+		check addedInterface.entityName == PcmCPRTestConstants.correspondenceTestPCMInterfaceName
 	}
 	create {
 		val javaInterface = new java::Interface

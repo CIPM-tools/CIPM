@@ -17,7 +17,7 @@ public class NameUserInteraction extends AbstractUserInteraction {
 	public NameUserInteraction(EObject triggeringElement, NamedElement toBeNamed) {
 		this.triggeringElement = triggeringElement;
 		this.toBeNamed = toBeNamed;
-		this.nameField = this.toBeNamed.eClass().getEStructuralFeature(CommonsPackage.NAMED_ELEMENT__NAME);
+		this.nameField = CommonsPackage.Literals.NAMED_ELEMENT__NAME;
 	}
 
 	@Override
@@ -73,5 +73,19 @@ public class NameUserInteraction extends AbstractUserInteraction {
 
 	public NamedElement getElementToBeNamed() {
 		return this.toBeNamed;
+	}
+
+	public String getName() {
+		return isResolved() ? (String) retrieveDesiredFeatureValueIfPresent(triggeringElement, nameField) : null;
+	}
+
+	@Override
+	public boolean isResolved() {
+		return this.isDesiredFeatureValuePresent(triggeringElement, nameField);
+	}
+
+	@Override
+	public void resolveAll() {
+		this.resolveForFeature(triggeringElement, nameField);
 	}
 }

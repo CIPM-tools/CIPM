@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -21,18 +22,21 @@ public final class PcmUserInteractionManager {
 	private static final Set<CorrespondenceEntry> desiredCorrespondences = new HashSet<CorrespondenceEntry>();
 
 	public static void addUserInteraction(AbstractUserInteraction userInteraction) {
-		if (!desiredFeatureValues.containsAll(userInteraction.getDesiredFeatures())
-				|| !desiredCorrespondences.containsAll(userInteraction.getDesiredCorrespondences())) {
+		if (userInteraction.getDesiredFeatures().stream()
+				.anyMatch((df) -> !hasDesiredFeatureValue(df.getEObject(), df.getFeature()))
+				|| userInteraction.getDesiredCorrespondences().stream()
+						.anyMatch((dc) -> !hasDesiredCorrespondence(dc.getKnownElement(), dc.getTag()))) {
 			resolutionStrats.forEach((s) -> s.applyFor(userInteraction));
 		}
 
 		// Split this part from conflict resolution, since they have to be applied first
-		if (!desiredFeatureValues.containsAll(userInteraction.getDesiredFeatures())) {
+		if (userInteraction.getDesiredFeatures().stream()
+				.anyMatch((df) -> !hasDesiredFeatureValue(df.getEObject(), df.getFeature()))) {
 			if (!wrappers.contains(userInteraction)) {
 				wrappers.add(userInteraction);
 			}
 			userInteraction.getDesiredFeatures().forEach((feat) -> {
-				var setVal = getSetDesiredFeatureEntry(feat.getEObject(), feat.getFeature());
+				var setVal = getAssignedDesiredFeatureEntry(feat.getEObject(), feat.getFeature());
 				if (setVal.isPresent()) {
 					userInteraction.getDesiredFeatureChangedValue(setVal.get());
 				} else if (getDesiredFeatureEntry(feat.getEObject(), feat.getFeature()).isEmpty()) {
@@ -43,14 +47,15 @@ public final class PcmUserInteractionManager {
 
 		// TODO Account for 1-to-many and many-to-many correspondences
 		// Split this part from conflict resolution, since they have to be applied first
-		if (!desiredCorrespondences.containsAll(userInteraction.getDesiredCorrespondences())) {
+		if (userInteraction.getDesiredCorrespondences().stream()
+				.anyMatch((dc) -> !hasDesiredCorrespondence(dc.getKnownElement(), dc.getTag()))) {
 			if (!wrappers.contains(userInteraction)) {
 				wrappers.add(userInteraction);
 			}
 			userInteraction.getDesiredCorrespondences().forEach((cor) -> {
 				var completeCorOpt = getCompleteDesiredCorrespondence(cor.getKnownElement(), cor.getTag());
-				if (completeCorOpt.isPresent()) {
-					userInteraction.getDesiredCorrespondenceChange(completeCorOpt.get());
+				if (completeCorOpt.hasAnyCompleteCorrespondences()) {
+					userInteraction.getDesiredCorrespondenceChange(completeCorOpt);
 				} else if (getDesiredCorrespondenceEntry(cor.getKnownElement(), cor.getTag()).isEmpty()) {
 					desiredCorrespondences.add(cor);
 				}
@@ -64,7 +69,7 @@ public final class PcmUserInteractionManager {
 
 	public static Object getDesiredFeatureValue(EObject obj, EStructuralFeature feat, boolean computeIfAbsent) {
 		FeatureEntry entry = null;
-		var valOpt = getSetDesiredFeatureEntry(obj, feat);
+		var valOpt = getAssignedDesiredFeatureEntry(obj, feat);
 		if (valOpt.isPresent()) {
 			entry = valOpt.get();
 		} else if ((valOpt = getDesiredFeatureEntry(obj, feat)).isPresent()) {
@@ -77,6 +82,8 @@ public final class PcmUserInteractionManager {
 		if (!entry.hasAssignedValue() && computeIfAbsent) {
 			var it = new ArrayList<>(wrappers).iterator();
 
+			// Do not iterate over wrappers as performManualUserInteraction
+			// may lead to removal of currentW after it finishes
 			while (it.hasNext() && !entry.hasAssignedValue()) {
 				var currentW = it.next();
 				if (!currentW.hasDesiredFeature(obj, feat)) {
@@ -91,11 +98,11 @@ public final class PcmUserInteractionManager {
 	}
 
 	public static boolean hasDesiredFeatureValue(EObject obj, EStructuralFeature feat) {
-		return getSetDesiredFeatureEntry(obj, feat).isPresent();
+		return getAssignedDesiredFeatureEntry(obj, feat).isPresent();
 	}
 
 	public static Object removeDesiredFeatureValue(EObject obj, EStructuralFeature feat, Object value) {
-		var valOpt = getSetDesiredFeatureEntry(obj, feat);
+		var valOpt = getAssignedDesiredFeatureEntry(obj, feat);
 		if (valOpt.isEmpty())
 			return null;
 
@@ -110,7 +117,7 @@ public final class PcmUserInteractionManager {
 	}
 
 	public static void setDesiredFeatureValue(AbstractUserInteraction userInteraction, FeatureEntry featEntry) {
-		var valOpt = getSetDesiredFeatureEntry(featEntry.getEObject(), featEntry.getFeature());
+		var valOpt = getAssignedDesiredFeatureEntry(featEntry.getEObject(), featEntry.getFeature());
 		if (valOpt.isPresent()) {
 			valOpt.get().setValuesFrom(featEntry);
 		} else if ((valOpt = getDesiredFeatureEntry(featEntry.getEObject(), featEntry.getFeature())).isPresent()) {
@@ -124,21 +131,21 @@ public final class PcmUserInteractionManager {
 		return desiredFeatureValues.stream().filter((e) -> e.isFeatureEntryFor(obj, feat)).findFirst();
 	}
 
-	private static Optional<FeatureEntry> getSetDesiredFeatureEntry(EObject obj, EStructuralFeature feat) {
+	private static Optional<FeatureEntry> getAssignedDesiredFeatureEntry(EObject obj, EStructuralFeature feat) {
 		return desiredFeatureValues.stream().filter((e) -> e.isFeatureEntryFor(obj, feat) && e.hasAssignedValue())
 				.findFirst();
 	}
 
-	private static Optional<CorrespondenceEntry> getDesiredCorrespondenceEntry(EObject knownSide,
-			String correspondenceTag) {
-		return desiredCorrespondences.stream()
-				.filter((t) -> t.hasCorrespondent(knownSide) && t.isTagEqual(correspondenceTag)).findFirst();
+	private static Optional<CorrespondenceEntry> getDesiredCorrespondenceEntry(EObject obj, String correspondenceTag) {
+		return desiredCorrespondences.stream().filter((t) -> t.hasElement(obj) && t.isTagEqual(correspondenceTag))
+				.findFirst();
 	}
 
-	private static Optional<CorrespondenceEntry> getCompleteDesiredCorrespondence(EObject knownSide,
-			String correspondenceTag) {
-		return desiredCorrespondences.stream()
-				.filter((t) -> t.hasAnyCompleteCorrespondencesWith(knownSide, correspondenceTag)).findFirst();
+	private static CorrespondenceEntry getCompleteDesiredCorrespondence(EObject obj, String correspondenceTag) {
+		var result = new CorrespondenceEntry(obj, correspondenceTag);
+		desiredCorrespondences.stream().filter((t) -> t.hasAnyCompleteCorrespondencesWith(obj, correspondenceTag))
+				.forEach((ce) -> result.addCorrespondences(ce));
+		return result;
 	}
 
 	private static Optional<CorrespondenceEntry> getCompleteDesiredCorrespondence(EObject knownSide, EObject otherSide,
@@ -150,9 +157,9 @@ public final class PcmUserInteractionManager {
 
 	public static CorrespondenceEntry getDesiredCorrespondence(EObject knownSide, String correspondenceTag,
 			boolean computeIfAbsent) {
-		var optCompleteCor = getCompleteDesiredCorrespondence(knownSide, correspondenceTag);
-		if (optCompleteCor.isPresent())
-			return optCompleteCor.get();
+		var corEntry = getCompleteDesiredCorrespondence(knownSide, correspondenceTag);
+		if (corEntry.hasAnyCompleteCorrespondences())
+			return corEntry;
 
 		if (!computeIfAbsent)
 			return null;
@@ -163,22 +170,24 @@ public final class PcmUserInteractionManager {
 
 		var it = new ArrayList<>(wrappers).iterator();
 
-		while (it.hasNext() && optCompleteCor.isEmpty()) {
+		// Do not iterate over wrappers as performManualUserInteraction
+		// may lead to removal of currentW after it finishes
+		while (it.hasNext() && !corEntry.hasAnyCompleteCorrespondences()) {
 			var currentW = it.next();
 			if (!currentW.hasDesiredCorrespondence(knownSide, correspondenceTag)) {
 				continue;
 			} else {
 				currentW.performManualUserInteraction();
-				// Manual interaction is supposed to update the correspondence
-				optCompleteCor = getCompleteDesiredCorrespondence(knownSide, correspondenceTag);
+				// Manual interaction is supposed to update the correspondences
+				corEntry = getCompleteDesiredCorrespondence(knownSide, correspondenceTag);
 			}
 		}
 
-		return optCompleteCor.isPresent() ? optCompleteCor.get() : null;
+		return corEntry.hasAnyCompleteCorrespondences() ? corEntry : null;
 	}
 
 	public static boolean hasDesiredCorrespondence(EObject knownSide, String correspondenceTag) {
-		return getCompleteDesiredCorrespondence(knownSide, correspondenceTag).isPresent();
+		return getCompleteDesiredCorrespondence(knownSide, correspondenceTag).hasAnyCompleteCorrespondences();
 	}
 
 	public static Object removeDesiredCorrespondence(EObject knownSide, EObject otherSide, String correspondenceTag) {
@@ -215,5 +224,15 @@ public final class PcmUserInteractionManager {
 		desiredFeatureValues.clear();
 		resolutionStrats.clear();
 		desiredCorrespondences.clear();
+	}
+
+	public static Set<CorrespondenceEntry> getAllCompleteCorrespondences() {
+		return desiredCorrespondences.stream().filter((c) -> c.hasAnyCompleteCorrespondences())
+				.collect(Collectors.toCollection(Set::of));
+	}
+
+	public static Set<FeatureEntry> getAllCompleteFeatures() {
+		return desiredFeatureValues.stream().filter((v) -> v.hasAssignedValue())
+				.collect(Collectors.toCollection(Set::of));
 	}
 }
