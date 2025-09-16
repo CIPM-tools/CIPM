@@ -7,17 +7,12 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.eclipse.emf.compare.utils.UseIdentifiers;
-import org.eclipse.emf.ecore.EModelElement;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emftext.language.java.classifiers.ClassifiersFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.palladiosimulator.pcm.repository.Repository;
-import org.palladiosimulator.pcm.repository.util.RepositoryResourceImpl;
 
 import cipm.consistency.commitintegration.lang.detection.strategy.ComponentDetectionStrategy;
 import cipm.consistency.commitintegration.lang.java.JavaModelFacade;
@@ -25,10 +20,7 @@ import cipm.consistency.commitintegration.settings.CommitIntegrationSettingsCont
 import cipm.consistency.cpr.pcmjava.JavaModelAccess;
 import cipm.consistency.models.ModelFacade;
 import cipm.consistency.vsum.test.pcm.userinteraction.PcmUserInteractionManager;
-import tools.vitruv.change.atomic.AtomicPackage;
 import tools.vitruv.change.atomic.EChange;
-import tools.vitruv.change.atomic.eobject.DeleteEObject;
-import tools.vitruv.change.atomic.feature.reference.ReplaceSingleValuedEReference;
 import tools.vitruv.framework.views.changederivation.DefaultStateBasedChangeResolutionStrategy;
 
 public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {

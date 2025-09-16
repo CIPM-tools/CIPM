@@ -3,7 +3,6 @@ package cipm.consistency.vsum.test.pcm.cprunittests;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emftext.language.java.commons.CommonsPackage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

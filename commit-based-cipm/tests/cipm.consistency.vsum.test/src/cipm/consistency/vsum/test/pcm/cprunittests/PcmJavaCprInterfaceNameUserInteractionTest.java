@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.function.Function;
 
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emftext.language.java.commons.CommonsPackage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
@@ -95,7 +94,7 @@ public class PcmJavaCprInterfaceNameUserInteractionTest extends AbstractPcmJavaC
 		}, PcmCPRTestConstants.userInteractionTestJavaInterfaceName);
 	}
 
-//	@Disabled("Enable if manual user interaction is to be tested")
+	@Disabled("Enable if manual user interaction is to be tested")
 	@Test
 	public void testJavaPCMUserInteraction_InterfaceName_Manual() {
 		this.javaInterfaceNameTest(null, null);

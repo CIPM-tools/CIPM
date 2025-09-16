@@ -35,7 +35,6 @@ import cipm.consistency.vsum.test.appspace.LoggingSetup;
 import cipm.consistency.vsum.test.pcm.PcmVsumFacade;
 import cipm.consistency.vsum.test.pcm.PcmVsumFacadeImpl;
 import jamopp.resource.JavaResource2Factory;
-import mir.reactions.dummyPCMCPRs.DummyPCMCPRsChangePropagationSpecification;
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
 

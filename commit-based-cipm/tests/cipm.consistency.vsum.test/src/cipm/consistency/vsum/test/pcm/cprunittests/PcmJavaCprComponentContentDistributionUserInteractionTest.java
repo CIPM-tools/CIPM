@@ -192,7 +192,7 @@ public class PcmJavaCprComponentContentDistributionUserInteractionTest extends A
 		});
 	}
 
-//	@Disabled("Enable if manual user interaction is to be tested")
+	@Disabled("Enable if manual user interaction is to be tested")
 	@Test
 	public void testJavaPCMUserInteraction_CmpContentDistribution_Manual() {
 		pcmCmpContentDistTest(null, null);
