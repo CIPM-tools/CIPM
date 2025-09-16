@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -25,6 +26,35 @@ import tools.vitruv.dsls.reactions.runtime.correspondence.CorrespondenceFactory;
 import tools.vitruv.dsls.reactions.runtime.correspondence.ReactionsCorrespondence;
 
 public class PcmJavaCprComponentContentDistributionUserInteractionTest extends AbstractPcmJavaCprTest {
+	private static final Function<Resource, Repository> repoObjLocator = (r) -> (Repository) r.getContents().get(0);
+	private static final Function<Resource, BasicComponent> cmpToBeDeletedLocator = (
+			r) -> (BasicComponent) repoObjLocator.apply(r).getComponents__Repository().stream()
+					.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
+							.equals(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentName))
+					.findFirst().get();
+	private static final Function<Resource, BasicComponent> cmpToPersistOneLocator = (
+			r) -> (BasicComponent) repoObjLocator.apply(r).getComponents__Repository().stream()
+					.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
+							.equals(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentOneName))
+					.findFirst().get();
+	private static final Function<Resource, BasicComponent> cmpToPersistTwoLocator = (
+			r) -> (BasicComponent) repoObjLocator.apply(r).getComponents__Repository().stream()
+					.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
+							.equals(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentTwoName))
+					.findFirst().get();
+	private static final Function<Resource, org.emftext.language.java.classifiers.Class> cls1Locator = (
+			r) -> (org.emftext.language.java.classifiers.Class) r.getContents().stream()
+					.filter((c) -> c instanceof org.emftext.language.java.classifiers.Class
+							&& ((org.emftext.language.java.classifiers.Class) c).getName().equals(
+									PcmCPRTestConstants.componentContentDistributionTestDeletedComponentClassOneName))
+					.findFirst().get();
+	private static final Function<Resource, org.emftext.language.java.classifiers.Class> cls2Locator = (
+			r) -> (org.emftext.language.java.classifiers.Class) r.getContents().stream()
+					.filter((c) -> c instanceof org.emftext.language.java.classifiers.Class
+							&& ((org.emftext.language.java.classifiers.Class) c).getName().equals(
+									PcmCPRTestConstants.componentContentDistributionTestDeletedComponentClassTwoName))
+					.findFirst().get();
+
 	@Override
 	protected List<ChangePropagationSpecification> getCPRs() {
 		var list = new ArrayList<ChangePropagationSpecification>();
@@ -74,19 +104,9 @@ public class PcmJavaCprComponentContentDistributionUserInteractionTest extends A
 		//
 
 		var pcmRes = this.getResourceFromPcmFacade(repositoryFileName);
-		var repoObj = (Repository) pcmRes.getContents().get(0);
-		var cmpToBeDeleted = (BasicComponent) repoObj.getComponents__Repository().stream()
-				.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
-						.equals(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentName))
-				.findFirst().get();
-		var cmpToPersistOne = (BasicComponent) repoObj.getComponents__Repository().stream()
-				.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
-						.equals(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentOneName))
-				.findFirst().get();
-		var cmpToPersistTwo = (BasicComponent) repoObj.getComponents__Repository().stream()
-				.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
-						.equals(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentTwoName))
-				.findFirst().get();
+		var cmpToBeDeleted = cmpToBeDeletedLocator.apply(pcmRes);
+		var cmpToPersistOne = cmpToPersistOneLocator.apply(pcmRes);
+		var cmpToPersistTwo = cmpToPersistTwoLocator.apply(pcmRes);
 
 		//
 		// Setup of correspondences
@@ -112,11 +132,8 @@ public class PcmJavaCprComponentContentDistributionUserInteractionTest extends A
 		//
 		pcmRes = this.getResourceFromPcmFacade(repositoryFileName);
 		var changes = this.getEChangesFor(pcmRes, (r) -> {
-			var rRepoObj = (Repository) r.getContents().get(0);
-			var cmpToDel = rRepoObj.getComponents__Repository().stream()
-					.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
-							.equals(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentName))
-					.findFirst().get();
+			var rRepoObj = repoObjLocator.apply(r);
+			var cmpToDel = cmpToBeDeletedLocator.apply(r);
 			rRepoObj.getComponents__Repository().remove(cmpToDel);
 		});
 
@@ -155,36 +172,17 @@ public class PcmJavaCprComponentContentDistributionUserInteractionTest extends A
 	@Test
 	public void testJavaPCMUserInteraction_CmpContentDistribution_Intercepted() {
 		final BiFunction<Resource, Resource, List<CorrespondenceEntry>> corFunc = (pcmRes, javaRes) -> {
-			var repoObj = (Repository) pcmRes.getContents().get(0);
-			var cmpToPersistOne = (BasicComponent) repoObj.getComponents__Repository().stream()
-					.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
-							.equals(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentOneName))
-					.findFirst().get();
-			var cmpToPersistTwo = (BasicComponent) repoObj.getComponents__Repository().stream()
-					.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
-							.equals(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentTwoName))
-					.findFirst().get();
+			var cmpToPersistOne = cmpToPersistOneLocator.apply(pcmRes);
+			var cmpToPersistTwo = cmpToPersistTwoLocator.apply(pcmRes);
 
-			var cls1 = (org.emftext.language.java.classifiers.Class) javaRes.getContents().stream()
-					.filter((c) -> c instanceof org.emftext.language.java.classifiers.Class
-							&& ((org.emftext.language.java.classifiers.Class) c).getName().equals(
-									PcmCPRTestConstants.componentContentDistributionTestDeletedComponentClassOneName))
-					.findFirst().get();
-			var cls2 = (org.emftext.language.java.classifiers.Class) javaRes.getContents().stream()
-					.filter((c) -> c instanceof org.emftext.language.java.classifiers.Class
-							&& ((org.emftext.language.java.classifiers.Class) c).getName().equals(
-									PcmCPRTestConstants.componentContentDistributionTestDeletedComponentClassTwoName))
-					.findFirst().get();
+			var cls1 = cls1Locator.apply(javaRes);
+			var cls2 = cls2Locator.apply(javaRes);
 
 			return List.of(new CorrespondenceEntry(cmpToPersistOne, cls1, ""),
 					new CorrespondenceEntry(cmpToPersistTwo, cls2, ""));
 		};
 		pcmCmpContentDistTest(corFunc, (pcmRes, javaRes) -> {
-			var repoObj = (Repository) pcmRes.getContents().get(0);
-			var cmpToBeDeleted = (BasicComponent) repoObj.getComponents__Repository().stream()
-					.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
-							.equals(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentName))
-					.findFirst().get();
+			var cmpToBeDeleted = cmpToBeDeletedLocator.apply(pcmRes);
 			return new ConflictResolutionStrategy[] {
 					new DummyDistributionConflictResolutionStrategy(cmpToBeDeleted, corFunc.apply(pcmRes, javaRes)) };
 		});
