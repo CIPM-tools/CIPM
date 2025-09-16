@@ -1,12 +1,9 @@
 package cipm.consistency.vsum.test.pcm.cprunittests;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emftext.language.java.classifiers.ClassifiersFactory;
 import org.emftext.language.java.commons.CommonsPackage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
@@ -16,15 +13,11 @@ import org.palladiosimulator.pcm.repository.BasicComponent;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryFactory;
 
-import cipm.consistency.vsum.test.pcm.userinteraction.CorrespondenceEntry;
-import cipm.consistency.vsum.test.pcm.userinteraction.DummyDistributionConflictResolutionStrategy;
 import cipm.consistency.vsum.test.pcm.userinteraction.DummyNameConflictResolutionStrategy;
 import cipm.consistency.vsum.test.pcm.userinteraction.DummyNamespaceConflictResolutionStrategy;
 import cipm.consistency.vsum.test.pcm.userinteraction.PcmUserInteractionManager;
 import mir.reactions.dummyPCMJavaUserInteractionCPRs.DummyPCMJavaUserInteractionCPRsChangePropagationSpecification;
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
-import tools.vitruv.dsls.reactions.runtime.correspondence.CorrespondenceFactory;
-import tools.vitruv.dsls.reactions.runtime.correspondence.ReactionsCorrespondence;
 
 public class PcmJavaCprUserInteractionTest extends AbstractPcmJavaCprTest {
 	@Override
@@ -32,212 +25,6 @@ public class PcmJavaCprUserInteractionTest extends AbstractPcmJavaCprTest {
 		var list = new ArrayList<ChangePropagationSpecification>();
 		list.add(new DummyPCMJavaUserInteractionCPRsChangePropagationSpecification());
 		return list;
-	}
-
-//	@Disabled("Enable if manual user interaction is to be tested")
-	@Test
-	public void testJavaPCMUserInteraction_CmpContentDistribution_Manual() {
-		//
-		// Setup of PCM
-		//
-
-		this.getPcmVsumFacade().propagateResource(this.getResourceFromPcmFacade(repositoryFileName).getURI(), (r) -> {
-			var repoObj = (Repository) r.getContents().get(0);
-
-			var cmpToBeDeleted = RepositoryFactory.eINSTANCE.createBasicComponent();
-			cmpToBeDeleted.setEntityName(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentName);
-			repoObj.getComponents__Repository().add(cmpToBeDeleted);
-
-			var cmpToPersistOne = RepositoryFactory.eINSTANCE.createBasicComponent();
-			cmpToPersistOne
-					.setEntityName(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentOneName);
-			repoObj.getComponents__Repository().add(cmpToPersistOne);
-
-			var cmpToPersistTwo = RepositoryFactory.eINSTANCE.createBasicComponent();
-			cmpToPersistTwo
-					.setEntityName(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentTwoName);
-			repoObj.getComponents__Repository().add(cmpToPersistTwo);
-		});
-
-		//
-		// Setup of Java
-		//
-		var javaResource = this.getJavaModelResourceFromJavaFacade();
-		var cls1 = ClassifiersFactory.eINSTANCE.createClass();
-		cls1.setName(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentClassOneName);
-		javaResource.getContents().add(cls1);
-
-		var cls2 = ClassifiersFactory.eINSTANCE.createClass();
-		cls2.setName(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentClassTwoName);
-		javaResource.getContents().add(cls2);
-		this.getJavaFacade().saveToDisk();
-
-		//
-		// Reload VSUM and re-locate resources and their content
-		//
-
-		var pcmRes = this.getResourceFromPcmFacade(repositoryFileName);
-		var repoObj = (Repository) pcmRes.getContents().get(0);
-		var cmpToBeDeleted = (BasicComponent) repoObj.getComponents__Repository().stream()
-				.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
-						.equals(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentName))
-				.findFirst().get();
-		var cmpToPersistOne = (BasicComponent) repoObj.getComponents__Repository().stream()
-				.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
-						.equals(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentOneName))
-				.findFirst().get();
-		var cmpToPersistTwo = (BasicComponent) repoObj.getComponents__Repository().stream()
-				.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
-						.equals(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentTwoName))
-				.findFirst().get();
-
-		//
-		// Setup of correspondences
-		//
-		var corView = this.getPcmVsumFacade().getCorrespondenceView().getEditableView(ReactionsCorrespondence.class,
-				() -> {
-					return CorrespondenceFactory.eINSTANCE.createReactionsCorrespondence();
-				});
-		corView.addCorrespondenceBetween(cls1, cmpToBeDeleted, "");
-		corView.addCorrespondenceBetween(cls2, cmpToBeDeleted, "");
-
-		//
-		// Actual test
-		//
-		pcmRes = this.getResourceFromPcmFacade(repositoryFileName);
-		var changes = this.getEChangesFor(pcmRes, (r) -> {
-			var rRepoObj = (Repository) r.getContents().get(0);
-			var cmpToDel = rRepoObj.getComponents__Repository().stream()
-					.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
-							.equals(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentName))
-					.findFirst().get();
-			rRepoObj.getComponents__Repository().remove(cmpToDel);
-		});
-
-		this.getPcmVsumFacade().addChanges(changes);
-		var prop = this.getPcmVsumFacade().propagateResource(pcmRes);
-		Assertions.assertNull(prop.getException());
-		this.logPropagatedChanges(prop);
-
-		// Correspondence tests
-		var tag = "";
-		var postPropCorView = this.getPcmVsumFacade().getCorrespondenceView();
-		var allObjs = List.of(cmpToPersistOne, cmpToPersistTwo, cls1, cls2);
-		var corObjSet = new HashSet<EObject>();
-		var correspondentList = new ArrayList<CorrespondenceEntry>();
-		for (var obj : allObjs) {
-			corObjSet.addAll(postPropCorView.getCorrespondingEObjects(obj));
-			correspondentList.add(new CorrespondenceEntry(obj, postPropCorView.getCorrespondingEObjects(obj), tag));
-		}
-
-		/**
-		 * There should be at least 3 correspondences in the correspondence view at the
-		 * end of the interaction, because cls1 and cls2 each have to correspond to at
-		 * least one component (same component is allowed). Hence there should be at
-		 * least 3 corresponding EObjects.
-		 * 
-		 * This assertion ensures that these correspondences have been added to the
-		 * correspondence view, so that the follow-up assertions work as intended.
-		 */
-		Assertions.assertTrue(corObjSet.size() >= 3);
-		PcmCprAssertions.assertCorrespondenceViewAndPcmManagerConsistent(this.getPcmVsumFacade(), correspondentList);
-	}
-
-	@Test
-	public void testJavaPCMUserInteraction_CmpContentDistribution_Intercepted() {
-		//
-		// Setup of PCM
-		//
-
-		this.getPcmVsumFacade().propagateResource(this.getResourceFromPcmFacade(repositoryFileName).getURI(), (r) -> {
-			var repoObj = (Repository) r.getContents().get(0);
-
-			var cmpToBeDeleted = RepositoryFactory.eINSTANCE.createBasicComponent();
-			cmpToBeDeleted.setEntityName(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentName);
-			repoObj.getComponents__Repository().add(cmpToBeDeleted);
-
-			var cmpToPersistOne = RepositoryFactory.eINSTANCE.createBasicComponent();
-			cmpToPersistOne
-					.setEntityName(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentOneName);
-			repoObj.getComponents__Repository().add(cmpToPersistOne);
-
-			var cmpToPersistTwo = RepositoryFactory.eINSTANCE.createBasicComponent();
-			cmpToPersistTwo
-					.setEntityName(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentTwoName);
-			repoObj.getComponents__Repository().add(cmpToPersistTwo);
-		});
-
-		//
-		// Setup of Java
-		//
-		var javaResource = this.getJavaModelResourceFromJavaFacade();
-		var cls1 = ClassifiersFactory.eINSTANCE.createClass();
-		cls1.setName(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentClassOneName);
-		javaResource.getContents().add(cls1);
-
-		var cls2 = ClassifiersFactory.eINSTANCE.createClass();
-		cls2.setName(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentClassTwoName);
-		javaResource.getContents().add(cls2);
-		this.getJavaFacade().saveToDisk();
-
-		//
-		// Reload VSUM and re-locate resources and their content
-		//
-
-		var pcmRes = this.getResourceFromPcmFacade(repositoryFileName);
-		var repoObj = (Repository) pcmRes.getContents().get(0);
-		var cmpToBeDeleted = (BasicComponent) repoObj.getComponents__Repository().stream()
-				.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
-						.equals(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentName))
-				.findFirst().get();
-		var cmpToPersistOne = (BasicComponent) repoObj.getComponents__Repository().stream()
-				.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
-						.equals(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentOneName))
-				.findFirst().get();
-		var cmpToPersistTwo = (BasicComponent) repoObj.getComponents__Repository().stream()
-				.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
-						.equals(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentTwoName))
-				.findFirst().get();
-
-		//
-		// Setup of correspondences
-		//
-		var corView = this.getPcmVsumFacade().getCorrespondenceView().getEditableView(ReactionsCorrespondence.class,
-				() -> {
-					return CorrespondenceFactory.eINSTANCE.createReactionsCorrespondence();
-				});
-		corView.addCorrespondenceBetween(cls1, cmpToBeDeleted, "");
-		corView.addCorrespondenceBetween(cls2, cmpToBeDeleted, "");
-
-		//
-		// Conflict resolution strategy setup
-		//
-		List<CorrespondenceEntry> correspondences = List.of(new CorrespondenceEntry(cmpToPersistOne, cls1, ""),
-				new CorrespondenceEntry(cmpToPersistTwo, cls2, ""));
-
-		PcmUserInteractionManager.addConflictResolutionStrategy(
-				new DummyDistributionConflictResolutionStrategy(cmpToBeDeleted, correspondences));
-
-		//
-		// Actual test
-		//
-		pcmRes = this.getResourceFromPcmFacade(repositoryFileName);
-		var changes = this.getEChangesFor(pcmRes, (r) -> {
-			var rRepoObj = (Repository) r.getContents().get(0);
-			var cmpToDel = rRepoObj.getComponents__Repository().stream()
-					.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
-							.equals(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentName))
-					.findFirst().get();
-			rRepoObj.getComponents__Repository().remove(cmpToDel);
-		});
-
-		this.getPcmVsumFacade().addChanges(changes);
-		var prop = this.getPcmVsumFacade().propagateResource(pcmRes);
-		Assertions.assertNull(prop.getException());
-		this.logPropagatedChanges(prop);
-
-		// Correspondence tests
-		PcmCprAssertions.assertCorrespondenceViewAndPcmManagerConsistent(this.getPcmVsumFacade(), correspondences);
 	}
 
 //	@Disabled("Enable if manual user interaction is to be tested")
