@@ -26,6 +26,7 @@ import tools.vitruv.dsls.reactions.runtime.correspondence.CorrespondenceFactory;
 import tools.vitruv.dsls.reactions.runtime.correspondence.ReactionsCorrespondence;
 
 public class PcmJavaCprComponentContentDistributionUserInteractionTest extends AbstractPcmJavaCprTest {
+	// PCM element locators
 	private static final Function<Resource, Repository> repoObjLocator = (r) -> (Repository) r.getContents().get(0);
 	private static final Function<Resource, BasicComponent> cmpToBeDeletedLocator = (
 			r) -> (BasicComponent) repoObjLocator.apply(r).getComponents__Repository().stream()
@@ -42,6 +43,8 @@ public class PcmJavaCprComponentContentDistributionUserInteractionTest extends A
 					.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
 							.equals(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentTwoName))
 					.findFirst().get();
+
+	// Java model element locators
 	private static final Function<Resource, org.emftext.language.java.classifiers.Class> cls1Locator = (
 			r) -> (org.emftext.language.java.classifiers.Class) r.getContents().stream()
 					.filter((c) -> c instanceof org.emftext.language.java.classifiers.Class
@@ -62,12 +65,8 @@ public class PcmJavaCprComponentContentDistributionUserInteractionTest extends A
 		return list;
 	}
 
-	public void pcmCmpContentDistTest(BiFunction<Resource, Resource, List<CorrespondenceEntry>> pcmAndJavaResToCorsFunc,
-			BiFunction<Resource, Resource, ConflictResolutionStrategy[]> pcmAndJavaResToStratsFunc) {
-		//
-		// Setup of PCM
-		//
-
+	private void setUpPCM() {
+		// Setup via propagation to ensure that the PcmFacade gets these changes
 		this.getPcmVsumFacade().propagateResource(this.getResourceFromPcmFacade(repositoryFileName).getURI(), (r) -> {
 			var repoObj = (Repository) r.getContents().get(0);
 
@@ -85,10 +84,9 @@ public class PcmJavaCprComponentContentDistributionUserInteractionTest extends A
 					.setEntityName(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentTwoName);
 			repoObj.getComponents__Repository().add(cmpToPersistTwo);
 		});
+	}
 
-		//
-		// Setup of Java
-		//
+	private void setUpJavaModel() {
 		var javaResource = this.getJavaModelResourceFromJavaFacade();
 		var cls1 = ClassifiersFactory.eINSTANCE.createClass();
 		cls1.setName(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentClassOneName);
@@ -98,43 +96,50 @@ public class PcmJavaCprComponentContentDistributionUserInteractionTest extends A
 		cls2.setName(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentClassTwoName);
 		javaResource.getContents().add(cls2);
 		this.getJavaFacade().saveToDisk();
+	}
 
-		//
-		// Reload VSUM and re-locate resources and their content
-		//
-
+	private void setUpCorrespondences() {
 		var pcmRes = this.getResourceFromPcmFacade(repositoryFileName);
 		var cmpToBeDeleted = cmpToBeDeletedLocator.apply(pcmRes);
-		var cmpToPersistOne = cmpToPersistOneLocator.apply(pcmRes);
-		var cmpToPersistTwo = cmpToPersistTwoLocator.apply(pcmRes);
 
-		//
-		// Setup of correspondences
-		//
+		var javaResource = this.getJavaModelResourceFromJavaFacade();
+		var cls1 = cls1Locator.apply(javaResource);
+		var cls2 = cls2Locator.apply(javaResource);
+
 		var corView = this.getPcmVsumFacade().getCorrespondenceView().getEditableView(ReactionsCorrespondence.class,
 				() -> {
 					return CorrespondenceFactory.eINSTANCE.createReactionsCorrespondence();
 				});
 		corView.addCorrespondenceBetween(cls1, cmpToBeDeleted, "");
 		corView.addCorrespondenceBetween(cls2, cmpToBeDeleted, "");
+	}
 
-		//
+	public void pcmCmpContentDistTest(BiFunction<Resource, Resource, List<CorrespondenceEntry>> pcmAndJavaResToCorsFunc,
+			BiFunction<Resource, Resource, ConflictResolutionStrategy[]> pcmAndJavaResToStratsFunc) {
+		setUpPCM();
+		setUpJavaModel();
+		setUpCorrespondences();
+
+		var pcmRes = this.getResourceFromPcmFacade(repositoryFileName);
+		var cmpToPersistOne = cmpToPersistOneLocator.apply(pcmRes);
+		var cmpToPersistTwo = cmpToPersistTwoLocator.apply(pcmRes);
+
+		var javaResource = this.getJavaModelResourceFromJavaFacade();
+		var cls1 = cls1Locator.apply(javaResource);
+		var cls2 = cls2Locator.apply(javaResource);
+
 		// Setup of conflict resolution strategies
-		//
 		if (pcmAndJavaResToStratsFunc != null) {
 			for (var s : pcmAndJavaResToStratsFunc.apply(pcmRes, javaResource)) {
 				PcmUserInteractionManager.addConflictResolutionStrategy(s);
 			}
 		}
 
-		//
-		// Actual test
-		//
-		pcmRes = this.getResourceFromPcmFacade(repositoryFileName);
+		// Propagate actual changes
 		var changes = this.getEChangesFor(pcmRes, (r) -> {
 			var rRepoObj = repoObjLocator.apply(r);
-			var cmpToDel = cmpToBeDeletedLocator.apply(r);
-			rRepoObj.getComponents__Repository().remove(cmpToDel);
+			var rCmpToDel = cmpToBeDeletedLocator.apply(r);
+			rRepoObj.getComponents__Repository().remove(rCmpToDel);
 		});
 
 		this.propagateChangesToResource(pcmRes, changes);
@@ -152,10 +157,9 @@ public class PcmJavaCprComponentContentDistributionUserInteractionTest extends A
 
 		if (pcmAndJavaResToCorsFunc == null) {
 			/**
-			 * There should be at least 3 correspondences in the correspondence view at the
+			 * There should be at least 3 EObjects present in the correspondence view at the
 			 * end of the interaction, because cls1 and cls2 each have to correspond to at
-			 * least one component (same component is allowed). Hence there should be at
-			 * least 3 corresponding EObjects.
+			 * least one component (same component is allowed).
 			 * 
 			 * This assertion ensures that these correspondences have been added to the
 			 * correspondence view, so that the follow-up assertions work as intended.
