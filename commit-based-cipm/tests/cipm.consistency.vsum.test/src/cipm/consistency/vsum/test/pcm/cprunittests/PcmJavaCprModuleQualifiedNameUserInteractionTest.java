@@ -60,26 +60,20 @@ public class PcmJavaCprModuleQualifiedNameUserInteractionTest extends AbstractPc
 		this.logPropagatedChanges(prop);
 
 		// Ensure that the change was actually applied to PCM
-		var propagatedResource = this.getResourceFromPcmFacade(repositoryFileName);
-		Assertions.assertEquals(1, propagatedResource.getContents().size());
-		var propagatedRepoEObj = propagatedResource.getContents().get(0);
-		Assertions.assertEquals(1, propagatedRepoEObj.eContents().size());
-		var propagatedRepoCmp = propagatedRepoEObj.eContents().get(0);
-		PcmCprAssertions.assertFeatureValueEquals(propagatedRepoCmp, EntityPackage.Literals.NAMED_ELEMENT__ENTITY_NAME,
-				pcmCmpName);
-
 		// Ensure that the Resource is saved after changes are applied
-		var res = this.loadNewResourceInstance(propagatedResource);
-
 		// Ensure that the loaded Resource has the expected contents
-		Assertions.assertEquals(1, res.getContents().size());
-		var resRepoEObj = res.getContents().get(0);
-		Assertions.assertEquals(1, resRepoEObj.eContents().size());
-		var resRepoCmp = resRepoEObj.eContents().get(0);
-		PcmCprAssertions.assertFeatureValueEquals(resRepoCmp, EntityPackage.Literals.NAMED_ELEMENT__ENTITY_NAME,
-				pcmCmpName);
-		Assertions.assertTrue(EcoreUtil.equals(resRepoEObj, propagatedRepoEObj));
-		Assertions.assertTrue(EcoreUtil.equals(resRepoCmp, propagatedRepoCmp));
+
+		var propagatedResource = this.getResourceFromPcmFacade(repositoryFileName);
+		var loadedResource = this.loadNewResourceInstance(propagatedResource);
+
+		PcmCprAssertions.assertForAllEqualResources((r) -> {
+			Assertions.assertEquals(1, r.getContents().size());
+			var rRepoEObj = r.getContents().get(0);
+			Assertions.assertEquals(1, rRepoEObj.eContents().size());
+			var rRepoCmp = rRepoEObj.eContents().get(0);
+			PcmCprAssertions.assertFeatureValueEquals(rRepoCmp, EntityPackage.Literals.NAMED_ELEMENT__ENTITY_NAME,
+					pcmCmpName);
+		}, propagatedResource, loadedResource);
 
 		// Ensure that consequential changes to Java are done too
 		this.removePlaceholderInJavaModelResource();
@@ -92,13 +86,11 @@ public class PcmJavaCprModuleQualifiedNameUserInteractionTest extends AbstractPc
 			PcmCprAssertions.assertActualFeatureValueAndPcmManagerConsistent(createdCmp[0], javaMod,
 					CommonsPackage.Literals.NAMESPACE_AWARE_ELEMENT__NAMESPACES);
 		} else {
-			PcmCprAssertions.assertFeatureValueInPcmManagerEquals(createdCmp[0],
+			PcmCprAssertions.assertFeatureValueSetViaPcmManager(createdCmp[0], javaMod,
 					CommonsPackage.Literals.NAMED_ELEMENT__NAME, expectedModuleName);
-			PcmCprAssertions.assertFeatureValueInPcmManagerEquals(createdCmp[0],
+			PcmCprAssertions.assertFeatureValueSetViaPcmManager(createdCmp[0], javaMod,
 					CommonsPackage.Literals.NAMESPACE_AWARE_ELEMENT__NAMESPACES, expectedModuleNss);
 		}
-		PcmCprAssertions.assertActualFeatureValueAndPcmManagerConsistent(createdCmp[0], javaMod,
-				CommonsPackage.Literals.NAMESPACE_AWARE_ELEMENT__NAMESPACES);
 
 		// Ensure that correspondences are persistent
 		var persistedPcmCmp = this.getResourceFromPcmFacade(repositoryFileName).getContents().get(0).eContents().get(0);
@@ -115,7 +107,7 @@ public class PcmJavaCprModuleQualifiedNameUserInteractionTest extends AbstractPc
 		Assertions.assertEquals(persistedPcmCmp, pcmCorrespondent);
 	}
 
-	@Disabled("Enable if manual user interaction is to be tested")
+//	@Disabled("Enable if manual user interaction is to be tested")
 	@Test
 	public void testJavaPCMUserInteraction_ModuleQualifiedName_Manual() {
 		pcmModuleQualifiedNameTest(null, null, null);
