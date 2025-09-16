@@ -54,10 +54,7 @@ public class PcmJavaCprModuleQualifiedNameUserInteractionTest extends AbstractPc
 			}
 		}
 
-		this.getPcmVsumFacade().addChanges(changes);
-		var prop = this.getPcmVsumFacade().propagateResource(originalRepoRes);
-		Assertions.assertNull(prop.getException());
-		this.logPropagatedChanges(prop);
+		this.propagateChangesToResource(originalRepoRes, changes);
 
 		// Ensure that the change was actually applied to PCM
 		// Ensure that the Resource is saved after changes are applied

@@ -120,10 +120,7 @@ public class PcmJavaCprComponentContentDistributionUserInteractionTest extends A
 			rRepoObj.getComponents__Repository().remove(cmpToDel);
 		});
 
-		this.getPcmVsumFacade().addChanges(changes);
-		var prop = this.getPcmVsumFacade().propagateResource(pcmRes);
-		Assertions.assertNull(prop.getException());
-		this.logPropagatedChanges(prop);
+		this.propagateChangesToResource(pcmRes, changes);
 
 		// Correspondence tests
 		var tag = "";
@@ -193,7 +190,7 @@ public class PcmJavaCprComponentContentDistributionUserInteractionTest extends A
 		});
 	}
 
-	@Disabled("Enable if manual user interaction is to be tested")
+//	@Disabled("Enable if manual user interaction is to be tested")
 	@Test
 	public void testJavaPCMUserInteraction_CmpContentDistribution_Manual() {
 		pcmCmpContentDistTest(null, null);

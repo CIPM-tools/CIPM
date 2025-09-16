@@ -38,10 +38,7 @@ public class PcmJavaCprCorrespondenceTest extends AbstractPcmJavaCprTest {
 			rRepoEObj.getInterfaces__Repository().add(pcmInterface);
 		});
 
-		this.getPcmVsumFacade().addChanges(changes);
-		var prop = this.getPcmVsumFacade().propagateResource(originalRepoRes);
-		Assertions.assertNull(prop.getException());
-		this.logPropagatedChanges(prop);
+		this.propagateChangesToResource(originalRepoRes, changes);
 
 		var propagatedRepoResource = this.getResourceFromPcmFacade(repositoryFileName);
 		var loadedRepoResource = this.loadNewResourceInstance(propagatedRepoResource);

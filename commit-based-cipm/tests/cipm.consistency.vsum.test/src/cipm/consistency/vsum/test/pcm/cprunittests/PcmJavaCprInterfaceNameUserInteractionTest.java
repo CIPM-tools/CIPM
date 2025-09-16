@@ -51,32 +51,21 @@ public class PcmJavaCprInterfaceNameUserInteractionTest extends AbstractPcmJavaC
 			}
 		}
 
-		this.getPcmVsumFacade().addChanges(changes);
-		var prop = this.getPcmVsumFacade().propagateResource(originalRepoRes);
-		Assertions.assertNull(prop.getException());
-		this.logPropagatedChanges(prop);
-
-		// Ensure that the change was actually applied to PCM
-		var propagatedResource = this.getResourceFromPcmFacade(repositoryFileName);
-		Assertions.assertEquals(1, propagatedResource.getContents().size());
-		var propagatedRepoEObj = propagatedResource.getContents().get(0);
-		Assertions.assertEquals(1, propagatedRepoEObj.eContents().size());
-		var propagatedRepoInterface = propagatedRepoEObj.eContents().get(0);
-		PcmCprAssertions.assertFeatureValueEquals(propagatedRepoInterface,
-				EntityPackage.Literals.NAMED_ELEMENT__ENTITY_NAME, pcmInterfaceName);
+		this.propagateChangesToResource(originalRepoRes, changes);
 
 		// Ensure that the Resource is saved after changes are applied
-		var res = this.loadNewResourceInstance(propagatedResource);
-
 		// Ensure that the loaded Resource has the expected contents
-		Assertions.assertEquals(1, res.getContents().size());
-		var resRepoEObj = res.getContents().get(0);
-		Assertions.assertEquals(1, resRepoEObj.eContents().size());
-		var resRepoInterface = resRepoEObj.eContents().get(0);
-		PcmCprAssertions.assertFeatureValueEquals(resRepoInterface, EntityPackage.Literals.NAMED_ELEMENT__ENTITY_NAME,
-				pcmInterfaceName);
-		Assertions.assertTrue(EcoreUtil.equals(resRepoEObj, propagatedRepoEObj));
-		Assertions.assertTrue(EcoreUtil.equals(resRepoInterface, propagatedRepoInterface));
+		// Ensure that the change was actually applied to PCM
+		var propagatedResource = this.getResourceFromPcmFacade(repositoryFileName);
+		var loadedResource = this.loadNewResourceInstance(propagatedResource);
+		PcmCprAssertions.assertForAllEqualResources((r) -> {
+			Assertions.assertEquals(1, r.getContents().size());
+			var rRepoEObj = r.getContents().get(0);
+			Assertions.assertEquals(1, rRepoEObj.eContents().size());
+			var rRepoInterface = rRepoEObj.eContents().get(0);
+			PcmCprAssertions.assertFeatureValueEquals(rRepoInterface, EntityPackage.Literals.NAMED_ELEMENT__ENTITY_NAME,
+					pcmInterfaceName);
+		}, propagatedResource, loadedResource);
 
 		// Ensure that consequential changes to Java are done too
 		this.removePlaceholderInJavaModelResource();
@@ -94,16 +83,8 @@ public class PcmJavaCprInterfaceNameUserInteractionTest extends AbstractPcmJavaC
 		// Ensure that correspondences are persistent
 		var persistedPcmI = this.getResourceFromPcmFacade(repositoryFileName).getContents().get(0).eContents().get(0);
 		var persistedJavaI = this.getJavaModelResourceFromJavaFacade().getContents().get(0);
-		Assertions.assertEquals(1,
-				this.getPcmVsumFacade().getCorrespondenceView().getCorrespondingEObjects(persistedPcmI).size());
-		var javaCorrespondent = this.getPcmVsumFacade().getCorrespondenceView().getCorrespondingEObjects(persistedPcmI)
-				.iterator().next();
-		Assertions.assertEquals(persistedJavaI, javaCorrespondent);
-		Assertions.assertEquals(1,
-				this.getPcmVsumFacade().getCorrespondenceView().getCorrespondingEObjects(persistedJavaI).size());
-		var pcmCorrespondent = this.getPcmVsumFacade().getCorrespondenceView().getCorrespondingEObjects(persistedJavaI)
-				.iterator().next();
-		Assertions.assertEquals(persistedPcmI, pcmCorrespondent);
+		PcmCprAssertions.assertCorrespondenceInCorrespondenceView(getPcmVsumFacade(), persistedPcmI, persistedJavaI,
+				"");
 	}
 
 	@Test
@@ -114,7 +95,7 @@ public class PcmJavaCprInterfaceNameUserInteractionTest extends AbstractPcmJavaC
 		}, PcmCPRTestConstants.userInteractionTestJavaInterfaceName);
 	}
 
-	@Disabled("Enable if manual user interaction is to be tested")
+//	@Disabled("Enable if manual user interaction is to be tested")
 	@Test
 	public void testJavaPCMUserInteraction_InterfaceName_Manual() {
 		this.javaInterfaceNameTest(null, null);

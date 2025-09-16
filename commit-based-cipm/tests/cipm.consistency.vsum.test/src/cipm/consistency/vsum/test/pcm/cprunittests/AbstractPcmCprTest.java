@@ -340,6 +340,14 @@ public abstract class AbstractPcmCprTest {
 		return this.vsumFacade;
 	}
 
+	protected Propagation propagateChangesToResource(Resource res, Collection<EChange> changes) {
+		this.getPcmVsumFacade().addChanges(changes);
+		var prop = this.getPcmVsumFacade().propagateResource(res);
+		Assertions.assertNull(prop.getException());
+		this.logPropagatedChanges(prop);
+		return prop;
+	}
+
 	protected void reloadVsumFacade() {
 		pcmFacade = this.setupPcmFacade();
 		vsumFacade = this.setupVsumFacade();
