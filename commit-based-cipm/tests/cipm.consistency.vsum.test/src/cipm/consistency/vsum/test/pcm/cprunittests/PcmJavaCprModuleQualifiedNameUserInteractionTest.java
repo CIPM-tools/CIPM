@@ -62,7 +62,6 @@ public class PcmJavaCprModuleQualifiedNameUserInteractionTest extends AbstractPc
 		// Ensure that the change was actually applied to PCM
 		// Ensure that the Resource is saved after changes are applied
 		// Ensure that the loaded Resource has the expected contents
-
 		var propagatedResource = this.getResourceFromPcmFacade(repositoryFileName);
 		var loadedResource = this.loadNewResourceInstance(propagatedResource);
 
@@ -93,18 +92,10 @@ public class PcmJavaCprModuleQualifiedNameUserInteractionTest extends AbstractPc
 		}
 
 		// Ensure that correspondences are persistent
-		var persistedPcmCmp = this.getResourceFromPcmFacade(repositoryFileName).getContents().get(0).eContents().get(0);
-		var persistedJavaMod = this.getJavaModelResourceFromJavaFacade().getContents().get(0);
-		Assertions.assertEquals(1,
-				this.getPcmVsumFacade().getCorrespondenceView().getCorrespondingEObjects(persistedPcmCmp).size());
-		var javaCorrespondent = this.getPcmVsumFacade().getCorrespondenceView()
-				.getCorrespondingEObjects(persistedPcmCmp).iterator().next();
-		Assertions.assertEquals(persistedJavaMod, javaCorrespondent);
-		Assertions.assertEquals(1,
-				this.getPcmVsumFacade().getCorrespondenceView().getCorrespondingEObjects(persistedJavaMod).size());
-		var pcmCorrespondent = this.getPcmVsumFacade().getCorrespondenceView()
-				.getCorrespondingEObjects(persistedJavaMod).iterator().next();
-		Assertions.assertEquals(persistedPcmCmp, pcmCorrespondent);
+		var persistedPcmCmp = propagatedResource.getContents().get(0).eContents().get(0);
+		var persistedJavaMod = javaResource.getContents().get(0);
+		PcmCprAssertions.assertCorrespondenceInCorrespondenceView(getPcmVsumFacade(), persistedPcmCmp, persistedJavaMod,
+				"");
 	}
 
 //	@Disabled("Enable if manual user interaction is to be tested")
