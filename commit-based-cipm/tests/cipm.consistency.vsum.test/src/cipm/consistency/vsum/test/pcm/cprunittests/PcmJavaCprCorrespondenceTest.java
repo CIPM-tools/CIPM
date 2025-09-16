@@ -43,47 +43,37 @@ public class PcmJavaCprCorrespondenceTest extends AbstractPcmJavaCprTest {
 		Assertions.assertNull(prop.getException());
 		this.logPropagatedChanges(prop);
 
+		var propagatedRepoResource = this.getResourceFromPcmFacade(repositoryFileName);
+		var loadedRepoResource = this.loadNewResourceInstance(propagatedRepoResource);
+
 		// Ensure that the change was actually applied to PCM
-		var propagatedResource = this.getResourceFromPcmFacade(repositoryFileName);
-		Assertions.assertEquals(1, propagatedResource.getContents().size());
-		var propagatedRepoEObj = propagatedResource.getContents().get(0);
-		Assertions.assertEquals(1, propagatedRepoEObj.eContents().size());
-		var propagatedRepoInterface = propagatedRepoEObj.eContents().get(0);
-		PcmCprAssertions.assertFeatureValueEquals(propagatedRepoInterface,
-				EntityPackage.Literals.NAMED_ELEMENT__ENTITY_NAME, pcmInterfaceName);
-
 		// Ensure that the Resource is saved after changes are applied
-		var res = this.loadNewResourceInstance(propagatedResource);
-
 		// Ensure that the loaded Resource has the expected contents
-		Assertions.assertEquals(1, res.getContents().size());
-		var resRepoEObj = res.getContents().get(0);
-		Assertions.assertEquals(1, resRepoEObj.eContents().size());
-		var resRepoInterface = resRepoEObj.eContents().get(0);
-		PcmCprAssertions.assertFeatureValueEquals(resRepoInterface, EntityPackage.Literals.NAMED_ELEMENT__ENTITY_NAME,
-				pcmInterfaceName);
-		Assertions.assertTrue(EcoreUtil.equals(resRepoEObj, propagatedRepoEObj));
-		Assertions.assertTrue(EcoreUtil.equals(resRepoInterface, propagatedRepoInterface));
+		PcmCprAssertions.assertForAllEqualResources((r) -> {
+			Assertions.assertEquals(1, r.getContents().size());
+			var rRepoEObj = r.getContents().get(0);
+			Assertions.assertEquals(1, rRepoEObj.eContents().size());
+			var rRepoInterface = rRepoEObj.eContents().get(0);
+			PcmCprAssertions.assertFeatureValueEquals(rRepoInterface, EntityPackage.Literals.NAMED_ELEMENT__ENTITY_NAME,
+					pcmInterfaceName);
+		}, originalRepoRes, propagatedRepoResource, loadedRepoResource);
 
 		// Ensure that consequential changes to Java are done too
 		this.removePlaceholderInJavaModelResource();
-		Assertions.assertEquals(1, javaResource.getContents().size());
-		var javaInterface = javaResource.getContents().get(0);
-		PcmCprAssertions.assertFeatureValueEquals(javaInterface, CommonsPackage.Literals.NAMED_ELEMENT__NAME,
-				pcmInterfaceName);
+		var persistedJavaResource = this.getJavaModelResourceFromJavaFacade();
+
+		PcmCprAssertions.assertForAllEqualResources((r) -> {
+			Assertions.assertEquals(1, r.getContents().size());
+			var rInterface = r.getContents().get(0);
+			PcmCprAssertions.assertFeatureValueEquals(rInterface, CommonsPackage.Literals.NAMED_ELEMENT__NAME,
+					pcmInterfaceName);
+		}, javaResource, persistedJavaResource);
 
 		// Ensure that correspondences are persistent
-		var persistedPcmI = this.getResourceFromPcmFacade(repositoryFileName).getContents().get(0).eContents().get(0);
-		var persistedJavaI = this.getJavaModelResourceFromJavaFacade().getContents().get(0);
-		Assertions.assertEquals(1,
-				this.getPcmVsumFacade().getCorrespondenceView().getCorrespondingEObjects(persistedPcmI).size());
-		var javaCorrespondent = this.getPcmVsumFacade().getCorrespondenceView().getCorrespondingEObjects(persistedPcmI)
-				.iterator().next();
-		Assertions.assertEquals(persistedJavaI, javaCorrespondent);
-		Assertions.assertEquals(1,
-				this.getPcmVsumFacade().getCorrespondenceView().getCorrespondingEObjects(persistedJavaI).size());
-		var pcmCorrespondent = this.getPcmVsumFacade().getCorrespondenceView().getCorrespondingEObjects(persistedJavaI)
-				.iterator().next();
-		Assertions.assertEquals(persistedPcmI, pcmCorrespondent);
+		var persistedPcmI = propagatedRepoResource.getContents().get(0).eContents().get(0);
+		var persistedJavaI = persistedJavaResource.getContents().get(0);
+
+		PcmCprAssertions.assertCorrespondenceInCorrespondenceView(getPcmVsumFacade(), persistedPcmI, persistedJavaI,
+				"");
 	}
 }

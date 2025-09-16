@@ -29,7 +29,7 @@ public class PcmCprTriggerTest extends AbstractPcmCprTest {
 	}
 
 	@Test
-	public void testCprTrigger_OnDifferentResourceInstance_WithoutView() {
+	public void testCprTrigger_OnDifferentResourceInstance() {
 		var repoRes = this.getNewInstanceForResourceFromPcmFacade(AbstractPcmCprTest.repositoryFileName);
 		var repoEObj = repoRes.getContents().get(0);
 		var repoEObjFragment = repoRes.getURIFragment(repoEObj);
@@ -83,7 +83,7 @@ public class PcmCprTriggerTest extends AbstractPcmCprTest {
 	}
 
 	@Test
-	public void testCprTrigger_OnSameResourceInstance_WithoutView() {
+	public void testCprTrigger_OnSameResourceInstance() {
 		var repoRes = this.getResourceFromPcmFacade(AbstractPcmCprTest.repositoryFileName);
 		var repoEObj = repoRes.getContents().get(0);
 		var repoEObjFragment = repoRes.getURIFragment(repoEObj);
@@ -135,48 +135,4 @@ public class PcmCprTriggerTest extends AbstractPcmCprTest {
 		Assertions.assertTrue(EcoreUtil.equals(resRepoEObj, propagatedRepoEObj));
 		Assertions.assertEquals(newEntityName, resRepoEObj.eGet(attr));
 	}
-
-	// TODO If changes should actually be acquired through view in these tests,
-	// enable and fix
-//	@Test
-//	public void testCprTrigger_OnSameResourceInstance_WithView() {
-//		final var newEntityName = "en";
-//		var mods = new HashMap<URI, Consumer<Resource>>();
-//		var repoRes = this.getResourceFromPcmFacade(AbstractPcmCprTest.repositoryFileName);
-//		mods.put(repoRes.getURI(), (r) -> {
-//			var repoEObj = (Repository) repoRes.getContents().get(0);
-//			repoEObj.setEntityName(newEntityName);
-//		});
-//
-//		var propList = this.getPcmVsumFacade().modifyEObjects(getPcmFacade(), mods);
-//
-//		// Ensure that no exceptions occurred during propagation
-//		Assertions.assertEquals(1, propList.size());
-//		var prop = propList.iterator().next();
-//		Assertions.assertNull(prop.getException());
-//		this.logPropagatedChanges(prop);
-//
-//		// Ensure that there is only one original change (the one made above) and is the
-//		// expected one
-//		Assertions.assertEquals(1, prop.getOriginalChangeCount());
-//		var change = prop.getChanges().get(0).getOriginalChange().getEChanges().get(0);
-//		Assertions.assertTrue(ReplaceSingleValuedEAttribute.class.isAssignableFrom(change.getClass()));
-//
-//		// Ensure that the change was actually applied
-//		var propagatedResource = this.getResourceFromPcmFacade(AbstractPcmCprTest.repositoryFileName);
-//		Assertions.assertEquals(1, propagatedResource.getContents().size());
-//		var propagatedRepoEObj = propagatedResource.getContents().get(0);
-//		Assertions.assertEquals(newEntityName, propagatedRepoEObj
-//				.eGet(EntityPackage.Literals.NAMED_ELEMENT__ENTITY_NAME));
-//
-//		// Ensure that the Resource is saved after changes are applied
-//		var res = this.loadNewResourceInstance(propagatedResource);
-//
-//		// Ensure that the loaded Resource has the expected contents
-//		Assertions.assertEquals(1, res.getContents().size());
-//		var resRepoEObj = res.getContents().get(0);
-//		Assertions.assertTrue(EcoreUtil.equals(resRepoEObj, propagatedRepoEObj));
-//		Assertions.assertEquals(newEntityName, resRepoEObj
-//				.eGet(EntityPackage.Literals.NAMED_ELEMENT__ENTITY_NAME));
-//	}
 }

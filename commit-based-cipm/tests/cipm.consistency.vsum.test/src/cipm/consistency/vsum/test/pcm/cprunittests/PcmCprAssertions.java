@@ -1,11 +1,15 @@
 package cipm.consistency.vsum.test.pcm.cprunittests;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 
+import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.junit.jupiter.api.Assertions;
@@ -15,6 +19,67 @@ import cipm.consistency.vsum.test.pcm.userinteraction.CorrespondenceEntry;
 import cipm.consistency.vsum.test.pcm.userinteraction.PcmUserInteractionManager;
 
 public final class PcmCprAssertions {
+	private static final Logger LOGGER = Logger.getLogger(PcmCprAssertions.class);
+
+	/**
+	 * Ensures that the correspondence (obj1, obj2, tag) = (obj2, obj1, tag) exists
+	 * within the correspondence view.
+	 */
+	public static void assertCorrespondenceInCorrespondenceView(PcmVsumFacade pcmVsum, EObject obj1, EObject obj2,
+			String tag) {
+		var corView = pcmVsum.getCorrespondenceView();
+		var obj1Correspondents = corView.getCorrespondingEObjects(obj1, tag);
+		var obj2Correspondents = corView.getCorrespondingEObjects(obj2, tag);
+
+		Assertions.assertTrue(corView.hasCorrespondences(obj1));
+		Assertions.assertTrue(obj2Correspondents.contains(obj1));
+
+		Assertions.assertTrue(corView.hasCorrespondences(obj2));
+		Assertions.assertTrue(obj1Correspondents.contains(obj2));
+	}
+
+	/**
+	 * Ensures that all contents of the given resources are equal (wrt.
+	 * {@link EcoreUtil#equals(List, List)}). Accounts for order differences as
+	 * well.
+	 */
+	public static void assertResourceInstancesEqual(Resource res1, Resource res2) {
+		LOGGER.debug(String.format("Computing content (and content order) equality of: %s vs %s", res1.getURI(),
+				res2.getURI()));
+		var res1Content = new ArrayList<EObject>();
+		res1.getAllContents().forEachRemaining(res1Content::add);
+		var res2Content = new ArrayList<EObject>();
+		res2.getAllContents().forEachRemaining(res2Content::add);
+
+		Assertions.assertEquals(res1Content.size(), res2Content.size());
+		Assertions.assertTrue(EcoreUtil.equals(res1Content, res2Content));
+		LOGGER.debug("Content (and content order) equal");
+	}
+
+	public static void assertAllResourceInstancesEqual(Resource... resources) {
+		for (int i = 0; i < resources.length - 1; i++) {
+			assertResourceInstancesEqual(resources[i], resources[i + 1]);
+		}
+	}
+
+	/**
+	 * Performs the (same) given assertions for all given Resource instances.
+	 */
+	public static void assertForAllResources(Consumer<Resource> assertions, Resource... resources) {
+		for (var r : resources) {
+			assertions.accept(r);
+		}
+	}
+
+	/**
+	 * Shorthand for {@link #assertForAllResources(Consumer, Resource...)} then
+	 * {@link #assertAllResourceInstancesEqual(Resource...)}
+	 */
+	public static void assertForAllEqualResources(Consumer<Resource> assertions, Resource... resources) {
+		assertForAllResources(assertions, resources);
+		assertAllResourceInstancesEqual(resources);
+	}
+
 	/**
 	 * {@code obj.feat =?= expectedValue}
 	 */
