@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.palladiosimulator.pcm.core.entity.EntityPackage;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryFactory;
-import org.palladiosimulator.pcm.repository.RepositoryPackage;
 
 import mir.reactions.dummyPCMJavaCorrespondenceCPRs.DummyPCMJavaCorrespondenceCPRsChangePropagationSpecification;
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
@@ -44,18 +43,14 @@ public class PcmJavaCprCorrespondenceTest extends AbstractPcmJavaCprTest {
 		Assertions.assertNull(prop.getException());
 		this.logPropagatedChanges(prop);
 
-//		Assertions.assertEquals(1, prop.getOriginalChangeCount());
-//		var change = prop.getChanges().get(0).getOriginalChange().getEChanges().get(0);
-//		Assertions.assertTrue(ReplaceSingleValuedEAttribute.class.isAssignableFrom(change.getClass()));
-
 		// Ensure that the change was actually applied to PCM
 		var propagatedResource = this.getResourceFromPcmFacade(repositoryFileName);
 		Assertions.assertEquals(1, propagatedResource.getContents().size());
 		var propagatedRepoEObj = propagatedResource.getContents().get(0);
 		Assertions.assertEquals(1, propagatedRepoEObj.eContents().size());
 		var propagatedRepoInterface = propagatedRepoEObj.eContents().get(0);
-		Assertions.assertEquals(pcmInterfaceName,
-				propagatedRepoInterface.eGet(EntityPackage.Literals.NAMED_ELEMENT__ENTITY_NAME));
+		PcmCprAssertions.assertFeatureValueEquals(propagatedRepoInterface,
+				EntityPackage.Literals.NAMED_ELEMENT__ENTITY_NAME, pcmInterfaceName);
 
 		// Ensure that the Resource is saved after changes are applied
 		var res = this.loadNewResourceInstance(propagatedResource);
@@ -65,8 +60,8 @@ public class PcmJavaCprCorrespondenceTest extends AbstractPcmJavaCprTest {
 		var resRepoEObj = res.getContents().get(0);
 		Assertions.assertEquals(1, resRepoEObj.eContents().size());
 		var resRepoInterface = resRepoEObj.eContents().get(0);
-		Assertions.assertEquals(pcmInterfaceName,
-				resRepoInterface.eGet(EntityPackage.Literals.NAMED_ELEMENT__ENTITY_NAME));
+		PcmCprAssertions.assertFeatureValueEquals(resRepoInterface, EntityPackage.Literals.NAMED_ELEMENT__ENTITY_NAME,
+				pcmInterfaceName);
 		Assertions.assertTrue(EcoreUtil.equals(resRepoEObj, propagatedRepoEObj));
 		Assertions.assertTrue(EcoreUtil.equals(resRepoInterface, propagatedRepoInterface));
 
@@ -74,8 +69,8 @@ public class PcmJavaCprCorrespondenceTest extends AbstractPcmJavaCprTest {
 		this.removePlaceholderInJavaModelResource();
 		Assertions.assertEquals(1, javaResource.getContents().size());
 		var javaInterface = javaResource.getContents().get(0);
-		Assertions.assertEquals(pcmInterfaceName,
-				javaInterface.eGet(EntityPackage.Literals.NAMED_ELEMENT__ENTITY_NAME));
+		PcmCprAssertions.assertFeatureValueEquals(javaInterface, CommonsPackage.Literals.NAMED_ELEMENT__NAME,
+				pcmInterfaceName);
 
 		// Ensure that correspondences are persistent
 		var persistedPcmI = this.getResourceFromPcmFacade(repositoryFileName).getContents().get(0).eContents().get(0);

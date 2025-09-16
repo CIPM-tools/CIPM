@@ -227,15 +227,6 @@ public abstract class AbstractPcmCprTest {
 		return propagation;
 	}
 
-	/**
-	 * PcmVsumFacade saves the propagated resource internally, so no need to save
-	 * model resources post propagation
-	 */
-	public void testPcmChangePropagation(Resource pcmResourceToPropagate, Collection<EChange> pcmChangesToPropagate) {
-		var props = propagatePcmChanges(pcmResourceToPropagate, pcmChangesToPropagate);
-		this.logPropagatedChanges(props);
-	}
-
 	protected void logPropagatedChanges(Propagation props) {
 		if (props != null && props.getChanges() != null) {
 			for (var originalChange : props.getChanges()) {

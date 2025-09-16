@@ -231,7 +231,7 @@ public final class PcmUserInteractionManager {
 				.collect(Collectors.toCollection(Set::of));
 	}
 
-	public static Set<FeatureEntry> getAllCompleteFeatures() {
+	public static Set<FeatureEntry> getAllAssignedFeatures() {
 		return desiredFeatureValues.stream().filter((v) -> v.hasAssignedValue())
 				.collect(Collectors.toCollection(Set::of));
 	}
