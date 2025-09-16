@@ -6,6 +6,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
 public abstract class AbstractUserInteraction {
+	// TODO Add logging to all user interactions, so that user input is visible
+
 	public abstract void performManualUserInteraction();
 
 	public abstract void getDesiredFeatureChangedValue(FeatureEntry featEntry);

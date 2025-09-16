@@ -19,6 +19,9 @@ import cipm.consistency.vsum.test.pcm.userinteraction.CorrespondenceEntry;
 import cipm.consistency.vsum.test.pcm.userinteraction.PcmUserInteractionManager;
 
 public final class PcmCprAssertions {
+
+	// TODO Add logging to all methods, so that assertion flow is clear
+
 	private static final Logger LOGGER = Logger.getLogger(PcmCprAssertions.class);
 
 	/**
