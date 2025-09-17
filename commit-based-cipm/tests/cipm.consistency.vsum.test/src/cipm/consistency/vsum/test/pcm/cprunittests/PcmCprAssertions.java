@@ -101,25 +101,28 @@ public final class PcmCprAssertions {
 	/**
 	 * <ul>
 	 * <li>
-	 * {@code PcmUserInteractionManager.(triggeringEObj, feat) =?= expectedValue}
+	 * {@code PcmUserInteractionManager.(triggeringPCMElement, affectedJavaElementFeat) =?= expectedValue}
 	 * <li>
-	 * {@code PcmUserInteractionManager.(triggeringEObj, feat) =?= correspondent.feat}
+	 * {@code PcmUserInteractionManager.(triggeringPCMElement, affectedJavaElementFeat) =?= affectedJavaElement.affectedJavaElementFeat}
 	 * </ul>
 	 */
-	public static void assertFeatureValueSetViaPcmManager(EObject triggeringEObj, EObject correspondent,
-			EStructuralFeature feat, Object expectedValue) {
-		Assertions.assertTrue(PcmUserInteractionManager.hasDesiredFeatureValue(triggeringEObj, feat));
-		assertFeatureValueInPcmManagerEquals(triggeringEObj, feat, expectedValue);
-		assertActualFeatureValueAndPcmManagerConsistent(triggeringEObj, correspondent, feat);
+	public static void assertFeatureValueSetViaPcmManager(EObject triggeringPCMElement, EObject affectedJavaElement,
+			EStructuralFeature affectedJavaElementFeat, Object expectedValue) {
+		Assertions.assertTrue(
+				PcmUserInteractionManager.hasDesiredFeatureValue(triggeringPCMElement, affectedJavaElementFeat));
+		assertFeatureValueInPcmManagerEquals(triggeringPCMElement, affectedJavaElementFeat, expectedValue);
+		assertActualFeatureValueAndPcmManagerConsistent(triggeringPCMElement, affectedJavaElement,
+				affectedJavaElementFeat);
 	}
 
 	/**
-	 * {@code PcmUserInteractionManager.(triggeringEObj, feat) =?= expectedValue}
+	 * {@code PcmUserInteractionManager.(triggeringPCMElement, affectedJavaElementFeat) =?= expectedValue}
 	 */
-	public static void assertFeatureValueInPcmManagerEquals(EObject triggeringEObj, EStructuralFeature feat,
-			Object expectedValue) {
-		var pcmManagerFeatVal = PcmUserInteractionManager.getDesiredFeatureValue(triggeringEObj, feat, false);
-		if (!feat.isMany()) {
+	public static void assertFeatureValueInPcmManagerEquals(EObject triggeringPCMElement,
+			EStructuralFeature affectedJavaElementFeat, Object expectedValue) {
+		var pcmManagerFeatVal = PcmUserInteractionManager.getDesiredFeatureValue(triggeringPCMElement,
+				affectedJavaElementFeat, false);
+		if (!affectedJavaElementFeat.isMany()) {
 			Assertions.assertEquals(expectedValue, pcmManagerFeatVal);
 		} else {
 			var expectedFeatVal = (List<?>) expectedValue;
@@ -130,15 +133,16 @@ public final class PcmCprAssertions {
 	}
 
 	/**
-	 * {@code PcmUserInteractionManager.(triggeringEObj, feat) =?= correspondent.feat}
+	 * {@code PcmUserInteractionManager.(triggeringPCMElement, affectedJavaElementFeat) =?= affectedJavaElement.affectedJavaElementFeat}
 	 */
-	public static void assertActualFeatureValueAndPcmManagerConsistent(EObject triggeringEObj, EObject correspondent,
-			EStructuralFeature feat) {
-		var pcmManagerFeatVal = PcmUserInteractionManager.getDesiredFeatureValue(triggeringEObj, feat, false);
-		if (!feat.isMany()) {
-			assertFeatureValueEquals(correspondent, feat, pcmManagerFeatVal);
+	public static void assertActualFeatureValueAndPcmManagerConsistent(EObject triggeringPCMElement,
+			EObject affectedJavaElement, EStructuralFeature affectedJavaElementFeat) {
+		var pcmManagerFeatVal = PcmUserInteractionManager.getDesiredFeatureValue(triggeringPCMElement,
+				affectedJavaElementFeat, false);
+		if (!affectedJavaElementFeat.isMany()) {
+			assertFeatureValueEquals(affectedJavaElement, affectedJavaElementFeat, pcmManagerFeatVal);
 		} else {
-			var correspondentFeatVal = (List<?>) correspondent.eGet(feat);
+			var correspondentFeatVal = (List<?>) affectedJavaElement.eGet(affectedJavaElementFeat);
 			var castedPcmManagerFeatVal = (List<?>) pcmManagerFeatVal;
 			Assertions.assertEquals(castedPcmManagerFeatVal.size(), correspondentFeatVal.size());
 			Assertions.assertTrue(castedPcmManagerFeatVal.containsAll(correspondentFeatVal));
