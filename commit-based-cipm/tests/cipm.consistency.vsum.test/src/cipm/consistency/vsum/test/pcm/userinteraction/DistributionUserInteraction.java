@@ -8,16 +8,17 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.palladiosimulator.pcm.core.entity.Entity;
 
 import tools.vitruv.change.interaction.UserInteractionFactory;
 
 public class DistributionUserInteraction extends AbstractUserInteraction {
 	private final static String correspondenceTag = "";
-	private final EObject deletedElement;
+	private final Entity deletedElement;
 	private final List<EObject> correspondingContentsToDistribute;
 	private final List<EObject> possibleDistributionTargets;
 
-	public DistributionUserInteraction(EObject deletedElement, List<EObject> correspondingContentsToDistribute,
+	public DistributionUserInteraction(Entity deletedElement, List<EObject> correspondingContentsToDistribute,
 			List<EObject> possibleDistributionTargets) {
 		this.deletedElement = deletedElement;
 		this.correspondingContentsToDistribute = correspondingContentsToDistribute;
@@ -48,11 +49,6 @@ public class DistributionUserInteraction extends AbstractUserInteraction {
 	}
 
 	@Override
-	public boolean hasDesiredFeature(EObject obj, EStructuralFeature feat) {
-		return false;
-	}
-
-	@Override
 	public Set<FeatureEntry> getDesiredFeatures() {
 		return Set.of();
 	}
@@ -77,7 +73,7 @@ public class DistributionUserInteraction extends AbstractUserInteraction {
 				&& correspondenceTag.equals(DistributionUserInteraction.correspondenceTag);
 	}
 
-	public EObject getDeletedElement() {
+	public Entity getDeletedElement() {
 		return deletedElement;
 	}
 
@@ -115,5 +111,11 @@ public class DistributionUserInteraction extends AbstractUserInteraction {
 		for (var c : this.correspondingContentsToDistribute) {
 			resolveForCorrespondence(c, correspondenceTag);
 		}
+	}
+
+	@Override
+	public boolean hasDesiredFeature(EObject triggeringPCMElement, EObject affectedJavaElement,
+			EStructuralFeature feat) {
+		return false;
 	}
 }

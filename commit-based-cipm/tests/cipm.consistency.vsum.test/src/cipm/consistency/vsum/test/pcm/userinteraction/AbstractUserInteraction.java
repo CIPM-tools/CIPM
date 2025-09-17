@@ -14,7 +14,12 @@ public abstract class AbstractUserInteraction {
 
 	public abstract void getDesiredCorrespondenceChange(CorrespondenceEntry corEntry);
 
-	public abstract boolean hasDesiredFeature(EObject obj, EStructuralFeature feat);
+	public boolean hasDesiredFeature(EObject triggeringPCMElement, EStructuralFeature feat) {
+		return this.hasDesiredFeature(triggeringPCMElement, null, feat);
+	}
+
+	public abstract boolean hasDesiredFeature(EObject triggeringPCMElement, EObject affectedJavaElement,
+			EStructuralFeature feat);
 
 	public abstract boolean hasDesiredCorrespondence(EObject knownSide, String correspondenceTag);
 
@@ -22,16 +27,26 @@ public abstract class AbstractUserInteraction {
 
 	public abstract Set<CorrespondenceEntry> getDesiredCorrespondences();
 
-	protected boolean isDesiredFeatureValuePresent(EObject obj, EStructuralFeature feat) {
-		return PcmUserInteractionManager.hasDesiredFeatureValue(obj, feat);
+	protected boolean isDesiredFeatureValuePresent(EObject triggeringPCMElement, EStructuralFeature feat) {
+		return isDesiredFeatureValuePresent(triggeringPCMElement, null, feat);
+	}
+
+	protected boolean isDesiredFeatureValuePresent(EObject triggeringPCMElement, EObject affectedJavaElement,
+			EStructuralFeature feat) {
+		return PcmUserInteractionManager.hasDesiredFeatureValue(triggeringPCMElement, affectedJavaElement, feat);
 	}
 
 	protected void reportDesiredFeatureValue(FeatureEntry featEntry) {
 		PcmUserInteractionManager.setDesiredFeatureValue(this, featEntry);
 	}
 
-	protected Object retrieveDesiredFeatureValueIfPresent(EObject obj, EStructuralFeature feat) {
-		return PcmUserInteractionManager.getDesiredFeatureValue(obj, feat, false);
+	protected Object retrieveDesiredFeatureValueIfPresent(EObject triggeringPCMElement, EStructuralFeature feat) {
+		return retrieveDesiredFeatureValueIfPresent(triggeringPCMElement, null, feat);
+	}
+
+	protected Object retrieveDesiredFeatureValueIfPresent(EObject triggeringPCMElement, EObject affectedJavaElement,
+			EStructuralFeature feat) {
+		return PcmUserInteractionManager.getDesiredFeatureValue(triggeringPCMElement, affectedJavaElement, feat, false);
 	}
 
 	protected boolean isDesiredCorrespondencePresent(EObject knownSide, String correspondenceTag) {
@@ -54,8 +69,13 @@ public abstract class AbstractUserInteraction {
 
 	public abstract void resolveAll();
 
-	public Object resolveForFeature(EObject obj, EStructuralFeature feat) {
-		return PcmUserInteractionManager.getDesiredFeatureValue(obj, feat, true);
+	public Object resolveForFeature(EObject triggeringPCMElement, EStructuralFeature feat) {
+		return resolveForFeature(triggeringPCMElement, null, feat);
+	}
+
+	public Object resolveForFeature(EObject triggeringPCMElement, EObject affectedJavaElement,
+			EStructuralFeature feat) {
+		return PcmUserInteractionManager.getDesiredFeatureValue(triggeringPCMElement, affectedJavaElement, feat, true);
 	}
 
 	public Object resolveForCorrespondence(EObject knownSide, String correspondenceTag) {

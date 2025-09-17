@@ -82,13 +82,6 @@ routine removeUserInteractionTestComponent(pcm::BasicComponent cmp, pcm::Reposit
 				addCorrespondenceBetween(cor.key, pcmElem, ui.correspondenceTag)
 			}
 		}
-
-//		for (javaObj : javaCorrespondents) {
-//			val cor = PcmUserInteractionManager.getDesiredCorrespondence(javaObj, "", true)
-//			for (pcmObj : cor.getCorrespondentsFor(javaObj)) {
-//				addCorrespondenceBetween(javaObj, pcmObj, "")
-//			}
-//		}
 	}
 }
 

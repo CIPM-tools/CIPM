@@ -69,19 +69,6 @@ public final class PcmUserInteractionManager {
 		wrappers.remove(userInteraction);
 	}
 
-	public static Object getDesiredFeatureValue(EObject obj, EStructuralFeature feat, boolean computeIfAbsent) {
-		var entry = desiredFeatureValues.getDesiredFeatureValue(obj, feat);
-		if (entry == null) {
-			entry = new FeatureEntry(obj, feat);
-			desiredFeatureValues.addDesiredFeature(entry);
-		}
-
-		if (!entry.hasAssignedValue() && computeIfAbsent) {
-			computeAbsentFeatureValue(entry);
-		}
-		return entry.hasAssignedValue() ? entry.getValue() : null;
-	}
-
 	private static void computeAbsentFeatureValue(FeatureEntry entry) {
 		var it = new ArrayList<>(wrappers).iterator();
 
@@ -98,12 +85,42 @@ public final class PcmUserInteractionManager {
 		}
 	}
 
-	public static boolean hasDesiredFeatureValue(EObject obj, EStructuralFeature feat) {
-		return desiredFeatureValues.hasDesiredFeatureValue(obj, feat);
+	public static Object getDesiredFeatureValue(EObject triggeringPCMElement, EObject affectedJavaElement,
+			EStructuralFeature feat, boolean computeIfAbsent) {
+		var entry = desiredFeatureValues.getDesiredFeatureValue(triggeringPCMElement, affectedJavaElement, feat);
+		if (entry == null) {
+			entry = new FeatureEntry(triggeringPCMElement, affectedJavaElement, feat);
+			desiredFeatureValues.addDesiredFeature(entry);
+		}
+
+		if (!entry.hasAssignedValue() && computeIfAbsent) {
+			computeAbsentFeatureValue(entry);
+		}
+		return entry.hasAssignedValue() ? entry.getValue() : null;
 	}
 
-	public static Object removeDesiredFeatureValue(EObject obj, EStructuralFeature feat, Object value) {
-		return desiredFeatureValues.removeDesiredFeatureValue(obj, feat, value);
+	public static Object getDesiredFeatureValue(EObject triggeringPCMElement, EStructuralFeature feat,
+			boolean computeIfAbsent) {
+		return getDesiredFeatureValue(triggeringPCMElement, null, feat, computeIfAbsent);
+	}
+
+	public static boolean hasDesiredFeatureValue(EObject triggeringPCMElement, EStructuralFeature feat) {
+		return desiredFeatureValues.hasDesiredFeatureValue(triggeringPCMElement, feat);
+	}
+
+	public static boolean hasDesiredFeatureValue(EObject triggeringPCMElement, EObject affectedJavaElement,
+			EStructuralFeature feat) {
+		return desiredFeatureValues.hasDesiredFeatureValue(triggeringPCMElement, affectedJavaElement, feat);
+	}
+
+	public static Object removeDesiredFeatureValue(EObject triggeringPCMElement, EStructuralFeature feat,
+			Object value) {
+		return desiredFeatureValues.removeDesiredFeatureValue(triggeringPCMElement, feat, value);
+	}
+
+	public static Object removeDesiredFeatureValue(EObject triggeringPCMElement, EObject affectedJavaElement,
+			EStructuralFeature feat, Object value) {
+		return desiredFeatureValues.removeDesiredFeatureValue(triggeringPCMElement, affectedJavaElement, feat, value);
 	}
 
 	public static void setDesiredFeatureValue(AbstractUserInteraction userInteraction, FeatureEntry featEntry) {

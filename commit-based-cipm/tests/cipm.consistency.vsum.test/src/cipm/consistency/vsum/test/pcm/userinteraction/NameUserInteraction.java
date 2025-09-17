@@ -12,10 +12,10 @@ import tools.vitruv.change.interaction.UserInteractionFactory;
 public class NameUserInteraction extends AbstractUserInteraction {
 	private EStructuralFeature nameField;
 	private NamedElement toBeNamed;
-	private EObject triggeringElement;
+	private EObject triggeringPCMElement;
 
-	public NameUserInteraction(EObject triggeringElement, NamedElement toBeNamed) {
-		this.triggeringElement = triggeringElement;
+	public NameUserInteraction(EObject triggeringPCMElement, NamedElement toBeNamed) {
+		this.triggeringPCMElement = triggeringPCMElement;
 		this.toBeNamed = toBeNamed;
 		this.nameField = CommonsPackage.Literals.NAMED_ELEMENT__NAME;
 	}
@@ -27,7 +27,7 @@ public class NameUserInteraction extends AbstractUserInteraction {
 				.startInteraction();
 
 		if (this.checkNameValue(name)) {
-			var entry = new FeatureEntry(this.triggeringElement, toBeNamed, nameField, name);
+			var entry = new FeatureEntry(this.triggeringPCMElement, toBeNamed, nameField, name);
 			this.reportDesiredFeatureValue(entry);
 		}
 	}
@@ -44,13 +44,8 @@ public class NameUserInteraction extends AbstractUserInteraction {
 	}
 
 	@Override
-	public boolean hasDesiredFeature(EObject obj, EStructuralFeature feat) {
-		return this.nameField == feat;
-	}
-
-	@Override
 	public Set<FeatureEntry> getDesiredFeatures() {
-		return Set.of(new FeatureEntry(this.triggeringElement, toBeNamed, this.nameField));
+		return Set.of(new FeatureEntry(this.triggeringPCMElement, toBeNamed, this.nameField));
 	}
 
 	@Override
@@ -68,7 +63,7 @@ public class NameUserInteraction extends AbstractUserInteraction {
 	}
 
 	public EObject getTriggeringElement() {
-		return this.triggeringElement;
+		return this.triggeringPCMElement;
 	}
 
 	public NamedElement getElementToBeNamed() {
@@ -76,16 +71,23 @@ public class NameUserInteraction extends AbstractUserInteraction {
 	}
 
 	public String getName() {
-		return isResolved() ? (String) retrieveDesiredFeatureValueIfPresent(triggeringElement, nameField) : null;
+		return isResolved() ? (String) retrieveDesiredFeatureValueIfPresent(triggeringPCMElement, nameField) : null;
 	}
 
 	@Override
 	public boolean isResolved() {
-		return this.isDesiredFeatureValuePresent(triggeringElement, nameField);
+		return this.isDesiredFeatureValuePresent(triggeringPCMElement, nameField);
 	}
 
 	@Override
 	public void resolveAll() {
-		this.resolveForFeature(triggeringElement, nameField);
+		this.resolveForFeature(triggeringPCMElement, nameField);
+	}
+
+	@Override
+	public boolean hasDesiredFeature(EObject triggeringPCMElement, EObject affectedJavaElement,
+			EStructuralFeature feat) {
+		return this.nameField == feat && this.triggeringPCMElement == triggeringPCMElement
+				&& (affectedJavaElement == null || this.toBeNamed == affectedJavaElement);
 	}
 }

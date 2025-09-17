@@ -2,13 +2,13 @@ package cipm.consistency.vsum.test.pcm.userinteraction;
 
 import java.util.List;
 
-import org.eclipse.emf.ecore.EObject;
+import org.palladiosimulator.pcm.core.entity.Entity;
 
 public class DummyDistributionConflictResolutionStrategy extends ConflictResolutionStrategy {
-	private EObject deletedElement;
+	private Entity deletedElement;
 	private List<CorrespondenceEntry> correspondences;
 
-	public DummyDistributionConflictResolutionStrategy(EObject deletedElement,
+	public DummyDistributionConflictResolutionStrategy(Entity deletedElement,
 			List<CorrespondenceEntry> correspondences) {
 		this.deletedElement = deletedElement;
 		this.correspondences = correspondences;
@@ -16,12 +16,8 @@ public class DummyDistributionConflictResolutionStrategy extends ConflictResolut
 
 	@Override
 	public void applyFor(AbstractUserInteraction userInteraction) {
-		if (userInteraction instanceof DistributionUserInteraction
-		// FIXME Find a way to pinpoint the related DistributionUserInteraction
-		// FIXME EcoreUtil is too strict here, since some derivable attributes change
-//				&& EcoreUtil
-//				.equals(((DistributionUserInteraction) userInteraction).getDeletedElement(), this.deletedElement)
-		) {
+		if (userInteraction instanceof DistributionUserInteraction && this.deletedElement.getId()
+				.equals(((DistributionUserInteraction) userInteraction).getDeletedElement().getId())) {
 			for (var cor : this.correspondences) {
 				PcmUserInteractionManager.setDesiredCorrespondence(null, cor);
 			}

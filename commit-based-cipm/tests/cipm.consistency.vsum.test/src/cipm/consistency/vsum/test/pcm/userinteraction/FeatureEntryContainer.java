@@ -20,15 +20,20 @@ public class FeatureEntryContainer {
 	}
 
 	public void addDesiredFeature(EObject triggeringPCMElement, EObject affectedJavaElement, EStructuralFeature feat) {
-		desiredFeatureValues.add(new FeatureEntry(triggeringPCMElement, affectedJavaElement, feat));
+		addDesiredFeature(new FeatureEntry(triggeringPCMElement, affectedJavaElement, feat));
 	}
 
 	public FeatureEntry getDesiredFeatureValue(EObject triggeringPCMElement, EStructuralFeature feat) {
+		return this.getDesiredFeatureValue(triggeringPCMElement, null, feat);
+	}
+
+	public FeatureEntry getDesiredFeatureValue(EObject triggeringPCMElement, EObject affectedJavaElement,
+			EStructuralFeature feat) {
 		FeatureEntry entry = null;
-		var valOpt = getAssignedDesiredFeatureEntry(triggeringPCMElement, feat);
+		var valOpt = getAssignedDesiredFeatureEntry(triggeringPCMElement, affectedJavaElement, feat);
 		if (valOpt.isPresent()) {
 			entry = valOpt.get();
-		} else if ((valOpt = getDesiredFeatureEntry(triggeringPCMElement, feat)).isPresent()) {
+		} else if ((valOpt = getDesiredFeatureEntry(triggeringPCMElement, affectedJavaElement, feat)).isPresent()) {
 			entry = valOpt.get();
 		}
 
@@ -39,8 +44,18 @@ public class FeatureEntryContainer {
 		return getAssignedDesiredFeatureEntry(triggeringPCMElement, feat).isPresent();
 	}
 
+	public boolean hasDesiredFeatureValue(EObject triggeringPCMElement, EObject affectedJavaElement,
+			EStructuralFeature feat) {
+		return getAssignedDesiredFeatureEntry(triggeringPCMElement, affectedJavaElement, feat).isPresent();
+	}
+
 	public Object removeDesiredFeatureValue(EObject triggeringPCMElement, EStructuralFeature feat, Object value) {
-		var valOpt = getAssignedDesiredFeatureEntry(triggeringPCMElement, feat);
+		return removeDesiredFeatureValue(triggeringPCMElement, null, feat, value);
+	}
+
+	public Object removeDesiredFeatureValue(EObject triggeringPCMElement, EObject affectedJavaElement,
+			EStructuralFeature feat, Object value) {
+		var valOpt = getAssignedDesiredFeatureEntry(triggeringPCMElement, affectedJavaElement, feat);
 		if (valOpt.isEmpty())
 			return null;
 
@@ -68,24 +83,25 @@ public class FeatureEntryContainer {
 	}
 
 	public Optional<FeatureEntry> getDesiredFeatureEntry(EObject triggeringPCMElement, EStructuralFeature feat) {
-		return desiredFeatureValues.stream().filter((e) -> e.isFeatureEntryFor(triggeringPCMElement, feat)).findFirst();
+		return getDesiredFeatureEntry(triggeringPCMElement, null, feat);
 	}
 
 	public Optional<FeatureEntry> getAssignedDesiredFeatureEntry(EObject triggeringPCMElement,
 			EStructuralFeature feat) {
-		return desiredFeatureValues.stream()
-				.filter((e) -> e.isFeatureEntryFor(triggeringPCMElement, feat) && e.hasAssignedValue()).findFirst();
+		return getAssignedDesiredFeatureEntry(triggeringPCMElement, null, feat);
 	}
 
 	public Optional<FeatureEntry> getDesiredFeatureEntry(EObject triggeringPCMElement, EObject affectedJavaElement,
 			EStructuralFeature feat) {
-		return desiredFeatureValues.stream().filter((e) -> e.isFeatureEntryFor(triggeringPCMElement, feat)).findFirst();
+		return desiredFeatureValues.stream()
+				.filter((e) -> e.isFeatureEntryFor(triggeringPCMElement, affectedJavaElement, feat)).findFirst();
 	}
 
 	public Optional<FeatureEntry> getAssignedDesiredFeatureEntry(EObject triggeringPCMElement,
 			EObject affectedJavaElement, EStructuralFeature feat) {
-		return desiredFeatureValues.stream()
-				.filter((e) -> e.isFeatureEntryFor(triggeringPCMElement, feat) && e.hasAssignedValue()).findFirst();
+		return desiredFeatureValues.stream().filter(
+				(e) -> e.isFeatureEntryFor(triggeringPCMElement, affectedJavaElement, feat) && e.hasAssignedValue())
+				.findFirst();
 	}
 
 	public Set<FeatureEntry> getAllAssignedFeatures() {

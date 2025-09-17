@@ -178,8 +178,12 @@ public class FeatureEntry {
 
 	public boolean isFeatureEntryFor(EObject triggeringPCMElement, EObject affectedJavaElement,
 			EStructuralFeature feat) {
-		return isFeatureEntryFor(triggeringPCMElement, feat)
-				&& this.eObjectEquals(this.affectedJavaElement, affectedJavaElement);
+		return isFeatureEntryFor(triggeringPCMElement, feat) && this.affectedJavaElementCompatible(affectedJavaElement);
+	}
+
+	public boolean affectedJavaElementCompatible(EObject affectedJavaElement) {
+		return !(this.affectedJavaElement != null && affectedJavaElement != null
+				&& !eObjectEquals(this.affectedJavaElement, affectedJavaElement));
 	}
 
 	public void setValuesFrom(FeatureEntry entry) {
@@ -210,7 +214,6 @@ public class FeatureEntry {
 				&& this.triggeringPCMElementEquals(castedO.triggeringPCMElement)
 				// Ensure that affectedJavaElements are not different, if both of them are not
 				// null
-				&& !(this.affectedJavaElement != null && castedO.affectedJavaElement != null
-						&& !eObjectEquals(affectedJavaElement, castedO.affectedJavaElement));
+				&& this.affectedJavaElementCompatible(castedO.affectedJavaElement);
 	}
 }
