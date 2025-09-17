@@ -75,7 +75,7 @@ public class PcmJavaCprInterfaceNameUserInteractionTest extends AbstractPcmJavaC
 			PcmCprAssertions.assertFeatureValueInPcmManagerConsistent(createdInterface[0], javaInterface,
 					CommonsPackage.Literals.NAMED_ELEMENT__NAME);
 		} else {
-			PcmCprAssertions.assertFeatureValueInPcmManagerEquals(createdInterface[0],
+			PcmCprAssertions.assertFeatureValueSetViaPcmManager(createdInterface[0], javaInterface,
 					CommonsPackage.Literals.NAMED_ELEMENT__NAME, expectedJavaInterfaceName);
 		}
 
