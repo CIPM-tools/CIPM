@@ -21,15 +21,6 @@ public class FeatureEntry {
 	private final EStructuralFeature affectedJavaElementFeature;
 	private Object affectedJavaElementFeatureValue;
 
-	public FeatureEntry(EObject triggeringPCMElement, EStructuralFeature affectedJavaElementFeature) {
-		this(triggeringPCMElement, null, affectedJavaElementFeature, unsetKey);
-	}
-
-	public FeatureEntry(EObject triggeringPCMElement, EStructuralFeature affectedJavaElementFeature,
-			Object affectedJavaElementFeatureValue) {
-		this(triggeringPCMElement, null, affectedJavaElementFeature, affectedJavaElementFeatureValue);
-	}
-
 	public FeatureEntry(EObject triggeringPCMElement, EObject affectedJavaElement,
 			EStructuralFeature affectedJavaElementFeature) {
 		this(triggeringPCMElement, affectedJavaElement, affectedJavaElementFeature, unsetKey);
