@@ -76,9 +76,9 @@ public class PcmJavaCprModuleQualifiedNameUserInteractionTest extends AbstractPc
 		var javaMod = javaResource.getContents().get(0);
 
 		if (expectedModuleName == null && expectedModuleNss == null) {
-			PcmCprAssertions.assertActualFeatureValueAndPcmManagerConsistent(createdCmp[0], javaMod,
+			PcmCprAssertions.assertFeatureValueInPcmManagerConsistent(createdCmp[0], javaMod,
 					CommonsPackage.Literals.NAMED_ELEMENT__NAME);
-			PcmCprAssertions.assertActualFeatureValueAndPcmManagerConsistent(createdCmp[0], javaMod,
+			PcmCprAssertions.assertFeatureValueInPcmManagerConsistent(createdCmp[0], javaMod,
 					CommonsPackage.Literals.NAMESPACE_AWARE_ELEMENT__NAMESPACES);
 		} else {
 			PcmCprAssertions.assertFeatureValueSetViaPcmManager(createdCmp[0], javaMod,
