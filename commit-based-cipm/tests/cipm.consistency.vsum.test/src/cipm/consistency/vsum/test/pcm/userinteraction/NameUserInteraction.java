@@ -27,7 +27,7 @@ public class NameUserInteraction extends AbstractUserInteraction {
 				.startInteraction();
 
 		if (this.checkNameValue(name)) {
-			var entry = new FeatureEntry(this.triggeringElement, nameField, name);
+			var entry = new FeatureEntry(this.triggeringElement, toBeNamed, nameField, name);
 			this.reportDesiredFeatureValue(entry);
 		}
 	}
@@ -50,7 +50,7 @@ public class NameUserInteraction extends AbstractUserInteraction {
 
 	@Override
 	public Set<FeatureEntry> getDesiredFeatures() {
-		return Set.of(new FeatureEntry(this.triggeringElement, this.nameField));
+		return Set.of(new FeatureEntry(this.triggeringElement, toBeNamed, this.nameField));
 	}
 
 	@Override

@@ -188,7 +188,7 @@ public final class PcmCprAssertions {
 		for (var corEntry : cors) {
 			var knownSide = corEntry.getKnownElement();
 			var correspondents = corEntry.getCorrespondentsForKnownElement();
-			var tag = corEntry.getTag();
+			var tag = corEntry.getCorrespondenceTag();
 
 			var knownSidePcmManagerCorEntry = PcmUserInteractionManager.getDesiredCorrespondence(knownSide, tag, false);
 			var knownSideCorViewCors = postPropCorView.getCorrespondingEObjects(knownSide);

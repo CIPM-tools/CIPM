@@ -15,36 +15,36 @@ import com.google.common.base.Preconditions;
 public class CorrespondenceEntry {
 	private final EObject knownElement;
 	private final Set<EObject> correspondents;
-	private String tag;
+	private String correspondenceTag;
 
-	public CorrespondenceEntry(EObject knownSide, String tag) {
-		this(knownSide, Set.of(), tag);
+	public CorrespondenceEntry(EObject knownSide, String correspondenceTag) {
+		this(knownSide, Set.of(), correspondenceTag);
 	}
 
-	public CorrespondenceEntry(EObject knownSide, EObject otherSide, String tag) {
-		this(knownSide, Set.of(otherSide), tag);
+	public CorrespondenceEntry(EObject knownSide, EObject otherSide, String correspondenceTag) {
+		this(knownSide, Set.of(otherSide), correspondenceTag);
 	}
 
-	public CorrespondenceEntry(EObject knownElement, Set<EObject> correspondents, String tag) {
+	public CorrespondenceEntry(EObject knownElement, Set<EObject> correspondents, String correspondenceTag) {
 		Preconditions.checkArgument(knownElement != null, "knownElement cannot be null");
 		Preconditions.checkArgument(correspondents != null, "correspondents cannot be null");
-		Preconditions.checkArgument(tag != null, "tag cannot be null");
+		Preconditions.checkArgument(correspondenceTag != null, "tag cannot be null");
 
 		// Correspondences are supposed to be symmetric and handled as such
 		// Therefore, knownElement too belongs in correspondents
 		this.correspondents = new HashSet<>(correspondents);
 		this.knownElement = knownElement;
 
-		this.tag = tag;
+		this.correspondenceTag = correspondenceTag;
 	}
 
-	public String getTag() {
-		return tag;
+	public String getCorrespondenceTag() {
+		return correspondenceTag;
 	}
 
-	public void setTag(String tag) {
+	public void setCorrespondenceTag(String tag) {
 		Preconditions.checkArgument(tag != null, "tag cannot be null");
-		this.tag = tag;
+		this.correspondenceTag = tag;
 	}
 
 	public EObject getKnownElement() {
@@ -77,7 +77,7 @@ public class CorrespondenceEntry {
 	}
 
 	public List<EObject> addCorrespondences(CorrespondenceEntry entry) {
-		if (!isTagEqual(entry.tag)) {
+		if (!isCorrespondenceTagEqual(entry.correspondenceTag)) {
 			return null;
 		}
 
@@ -143,7 +143,7 @@ public class CorrespondenceEntry {
 	}
 
 	public boolean hasAnyCompleteCorrespondences(String tag) {
-		return isTagEqual(tag) && hasAnyCompleteCorrespondences();
+		return isCorrespondenceTagEqual(tag) && hasAnyCompleteCorrespondences();
 	}
 
 	public boolean hasAnyCompleteCorrespondencesWith(EObject correspondent) {
@@ -151,12 +151,12 @@ public class CorrespondenceEntry {
 				|| (eObjectEquals(knownElement, correspondent) && hasAnyCompleteCorrespondences());
 	}
 
-	public boolean hasAnyCompleteCorrespondencesWith(EObject correspondent, String tag) {
-		return isTagEqual(tag) && hasAnyCompleteCorrespondencesWith(correspondent);
+	public boolean hasAnyCompleteCorrespondencesWith(EObject correspondent, String correspondenceTag) {
+		return isCorrespondenceTagEqual(correspondenceTag) && hasAnyCompleteCorrespondencesWith(correspondent);
 	}
 
-	public boolean isTagEqual(String tag) {
-		return this.tag.equals(tag);
+	public boolean isCorrespondenceTagEqual(String correspondenceTag) {
+		return this.correspondenceTag.equals(correspondenceTag);
 	}
 
 	@Override
@@ -168,6 +168,7 @@ public class CorrespondenceEntry {
 
 		return eObjectEquals(this.knownElement, castedO.knownElement)
 				&& this.correspondents.size() == castedO.correspondents.size()
-				&& this.hasCorrespondents(castedO.correspondents) && this.tag.equals(castedO.tag);
+				&& this.hasCorrespondents(castedO.correspondents)
+				&& this.correspondenceTag.equals(castedO.correspondenceTag);
 	}
 }

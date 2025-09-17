@@ -32,7 +32,7 @@ public class NamespaceUserInteraction extends AbstractUserInteraction {
 			namespaces.add(ns);
 		}
 
-		var entry = new FeatureEntry(this.triggeringElement, namespaceField);
+		var entry = new FeatureEntry(this.triggeringElement, toBeAssignedNamespace, namespaceField);
 		entry.addValues(namespaces);
 		this.reportDesiredFeatureValue(entry);
 	}
@@ -60,7 +60,7 @@ public class NamespaceUserInteraction extends AbstractUserInteraction {
 
 	@Override
 	public Set<FeatureEntry> getDesiredFeatures() {
-		return Set.of(new FeatureEntry(triggeringElement, namespaceField));
+		return Set.of(new FeatureEntry(triggeringElement, toBeAssignedNamespace, namespaceField));
 	}
 
 	@Override
