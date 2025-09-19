@@ -12,6 +12,10 @@ import tools.vitruv.change.atomic.eobject.EObjectExistenceEChange;
 import tools.vitruv.change.atomic.feature.FeatureEChange;
 import tools.vitruv.change.atomic.feature.FeatureFactory;
 import tools.vitruv.change.atomic.feature.UnsetFeature;
+import tools.vitruv.change.atomic.feature.UpdateMultiValuedFeatureEChange;
+import tools.vitruv.change.atomic.feature.list.InsertInListEChange;
+import tools.vitruv.change.atomic.feature.list.RemoveFromListEChange;
+import tools.vitruv.change.atomic.feature.single.ReplaceSingleValuedFeatureEChange;
 import tools.vitruv.change.atomic.root.InsertRootEObject;
 import tools.vitruv.change.atomic.root.RemoveRootEObject;
 import tools.vitruv.change.atomic.root.RootEChange;
@@ -43,6 +47,11 @@ public class RemoveDeletedElementChangesRule extends ChangeSequenceProcessingRul
 		 * cannot operate as expected without RootEChanges.
 		 */
 		removeRedundantRootChanges(newChangeList);
+		/*
+		 * Handle UpdateMultiValuedFeatureEChange here, as unsetting them is not
+		 * possible and they have to remain, if their counterpart is missing.
+		 */
+		removeRedundantFeatValListChanges(newChangeList);
 		removeRedundantChanges(newChangeList, changeSequence);
 
 		return newChangeList;
@@ -60,8 +69,24 @@ public class RemoveDeletedElementChangesRule extends ChangeSequenceProcessingRul
 				.collect(Collectors.toCollection(ArrayList::new));
 
 		for (var rc : removeRootChanges) {
-			var matchingInsert = insertRootChanges.stream().filter((ic) -> ChangeUtil.areMatchingRootEChange(ic, rc))
+			var matchingInsert = insertRootChanges.stream().filter((ic) -> ChangeUtil.areMatchingRootEChanges(ic, rc))
 					.findFirst();
+			if (matchingInsert.isPresent()) {
+				newChangeList.remove(matchingInsert.get());
+				newChangeList.remove(rc);
+			}
+		}
+	}
+
+	private void removeRedundantFeatValListChanges(List<EChange> newChangeList) {
+		var insertChanges = newChangeList.stream().filter((c) -> c instanceof InsertInListEChange)
+				.collect(Collectors.toCollection(ArrayList::new));
+		var removeChanges = newChangeList.stream().filter((c) -> c instanceof RemoveFromListEChange)
+				.collect(Collectors.toCollection(ArrayList::new));
+
+		for (var rc : removeChanges) {
+			var matchingInsert = insertChanges.stream()
+					.filter((ic) -> ChangeUtil.areMatchingFeatValListEChanges(ic, rc)).findFirst();
 			if (matchingInsert.isPresent()) {
 				newChangeList.remove(matchingInsert.get());
 				newChangeList.remove(rc);
@@ -83,6 +108,8 @@ public class RemoveDeletedElementChangesRule extends ChangeSequenceProcessingRul
 
 		for (var dc : deletingChanges) {
 			var deletedElement = ChangeUtil.getDeletedEObject(dc);
+			var matchingCreate = creatingChanges.stream()
+					.filter((cc) -> ChangeUtil.areMatchingEObjectExistenceChanges(cc, dc)).findFirst();
 			for (var currentChange : List.copyOf(newChangeList)) {
 				/*
 				 * Exclude EObjectExistenceEChanges, especially dc. Since they each are
@@ -99,17 +126,31 @@ public class RemoveDeletedElementChangesRule extends ChangeSequenceProcessingRul
 				 */
 				if (currentChange instanceof RootEChange)
 					continue;
+				/*
+				 * Exclude UpdateMultiValuedFeatureEChange. As it is not possible to simply
+				 * unset their corresponding feature, they have to be handled elsewhere.
+				 */
+				if (currentChange instanceof UpdateMultiValuedFeatureEChange)
+					continue;
 				if (ChangeUtil.isEObjectInvolvedIn(currentChange, deletedElement)) {
+					var currentChangeAffectedObj = ChangeUtil.getAffectedEObject(currentChange);
 
 					/*
-					 * Feature changes that add deletedElement as the new value for a feature of an
-					 * EObject != deletedElement should transform to unset changes, as
-					 * deletedElement is no longer present. Subtracting changes, on the other hand,
-					 * can be discarded
+					 * Single valued replace changes that add deletedElement as the new value for a
+					 * feature of an EObject obj != deletedElement should transform to unset
+					 * changes, as deletedElement is no longer present.
+					 * 
+					 * If obj == deletedElement and there is no matching create change,
+					 * currentChange should transform into an unset change as well, so that
+					 * deletedElement's removal is observed during change propagation.
+					 * 
+					 * If obj is a root EObject (i.e. obj.eResource().getContents().contains(obj)),
+					 * no need for an unset change.
 					 */
-					if (currentChange instanceof FeatureEChange && currentChange instanceof AdditiveEChange
-							&& !ChangeUtil.eObjectsEqual(ChangeUtil.getAffectedEObject(currentChange),
-									deletedElement)) {
+					if (currentChange instanceof ReplaceSingleValuedFeatureEChange
+							&& !ChangeUtil.isRootEObject(currentChangeAffectedObj) && (matchingCreate.isEmpty()
+									|| !ChangeUtil.eObjectsEqual(currentChangeAffectedObj, deletedElement))) {
+
 						newChangeList.add(newChangeList.indexOf(currentChange),
 								getUnsetChangeFor((FeatureEChange<?, ?>) currentChange));
 					}
@@ -117,8 +158,6 @@ public class RemoveDeletedElementChangesRule extends ChangeSequenceProcessingRul
 				}
 			}
 
-			var matchingCreate = creatingChanges.stream()
-					.filter((cc) -> ChangeUtil.areMatchingEObjectExistenceChanges(cc, dc)).findFirst();
 			if (matchingCreate.isPresent()) {
 				newChangeList.remove(matchingCreate.get());
 				newChangeList.remove(dc);

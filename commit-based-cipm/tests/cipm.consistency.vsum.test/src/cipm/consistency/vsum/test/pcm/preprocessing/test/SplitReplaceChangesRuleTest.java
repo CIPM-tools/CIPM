@@ -39,8 +39,8 @@ public class SplitReplaceChangesRuleTest {
 
 	private List<EChange> getBaselineChanges() {
 		final var repo = RepositoryFactory.eINSTANCE.createRepository();
-		var changes = cc.getEChangesFor(List.of(ChangePreprocessingTestModifications.addObjToResourceAction(repo),
-				ChangePreprocessingTestModifications.removeObjFromResourceAction(repo)));
+		var changes = cc.getEChangesFor(List.of(ChangePreprocessingTestModifications.addRootToResourceAction(repo),
+				ChangePreprocessingTestModifications.removeRootFromResourceAction(repo)));
 
 		Assertions.assertEquals(1,
 				changes.stream().filter((c) -> c instanceof ReplaceSingleValuedFeatureEChange).count());
@@ -93,9 +93,9 @@ public class SplitReplaceChangesRuleTest {
 	public void transformReplaceChange_TwoFeatures_FirstValueAssignment() {
 		final var repoName = "repoName";
 		final var repo = RepositoryFactory.eINSTANCE.createRepository();
-		var changes = cc.getEChangesFor(List.of(ChangePreprocessingTestModifications.addObjToResourceAction(repo),
-				ChangePreprocessingTestModifications.setObjEntityNameAction(repo, repoName),
-				ChangePreprocessingTestModifications.removeObjFromResourceAction(repo)));
+		var changes = cc.getEChangesFor(List.of(ChangePreprocessingTestModifications.addRootToResourceAction(repo),
+				ChangePreprocessingTestModifications.setEntityNameAction(repo, repoName),
+				ChangePreprocessingTestModifications.removeRootFromResourceAction(repo)));
 
 		Assertions.assertEquals(6, changes.size());
 

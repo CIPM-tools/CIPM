@@ -17,6 +17,8 @@ import tools.vitruv.change.atomic.eobject.DeleteEObject;
 import tools.vitruv.change.atomic.eobject.EObjectExistenceEChange;
 import tools.vitruv.change.atomic.feature.FeatureEChange;
 import tools.vitruv.change.atomic.feature.UnsetFeature;
+import tools.vitruv.change.atomic.feature.list.InsertInListEChange;
+import tools.vitruv.change.atomic.feature.list.RemoveFromListEChange;
 import tools.vitruv.change.atomic.root.InsertRootEObject;
 import tools.vitruv.change.atomic.root.RemoveRootEObject;
 
@@ -206,10 +208,17 @@ public final class ChangeUtil {
 		return eObjectsEqual(getAffectedEObject(createChange), getAffectedEObject(deleteChange));
 	}
 
-	public static boolean areMatchingRootEChange(EChange insertChange, EChange removeChange) {
+	public static boolean areMatchingRootEChanges(EChange insertChange, EChange removeChange) {
 		if (!(insertChange instanceof InsertRootEObject && removeChange instanceof RemoveRootEObject))
 			return false;
 		return eObjectsEqual((EObject) getNewValue(insertChange), (EObject) getOldValue(removeChange));
+	}
+
+	public static boolean areMatchingFeatValListEChanges(EChange insertChange, EChange removeChange) {
+		if (!(insertChange instanceof InsertInListEChange && removeChange instanceof RemoveFromListEChange))
+			return false;
+		return eObjectsEqual(getAffectedEObject(insertChange), getAffectedEObject(removeChange))
+				&& getAffectedFeature(insertChange) == getAffectedFeature(removeChange);
 	}
 
 	public static boolean containsEObject(Collection<EObject> col, EObject objToSeek) {
@@ -238,5 +247,11 @@ public final class ChangeUtil {
 
 		var affectedObjIdxInRes = affectedObjInRes.getContents().indexOf(affectedObj);
 		return affectedObjIdxInRes;
+	}
+
+	public static boolean isRootEObject(EObject obj) {
+		if (obj.eResource() == null)
+			return false;
+		return obj.eResource().getContents().contains(obj);
 	}
 }
