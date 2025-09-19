@@ -52,7 +52,7 @@ public class ChangePreprocessingTestModifications {
 	 * </ol>
 	 */
 	public static Consumer<Resource> setObjSingleValuedFeatAction(EObject obj, EStructuralFeature feat, Object val) {
-		preFeatSetActionArgumentCheck(obj, feat, val);
+		preSingleValuedFeatSetActionArgumentCheck(obj, feat, val);
 
 		return (r) -> {
 			EObject objInRes = null;
@@ -68,7 +68,7 @@ public class ChangePreprocessingTestModifications {
 		};
 	}
 
-	private static void preFeatSetActionArgumentCheck(EObject obj, EStructuralFeature feat, Object val) {
+	private static void preSingleValuedFeatSetActionArgumentCheck(EObject obj, EStructuralFeature feat, Object val) {
 		Preconditions.checkArgument(feat.isChangeable(), "Given feat must be changeable");
 		Preconditions.checkArgument(val != null || feat.isUnsettable(),
 				"Given feat must be unsettable for val = null to be allowed");

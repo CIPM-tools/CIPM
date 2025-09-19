@@ -200,6 +200,18 @@ public final class ChangeUtil {
 		return containsEObject(getInvolvedEObjects(change), obj);
 	}
 
+	public static boolean areMatchingEObjectExistenceChanges(EChange createChange, EChange deleteChange) {
+		if (!(createChange instanceof CreateEObject && deleteChange instanceof DeleteEObject))
+			return false;
+		return eObjectsEqual(getAffectedEObject(createChange), getAffectedEObject(deleteChange));
+	}
+
+	public static boolean areMatchingRootEChange(EChange insertChange, EChange removeChange) {
+		if (!(insertChange instanceof InsertRootEObject && removeChange instanceof RemoveRootEObject))
+			return false;
+		return eObjectsEqual((EObject) getNewValue(insertChange), (EObject) getOldValue(removeChange));
+	}
+
 	public static boolean containsEObject(Collection<EObject> col, EObject objToSeek) {
 		if (col == null)
 			return false;
