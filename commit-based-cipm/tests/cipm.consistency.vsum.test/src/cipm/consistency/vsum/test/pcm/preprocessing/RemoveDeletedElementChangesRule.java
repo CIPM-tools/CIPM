@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import tools.vitruv.change.atomic.AdditiveEChange;
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.atomic.eobject.CreateEObject;
 import tools.vitruv.change.atomic.eobject.DeleteEObject;
@@ -15,7 +14,7 @@ import tools.vitruv.change.atomic.feature.UnsetFeature;
 import tools.vitruv.change.atomic.feature.UpdateMultiValuedFeatureEChange;
 import tools.vitruv.change.atomic.feature.list.InsertInListEChange;
 import tools.vitruv.change.atomic.feature.list.RemoveFromListEChange;
-import tools.vitruv.change.atomic.feature.single.ReplaceSingleValuedFeatureEChange;
+import tools.vitruv.change.atomic.feature.reference.ReplaceSingleValuedEReference;
 import tools.vitruv.change.atomic.root.InsertRootEObject;
 import tools.vitruv.change.atomic.root.RemoveRootEObject;
 import tools.vitruv.change.atomic.root.RootEChange;
@@ -106,10 +105,12 @@ public class RemoveDeletedElementChangesRule extends ChangeSequenceProcessingRul
 		var deletingChanges = changeSequence.stream().filter((c) -> c instanceof DeleteEObject)
 				.collect(Collectors.toCollection(ArrayList::new));
 
-		for (var dc : deletingChanges) {
-			var deletedElement = ChangeUtil.getDeletedEObject(dc);
-			var matchingCreate = creatingChanges.stream()
-					.filter((cc) -> ChangeUtil.areMatchingEObjectExistenceChanges(cc, dc)).findFirst();
+		// TODO Refactor once what changes can be removed is fully clear
+
+		for (var deletingChange : deletingChanges) {
+			var deletedElement = ChangeUtil.getDeletedEObject(deletingChange);
+			var matchingCreateChangeOfDeletingChange = creatingChanges.stream()
+					.filter((cc) -> ChangeUtil.areMatchingEObjectExistenceChanges(cc, deletingChange)).findFirst();
 			for (var currentChange : List.copyOf(newChangeList)) {
 				/*
 				 * Exclude EObjectExistenceEChanges, especially dc. Since they each are
@@ -136,21 +137,19 @@ public class RemoveDeletedElementChangesRule extends ChangeSequenceProcessingRul
 					var currentChangeAffectedObj = ChangeUtil.getAffectedEObject(currentChange);
 
 					/*
-					 * Single valued replace changes that add deletedElement as the new value for a
-					 * feature of an EObject obj != deletedElement should transform to unset
-					 * changes, as deletedElement is no longer present.
-					 * 
-					 * If obj == deletedElement and there is no matching create change,
-					 * currentChange should transform into an unset change as well, so that
-					 * deletedElement's removal is observed during change propagation.
-					 * 
-					 * If obj is a root EObject (i.e. obj.eResource().getContents().contains(obj)),
-					 * no need for an unset change.
+					 * Use unset changes instead of ReplaceSingleValuedEReferences that involve
+					 * deletedElement, in order to avoid change propagation issues. Since
+					 * deletedElement will no longer be present, an unset change should signal that
+					 * deletedElement is no longer used as a value.
 					 */
-					if (currentChange instanceof ReplaceSingleValuedFeatureEChange
-							&& !ChangeUtil.isRootEObject(currentChangeAffectedObj) && (matchingCreate.isEmpty()
+					// FIXME Use ReplaceSingleValuedFeatureEChanges instead of
+					// ReplaceSingleValuedEReference for the first conditional, if tests fail
+					if (currentChange instanceof ReplaceSingleValuedEReference
+							// deletedElement's EReferences require no unset changes, if deletedElement is
+							// confirmed to have been created within the given
+							// changeSequence, prior to deletingChange.
+							&& (matchingCreateChangeOfDeletingChange.isEmpty()
 									|| !ChangeUtil.eObjectsEqual(currentChangeAffectedObj, deletedElement))) {
-
 						newChangeList.add(newChangeList.indexOf(currentChange),
 								getUnsetChangeFor((FeatureEChange<?, ?>) currentChange));
 					}
@@ -158,9 +157,9 @@ public class RemoveDeletedElementChangesRule extends ChangeSequenceProcessingRul
 				}
 			}
 
-			if (matchingCreate.isPresent()) {
-				newChangeList.remove(matchingCreate.get());
-				newChangeList.remove(dc);
+			if (matchingCreateChangeOfDeletingChange.isPresent()) {
+				newChangeList.remove(matchingCreateChangeOfDeletingChange.get());
+				newChangeList.remove(deletingChange);
 			}
 		}
 	}

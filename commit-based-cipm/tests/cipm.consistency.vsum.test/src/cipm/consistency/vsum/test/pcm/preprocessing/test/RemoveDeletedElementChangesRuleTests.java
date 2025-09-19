@@ -1,12 +1,10 @@
 package cipm.consistency.vsum.test.pcm.preprocessing.test;
 
 import java.util.List;
-import java.util.function.Function;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.palladiosimulator.pcm.repository.Repository;
-import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.repository.RepositoryFactory;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
 
@@ -134,7 +132,40 @@ public class RemoveDeletedElementChangesRuleTests {
 		var postRuleChanges = rule.apply(changes);
 		Assertions.assertEquals(3, changes.size());
 		Assertions.assertEquals(3, postRuleChanges.size());
-		postRuleChanges.remove(postRuleChanges.size() - 1);
+		ChangePreprocessingTestAssertions.assertChangeSequencesHaveSameEffect(baseRes, changes, postRuleChanges);
+	}
+
+	@Disabled
+	@Test
+	public void test() {
+
+		// TODO Implement a proper test, where 2 root EObjects have a reference and you
+		// remove the referenced one. Currently, using a type from param moves that type
+		// into param and it is no longer a root element.
+
+		final var type1 = RepositoryFactory.eINSTANCE.createPrimitiveDataType();
+		final var type2 = RepositoryFactory.eINSTANCE.createPrimitiveDataType();
+		final var param = RepositoryFactory.eINSTANCE.createParameter();
+		var res = cc.getEmptyResourceInstance();
+		cc.getEChangesFor(res,
+				List.of(ChangePreprocessingTestModifications.addRootToResourceAction(type1),
+						ChangePreprocessingTestModifications.addRootToResourceAction(type2),
+						ChangePreprocessingTestModifications.addRootToResourceAction(param)
+//						ChangePreprocessingTestModifications.setSingleValuedFeatAction(param,
+//								RepositoryPackage.Literals.PARAMETER__DATA_TYPE_PARAMETER, type1),
+//						ChangePreprocessingTestModifications.setSingleValuedFeatAction(param,
+//								RepositoryPackage.Literals.PARAMETER__DATA_TYPE_PARAMETER, type2)
+				));
+
+		var baseRes = cc.getResourceCopy(res);
+		Assertions.assertEquals(3, baseRes.getContents().size());
+
+		var changes = cc.getEChangesFor(res,
+				List.of(ChangePreprocessingTestModifications.setSingleValuedFeatAction(param,
+						RepositoryPackage.Literals.PARAMETER__DATA_TYPE_PARAMETER, type1),
+						ChangePreprocessingTestModifications.removeRootFromResourceAction(type1)));
+
+		var postRuleChanges = rule.apply(changes);
 		ChangePreprocessingTestAssertions.assertChangeSequencesHaveSameEffect(baseRes, changes, postRuleChanges);
 	}
 }
