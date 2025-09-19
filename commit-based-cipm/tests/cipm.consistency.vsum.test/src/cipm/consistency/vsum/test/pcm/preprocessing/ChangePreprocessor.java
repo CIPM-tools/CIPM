@@ -10,7 +10,7 @@ import tools.vitruv.change.correspondence.view.CorrespondenceModelView;
 public class ChangePreprocessor {
 	private CorrespondenceModelView<?> corView;
 	private final ChangeDependencyAnalyser changeDepAnalyser = new ChangeDependencyAnalyser();
-	private final AtomicChangeTransformer atomicChangeTransformer = new AtomicChangeTransformer();
+	private final SplitReplaceChangesRule atomicChangeTransformer = new SplitReplaceChangesRule();
 	private final PcmDependencyContainer depCon = new PcmDependencyContainer();
 	private final List<PcmChangeWrapper> wrappedPcmChanges = new ArrayList<>();
 
@@ -20,7 +20,7 @@ public class ChangePreprocessor {
 
 	public void addChanges(Collection<EChange> pcmChanges) {
 		for (var c : pcmChanges) {
-			for (var tc : atomicChangeTransformer.transform(c)) {
+			for (var tc : atomicChangeTransformer.splitIfReplaceChange(c)) {
 				var w = new PcmChangeWrapper(tc, depCon);
 				this.wrappedPcmChanges.add(w);
 				changeDepAnalyser.getCorrespondenceDependencies(tc, corView)

@@ -110,10 +110,17 @@ public final class ChangeUtil {
 		if (oldChange instanceof AdditiveEChange && newChange instanceof SubtractiveEChange) {
 			var newVal = getNewValue(oldChange);
 			var oldVal = getOldValue(newChange);
-			return newVal instanceof EObject && oldVal instanceof EObject
-					&& eObjectsEqual((EObject) newVal, (EObject) oldVal);
+			if (newVal == null || oldVal == null)
+				return false;
+			if (newVal instanceof EObject && oldVal instanceof EObject)
+				return eObjectsEqual((EObject) newVal, (EObject) oldVal);
+			return oldVal.equals(newVal);
 		}
 		return false;
+	}
+
+	public static boolean newAndOldValuesPresentAndEqual(EChange change) {
+		return newAndOldValuesPresentAndEqual(change, change);
 	}
 
 	public static EObject getAffectedEObject(EChange change) {

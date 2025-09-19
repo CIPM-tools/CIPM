@@ -47,7 +47,7 @@ public class ChangeComputer {
 
 	public Resource getEmptyResourceInstance() {
 		return new ResourceSetImpl()
-				.createResource(URI.createFileURI(new File("").toPath().resolve("res.xmi").toString()));
+				.createResource(URI.createFileURI(new File("").toPath().resolve("res.repository").toString()));
 	}
 
 	public Resource getResourceCopy(Resource res) {
