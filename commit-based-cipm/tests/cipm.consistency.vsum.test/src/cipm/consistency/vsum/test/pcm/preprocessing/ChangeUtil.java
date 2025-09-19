@@ -200,14 +200,6 @@ public final class ChangeUtil {
 		return containsEObject(getInvolvedEObjects(change), obj);
 	}
 
-	public static boolean isEObjectRemovingChange(EChange change) {
-		return change instanceof DeleteEObject;
-	}
-
-	public static boolean isEObjectCreatingChange(EChange change) {
-		return change instanceof CreateEObject;
-	}
-
 	public static boolean containsEObject(Collection<EObject> col, EObject objToSeek) {
 		if (col == null)
 			return false;

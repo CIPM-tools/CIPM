@@ -53,7 +53,6 @@ public class ChangePreprocessingTestModifications {
 	 */
 	public static Consumer<Resource> setObjSingleValuedFeatAction(EObject obj, EStructuralFeature feat, Object val) {
 		preFeatSetActionArgumentCheck(obj, feat, val);
-		Preconditions.checkArgument(obj.eResource() != null, "Given obj must be inside a resource");
 
 		return (r) -> {
 			EObject objInRes = null;

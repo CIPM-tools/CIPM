@@ -57,12 +57,7 @@ public class ChangeComputer {
 	}
 
 	public List<EChange> getEChangesFor(List<Consumer<Resource>> modifications) {
-		var changes = new ArrayList<EChange>();
-		var res = this.getEmptyResourceInstance();
-		for (var mod : modifications) {
-			changes.addAll(this.getEChangesFor(res, mod));
-		}
-		return changes;
+		return this.getEChangesFor(this.getEmptyResourceInstance(), modifications);
 	}
 
 	public List<EChange> getEChangesFor(Consumer<Resource> modifications) {
@@ -78,5 +73,16 @@ public class ChangeComputer {
 		var d = new DefaultStateBasedChangeResolutionStrategy(UseIdentifiers.WHEN_AVAILABLE);
 		var changes = d.getChangeSequenceBetween(oldRes, unmodifiedResDupl).getEChanges();
 		return new ArrayList<>(changes);
+	}
+
+	/**
+	 * Modifies oldRes along the way
+	 */
+	public List<EChange> getEChangesFor(Resource oldRes, List<Consumer<Resource>> modifications) {
+		var changes = new ArrayList<EChange>();
+		for (var mod : modifications) {
+			changes.addAll(this.getEChangesFor(oldRes, mod));
+		}
+		return changes;
 	}
 }

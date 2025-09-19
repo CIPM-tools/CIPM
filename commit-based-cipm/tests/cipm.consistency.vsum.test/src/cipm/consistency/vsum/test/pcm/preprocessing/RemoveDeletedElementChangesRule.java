@@ -5,36 +5,101 @@ import java.util.List;
 
 import tools.vitruv.change.atomic.AdditiveEChange;
 import tools.vitruv.change.atomic.EChange;
+import tools.vitruv.change.atomic.eobject.CreateEObject;
+import tools.vitruv.change.atomic.eobject.DeleteEObject;
 import tools.vitruv.change.atomic.feature.FeatureEChange;
 import tools.vitruv.change.atomic.feature.FeatureFactory;
 import tools.vitruv.change.atomic.feature.UnsetFeature;
+import tools.vitruv.change.atomic.root.InsertRootEObject;
+import tools.vitruv.change.atomic.root.RemoveRootEObject;
 
 public class RemoveDeletedElementChangesRule extends ChangeSequenceProcessingRule {
 	@Override
 	public List<EChange> apply(List<EChange> changeSequence) {
-		var newChangeList = new ArrayList<>(changeSequence);
+		List<EChange> newChangeList = new ArrayList<>(changeSequence);
 
 		/*
 		 * Start from the last change and look for changes that delete EObjects. Then
 		 * remove all previous changes that become redundant, as their EObject has been
 		 * deleted.
 		 */
-		for (int i = newChangeList.size() - 1; i >= 0; i--) {
-			var currentChange = newChangeList.get(i);
-			if (!changeSequence.contains(currentChange))
+		for (int i = changeSequence.size() - 1; i >= 0; i--) {
+			var currentChange = changeSequence.get(i);
+			if (!newChangeList.contains(currentChange))
 				continue;
-			if (ChangeUtil.isEObjectRemovingChange(currentChange)) {
+			if (currentChange instanceof DeleteEObject) {
 				var creatingChange = this.getMatchingCreationChange(currentChange, changeSequence);
-				removeRedundantChangesFor(currentChange, changeSequence);
+				newChangeList = this.removeRedundantChangesFor(currentChange, changeSequence);
 
 				// Creating change is within this change sequence and is deleted above
 				// Therefore, the deleting change (currentChange) should also be removed
 				if (creatingChange != null) {
-					changeSequence.remove(currentChange);
+					var rootInsertingChange = this.getMatchingRootInsertChange(currentChange, changeSequence);
+					var rootRemovingChange = this.getMatchingRootRemoveChange(currentChange, changeSequence);
+
+					// If currentChange is deleting a root EObject, remove the root insertion and
+					// removal changes too
+					if (rootInsertingChange != null && rootRemovingChange != null) {
+						newChangeList.remove(rootInsertingChange);
+						newChangeList.remove(rootRemovingChange);
+					}
+
+					// Remove the negated deleting change (currentChange)
+					newChangeList.remove(currentChange);
 				}
 			}
 		}
-		return changeSequence;
+		return newChangeList;
+	}
+
+	private EChange getMatchingRootInsertChange(EChange deletingChange, List<EChange> changeSequence) {
+		var deletingChangeIdx = changeSequence.indexOf(deletingChange);
+
+		// If the only change is the deleting change (deletingChangeIdx == 0) or
+		// deleting change is not in the change sequence (deletingChangeIdx == -1),
+		// abort
+		if (deletingChangeIdx < 1)
+			return null;
+
+		// If there is no removed element in the change, abort
+		var deletedElement = ChangeUtil.getDeletedEObject(deletingChange);
+		if (deletedElement == null)
+			return null;
+
+		for (int i = deletingChangeIdx - 1; i >= 0; i--) {
+			var currentChange = changeSequence.get(i);
+			if (ChangeUtil.isEObjectInvolvedIn(currentChange, deletedElement)
+					&& currentChange instanceof InsertRootEObject) {
+				return currentChange;
+			}
+		}
+
+		return null;
+	}
+
+	private EChange getMatchingRootRemoveChange(EChange deletingChange, List<EChange> changeSequence) {
+		var deletingChangeIdx = changeSequence.indexOf(deletingChange);
+
+		// If the only change is the deleting change (deletingChangeIdx == 0) or
+		// deleting change is not in the change sequence (deletingChangeIdx == -1),
+		// abort
+		if (deletingChangeIdx < 1)
+			return null;
+
+		// If there is no removed element in the change, abort
+		var deletedElement = ChangeUtil.getDeletedEObject(deletingChange);
+		if (deletedElement == null)
+			return null;
+
+		for (int i = deletingChangeIdx - 1; i >= 0; i--) {
+			var currentChange = changeSequence.get(i);
+			if (ChangeUtil.isEObjectInvolvedIn(currentChange, deletedElement)
+					&& currentChange instanceof RemoveRootEObject) {
+				return currentChange;
+			}
+		}
+
+		return null;
 	}
 
 	private EChange getMatchingCreationChange(EChange deletingChange, List<EChange> changeSequence) {
@@ -54,7 +119,7 @@ public class RemoveDeletedElementChangesRule extends ChangeSequenceProcessingRul
 		for (int i = deletingChangeIdx - 1; i >= 0; i--) {
 			var currentChange = changeSequence.get(i);
 			if (ChangeUtil.isEObjectInvolvedIn(currentChange, deletedElement)
-					&& ChangeUtil.isEObjectCreatingChange(currentChange)) {
+					&& currentChange instanceof CreateEObject) {
 				return currentChange;
 			}
 		}
@@ -62,25 +127,29 @@ public class RemoveDeletedElementChangesRule extends ChangeSequenceProcessingRul
 		return null;
 	}
 
-	private void removeRedundantChangesFor(EChange deletingChange, List<EChange> changeSequence) {
+	private List<EChange> removeRedundantChangesFor(EChange deletingChange, List<EChange> changeSequence) {
+		var newChangeList = new ArrayList<>(changeSequence);
 		var deletingChangeIdx = changeSequence.indexOf(deletingChange);
 
 		// If the only change is the deleting change (deletingChangeIdx == 0) or
 		// deleting change is not in the change sequence (deletingChangeIdx == -1),
 		// abort
 		if (deletingChangeIdx < 1)
-			return;
+			return newChangeList;
 
 		// If there is no removed element in the change, abort
 		var deletedElement = ChangeUtil.getDeletedEObject(deletingChange);
 		if (deletedElement == null)
-			return;
+			return newChangeList;
 
 		// Iterate over another list to avoid concurrent modification exceptions
-		var newChangeList = new ArrayList<>(changeSequence);
 		for (int i = deletingChangeIdx - 1; i >= 0; i--) {
-			var currentChange = newChangeList.get(i);
-			if (!changeSequence.contains(currentChange))
+			var currentChange = changeSequence.get(i);
+			if (!newChangeList.contains(currentChange))
+				continue;
+			// Do not remove RemoveRootEObject instances, unless there is a preceding
+			// CreateEObject
+			if (currentChange instanceof RemoveRootEObject)
 				continue;
 			if (ChangeUtil.isEObjectInvolvedIn(currentChange, deletedElement)) {
 
@@ -92,12 +161,14 @@ public class RemoveDeletedElementChangesRule extends ChangeSequenceProcessingRul
 				 */
 				if (currentChange instanceof FeatureEChange && currentChange instanceof AdditiveEChange
 						&& !ChangeUtil.eObjectsEqual(ChangeUtil.getAffectedEObject(deletingChange), deletedElement)) {
-					changeSequence.add(changeSequence.indexOf(currentChange),
+					newChangeList.add(newChangeList.indexOf(currentChange),
 							getUnsetChangeFor((FeatureEChange<?, ?>) currentChange));
 				}
-				changeSequence.remove(currentChange);
+				newChangeList.remove(currentChange);
 			}
 		}
+
+		return newChangeList;
 	}
 
 	private UnsetFeature<?, ?> getUnsetChangeFor(FeatureEChange<?, ?> change) {

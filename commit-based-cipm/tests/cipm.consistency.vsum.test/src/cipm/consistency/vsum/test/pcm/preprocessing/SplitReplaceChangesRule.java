@@ -30,6 +30,11 @@ public class SplitReplaceChangesRule extends ChangeSequenceProcessingRule {
 	 * affectedObjectID results in the exception above
 	 * 
 	 * replace -> remove, insert transformation taken from TGG repository
+	 * 
+	 * 
+	 * 
+	 * TODO Clarify whether it is even possible to set a single-valued feature via
+	 * insert / remove changes. The only way might be replace changes
 	 */
 
 	@Override

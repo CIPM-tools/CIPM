@@ -18,25 +18,27 @@ public final class ChangePreprocessingTestAssertions {
 
 	public static void assertChangeSequencesHaveSameEffect(Collection<EChange> changeSeq1,
 			Collection<EChange> changeSeq2) {
-		assertChangeSequencesHaveSameEffect(defaultChangeComputer.getEmptyResourceInstance(), changeSeq1,
-				defaultChangeComputer.getEmptyResourceInstance(), changeSeq2);
+		assertChangeSequencesHaveSameEffect(defaultChangeComputer.getEmptyResourceInstance(), changeSeq1, changeSeq2);
 	}
 
-	public static void assertChangeSequencesHaveSameEffect(Resource emptyRes1, Collection<EChange> changeSeq1,
-			Resource emptyRes2, Collection<EChange> changeSeq2) {
+	public static void assertChangeSequencesHaveSameEffect(Resource startRes, Collection<EChange> changeSeq1,
+			Collection<EChange> changeSeq2) {
 		var compChange1 = VitruviusChangeFactory.getInstance().createTransactionalChange(changeSeq1);
 		var compChange2 = VitruviusChangeFactory.getInstance().createTransactionalChange(changeSeq2);
 
 		compChange1 = (TransactionalChange) compChange1.unresolve();
 		compChange2 = (TransactionalChange) compChange2.unresolve();
 
-		compChange1.resolveAndApply(emptyRes1.getResourceSet());
-		compChange2.resolveAndApply(emptyRes2.getResourceSet());
+		var res1 = defaultChangeComputer.getResourceCopy(startRes);
+		var res2 = defaultChangeComputer.getResourceCopy(startRes);
+
+		compChange1.resolveAndApply(res1.getResourceSet());
+		compChange2.resolveAndApply(res2.getResourceSet());
 
 		var res1Elems = new ArrayList<EObject>();
-		emptyRes1.getAllContents().forEachRemaining((c) -> res1Elems.add(c));
+		res1.getAllContents().forEachRemaining((c) -> res1Elems.add(c));
 		var res2Elems = new ArrayList<EObject>();
-		emptyRes2.getAllContents().forEachRemaining((c) -> res2Elems.add(c));
+		res2.getAllContents().forEachRemaining((c) -> res2Elems.add(c));
 
 		Assertions.assertEquals(res1Elems.size(), res2Elems.size());
 
