@@ -170,6 +170,9 @@ public class RemoveDeletedElementChangesRuleTests {
 		var postRuleChanges = rule.apply(changes);
 //		Assertions.assertEquals(3, changes.size());
 //		Assertions.assertEquals(3, postRuleChanges.size());
+
+		// FIXME Fix the test
+
 		ChangePreprocessingTestAssertions.assertChangeSequencesHaveSameEffect(baseRes, changes, postRuleChanges);
 	}
 

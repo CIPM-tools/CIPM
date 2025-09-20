@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.eclipse.emf.ecore.EObject;
+
 import com.google.common.collect.Lists;
 
 import tools.vitruv.change.atomic.EChange;
@@ -12,6 +14,8 @@ import tools.vitruv.change.atomic.feature.FeatureEChange;
 import tools.vitruv.change.atomic.feature.FeatureFactory;
 import tools.vitruv.change.atomic.feature.UnsetFeature;
 import tools.vitruv.change.atomic.feature.UpdateMultiValuedFeatureEChange;
+import tools.vitruv.change.atomic.feature.list.RemoveFromListEChange;
+import tools.vitruv.change.atomic.feature.reference.ReferenceFactory;
 import tools.vitruv.change.atomic.feature.reference.ReplaceSingleValuedEReference;
 
 /**
@@ -51,30 +55,118 @@ public class RemoveDeletedElementFeatureChangesRule extends ChangeSequenceProces
 			for (var affectedChange : affectedSingleValuedFeatureChanges) {
 
 				/*
-				 * Use unset changes instead of ReplaceSingleValuedEReferences that involve
-				 * deletedElement as new or old value, since EObject ID fields are mandatory and
-				 * change propagation will not be able to resolve deletedElement once it is
-				 * deleted.
+				 * ReplaceSingleValuedEReferences must be handled carefully, since EObject ID
+				 * fields are mandatory and change propagation will not be able to resolve
+				 * deletedElement once it is deleted. There are 3 cases:
+				 * 
+				 * 1) deletedElement is affectedEObject: Change must be replaced with an unset
+				 * change, in order to update the EOpposite feature's value in its holder, which
+				 * signals that deletedElement should be removed from EOpposite feature's
+				 * holder.
+				 * 
+				 * 2) deletedElement is new value: Change must be replaced with an unset change
+				 * 
+				 * 3) deletedElement is old value: Change's old value (and old value ID) must be
+				 * set to null, if change's new value is not null. Otherwise handle it same as
+				 * 2).
 				 */
 				if (affectedChange instanceof ReplaceSingleValuedEReference) {
-					var idx = newChangesList.indexOf(affectedChange);
-					newChangesList.add(idx, this.getUnsetChangeFor(affectedChange));
-				}
+					var castedChange = (ReplaceSingleValuedEReference<?, ?>) affectedChange;
+					if (ChangeUtil.eObjectsNonNullAndEqual(castedChange.getAffectedEObject(), deletedElement)) {
+						handleValueObjectDeleted(newChangesList, castedChange, deletingChanges, deletedElement);
+					} else if (ChangeUtil.eObjectsNonNullAndEqual(castedChange.getNewValue(), deletedElement)
+							|| (ChangeUtil.eObjectsNonNullAndEqual(castedChange.getOldValue(), deletedElement)
+									&& castedChange.getNewValue() == null)) {
+						handleValueObjectDeleted(newChangesList, castedChange, deletingChanges, deletedElement);
+					} else if (ChangeUtil.eObjectsNonNullAndEqual(castedChange.getOldValue(), deletedElement)
+							&& castedChange.getNewValue() != null) {
+						// deletedElement is old value and its new value is not null
+						unsetOldValueOfReplaceChange(castedChange);
+					}
 
-				/*
-				 * All feature changes that involve deletedElement should be removed
-				 */
-				newChangesList.remove(affectedChange);
+					// TODO Fix if an EObject can be involved in a change in indirect ways (i.e.
+					// without being present directly as an attribute)
+
+				} else {
+					/*
+					 * All other feature changes that involve deletedElement should be removed
+					 */
+					newChangesList.remove(affectedChange);
+				}
 			}
 		}
 		return newChangesList;
 	}
 
-	private UnsetFeature<?, ?> getUnsetChangeFor(FeatureEChange<?, ?> change) {
+	private void handleAffectedObjectDeleted(List<EChange> newChangesList,
+			ReplaceSingleValuedEReference<?, ?> castedChange, List<EChange> deletingChanges, EObject deletedElement) {
+		// deletedElement is affectedEObject
+		var oppositeFeat = castedChange.getAffectedFeature().getEOpposite();
+		var oppositeObj = (EObject) castedChange.getAffectedEObject().eGet(castedChange.getAffectedFeature());
+		var isOppositeObjDeleted = deletingChanges.stream()
+				.anyMatch((c) -> ChangeUtil.eObjectsNonNullAndEqual(ChangeUtil.getDeletedEObject(c), oppositeObj));
+		if (!isOppositeObjDeleted) {
+			var idx = newChangesList.indexOf(castedChange);
+			if (!oppositeFeat.isMany()) {
+				newChangesList.add(idx, this.getUnsetChangeForEOpposite(castedChange));
+			} else {
+				newChangesList.add(idx, this.getListRemovalChangeForEOpposite(castedChange));
+			}
+		}
+		newChangesList.remove(castedChange);
+	}
+
+	private void handleValueObjectDeleted(List<EChange> newChangesList,
+			ReplaceSingleValuedEReference<?, ?> castedChange, List<EChange> deletingChanges, EObject deletedElement) {
+		// Either deletedElement is new value OR deletedElement is old value and new
+		// value is null
+		var idx = newChangesList.indexOf(castedChange);
+		newChangesList.add(idx, this.getUnsetChangeFor(castedChange));
+		newChangesList.remove(castedChange);
+	}
+
+	private RemoveFromListEChange<?, ?, ?> getListRemovalChangeForEOpposite(
+			ReplaceSingleValuedEReference<?, ?> change) {
+		var oppositeFeat = change.getAffectedFeature().getEOpposite();
+		var oppositeObj = change.getOldValue();
+		var oppositeObjID = change.getOldValueID();
+
+		var changeAffectedObj = change.getAffectedEObject();
+		var changeAffectedObjID = change.getAffectedEObjectID();
+
+		var removeChange = ReferenceFactory.eINSTANCE.createRemoveEReference();
+		removeChange.setAffectedEObject(oppositeObj);
+		removeChange.setAffectedFeature(oppositeFeat);
+		removeChange.setAffectedEObjectID(oppositeObjID);
+		removeChange.setOldValue(changeAffectedObj);
+		removeChange.setOldValueID(changeAffectedObjID);
+		var list = (List<?>) oppositeObj.eGet(oppositeFeat);
+		removeChange.setIndex((list.indexOf(changeAffectedObj)));
+		return removeChange;
+	}
+
+	private UnsetFeature<?, ?> getUnsetChangeFor(ReplaceSingleValuedEReference<?, ?> change) {
 		var unsetChange = FeatureFactory.eINSTANCE.createUnsetFeature();
 		unsetChange.setAffectedEObject(change.getAffectedEObject());
 		unsetChange.setAffectedFeature(change.getAffectedFeature());
 		unsetChange.setAffectedEObjectID(change.getAffectedEObjectID());
 		return unsetChange;
+	}
+
+	private UnsetFeature<?, ?> getUnsetChangeForEOpposite(ReplaceSingleValuedEReference<?, ?> change) {
+		var oppositeFeat = change.getAffectedFeature().getEOpposite();
+		var oppositeObj = (EObject) change.getAffectedEObject().eGet(change.getAffectedFeature());
+		var oppositeObjID = change.getOldValueID();
+
+		var unsetChange = FeatureFactory.eINSTANCE.createUnsetFeature();
+		unsetChange.setAffectedEObject(oppositeObj);
+		unsetChange.setAffectedFeature(oppositeFeat);
+		unsetChange.setAffectedEObjectID(oppositeObjID);
+		return unsetChange;
+	}
+
+	private void unsetOldValueOfReplaceChange(ReplaceSingleValuedEReference<?, ?> change) {
+		change.setOldValue(null);
+		change.setOldValueID(null);
 	}
 }
