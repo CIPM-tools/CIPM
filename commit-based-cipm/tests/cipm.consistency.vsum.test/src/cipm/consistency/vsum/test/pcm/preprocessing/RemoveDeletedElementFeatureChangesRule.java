@@ -14,8 +14,6 @@ import tools.vitruv.change.atomic.feature.FeatureEChange;
 import tools.vitruv.change.atomic.feature.FeatureFactory;
 import tools.vitruv.change.atomic.feature.UnsetFeature;
 import tools.vitruv.change.atomic.feature.UpdateMultiValuedFeatureEChange;
-import tools.vitruv.change.atomic.feature.list.RemoveFromListEChange;
-import tools.vitruv.change.atomic.feature.reference.ReferenceFactory;
 import tools.vitruv.change.atomic.feature.reference.ReplaceSingleValuedEReference;
 
 /**
@@ -72,9 +70,8 @@ public class RemoveDeletedElementFeatureChangesRule extends ChangeSequenceProces
 				 */
 				if (affectedChange instanceof ReplaceSingleValuedEReference) {
 					var castedChange = (ReplaceSingleValuedEReference<?, ?>) affectedChange;
-					if (ChangeUtil.eObjectsNonNullAndEqual(castedChange.getAffectedEObject(), deletedElement)) {
-						handleValueObjectDeleted(newChangesList, castedChange, deletingChanges, deletedElement);
-					} else if (ChangeUtil.eObjectsNonNullAndEqual(castedChange.getNewValue(), deletedElement)
+					if (ChangeUtil.eObjectsNonNullAndEqual(castedChange.getAffectedEObject(), deletedElement)
+							|| ChangeUtil.eObjectsNonNullAndEqual(castedChange.getNewValue(), deletedElement)
 							|| (ChangeUtil.eObjectsNonNullAndEqual(castedChange.getOldValue(), deletedElement)
 									&& castedChange.getNewValue() == null)) {
 						handleValueObjectDeleted(newChangesList, castedChange, deletingChanges, deletedElement);
@@ -98,23 +95,23 @@ public class RemoveDeletedElementFeatureChangesRule extends ChangeSequenceProces
 		return newChangesList;
 	}
 
-	private void handleAffectedObjectDeleted(List<EChange> newChangesList,
-			ReplaceSingleValuedEReference<?, ?> castedChange, List<EChange> deletingChanges, EObject deletedElement) {
-		// deletedElement is affectedEObject
-		var oppositeFeat = castedChange.getAffectedFeature().getEOpposite();
-		var oppositeObj = (EObject) castedChange.getAffectedEObject().eGet(castedChange.getAffectedFeature());
-		var isOppositeObjDeleted = deletingChanges.stream()
-				.anyMatch((c) -> ChangeUtil.eObjectsNonNullAndEqual(ChangeUtil.getDeletedEObject(c), oppositeObj));
-		if (!isOppositeObjDeleted) {
-			var idx = newChangesList.indexOf(castedChange);
-			if (!oppositeFeat.isMany()) {
-				newChangesList.add(idx, this.getUnsetChangeForEOpposite(castedChange));
-			} else {
-				newChangesList.add(idx, this.getListRemovalChangeForEOpposite(castedChange));
-			}
-		}
-		newChangesList.remove(castedChange);
-	}
+//	private void handleAffectedObjectDeleted(List<EChange> newChangesList,
+//			ReplaceSingleValuedEReference<?, ?> castedChange, List<EChange> deletingChanges, EObject deletedElement) {
+//		// deletedElement is affectedEObject
+//		var oppositeFeat = castedChange.getAffectedFeature().getEOpposite();
+//		var oppositeObj = (EObject) castedChange.getAffectedEObject().eGet(castedChange.getAffectedFeature());
+//		var isOppositeObjDeleted = deletingChanges.stream()
+//				.anyMatch((c) -> ChangeUtil.eObjectsNonNullAndEqual(ChangeUtil.getDeletedEObject(c), oppositeObj));
+//		if (!isOppositeObjDeleted) {
+//			var idx = newChangesList.indexOf(castedChange);
+//			if (!oppositeFeat.isMany()) {
+//				newChangesList.add(idx, this.getUnsetChangeForEOpposite(castedChange));
+//			} else {
+//				newChangesList.add(idx, this.getListRemovalChangeForEOpposite(castedChange));
+//			}
+//		}
+//		newChangesList.remove(castedChange);
+//	}
 
 	private void handleValueObjectDeleted(List<EChange> newChangesList,
 			ReplaceSingleValuedEReference<?, ?> castedChange, List<EChange> deletingChanges, EObject deletedElement) {
@@ -125,25 +122,25 @@ public class RemoveDeletedElementFeatureChangesRule extends ChangeSequenceProces
 		newChangesList.remove(castedChange);
 	}
 
-	private RemoveFromListEChange<?, ?, ?> getListRemovalChangeForEOpposite(
-			ReplaceSingleValuedEReference<?, ?> change) {
-		var oppositeFeat = change.getAffectedFeature().getEOpposite();
-		var oppositeObj = change.getOldValue();
-		var oppositeObjID = change.getOldValueID();
-
-		var changeAffectedObj = change.getAffectedEObject();
-		var changeAffectedObjID = change.getAffectedEObjectID();
-
-		var removeChange = ReferenceFactory.eINSTANCE.createRemoveEReference();
-		removeChange.setAffectedEObject(oppositeObj);
-		removeChange.setAffectedFeature(oppositeFeat);
-		removeChange.setAffectedEObjectID(oppositeObjID);
-		removeChange.setOldValue(changeAffectedObj);
-		removeChange.setOldValueID(changeAffectedObjID);
-		var list = (List<?>) oppositeObj.eGet(oppositeFeat);
-		removeChange.setIndex((list.indexOf(changeAffectedObj)));
-		return removeChange;
-	}
+//	private RemoveFromListEChange<?, ?, ?> getListRemovalChangeForEOpposite(
+//			ReplaceSingleValuedEReference<?, ?> change) {
+//		var oppositeFeat = change.getAffectedFeature().getEOpposite();
+//		var oppositeObj = change.getOldValue();
+//		var oppositeObjID = change.getOldValueID();
+//
+//		var changeAffectedObj = change.getAffectedEObject();
+//		var changeAffectedObjID = change.getAffectedEObjectID();
+//
+//		var removeChange = ReferenceFactory.eINSTANCE.createRemoveEReference();
+//		removeChange.setAffectedEObject(oppositeObj);
+//		removeChange.setAffectedFeature(oppositeFeat);
+//		removeChange.setAffectedEObjectID(oppositeObjID);
+//		removeChange.setOldValue(changeAffectedObj);
+//		removeChange.setOldValueID(changeAffectedObjID);
+//		var list = (List<?>) oppositeObj.eGet(oppositeFeat);
+//		removeChange.setIndex((list.indexOf(changeAffectedObj)));
+//		return removeChange;
+//	}
 
 	private UnsetFeature<?, ?> getUnsetChangeFor(ReplaceSingleValuedEReference<?, ?> change) {
 		var unsetChange = FeatureFactory.eINSTANCE.createUnsetFeature();
@@ -153,17 +150,17 @@ public class RemoveDeletedElementFeatureChangesRule extends ChangeSequenceProces
 		return unsetChange;
 	}
 
-	private UnsetFeature<?, ?> getUnsetChangeForEOpposite(ReplaceSingleValuedEReference<?, ?> change) {
-		var oppositeFeat = change.getAffectedFeature().getEOpposite();
-		var oppositeObj = (EObject) change.getAffectedEObject().eGet(change.getAffectedFeature());
-		var oppositeObjID = change.getOldValueID();
-
-		var unsetChange = FeatureFactory.eINSTANCE.createUnsetFeature();
-		unsetChange.setAffectedEObject(oppositeObj);
-		unsetChange.setAffectedFeature(oppositeFeat);
-		unsetChange.setAffectedEObjectID(oppositeObjID);
-		return unsetChange;
-	}
+//	private UnsetFeature<?, ?> getUnsetChangeForEOpposite(ReplaceSingleValuedEReference<?, ?> change) {
+//		var oppositeFeat = change.getAffectedFeature().getEOpposite();
+//		var oppositeObj = (EObject) change.getAffectedEObject().eGet(change.getAffectedFeature());
+//		var oppositeObjID = change.getOldValueID();
+//
+//		var unsetChange = FeatureFactory.eINSTANCE.createUnsetFeature();
+//		unsetChange.setAffectedEObject(oppositeObj);
+//		unsetChange.setAffectedFeature(oppositeFeat);
+//		unsetChange.setAffectedEObjectID(oppositeObjID);
+//		return unsetChange;
+//	}
 
 	private void unsetOldValueOfReplaceChange(ReplaceSingleValuedEReference<?, ?> change) {
 		change.setOldValue(null);
