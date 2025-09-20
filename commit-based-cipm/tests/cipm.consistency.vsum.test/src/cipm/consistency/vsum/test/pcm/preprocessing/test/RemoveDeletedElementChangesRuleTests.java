@@ -2,6 +2,9 @@ package cipm.consistency.vsum.test.pcm.preprocessing.test;
 
 import java.util.List;
 
+import org.emftext.language.java.classifiers.ClassifiersFactory;
+import org.emftext.language.java.types.TypesFactory;
+import org.emftext.language.java.types.TypesPackage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -10,7 +13,7 @@ import org.palladiosimulator.pcm.repository.RepositoryPackage;
 
 import cipm.consistency.vsum.test.pcm.cprunittests.ChangeComputer;
 import cipm.consistency.vsum.test.pcm.preprocessing.ChangeSequenceProcessingRule;
-import cipm.consistency.vsum.test.pcm.preprocessing.RemoveDeletedElementChangesRule;
+import cipm.consistency.vsum.test.pcm.preprocessing.RemoveRedundantChangesRule;
 import tools.vitruv.change.atomic.eobject.DeleteEObject;
 import tools.vitruv.change.atomic.root.RemoveRootEObject;
 
@@ -24,7 +27,7 @@ import tools.vitruv.change.atomic.root.RemoveRootEObject;
  */
 public class RemoveDeletedElementChangesRuleTests {
 	private static final ChangeComputer cc = new ChangeComputer();
-	private static final ChangeSequenceProcessingRule rule = new RemoveDeletedElementChangesRule();
+	private static final ChangeSequenceProcessingRule rule = new RemoveRedundantChangesRule();
 
 	/**
 	 * Change sequence: Create R -> Delete R
@@ -114,7 +117,7 @@ public class RemoveDeletedElementChangesRuleTests {
 	 * Change sequence: Remove C from R.components -> Delete C
 	 */
 	@Test
-	public void brokenFeatureChange() {
+	public void deletedElementIsReferenced_SingleReference() {
 		final var repo = RepositoryFactory.eINSTANCE.createRepository();
 		final var cmp = RepositoryFactory.eINSTANCE.createBasicComponent();
 		var res = cc.getEmptyResourceInstance();
@@ -132,6 +135,41 @@ public class RemoveDeletedElementChangesRuleTests {
 		var postRuleChanges = rule.apply(changes);
 		Assertions.assertEquals(3, changes.size());
 		Assertions.assertEquals(3, postRuleChanges.size());
+		ChangePreprocessingTestAssertions.assertChangeSequencesHaveSameEffect(baseRes, changes, postRuleChanges);
+	}
+
+	/**
+	 * Pre-setup: Create Cls -> Set Cls as tr1.target
+	 * <p>
+	 * Change sequence: Remove C from R.components -> Delete C
+	 */
+	@Test
+	public void deletedElementIsReferenced_MultipleReference() {
+		var cls = ClassifiersFactory.eINSTANCE.createClass();
+		var tr1 = TypesFactory.eINSTANCE.createClassifierReference();
+		var tr2 = TypesFactory.eINSTANCE.createClassifierReference();
+		var res = cc.getEmptyResourceInstance();
+
+		res.getContents().add(cls);
+		res.getContents().add(tr1);
+		res.getContents().add(tr2);
+
+		tr1.setTarget(cls);
+		tr2.setTarget(cls);
+
+		var baseRes = cc.getResourceCopy(res);
+
+		var changes = cc.getEChangesFor(res,
+				List.of(ChangePreprocessingTestModifications.unsetSingleValuedFeatAction(tr1,
+						TypesPackage.Literals.CLASSIFIER_REFERENCE__TARGET),
+						ChangePreprocessingTestModifications.unsetSingleValuedFeatAction(tr2,
+								TypesPackage.Literals.CLASSIFIER_REFERENCE__TARGET),
+						ChangePreprocessingTestModifications.removeRootFromResourceAction(cls)));
+
+//		Assertions.assertEquals(3, changes.size());
+		var postRuleChanges = rule.apply(changes);
+//		Assertions.assertEquals(3, changes.size());
+//		Assertions.assertEquals(3, postRuleChanges.size());
 		ChangePreprocessingTestAssertions.assertChangeSequencesHaveSameEffect(baseRes, changes, postRuleChanges);
 	}
 

@@ -43,7 +43,7 @@ public final class ChangePreprocessingTestAssertions {
 		Assertions.assertEquals(res1Elems.size(), res2Elems.size());
 
 		for (int i = 0; i < res1Elems.size(); i++) {
-			Assertions.assertTrue(ChangeUtil.eObjectsEqual(res1Elems.get(i), res2Elems.get(i)));
+			Assertions.assertTrue(ChangeUtil.eObjectsNonNullAndEqual(res1Elems.get(i), res2Elems.get(i)));
 		}
 	}
 }

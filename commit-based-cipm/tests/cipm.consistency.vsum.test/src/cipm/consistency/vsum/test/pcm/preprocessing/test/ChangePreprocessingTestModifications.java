@@ -61,11 +61,21 @@ public class ChangePreprocessingTestModifications {
 		return (r) -> findEObjInRes(r, obj).eSet(feat, val);
 	}
 
+	public static Consumer<Resource> unsetSingleValuedFeatAction(EObject obj, EStructuralFeature feat) {
+		preFeatChangeCheck(obj, feat);
+
+		// Do not check for unsettability, since it seems to be inconsistent across
+		// different EObject types. Ex: Class.target is not unsettable, yet it can be
+		// set to null via eUnset().
+
+		return (r) -> findEObjInRes(r, obj).eUnset(feat);
+	}
+
 	private static EObject findEObjInRes(Resource r, EObject obj) {
 		var it = r.getAllContents();
 		while (it.hasNext()) {
 			var currentObj = it.next();
-			if (ChangeUtil.eObjectsEqual(currentObj, obj)) {
+			if (ChangeUtil.eObjectsNonNullAndEqual(currentObj, obj)) {
 				return currentObj;
 			}
 		}
@@ -128,12 +138,19 @@ public class ChangePreprocessingTestModifications {
 		}
 	}
 
-	private static void preFeatSetArgumentCheck(EObject obj, EStructuralFeature feat, Object val) {
+	private static void preFeatChangeCheck(EObject obj, EStructuralFeature feat) {
 		Preconditions.checkArgument(feat.isChangeable(), "Given feat must be changeable");
-		Preconditions.checkArgument(val != null || feat.isUnsettable(),
-				"Given feat must be unsettable for val = null to be allowed");
 		Preconditions.checkArgument(obj.eClass().getEAllStructuralFeatures().contains(feat),
 				"Given obj must support feat");
+	}
+
+	private static void preFeatSetArgumentCheck(EObject obj, EStructuralFeature feat, Object val) {
+		preFeatChangeCheck(obj, feat);
+
+		// Do not check for unsettability, since it seems to be inconsistent across
+		// different EObject types. Ex: Class.target is not unsettable, yet it can be
+		// set to null via eUnset().
+
 		var featValCls = feat.getEType().getInstanceClass();
 		Preconditions.checkArgument(feat.getEType().getInstanceClass().isAssignableFrom(val.getClass()),
 				"Type of val must be: " + featValCls.getSimpleName());

@@ -14,7 +14,9 @@ import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.atomic.SubtractiveEChange;
 import tools.vitruv.change.atomic.eobject.CreateEObject;
 import tools.vitruv.change.atomic.eobject.DeleteEObject;
+import tools.vitruv.change.atomic.eobject.EObjectAddedEChange;
 import tools.vitruv.change.atomic.eobject.EObjectExistenceEChange;
+import tools.vitruv.change.atomic.eobject.EObjectSubtractedEChange;
 import tools.vitruv.change.atomic.feature.FeatureEChange;
 import tools.vitruv.change.atomic.feature.UnsetFeature;
 import tools.vitruv.change.atomic.feature.list.InsertInListEChange;
@@ -22,12 +24,10 @@ import tools.vitruv.change.atomic.feature.list.RemoveFromListEChange;
 import tools.vitruv.change.atomic.root.InsertRootEObject;
 import tools.vitruv.change.atomic.root.RemoveRootEObject;
 
-/**
- * Does not handle ReplaceSingleValuedFeatureEChange, they must first be broken
- * down to add and remove changes.
- */
 public final class ChangeUtil {
-	public static boolean eObjectsEqual(EObject obj1, EObject obj2) {
+	public static boolean eObjectsNonNullAndEqual(EObject obj1, EObject obj2) {
+		if (obj1 == null || obj2 == null)
+			return false;
 		if (!EcoreUtil.equals(obj1, obj2))
 			return false;
 
@@ -46,6 +46,20 @@ public final class ChangeUtil {
 		var idVal1 = ((EObjectExistenceEChange<?>) change1).getIdAttributeValue();
 		var idVal2 = ((EObjectExistenceEChange<?>) change2).getIdAttributeValue();
 		return idVal1 == idVal2 || idVal1.equals(idVal2);
+	}
+
+	public static boolean affectedFeatureValueTypeIsEObject(EChange change) {
+		var feat = getAffectedFeature(change);
+		if (feat == null)
+			return false;
+		return EObject.class.isAssignableFrom(feat.getEType().getInstanceClass());
+	}
+
+	public static boolean affectedFeatureSupportsValueType(EChange change, Class<?> valueType) {
+		var feat = getAffectedFeature(change);
+		if (feat == null)
+			return false;
+		return feat.getEType().getInstanceClass().isAssignableFrom(valueType);
 	}
 
 	public static boolean affectedFeaturesPresentAndEqual(EChange change1, EChange change2) {
@@ -68,7 +82,7 @@ public final class ChangeUtil {
 		if (!idAttributeValuesEqual(change1, change2))
 			return false;
 
-		return eObjectsEqual(affectedObj1, affectedObj2);
+		return eObjectsNonNullAndEqual(affectedObj1, affectedObj2);
 	}
 
 	public static boolean affectedEObjectFeaturesPresentAndEqual(EChange change1, EChange change2) {
@@ -98,7 +112,7 @@ public final class ChangeUtil {
 		if (oldChange instanceof InsertRootEObject && newChange instanceof RemoveRootEObject) {
 			var castedOC = (InsertRootEObject<?>) oldChange;
 			var castedNC = (RemoveRootEObject<?>) newChange;
-			return eObjectsEqual(castedOC.getNewValue(), castedNC.getOldValue());
+			return eObjectsNonNullAndEqual(castedOC.getNewValue(), castedNC.getOldValue());
 		}
 
 		if (oldChange instanceof CreateEObject && newChange instanceof DeleteEObject) {
@@ -115,7 +129,7 @@ public final class ChangeUtil {
 			if (newVal == null || oldVal == null)
 				return false;
 			if (newVal instanceof EObject && oldVal instanceof EObject)
-				return eObjectsEqual((EObject) newVal, (EObject) oldVal);
+				return eObjectsNonNullAndEqual((EObject) newVal, (EObject) oldVal);
 			return oldVal.equals(newVal);
 		}
 		return false;
@@ -156,6 +170,18 @@ public final class ChangeUtil {
 	public static Object getOldValue(EChange change) {
 		if (change instanceof SubtractiveEChange)
 			return ((SubtractiveEChange<?>) change).getOldValue();
+		return null;
+	}
+
+	public static String getNewValueID(EChange change) {
+		if (change instanceof EObjectAddedEChange)
+			return ((EObjectAddedEChange<?>) change).getNewValueID();
+		return null;
+	}
+
+	public static String getOldValueID(EChange change) {
+		if (change instanceof EObjectSubtractedEChange)
+			return ((EObjectSubtractedEChange<?>) change).getOldValueID();
 		return null;
 	}
 
@@ -205,19 +231,19 @@ public final class ChangeUtil {
 	public static boolean areMatchingEObjectExistenceChanges(EChange createChange, EChange deleteChange) {
 		if (!(createChange instanceof CreateEObject && deleteChange instanceof DeleteEObject))
 			return false;
-		return eObjectsEqual(getAffectedEObject(createChange), getAffectedEObject(deleteChange));
+		return eObjectsNonNullAndEqual(getAffectedEObject(createChange), getAffectedEObject(deleteChange));
 	}
 
 	public static boolean areMatchingRootEChanges(EChange insertChange, EChange removeChange) {
 		if (!(insertChange instanceof InsertRootEObject && removeChange instanceof RemoveRootEObject))
 			return false;
-		return eObjectsEqual((EObject) getNewValue(insertChange), (EObject) getOldValue(removeChange));
+		return eObjectsNonNullAndEqual((EObject) getNewValue(insertChange), (EObject) getOldValue(removeChange));
 	}
 
 	public static boolean areMatchingFeatValListEChanges(EChange insertChange, EChange removeChange) {
 		if (!(insertChange instanceof InsertInListEChange && removeChange instanceof RemoveFromListEChange))
 			return false;
-		return eObjectsEqual(getAffectedEObject(insertChange), getAffectedEObject(removeChange))
+		return eObjectsNonNullAndEqual(getAffectedEObject(insertChange), getAffectedEObject(removeChange))
 				&& getAffectedFeature(insertChange) == getAffectedFeature(removeChange);
 	}
 
@@ -225,7 +251,7 @@ public final class ChangeUtil {
 		if (col == null)
 			return false;
 
-		return col.stream().anyMatch((o) -> eObjectsEqual(o, objToSeek));
+		return col.stream().anyMatch((o) -> eObjectsNonNullAndEqual(o, objToSeek));
 	}
 
 	public static int getIndexOfObj(EChange change, EObject obj) {

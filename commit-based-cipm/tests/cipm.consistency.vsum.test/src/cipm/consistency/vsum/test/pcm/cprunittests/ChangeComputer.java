@@ -46,13 +46,15 @@ public class ChangeComputer {
 	}
 
 	public Resource getEmptyResourceInstance() {
-		return new ResourceSetImpl()
-				.createResource(URI.createFileURI(new File("").toPath().resolve("res.repository").toString()));
+		return new ResourceSetImpl().createResource(URI.createFileURI(new File("").toPath().resolve("res").toString()));
 	}
 
 	public Resource getResourceCopy(Resource res) {
 		var newRes = this.getEmptyResourceInstance();
-		res.getContents().forEach((c) -> newRes.getContents().add(EcoreUtil.copy(c)));
+		var copier = new EcoreUtil.Copier();
+		var copies = copier.copyAll(res.getContents());
+		copier.copyReferences();
+		newRes.getContents().addAll(copies);
 		return newRes;
 	}
 
@@ -65,7 +67,8 @@ public class ChangeComputer {
 	}
 
 	/**
-	 * Modifies oldRes along the way
+	 * Modifies oldRes along the way. This allows using the original oldRes contents
+	 * in modifications.
 	 */
 	public List<EChange> getEChangesFor(Resource oldRes, Consumer<Resource> modifications) {
 		var unmodifiedResDupl = this.getResourceCopy(oldRes);
