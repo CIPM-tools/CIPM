@@ -17,12 +17,14 @@ import tools.vitruv.change.atomic.feature.UpdateMultiValuedFeatureEChange;
 import tools.vitruv.change.atomic.feature.reference.ReplaceSingleValuedEReference;
 
 /**
- * <p>
- * Set containment obj.feat to R -> Delete R ==> NOP -> Delete R
- * <p>
- * Set containing obj.feat to R -> Delete R ==> Unset obj.feat -> Delete R
+ * Set obj.feat to R -> Delete R ==> (Unset R or NOP) -> Delete R
  */
 public class RemoveDeletedElementFeatureChangesRule extends ChangeSequenceProcessingRule {
+
+	// TODO Split this rule into 2: 1) Handles replace changes; 2) Removes redundant
+	// FeatureEChanges
+	// TODO Go over the entire EChanges concrete types to simplify implementation
+	// and keep this rule clear
 
 	@Override
 	public List<EChange> apply(List<EChange> changeSequence) {
