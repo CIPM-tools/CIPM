@@ -12,8 +12,8 @@ import org.palladiosimulator.pcm.repository.RepositoryFactory;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
 
 import cipm.consistency.vsum.test.pcm.cprunittests.ChangeComputer;
-import cipm.consistency.vsum.test.pcm.preprocessing.ChangeSequenceProcessingRule;
-import cipm.consistency.vsum.test.pcm.preprocessing.RemoveRedundantChangesRule;
+import cipm.consistency.vsum.test.pcm.preprocessing.rules.ChangePreprocessingRule;
+import cipm.consistency.vsum.test.pcm.preprocessing.rules.atomic.RemoveRedundantChangesRule;
 import tools.vitruv.change.atomic.eobject.DeleteEObject;
 import tools.vitruv.change.atomic.root.RemoveRootEObject;
 
@@ -27,7 +27,7 @@ import tools.vitruv.change.atomic.root.RemoveRootEObject;
  */
 public class RemoveDeletedElementChangesRuleTests {
 	private static final ChangeComputer cc = new ChangeComputer();
-	private static final ChangeSequenceProcessingRule rule = new RemoveRedundantChangesRule();
+	private static final ChangePreprocessingRule rule = new RemoveRedundantChangesRule();
 
 	/**
 	 * Change sequence: Create R -> Delete R

@@ -1,9 +1,11 @@
-package cipm.consistency.vsum.test.pcm.preprocessing;
+package cipm.consistency.vsum.test.pcm.preprocessing.rules.atomic;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import cipm.consistency.vsum.test.pcm.preprocessing.ChangeUtil;
+import cipm.consistency.vsum.test.pcm.preprocessing.rules.ChangePreprocessingRule;
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.atomic.feature.list.InsertInListEChange;
 import tools.vitruv.change.atomic.feature.list.RemoveFromListEChange;
@@ -11,7 +13,7 @@ import tools.vitruv.change.atomic.feature.list.RemoveFromListEChange;
 /**
  * Insert Obj in (many-valued feature) feat -> Remove Obj from feat ==> NOP
  */
-public class RemoveRedundantFeatValListChangesRule extends ChangeSequenceProcessingRule {
+public class RemoveRedundantSingleListEntryChangesRule extends ChangePreprocessingRule {
 
 	@Override
 	public List<EChange> apply(List<EChange> changeSequence) {
@@ -24,7 +26,7 @@ public class RemoveRedundantFeatValListChangesRule extends ChangeSequenceProcess
 
 		for (var rc : removeChanges) {
 			var matchingInsert = insertChanges.stream()
-					.filter((ic) -> ChangeUtil.areMatchingFeatValListEChanges(ic, rc)).findFirst();
+					.filter((ic) -> ChangeUtil.areMatchingSingleListEntryEChanges(ic, rc)).findFirst();
 			if (matchingInsert.isPresent()) {
 				newChangeList.remove(matchingInsert.get());
 				newChangeList.remove(rc);

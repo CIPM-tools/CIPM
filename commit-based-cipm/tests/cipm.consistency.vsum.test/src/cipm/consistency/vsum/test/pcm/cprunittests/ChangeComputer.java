@@ -50,7 +50,7 @@ public class ChangeComputer {
 	}
 
 	public Resource getResourceCopy(Resource res) {
-		var newRes = this.getEmptyResourceInstance();
+		var newRes = new ResourceSetImpl().createResource(res.getURI());
 		var copier = new EcoreUtil.Copier();
 		var copies = copier.copyAll(res.getContents());
 		copier.copyReferences();
