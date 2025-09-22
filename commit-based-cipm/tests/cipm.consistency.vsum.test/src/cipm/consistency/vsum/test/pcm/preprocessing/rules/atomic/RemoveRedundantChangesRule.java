@@ -16,20 +16,18 @@ public class RemoveRedundantChangesRule extends ChangePreprocessingRule {
 	@Override
 	public List<EChange> apply(List<EChange> changeSequence) {
 		return
-		// Create & Remove changes
+		// Create, InsertRoot, RemoveRoot, Delete changes
 		removeRedundantExistenceChangesRuleChanges.apply(
-				// Root element insertion and removal changes
-				removeRedundantRootChanges.apply(
-						// Fix replace changes
-						fixReplaceSingleValuedEReferenceChanges.apply(
-								// Many-valued feature changes (insert/remove from list)
-								removeRedundantSingleListEntryChanges.apply(
-										// Unset feature changes (unset feature)
-										removeRedundantUnsetChanges.apply(
-												// Single-valued feature changes (replace EAttribute values)
-												removeRedundantReplaceSingleValuedEAttributeChanges.apply(
+				// Fix replace changes
+				fixReplaceSingleValuedEReferenceChanges.apply(
+						// Many-valued feature changes (insert/remove from list)
+						removeRedundantSingleListEntryChanges.apply(
+								// Unset feature changes (unset feature)
+								removeRedundantUnsetChanges.apply(
+										// Single-valued feature changes (replace EAttribute values)
+										removeRedundantReplaceSingleValuedEAttributeChanges.apply(
 
-														changeSequence))))));
+												changeSequence)))));
 	}
 
 }

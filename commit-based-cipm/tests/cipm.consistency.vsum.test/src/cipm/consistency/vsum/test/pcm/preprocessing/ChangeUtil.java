@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 
+import de.uka.ipd.sdq.identifier.Identifier;
 import tools.vitruv.change.atomic.AdditiveEChange;
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.atomic.SubtractiveEChange;
@@ -46,14 +48,6 @@ public final class ChangeUtil {
 		return EcoreUtil.equals(obj1, obj2);
 	}
 
-	public static boolean idAttributeValuesEqual(EChange change1, EChange change2) {
-		if (!(change1 instanceof EObjectExistenceEChange) && !(change2 instanceof EObjectExistenceEChange))
-			return true;
-		var idVal1 = ((EObjectExistenceEChange<?>) change1).getIdAttributeValue();
-		var idVal2 = ((EObjectExistenceEChange<?>) change2).getIdAttributeValue();
-		return idVal1 == idVal2 || idVal1.equals(idVal2);
-	}
-
 	public static boolean affectedFeatureValueTypeIsEObject(EChange change) {
 		var feat = getAffectedFeature(change);
 		if (feat == null)
@@ -85,9 +79,6 @@ public final class ChangeUtil {
 		if (affectedObj1 == null || affectedObj2 == null)
 			return false;
 
-		if (!idAttributeValuesEqual(change1, change2))
-			return false;
-
 		return eObjectsNonNullAndEqual(affectedObj1, affectedObj2);
 	}
 
@@ -111,12 +102,6 @@ public final class ChangeUtil {
 		if (newAndOldValuesPresentAndEqual(oldChange, newChange))
 			return true;
 
-		return false;
-	}
-
-	public static boolean sameEObjectCreatedAndRemoved(EChange creatingChange, EChange deletingChange) {
-		if (creatingChange instanceof CreateEObject && deletingChange instanceof DeleteEObject)
-			return affectedEObjectsPresentAndEqual(creatingChange, deletingChange);
 		return false;
 	}
 
@@ -249,16 +234,47 @@ public final class ChangeUtil {
 		return containsEObject(getInvolvedEObjects(change), obj);
 	}
 
-	public static boolean areMatchingEObjectExistenceChanges(EChange createChange, EChange deleteChange) {
-		if (!(createChange instanceof CreateEObject && deleteChange instanceof DeleteEObject))
+	public static boolean areMatchingEObjectExistenceChanges(EChange createChange, EChange insertRootChange,
+			EChange removeRootChange, EChange deleteChange) {
+		if (!(createChange instanceof CreateEObject && deleteChange instanceof DeleteEObject
+				&& insertRootChange instanceof InsertRootEObject && removeRootChange instanceof RemoveRootEObject))
 			return false;
-		return sameEObjectCreatedAndRemoved(createChange, deleteChange);
+
+		var idVal1 = ((EObjectExistenceEChange<?>) createChange).getIdAttributeValue();
+		var idVal2 = ((EObjectExistenceEChange<?>) deleteChange).getIdAttributeValue();
+		if (idVal1 != idVal2 && ((idVal1 == null ^ idVal2 == null) || !idVal1.equals(idVal2)))
+			return false;
+
+		if (!affectedEObjectsPresentAndEqual(createChange, deleteChange))
+			return false;
+
+		return areMatchingRootEChanges(insertRootChange, removeRootChange);
 	}
 
 	public static boolean areMatchingRootEChanges(EChange insertChange, EChange removeChange) {
 		if (!(insertChange instanceof InsertRootEObject && removeChange instanceof RemoveRootEObject))
 			return false;
-		return newAndOldValuesPresentAndEqual(insertChange, removeChange);
+
+		if (!newAndOldValuesPresentAndEqual(insertChange, removeChange))
+			return false;
+
+		var castedIC = (InsertRootEObject<?>) insertChange;
+		var castedRC = (RemoveRootEObject<?>) removeChange;
+		var icNewVal = (EObject) castedIC.getNewValue();
+		var rcOldVal = (EObject) castedRC.getOldValue();
+
+		var icURIWithIdx = URI.createURI(castedIC.getUri()).appendFragment("/" + String.valueOf(castedIC.getIndex()))
+				.toString();
+
+		if (icURIWithIdx.equals(castedRC.getOldValueID()))
+			return true;
+
+		if (icNewVal instanceof Identifier && rcOldVal instanceof Identifier) {
+			return URI.createURI(castedIC.getUri()).appendFragment("/" + ((Identifier) icNewVal).getId()).toString()
+					.equals(castedRC.getOldValueID());
+		}
+
+		return false;
 	}
 
 	public static boolean areMatchingSingleListEntryEChanges(EChange insertChange, EChange removeChange) {
@@ -266,7 +282,6 @@ public final class ChangeUtil {
 			return false;
 		return eObjectsNonNullAndEqual(getAffectedEObject(insertChange), getAffectedEObject(removeChange))
 				&& newAndOldValuesPresentAndEqual(insertChange, removeChange)
-				&& getIndexOfValue(insertChange) == getIndexOfValue(removeChange)
 				&& getAffectedFeature(insertChange) == getAffectedFeature(removeChange);
 	}
 
