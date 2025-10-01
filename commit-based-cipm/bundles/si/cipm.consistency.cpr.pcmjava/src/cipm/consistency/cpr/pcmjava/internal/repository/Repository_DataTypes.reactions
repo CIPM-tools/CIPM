@@ -1,10 +1,8 @@
 import cipm.consistency.cpr.pcmjava.PCMElementUtil
-import org.emftext.language.java.classifiers.ConcreteClassifier
 import cipm.consistency.cpr.pcmjava.JavaModelAccess
-import tools.vitruv.change.interaction.UserInteractionFactory
-import org.emftext.language.java.classifiers.Classifier
-import org.emftext.language.java.JavaClasspath
-import org.emftext.language.java.commons.Commentable
+import org.emftext.language.java.members.MembersFactory
+import org.emftext.language.java.types.TypesFactory
+import org.eclipse.emf.ecore.util.EcoreUtil
 
 import "http://www.emftext.org/java" as java
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
@@ -16,99 +14,131 @@ execute actions in java
 reaction AddedDataType {
 	after element pcm::DataType inserted in pcm::Repository[dataTypes__Repository]
 	call {
-
-		// Concept:
-		// 1) Check if a corresponding classifier exists. Add correspondence if it does
-		// 2) Add correspondences between DataType and all references to it (so that they can be adapted accordingly)
-		// TODO Clarify if corresponding classifier could have a correspondence to a component
-		val classifiers = PCMElementUtil.getAllJavaCorrespondentsOfType(affectedEObject, correspondenceModel,
-			ConcreteClassifier, [
-				PCMElementUtil.doTypesMatch(newValue, it)
-			])
-
-		if (classifiers.size == 0) {
-			createOrLocateJavaClassifierForDataType(newValue)
-		} else if (classifiers.size == 1) {
-			addCorrespondenceBetween(newValue, classifiers.get(0))
-		} else {
-			// Detecting multiple potential matches
-			// TODO Ask the user which classifier the DataType corresponds to
-		}
+		createOrLocateJavaClassifierForDataType(newValue)
 	}
 }
 
 reaction RemovedDataType {
 	after element pcm::DataType removed from pcm::Repository[dataTypes__Repository]
 	call {
-		PCMElementUtil.getAllJavaCorrespondentsOfType(
-			affectedEObject,
-			correspondenceModel,
-			ConcreteClassifier,
-			[PCMElementUtil.doTypesMatch(oldValue, it)]
-		).forEach [
-			removeDataTypeCorrespondents(oldValue, it)
-		]
+		removeJavaClassifierCorrespondenceFromDataType(oldValue)
+	}
+}
+
+reaction ReplacedInnerType {
+	after element pcm::DataType replaced at pcm::CollectionDataType[innerType_CollectionDataType]
+	call {
+		addOrLocateOrReplaceCorrespondingField(affectedEObject, affectedFeature, oldValue, newValue)
+	}
+}
+
+reaction AddedInnerDeclaration {
+	after element pcm::InnerDeclaration inserted in pcm::CompositeDataType[innerDeclaration_CompositeDataType]
+	call {
+		// TODO Look at the field correspondents, create them if necessary
+	}
+}
+
+reaction RemovedInnerDeclaration {
+	after element pcm::InnerDeclaration removed from pcm::CompositeDataType[innerDeclaration_CompositeDataType]
+	call {
+		// TODO Look at the field correspondents, remove them if necessary
+	}
+}
+
+reaction ReplacedInnerDeclarationDataType {
+	after element pcm::DataType replaced at pcm::InnerDeclaration[datatype_InnerDeclaration]
+	call {
+		// TODO Look at the field correspondents, adjust them if necessary
+	}
+}
+
+routine addOrLocateOrReplaceCorrespondingField(pcm::DataType outerType, EObject innerTypeEReference, pcm::DataType oldInnerType, pcm::DataType newInnerType) {
+	match {
+		val outerCls = retrieve java::ConcreteClassifier corresponding to outerType
+		val outerClsInnerField = retrieve optional java::Field corresponding to innerTypeEReference
+		val oldInnerCls = retrieve java::ConcreteClassifier corresponding to oldInnerType
+		val newInnerCls = retrieve java::ConcreteClassifier corresponding to newInnerType
+	}
+	update {
+		var newTypeRef = TypesFactory.eINSTANCE.createClassifierReference()
+		newTypeRef.target = newInnerCls
+		if (outerClsInnerField.present) {
+			// Corresponding Java field is present => Set its type reference
+			outerClsInnerField.get.typeReference = newTypeRef
+			return
+		}
+
+		var preexistingField = outerCls.fields.filter[EcoreUtil.equals(it.typeReference.target, oldInnerCls)].toList
+		if (preexistingField.size == 1) {
+			// Pre-existing matching field is found => Set its type reference
+			preexistingField.get(0).typeReference = newTypeRef
+		} else if (preexistingField.size > 1) {
+			// TODO User interaction for locating the field (or creating a new one), which is responsible for
+			// storing all elements. Then set its type reference
+			//
+			// var field = 
+			// field.typeReference = newTypeRef
+		} else {
+			// No corresponding field is found, create the field
+			var field = MembersFactory.eINSTANCE.createField()
+
+			// TODO User interaction for the name of the created Field
+			// allow for the option of creating no field, as it is not always
+			// possible to handle it so easily (ex: with element nodes)
+			//
+			// TODO Add conflict resolution strategy through user preferences,
+			// so that field's name is "innerTypeField" as default
+			field.name = "innerTypeField"
+			field.typeReference = newTypeRef
+
+			outerCls.members += field
+
+			// TODO Consider adding a special tag "CREATED_BY_CHANGE_PROP"
+			// to signal that it should be removed, if the PCM DataType is removed
+			addCorrespondenceBetween(field, innerTypeEReference)
+		}
+	}
+}
+
+routine removeJavaClassifierCorrespondenceFromDataType(pcm::DataType type) {
+	match {
+		val cls = retrieve java::ConcreteClassifier corresponding to type
+	}
+	update {
+		removeCorrespondenceBetween(type, cls)
+
+	// TODO User interaction for optionally removing cls
+	//
+	// Check for dependencies and ask the user what to do:
+	// 1) Leave Java counterpart
+	// 2) Delete (user-defined) Java counterpart
 	}
 }
 
 routine createOrLocateJavaClassifierForDataType(pcm::DataType type) {
-	// About native types:
-	// Ask/determine whether the type corresponds to a native type (java.lang, java.util, etc.)
-	// Ask the user to locate it, if it cannot be found
-	// About user-defined classes:
-	// Ask what type of classifier it should be
-	// Ask whether it is an inner classifier
-	// Ask about the modifiers of the classifier too (abstract, final, static, etc.)
-	update {
-		val classifiers = JavaModelAccess.getAllTopLevelJavaModelElements([
-			PCMElementUtil.doTypesMatch(type, (it as Classifier))
-		])
-
-		if (classifiers.size == 1) {
-			// A (unique) matching Java classifier has been found, add the correspondence
-			var javaCls = classifiers.^get(0)
-			addCorrespondenceBetween(type, javaCls)
-		} else if (classifiers.size == 0) {
-			// No matching Java classifier has been found
-			// TODO Warn the user, ask if a user-defined classifier should be constructed and added to the Java Model along with a correspondence to the DataType
-		} else {
-			// Multiple matching Java classifiers have been found
-			val choices = newArrayList
-			classifiers.stream.map([(it as ConcreteClassifier).getQualifiedName()]).forEach([choices.^add(it)])
-			choices.add("None")
-			val choice = UserInteractionFactory.instance.createDialogUserInteractor.singleSelectionDialogBuilder.
-				message(
-					"There are multiple potentially corresponding Java classifiers present, which one shall correspond to the Data Type?").
-				choices(choices).startInteraction
-
-			if (choice < choices.size - 1) {
-				// A classifier has been selected, add the correspondence
-				addCorrespondenceBetween(type, classifiers.stream.filter([
-					(it as ConcreteClassifier).getQualifiedName().equals(choices.get(choice))
-				]).findFirst.get)
-			} else {
-				// The option "None" was selected, none of the suggested classifiers correspond to the type (according to user)
-				// TODO Ask if a user-defined classifier should be constructed and added to the Java Model along with a correspondence to the DataType
-			}
-		}
+	// Concept:
+	// 1) Check if a corresponding classifier exists. Add correspondence if it does
+	// 2) Add correspondences between DataType and all references to it (so that they can be adapted accordingly)
+	// TODO Clarify if corresponding classifier could have a correspondence to a component
+	match {
+		require absence of java::ConcreteClassifier corresponding to type
 	}
-}
-
-routine removeDataTypeCorrespondents(pcm::DataType type, java::Commentable javaElem) {
 	update {
-		if (getCorrespondingElement(type, Commentable, null, null, false) == javaElem) {
-			// TODO Check if javaElem is user-defined an not provided by an external library or is native to Java
-			// TODO If not, ask if javaElem should be removed
-			// TODO Deal with all dependencies to the removed DataType (ex: References)
+		var dataTypeName = PCMElementUtil.getDataTypeName(type)
+		var matchingClassifiers = JavaModelAccess.findPotentialClassifiers(dataTypeName)
+
+		// Only match based on names, as it is assumed that PCM DataTypes and their
+		// corresponding classifiers have to have the same name
+		if (matchingClassifiers.size() == 1) {
+			addCorrespondenceBetween(type, matchingClassifiers.get(0))
+		} else if (matchingClassifiers.isEmpty) {
+			// TODO User interaction for corresponding classifier stub creation
+			// Only for user defined types, otherwise this part should never be reached
+			// TODO Make sure to allow taking no action / leaving a developer task
+		} else {
+			// TODO User interaction for deciding which classifier is the correct one
+			// Present a list of namespaces, as fully qualified names have to be different
 		}
-	// TODO Implement
-	// Check for dependencies and ask the user what to do:
-	// 1) Remove PCM DataType:
-	// 1.1) Leave Java counterpart
-	// 1.2) Set all references (Java/PCM) to Object, but leave the corresponding classifier in Java
-	// 1.3) Set all references (Java/PCM) to Object, remove the corresponding classifier in Java
-	// 2) "Clean" PCM DataType: Delete its contents, but leave it as a placeholder (so that we know where it was used previously)
-	// 2.1) Remove all potentially nested stuff to their own DataType
-	// 2.2) Extract all potentially nested stuff to their own DataType
 	}
 }

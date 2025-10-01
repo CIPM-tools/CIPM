@@ -33,6 +33,18 @@ public final class PCMElementUtil {
 	private PCMElementUtil() {
 	}
 
+	public static String getDataTypeName(DataType dt) {
+		if (dt instanceof PrimitiveDataType) {
+			return ((PrimitiveDataType) dt).getType().getName();
+		} else if (dt instanceof CompositeDataType) {
+			return ((CompositeDataType) dt).getEntityName();
+		} else if (dt instanceof CollectionDataType) {
+			return ((CollectionDataType) dt).getEntityName();
+		} else {
+			throw new IllegalArgumentException("Unknown DataType implementor");
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	public static <T extends Commentable> Set<T> getAllJavaCorrespondentsOfType(EObject obj,
 			EditableCorrespondenceModelView<?> cm, Class<T> cls, Predicate<T> filter) {

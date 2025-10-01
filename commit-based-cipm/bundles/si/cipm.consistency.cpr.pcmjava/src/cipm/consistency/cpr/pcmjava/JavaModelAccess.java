@@ -1,13 +1,22 @@
 package cipm.consistency.cpr.pcmjava;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emftext.language.java.classifiers.Classifier;
+import org.emftext.language.java.commons.Commentable;
+import org.emftext.language.java.containers.JavaRoot;
+import org.emftext.language.java.members.MemberContainer;
 
 /**
  * A utility class that grants access to all Java code model elements. <br>
@@ -30,9 +39,8 @@ public final class JavaModelAccess {
 	 *         from the Java code model, whose architecture is modeled in its PCM
 	 *         counterpart.
 	 */
-	public static Collection<EObject> getAllTopLevelJavaModelElements() {
-		// TODO Implement
-		return null;
+	public static Collection<EObject> getTopLevelJavaModelElements() {
+		return getTopLevelJavaModelElements(null);
 	}
 
 	/**
@@ -40,9 +48,37 @@ public final class JavaModelAccess {
 	 *         from the Java code model satisfying the given filter, whose
 	 *         architecture is modeled in its PCM counterpart.
 	 */
-	public static Collection<EObject> getAllTopLevelJavaModelElements(Predicate<EObject> filter) {
-		// TODO Implement
-		return null;
+	public static Collection<EObject> getTopLevelJavaModelElements(Predicate<EObject> filter) {
+		if (filter == null)
+			return new ArrayList<>(javaModel.getContents());
+
+		return javaModel.getContents().stream().filter(filter).collect(Collectors.toCollection(ArrayList::new));
+	}
+
+	/**
+	 * @return All contents inside the Java code model:
+	 *         {@code javaModel.getAllContents()}
+	 */
+	public static Collection<EObject> getAllJavaModelElements() {
+		var contents = new ArrayList<EObject>();
+		javaModel.getAllContents().forEachRemaining(contents::add);
+		return contents;
+	}
+
+	/**
+	 * @return A set of Classifiers found in the Java code model, whose name
+	 *         (without namespaces) matches the given name.
+	 */
+	public static Set<Classifier> findPotentialClassifiers(String name) {
+		var clsSet = new HashSet<Classifier>();
+
+		getAllJavaModelElements().stream().filter((o) -> o instanceof Classifier).map((cls) -> ((Classifier) cls))
+				.filter((cls) -> cls.getName() != null && cls.getName().equals(name)).forEach((cls) -> {
+					if (clsSet.stream().noneMatch((c) -> EcoreUtil.equals(c, cls)))
+						clsSet.add(cls);
+				});
+
+		return clsSet;
 	}
 
 	/**
