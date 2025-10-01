@@ -5,4 +5,7 @@ reactions: allRepository
 in reaction to changes in pcm
 execute actions in java
 
-// TODO Write imports
+import interfaceProvidingEntity
+import interfaceRequiringEntity
+import repositoryDataTypes
+

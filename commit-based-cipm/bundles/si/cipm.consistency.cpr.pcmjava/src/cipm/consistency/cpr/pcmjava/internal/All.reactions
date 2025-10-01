@@ -6,7 +6,4 @@ in reaction to changes in pcm
 execute actions in java
 
 import allRepository
-import allSystem
-import allAllocation
-import allUsage
-import allResourceEnvironment
+
