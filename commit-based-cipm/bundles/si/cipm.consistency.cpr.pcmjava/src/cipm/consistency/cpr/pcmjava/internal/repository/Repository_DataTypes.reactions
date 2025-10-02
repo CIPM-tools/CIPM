@@ -1,8 +1,10 @@
-import cipm.consistency.cpr.pcmjava.PCMElementUtil
 import cipm.consistency.cpr.pcmjava.JavaModelAccess
 import org.emftext.language.java.members.MembersFactory
 import org.emftext.language.java.types.TypesFactory
-import org.eclipse.emf.ecore.util.EcoreUtil
+import cipm.consistency.cpr.pcmjava.PcmJavaTypeUtil
+import org.palladiosimulator.pcm.repository.CollectionDataType
+import org.palladiosimulator.pcm.repository.RepositoryPackage
+import org.palladiosimulator.pcm.repository.CompositeDataType
 
 import "http://www.emftext.org/java" as java
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
@@ -21,39 +23,106 @@ reaction AddedDataType {
 reaction RemovedDataType {
 	after element pcm::DataType removed from pcm::Repository[dataTypes__Repository]
 	call {
-		removeJavaClassifierCorrespondenceFromDataType(oldValue)
+		removeJavaClassifierCorrespondenceForDataType(oldValue)
 	}
 }
 
 reaction ReplacedInnerType {
 	after element pcm::DataType replaced at pcm::CollectionDataType[innerType_CollectionDataType]
 	call {
-		addOrLocateOrReplaceCorrespondingField(affectedEObject, affectedFeature, oldValue, newValue)
+		// "create" scenario has to be considered here as well, since the feature could be null at the start
+		createOrLocateOrReplaceCorrespondingField(affectedEObject, affectedFeature, oldValue, newValue)
 	}
 }
 
 reaction AddedInnerDeclaration {
 	after element pcm::InnerDeclaration inserted in pcm::CompositeDataType[innerDeclaration_CompositeDataType]
 	call {
-		// TODO Look at the field correspondents, create them if necessary
+		createOrLocateCorrespondingFieldForInnerDeclaration(newValue, newValue.datatype_InnerDeclaration,
+			affectedEObject)
 	}
 }
 
 reaction RemovedInnerDeclaration {
 	after element pcm::InnerDeclaration removed from pcm::CompositeDataType[innerDeclaration_CompositeDataType]
 	call {
-		// TODO Look at the field correspondents, remove them if necessary
+		removeCorrespondingFieldForInnerDeclaration(oldValue, oldValue.datatype_InnerDeclaration)
 	}
 }
 
 reaction ReplacedInnerDeclarationDataType {
 	after element pcm::DataType replaced at pcm::InnerDeclaration[datatype_InnerDeclaration]
 	call {
-		// TODO Look at the field correspondents, adjust them if necessary
+		replaceCorrespondingFieldTypeForInnerDeclarationType(affectedEObject, newValue)
 	}
 }
 
-routine addOrLocateOrReplaceCorrespondingField(pcm::DataType outerType, EObject innerTypeEReference, pcm::DataType oldInnerType, pcm::DataType newInnerType) {
+// TODO For replacing field types, check if its references can be automatically changed without breaking the code
+// Return types, Parameter types, Generic types, method call chains that target the field
+//
+routine replaceCorrespondingFieldTypeForInnerDeclarationType(pcm::InnerDeclaration pcmInnerDecl, pcm::DataType pcmInnerDeclType) {
+	match {
+		val field = retrieve java::Field corresponding to pcmInnerDecl
+		val newJavaType = retrieve java::ConcreteClassifier corresponding to pcmInnerDeclType
+	}
+	update {
+		// TODO User interaction for whether the field should be replaced, as it is not always
+		// possible to determine automatically (ex: if the field is referenced somewhere)
+		var newTypeRef = TypesFactory.eINSTANCE.createClassifierReference()
+		newTypeRef.target = newJavaType
+		field.typeReference = newTypeRef
+	}
+}
+
+routine removeCorrespondingFieldForInnerDeclaration(pcm::InnerDeclaration pcmInnerDecl, pcm::DataType pcmOuterType) {
+	match {
+		val field = retrieve java::Field corresponding to pcmInnerDecl
+		val outerCls = retrieve java::ConcreteClassifier corresponding to pcmOuterType
+	}
+	update {
+		// TODO User interaction for whether the field should be removed, as it is not always
+		// possible to determine automatically (ex: if the field is referenced somewhere)
+		//
+		outerCls.members -= field
+		removeCorrespondenceBetween(field, pcmInnerDecl)
+	}
+}
+
+routine createOrLocateCorrespondingFieldForInnerDeclaration(pcm::InnerDeclaration pcmInnerDecl, pcm::DataType pcmInnerType, pcm::DataType pcmOuterType) {
+	match {
+		val outerCls = retrieve java::ConcreteClassifier corresponding to pcmOuterType
+		val innerCls = retrieve java::ConcreteClassifier corresponding to pcmInnerType
+	}
+	update {
+		var newTypeRef = TypesFactory.eINSTANCE.createClassifierReference()
+		newTypeRef.target = innerCls
+
+		// TODO User interaction for whether the field should be replaced, as it is not always
+		// possible to determine automatically (ex: if the field is referenced somewhere)
+		//
+		// Maybe there exists a Java field without correspondence
+		var preexistingField = PcmJavaTypeUtil.getJavaFieldForIn(pcmInnerDecl.datatype_InnerDeclaration, outerCls)
+		if (preexistingField !== null) {
+			// Pre-existing matching field is found => Set its type reference
+			preexistingField.typeReference = newTypeRef
+			return
+		}
+
+		// TODO User interaction for whether a field should be created, as it is not always
+		// possible to handle so easily (ex: with element nodes)
+		var field = MembersFactory.eINSTANCE.createField()
+		field.name = pcmInnerDecl.entityName
+		field.typeReference = newTypeRef
+
+		// TODO Consider adding a special tag "CREATED_BY_CHANGE_PROP"
+		// to signal that it should be removed, if the PCM DataType is removed
+		//
+		outerCls.members += field
+		addCorrespondenceBetween(field, pcmInnerDecl)
+	}
+}
+
+routine createOrLocateOrReplaceCorrespondingField(pcm::DataType outerType, EObject innerTypeEReference, pcm::DataType oldInnerType, pcm::DataType newInnerType) {
 	match {
 		val outerCls = retrieve java::ConcreteClassifier corresponding to outerType
 		val outerClsInnerField = retrieve optional java::Field corresponding to innerTypeEReference
@@ -61,6 +130,8 @@ routine addOrLocateOrReplaceCorrespondingField(pcm::DataType outerType, EObject 
 		val newInnerCls = retrieve java::ConcreteClassifier corresponding to newInnerType
 	}
 	update {
+		// TODO User interaction for whether the field should be replaced, as it is not always
+		// possible to determine automatically (ex: if the field is referenced somewhere)
 		var newTypeRef = TypesFactory.eINSTANCE.createClassifierReference()
 		newTypeRef.target = newInnerCls
 		if (outerClsInnerField.present) {
@@ -69,43 +140,47 @@ routine addOrLocateOrReplaceCorrespondingField(pcm::DataType outerType, EObject 
 			return
 		}
 
-		var preexistingField = outerCls.fields.filter[EcoreUtil.equals(it.typeReference.target, oldInnerCls)].toList
-		if (preexistingField.size == 1) {
+		// No Java field corresponding to innerType exists
+		// Maybe there exists a Java field without correspondence
+		var preexistingField = PcmJavaTypeUtil.getJavaFieldForIn(oldInnerType, outerCls)
+		if (preexistingField !== null) {
 			// Pre-existing matching field is found => Set its type reference
-			preexistingField.get(0).typeReference = newTypeRef
-		} else if (preexistingField.size > 1) {
-			// TODO User interaction for locating the field (or creating a new one), which is responsible for
-			// storing all elements. Then set its type reference
-			//
-			// var field = 
-			// field.typeReference = newTypeRef
-		} else {
-			// No corresponding field is found, create the field
-			var field = MembersFactory.eINSTANCE.createField()
-
-			// TODO User interaction for the name of the created Field
-			// allow for the option of creating no field, as it is not always
-			// possible to handle it so easily (ex: with element nodes)
-			//
-			// TODO Add conflict resolution strategy through user preferences,
-			// so that field's name is "innerTypeField" as default
-			field.name = "innerTypeField"
-			field.typeReference = newTypeRef
-
-			outerCls.members += field
-
-			// TODO Consider adding a special tag "CREATED_BY_CHANGE_PROP"
-			// to signal that it should be removed, if the PCM DataType is removed
-			addCorrespondenceBetween(field, innerTypeEReference)
+			preexistingField.typeReference = newTypeRef
+			return
 		}
+
+		// The Java field has to be created inside outerCls,
+		// if the inner type is to have a correspondence
+		//
+		// TODO User interaction for the name of the created Field
+		// allow for the option of creating no field, as it is not always
+		// possible to handle it so easily (ex: with element nodes)
+		//
+		// TODO Add conflict resolution strategy through user preferences,
+		// so that field's name is "innerTypeField" as default
+		var field = MembersFactory.eINSTANCE.createField()
+		field.name = "innerTypeField"
+		field.typeReference = newTypeRef
+
+		outerCls.members += field
+
+		// TODO Consider adding a special tag "CREATED_BY_CHANGE_PROP"
+		// to signal that it should be removed, if the PCM DataType is removed
+		addCorrespondenceBetween(field, innerTypeEReference)
 	}
 }
 
-routine removeJavaClassifierCorrespondenceFromDataType(pcm::DataType type) {
+routine removeJavaClassifierCorrespondenceForDataType(pcm::DataType type) {
 	match {
 		val cls = retrieve java::ConcreteClassifier corresponding to type
 	}
 	update {
+		if (type instanceof CollectionDataType)
+			removeJavaFieldCorrespondenceForCollectionDataType(type)
+
+		if (type instanceof CompositeDataType)
+			type.innerDeclaration_CompositeDataType.forall[removeJavaFieldCorrespondencesForInnerDeclaration]
+
 		removeCorrespondenceBetween(type, cls)
 
 	// TODO User interaction for optionally removing cls
@@ -113,6 +188,36 @@ routine removeJavaClassifierCorrespondenceFromDataType(pcm::DataType type) {
 	// Check for dependencies and ask the user what to do:
 	// 1) Leave Java counterpart
 	// 2) Delete (user-defined) Java counterpart
+	}
+}
+
+routine removeJavaFieldCorrespondenceForCollectionDataType(pcm::CollectionDataType type) {
+	match {
+		val field = retrieve java::Field corresponding to type.eClass.getEStructuralFeature(
+			RepositoryPackage.COLLECTION_DATA_TYPE__INNER_TYPE_COLLECTION_DATA_TYPE)
+	}
+	update {
+		// TODO User interaction for optionally removing field
+		//
+		// Check for dependencies and ask the user what to do:
+		// 1) Leave Java counterpart
+		// 2) Delete (user-defined) Java counterpart
+		removeCorrespondenceBetween(field, type.eClass.getEStructuralFeature(
+			RepositoryPackage.COLLECTION_DATA_TYPE__INNER_TYPE_COLLECTION_DATA_TYPE))
+	}
+}
+
+routine removeJavaFieldCorrespondencesForInnerDeclaration(pcm::InnerDeclaration pcmInnerDecl) {
+	match {
+		val field = retrieve java::Field corresponding to pcmInnerDecl
+	}
+	update {
+		// TODO User interaction for optionally removing field
+		//
+		// Check for dependencies and ask the user what to do:
+		// 1) Leave Java counterpart
+		// 2) Delete (user-defined) Java counterpart
+		removeCorrespondenceBetween(field, pcmInnerDecl)
 	}
 }
 
@@ -125,11 +230,16 @@ routine createOrLocateJavaClassifierForDataType(pcm::DataType type) {
 		require absence of java::ConcreteClassifier corresponding to type
 	}
 	update {
-		var dataTypeName = PCMElementUtil.getDataTypeName(type)
-		var matchingClassifiers = JavaModelAccess.findPotentialClassifiers(dataTypeName)
-
 		// Only match based on names, as it is assumed that PCM DataTypes and their
-		// corresponding classifiers have to have the same name
+		// corresponding classifiers have to have the same name.
+		//
+		// However, there could still be multiple matches since differences in namespaces are possible.
+		// In such cases, user has to be asked for conflict resolution
+		var matchingClassifiers = JavaModelAccess.findPotentialConcreteClassifiers(
+			PcmJavaTypeUtil.getDataTypeName(type)).filter [
+			PcmJavaTypeUtil.doTypesMatch(type, it)
+		]
+
 		if (matchingClassifiers.size() == 1) {
 			addCorrespondenceBetween(type, matchingClassifiers.get(0))
 		} else if (matchingClassifiers.isEmpty) {

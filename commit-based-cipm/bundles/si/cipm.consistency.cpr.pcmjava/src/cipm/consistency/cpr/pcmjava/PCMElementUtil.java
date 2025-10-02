@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 import org.eclipse.emf.ecore.EObject;
-import org.emftext.language.java.classifiers.Classifier;
 import org.emftext.language.java.classifiers.ConcreteClassifier;
 import org.emftext.language.java.commons.Commentable;
 import org.emftext.language.java.imports.Import;
@@ -16,14 +15,9 @@ import org.emftext.language.java.imports.ImportingElement;
 import org.emftext.language.java.members.Method;
 import org.emftext.language.java.modifiers.AnnotableAndModifiable;
 import org.emftext.language.java.modifiers.Public;
-import org.emftext.language.java.types.TypeReference;
-import org.palladiosimulator.pcm.repository.CollectionDataType;
-import org.palladiosimulator.pcm.repository.CompositeDataType;
-import org.palladiosimulator.pcm.repository.DataType;
 import org.palladiosimulator.pcm.repository.OperationInterface;
 import org.palladiosimulator.pcm.repository.OperationRequiredRole;
 import org.palladiosimulator.pcm.repository.OperationSignature;
-import org.palladiosimulator.pcm.repository.PrimitiveDataType;
 
 import com.google.common.collect.Sets;
 
@@ -31,18 +25,6 @@ import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
 
 public final class PCMElementUtil {
 	private PCMElementUtil() {
-	}
-
-	public static String getDataTypeName(DataType dt) {
-		if (dt instanceof PrimitiveDataType) {
-			return ((PrimitiveDataType) dt).getType().getName();
-		} else if (dt instanceof CompositeDataType) {
-			return ((CompositeDataType) dt).getEntityName();
-		} else if (dt instanceof CollectionDataType) {
-			return ((CollectionDataType) dt).getEntityName();
-		} else {
-			throw new IllegalArgumentException("Unknown DataType implementor");
-		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -106,42 +88,6 @@ public final class PCMElementUtil {
 	}
 
 	/**
-	 * @return Whether the given PCM DataType matches the given Java TypeReference
-	 * @throws IllegalArgumentException If the PCM DataType is not an instance of
-	 *                                  PrimitiveDataType, CompositeDataType or
-	 *                                  CollectionDataType
-	 */
-	public static boolean doTypesMatch(DataType pcmType, Classifier javaType) {
-		if (pcmType instanceof PrimitiveDataType) {
-			var castedPCMType = (PrimitiveDataType) pcmType;
-
-			return castedPCMType.getType().getName().toString().equals(javaType.getName());
-		} else if (pcmType instanceof CompositeDataType) {
-			var castedPCMType = (CompositeDataType) pcmType;
-
-			return castedPCMType.getEntityName().equals(javaType.getName());
-		} else if (pcmType instanceof CollectionDataType) {
-			var castedPCMType = (CollectionDataType) pcmType;
-
-			return castedPCMType.getEntityName().equals(javaType.getName());
-		} else {
-			throw new IllegalArgumentException("Unknown PCM DataType");
-		}
-	}
-
-	public static boolean doTypesMatch(DataType pcmType, TypeReference javaType) {
-		var javaClassifier = javaType.getPureClassifierReference();
-
-		// Check out-most types
-		if (!doTypesMatch(pcmType, javaClassifier))
-			return false;
-
-		// TODO Check inner types too
-
-		return true;
-	}
-
-	/**
 	 * TODO Clarify whether generic elements matter here (ex: TypeArguments)
 	 * 
 	 * @param checkExceptions Whether exceptions should match as well
@@ -155,7 +101,7 @@ public final class PCMElementUtil {
 		}
 
 		// Check return types
-		if (!doTypesMatch(pcmSig.getReturnType__OperationSignature(), javaMet.getTypeReference())) {
+		if (!PcmJavaTypeUtil.doTypesMatch(pcmSig.getReturnType__OperationSignature(), javaMet.getTypeReference())) {
 			return false;
 		}
 
@@ -169,7 +115,7 @@ public final class PCMElementUtil {
 		// Check parameter types
 		if (!pcmSig.getParameters__OperationSignature().stream()
 				.allMatch((pcmParam) -> javaMet.getParameters().stream()
-						.anyMatch((javaParam) -> doTypesMatch(pcmParam.getDataType__Parameter(),
+						.anyMatch((javaParam) -> PcmJavaTypeUtil.doTypesMatch(pcmParam.getDataType__Parameter(),
 								javaParam.getTypeReference())))) {
 			return false;
 		}
@@ -282,75 +228,6 @@ public final class PCMElementUtil {
 	public static Set<Import> getRequiredRoleImports(OperationRequiredRole reqRole,
 			EditableCorrespondenceModelView<?> cm) {
 		return getRequiredInterfaceImports(reqRole.getRequiredInterface__OperationRequiredRole(), cm);
-	}
-
-	/**
-	 * @param pcmType            The PCM DataType
-	 * @param javaType           The Java Classifier corresponding to pcmType
-	 * @param toSearchForImports Java elements, which should be searched for imports
-	 *                           to javaType
-	 * @return A set of all direct, 1 to 1 imports to javaType (i.e. all imports,
-	 *         which only import javaType)
-	 */
-	public static Set<Import> getAllDataTypeImports(DataType pcmType, EditableCorrespondenceModelView<?> cm) {
-		var javaType = (ConcreteClassifier) cm.getCorrespondingEObjects(pcmType).stream()
-				.filter((javaObj) -> (javaObj instanceof ConcreteClassifier)).findFirst().get();
-		if (!doTypesMatch(pcmType, javaType)) {
-			return null;
-		}
-
-		// TODO Account for DataType's inner types too
-
-		var importSet = new HashSet<Import>();
-		for (var je : getAllJavaCorrespondentsOfType(pcmType.getRepository__DataType(), cm, Commentable.class, null)) {
-			var it = je.eAllContents();
-			while (it.hasNext()) {
-				var next = it.next();
-				if (next instanceof ImportingElement) {
-					var castedJE = (ImportingElement) next;
-					castedJE.getImports().stream()
-							.filter((imp) -> imp.getClassifier().getName().equals(javaType.getName()))
-							.forEach((imp) -> importSet.add(imp));
-					it.prune();
-				}
-			}
-		}
-
-		return importSet;
-	}
-
-	/**
-	 * @param pcmType            The PCM DataType
-	 * @param javaType           The Java Classifier corresponding to pcmType
-	 * @param toSearchForImports Java elements, which should be searched for
-	 *                           references to javaType
-	 * @return A set of all direct java references to javaType
-	 */
-	public static Set<TypeReference> getAllDataTypeReferences(DataType pcmType, EditableCorrespondenceModelView<?> cm) {
-		var javaType = (ConcreteClassifier) cm.getCorrespondingEObjects(pcmType).stream()
-				.filter((javaObj) -> (javaObj instanceof ConcreteClassifier)).findFirst().get();
-		if (!doTypesMatch(pcmType, javaType)) {
-			return null;
-		}
-
-		// TODO Account for DataType's inner types too
-
-		var typeReferenceSet = new HashSet<TypeReference>();
-		for (var je : getAllJavaCorrespondentsOfType(pcmType.getRepository__DataType(), cm, Commentable.class, null)) {
-			var it = je.eAllContents();
-			while (it.hasNext()) {
-				var next = it.next();
-				if (next instanceof TypeReference) {
-					var castedJE = (TypeReference) next;
-					if (doTypesMatch(pcmType, castedJE)) {
-						typeReferenceSet.add(castedJE);
-						it.prune();
-					}
-				}
-			}
-		}
-
-		return typeReferenceSet;
 	}
 
 }

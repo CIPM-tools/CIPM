@@ -13,10 +13,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emftext.language.java.classifiers.Classifier;
-import org.emftext.language.java.commons.Commentable;
-import org.emftext.language.java.containers.JavaRoot;
-import org.emftext.language.java.members.MemberContainer;
+import org.emftext.language.java.classifiers.ConcreteClassifier;
 
 /**
  * A utility class that grants access to all Java code model elements. <br>
@@ -69,10 +66,11 @@ public final class JavaModelAccess {
 	 * @return A set of Classifiers found in the Java code model, whose name
 	 *         (without namespaces) matches the given name.
 	 */
-	public static Set<Classifier> findPotentialClassifiers(String name) {
-		var clsSet = new HashSet<Classifier>();
+	public static Set<ConcreteClassifier> findPotentialConcreteClassifiers(String name) {
+		var clsSet = new HashSet<ConcreteClassifier>();
 
-		getAllJavaModelElements().stream().filter((o) -> o instanceof Classifier).map((cls) -> ((Classifier) cls))
+		getAllJavaModelElements().stream().filter((o) -> o instanceof ConcreteClassifier)
+				.map((cls) -> ((ConcreteClassifier) cls))
 				.filter((cls) -> cls.getName() != null && cls.getName().equals(name)).forEach((cls) -> {
 					if (clsSet.stream().noneMatch((c) -> EcoreUtil.equals(c, cls)))
 						clsSet.add(cls);
