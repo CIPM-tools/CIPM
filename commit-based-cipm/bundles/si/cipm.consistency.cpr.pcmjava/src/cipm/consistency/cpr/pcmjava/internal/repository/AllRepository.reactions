@@ -7,5 +7,7 @@ execute actions in java
 
 import interfaceProvidingEntity
 import interfaceRequiringEntity
-import repositoryDataTypes
+import repositoryDataTypesExistential
+import repositoryDataTypesAttributes
+import repositoryInterfacesExistential
 
