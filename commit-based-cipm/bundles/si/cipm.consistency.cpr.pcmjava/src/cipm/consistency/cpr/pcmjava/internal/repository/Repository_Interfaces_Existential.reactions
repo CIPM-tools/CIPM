@@ -1,0 +1,194 @@
+import cipm.consistency.cpr.pcmjava.JavaModelAccess
+import cipm.consistency.cpr.pcmjava.PcmJavaCPRUtils
+import org.emftext.language.java.types.TypesFactory
+import cipm.consistency.cpr.pcmjava.PCMElementUtil
+import org.emftext.language.java.parameters.ParametersFactory
+import org.emftext.language.java.members.MembersFactory
+
+import "http://www.emftext.org/java" as java
+import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
+
+reactions: repositoryInterfacesExistential
+in reaction to changes in pcm
+execute actions in java
+
+reaction AddedInterface {
+	after element pcm::OperationInterface inserted in pcm::Repository[interfaces__Repository]
+	call {
+		findOrCreateOrDecideJavaInterface(newValue)
+	}
+}
+
+routine findOrCreateOrDecideJavaInterface(pcm::OperationInterface pcmIfc) {
+	// All PCM interfaces should have one corresponding Java Interface
+	// with a matching name. Java namespaces are excluded here
+	match {
+		require absence of java::Interface corresponding to pcmIfc
+	}
+	update {
+		val matchingJavaIfcs = JavaModelAccess.findPotentialConcreteClassifiers(pcmIfc.entityName)
+
+		// Since CIPM has PCM Interfaces have no namespaces, user disambiguation is necessary in general
+		var javaCorrespondentOfType = PcmJavaCPRUtils.findOrCreateOrDecideJavaCorrespondent(pcmIfc, matchingJavaIfcs)
+
+		PcmJavaCPRUtils.integrateJavaClassifierCorrespondent(correspondenceModel, pcmIfc, JavaModelAccess.javaModel,
+			javaCorrespondentOfType)
+	}
+}
+
+reaction RemovedInterface {
+	after element pcm::OperationInterface removed from pcm::Repository[interfaces__Repository]
+	call {
+		removeJavaInterface(oldValue)
+	}
+}
+
+routine removeJavaInterface(pcm::OperationInterface pcmIfc) {
+	match {
+		val javaIfc = retrieve java::Interface corresponding to pcmIfc
+	}
+	update {
+		// TODO Ask if Java correspondent should be removed
+		// Check for dependencies and remove if not referenced
+		javaIfc.eContainer.eContents.remove(javaIfc)
+	}
+}
+
+reaction AddedOperationSignature {
+	after element pcm::OperationSignature inserted in pcm::OperationInterface[signatures__OperationInterface]
+	call {
+		findOrCreateJavaInterfaceMethod(newValue)
+	}
+}
+
+routine findOrCreateJavaInterfaceMethod(pcm::OperationSignature pcmSig) {
+	match {
+		val javaReturnType = retrieve java::ConcreteClassifier corresponding to pcmSig.returnType__OperationSignature
+		val javaIfc = retrieve java::Interface corresponding to pcmSig.interface__OperationSignature
+	}
+	update {
+		val potentialMatchingMethods = javaIfc.methods.findFirst [
+			PCMElementUtil.doMethodSignaturesMatch(pcmSig, it, false)
+		]
+
+		if (potentialMatchingMethods !== null) {
+			PcmJavaCPRUtils.
+				addCorrespondencesForPcmOperationSignatureAndJavaInterfaceMethod(correspondenceModel, pcmSig,
+					potentialMatchingMethods)
+		} else {
+			val javaInterfaceMethod = MembersFactory.eINSTANCE.createInterfaceMethod
+			javaInterfaceMethod.name = pcmSig.entityName
+
+		// FIXME Change all java::Interface types into java::InterfaceMethod
+		// TODO Depending on the return type, either "return;", "return 0;", "return null;", "return false;"
+		// TODO Check if only adding the Java method stub with "return" is enough
+		//
+		// That should be the case, since all other Java elements will be added in other CPRs
+		}
+	}
+}
+
+reaction RemovedOperationSignature {
+	after element pcm::OperationSignature removed from pcm::OperationInterface[signatures__OperationInterface]
+	call {
+		removeJavaInterfaceMethod(oldValue)
+	}
+}
+
+routine removeJavaInterfaceMethod(pcm::OperationSignature pcmSig) {
+	match {
+		val javaMet = retrieve java::Method corresponding to pcmSig
+	}
+	update {
+		// TODO Check if removing the Java Method breaks the code
+		// TODO User interaction to ask user if Java method should be kept
+		javaMet.eContainer.eContents.remove(javaMet)
+	}
+}
+
+reaction AddedExceptionTypeToOperationSignature {
+	after element pcm::ExceptionType inserted in pcm::OperationSignature[exceptions__Signature]
+	call {
+		addExceptionTypeToJavaInterfaceMethod(affectedEObject, newValue)
+	}
+}
+
+routine addExceptionTypeToJavaInterfaceMethod(pcm::OperationSignature pcmSig, pcm::ExceptionType pcmExcType) {
+	match {
+		val javaMet = retrieve java::Method corresponding to pcmSig
+	}
+	update {
+		var matchingJavaExcs = JavaModelAccess.findPotentialConcreteClassifiers(pcmExcType.exceptionName)
+
+		if (matchingJavaExcs.size() == 1) {
+			// TODO Check if adding exception type breaks code
+			// TODO User interaction to resolve issues
+			var javaExcRef = TypesFactory.eINSTANCE.createNamespaceClassifierReference
+			javaExcRef.target = matchingJavaExcs.get(0)
+			javaMet.exceptions += javaExcRef
+			PcmJavaCPRUtils.addCorrespondenceToJavaCorrespondent(correspondenceModel, pcmExcType, javaExcRef)
+		} else if (matchingJavaExcs.size() > 1) {
+			// TODO User interaction to ask for which exception is correct
+		}
+	}
+}
+
+reaction RemovedExceptionTypeToOperationSignature {
+	after element pcm::ExceptionType removed from pcm::OperationSignature[exceptions__Signature]
+	call {
+		removeExceptionTypeFromJavaInterfaceMethod(affectedEObject, oldValue)
+	}
+}
+
+routine removeExceptionTypeFromJavaInterfaceMethod(pcm::OperationSignature pcmSig, pcm::ExceptionType pcmExcType) {
+	match {
+		val javaMet = retrieve java::Method corresponding to pcmSig
+		val javaExcRef = retrieve java::NamespaceClassifierReference corresponding to pcmExcType
+	}
+	update {
+		// TODO Check if removing exception type breaks code
+		javaMet.exceptions -= javaExcRef
+	}
+}
+
+reaction AddedParameterToOperationSignature {
+	after element pcm::Parameter inserted in pcm::OperationSignature[parameters__OperationSignature]
+	call {
+		addParameterToJavaInterfaceMethod(affectedEObject, newValue)
+	}
+}
+
+routine addParameterToJavaInterfaceMethod(pcm::OperationSignature pcmSig, pcm::Parameter pcmParam) {
+	match {
+		val javaMet = retrieve java::Method corresponding to pcmSig
+		val javaParamCls = retrieve java::ConcreteClassifier corresponding to pcmParam.dataType__Parameter
+	}
+	update {
+		// TODO Check if adding a new parameter to Java method breaks code (most likely)
+		val javaParamTypeRef = TypesFactory.eINSTANCE.createClassifierReference
+		javaParamTypeRef.target = javaParamCls
+		val javaParam = ParametersFactory.eINSTANCE.createOrdinaryParameter
+		javaParam.name = pcmParam.parameterName
+		javaParam.typeReference = javaParamTypeRef
+
+		PcmJavaCPRUtils.addCorrespondenceToJavaCorrespondent(correspondenceModel, pcmParam, javaParam)
+	}
+}
+
+reaction RemovedParameterFromOperationSignature {
+	after element pcm::Parameter removed from pcm::OperationSignature[parameters__OperationSignature]
+	call {
+		removeParameterFromJavaInterfaceMethod(affectedEObject, oldValue)
+	}
+}
+
+routine removeParameterFromJavaInterfaceMethod(pcm::OperationSignature pcmSig, pcm::Parameter pcmParam) {
+	match {
+		val javaMet = retrieve java::Method corresponding to pcmSig
+		val javaParam = retrieve java::Parameter corresponding to pcmParam
+	}
+	update {
+		// TODO Check if removing a parameter from Java method breaks code (most likely)
+		javaMet.parameters -= javaParam
+	}
+}

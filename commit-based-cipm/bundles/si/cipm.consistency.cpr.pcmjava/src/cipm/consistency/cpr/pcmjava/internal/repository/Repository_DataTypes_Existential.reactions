@@ -6,7 +6,6 @@ import org.palladiosimulator.pcm.repository.CollectionDataType
 import org.palladiosimulator.pcm.repository.RepositoryPackage
 import org.palladiosimulator.pcm.repository.CompositeDataType
 import cipm.consistency.cpr.pcmjava.PcmJavaCPRUtils
-import de.uka.ipd.sdq.identifier.Identifier
 import org.emftext.language.java.classifiers.ConcreteClassifier
 import org.emftext.language.java.containers.CompilationUnit
 
@@ -160,7 +159,7 @@ routine createOrLocateOrReplaceCorrespondingField(pcm::DataType outerType, EObje
 		// allow for the option of creating no field, as it is not always
 		// possible to handle it so easily (ex: with element nodes)
 		//
-		// TODO Add conflict resolution strategy through user preferences,
+		// FIXME Add conflict resolution strategy through user preferences,
 		// so that field's name is "innerTypeField" as default
 		var field = MembersFactory.eINSTANCE.createField()
 		field.name = "innerTypeField"
@@ -244,12 +243,21 @@ routine findOrCreateOrDecideJavaClassifierForDataType(pcm::DataType pcmDataType)
 			PcmJavaTypeUtil.doTypesMatch(pcmDataType, it)
 		]
 
-		var pcmDataTypeAsIdentifier = pcmDataType as Identifier
-		var javaCorrespondentOfType = PcmJavaCPRUtils.findOrCreateOrDecideJavaCorrespondent(pcmDataTypeAsIdentifier,
+		var javaCorrespondentOfType = PcmJavaCPRUtils.findOrCreateOrDecideJavaCorrespondent(pcmDataType,
 			matchingClassifiers)
 
+		// Add necessary imports to Java Classifier to avoid compilation errors,
+		// if it was freshly created
+		if (javaCorrespondentOfType.eResource === null) {
+			if (javaCorrespondentOfType instanceof CompilationUnit) {
+				PcmJavaCPRUtils.prepareJavaCompilationUnit(javaCorrespondentOfType)
+			} else if (javaCorrespondentOfType instanceof ConcreteClassifier) {
+				PcmJavaCPRUtils.prepareJavaClassifier(javaCorrespondentOfType)
+			}
+		}
+
 		// TODO Deal with the required imports (from freshly created Java Classifier as well)
-		PcmJavaCPRUtils.integrateJavaClassifierCorrespondent(correspondenceModel, pcmDataTypeAsIdentifier,
+		PcmJavaCPRUtils.integrateJavaClassifierCorrespondent(correspondenceModel, pcmDataType,
 			JavaModelAccess.javaModel, javaCorrespondentOfType)
 	}
 }

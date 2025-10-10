@@ -1,0 +1,173 @@
+import org.emftext.language.java.types.TypesFactory
+import org.eclipse.emf.ecore.util.EcoreUtil
+import cipm.consistency.cpr.pcmjava.JavaModelAccess
+
+import "http://www.emftext.org/java" as java
+import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
+
+reactions: repositoryInterfacesAttributes
+in reaction to changes in pcm
+execute actions in java
+
+reaction RenamedInterface {
+	after attribute replaced at pcm::OperationInterface[entityName]
+	call {
+		renameJavaInterface(affectedEObject, newValue)
+	}
+}
+
+routine renameJavaInterface(pcm::OperationInterface pcmIfc, String newName) {
+	match {
+		val javaIfc = retrieve java::Interface corresponding to pcmIfc
+	}
+	update {
+		// TODO Check for conflicts
+		javaIfc.name = newName
+	}
+}
+
+reaction AddedParentInterface {
+	after element pcm::OperationInterface inserted in pcm::OperationInterface[parentInterfaces__Interface]
+	call {
+		extendChildInterface(newValue, affectedEObject)
+	}
+}
+
+routine extendChildInterface(pcm::OperationInterface pcmParentInterface, pcm::OperationInterface pcmChildInterface) {
+	match {
+		val parentJavaCorrespondent = retrieve java::Interface corresponding to pcmParentInterface
+		val childJavaCorrespondent = retrieve java::Interface corresponding to pcmChildInterface
+	}
+	update {
+		var extendsRef = TypesFactory.eINSTANCE.createClassifierReference
+		extendsRef.target = parentJavaCorrespondent
+		childJavaCorrespondent.extends.add(extendsRef)
+	}
+}
+
+reaction RemovedParentInterface {
+	after element pcm::OperationInterface removed from pcm::OperationInterface[parentInterfaces__Interface]
+	call {
+		unextendChildInterface(oldValue, affectedEObject)
+	}
+}
+
+routine unextendChildInterface(pcm::OperationInterface pcmParentInterface, pcm::OperationInterface pcmChildInterface) {
+	match {
+		val parentJavaCorrespondent = retrieve java::Interface corresponding to pcmParentInterface
+		val childJavaCorrespondent = retrieve java::Interface corresponding to pcmChildInterface
+	}
+	update {
+		val parentJavaCorrespondentRef = childJavaCorrespondent.extends.filter [
+			EcoreUtil.equals(it.target, parentJavaCorrespondent)
+		].toList
+		if (parentJavaCorrespondentRef.isEmpty) {
+			return
+		}
+
+		if (parentJavaCorrespondentRef.size == 1) {
+			childJavaCorrespondent.extends.remove(parentJavaCorrespondentRef.get(0))
+		} else {
+			// TODO User interaction to determine which matching parent interface should be removed
+		}
+	}
+}
+
+reaction RenamedOperationSignature {
+	after attribute replaced at pcm::OperationSignature[entityName]
+	call {
+		renameJavaInterfaceMethod(affectedEObject, newValue)
+	}
+}
+
+routine renameJavaInterfaceMethod(pcm::OperationSignature pcmSig, String newName) {
+	match {
+		val javaMet = retrieve java::Method corresponding to pcmSig
+	}
+	update {
+		// TODO Check for conflicts
+		javaMet.name = newName
+	}
+}
+
+reaction ReplacedOperationSignatureReturnType {
+	after element pcm::DataType replaced at pcm::OperationSignature[returnType__OperationSignature]
+	call {
+		// TODO Change return type in the method in Java interface, if it is unused
+		// Only if corresponding Java interface exists
+		changeJavaInterfaceMethodReturnType(affectedEObject, newValue)
+	}
+}
+
+routine changeJavaInterfaceMethodReturnType(pcm::OperationSignature pcmSig, pcm::DataType newType) {
+	match {
+		val newTypeJavaCls = retrieve java::ConcreteClassifier corresponding to newType
+		val javaMet = retrieve java::Method corresponding to pcmSig
+	}
+	update {
+		// TODO Check if replacing return type breaks code
+		// TODO User interaction to resolve issues
+		val newTypeRef = TypesFactory.eINSTANCE.createClassifierReference
+		newTypeRef.target = newTypeJavaCls
+		javaMet.typeReference = newTypeRef
+	}
+}
+
+reaction RenamedParameter {
+	after attribute replaced at pcm::Parameter[parameterName]
+	call {
+		renameJavaInterfaceMethodParameter(affectedEObject, newValue)
+	}
+}
+
+routine renameJavaInterfaceMethodParameter(pcm::Parameter pcmParam, String newName) {
+	match {
+		val javaParam = retrieve java::Parameter corresponding to pcmParam
+	}
+	update {
+		javaParam.name = newName
+	}
+}
+
+reaction ReplacedParameterDataType {
+	after element pcm::DataType replaced at pcm::Parameter[dataType__Parameter]
+	call {
+		replaceParameterTypeOfJavaInterfaceMethodParameter(affectedEObject, newValue)
+	}
+}
+
+routine replaceParameterTypeOfJavaInterfaceMethodParameter(pcm::Parameter pcmParam, pcm::DataType newType) {
+	match {
+		val newJavaType = retrieve java::ConcreteClassifier corresponding to newType
+		val javaParam = retrieve java::Parameter corresponding to pcmParam
+	}
+	update {
+		// TODO Check if replacing a parameter type in Java method breaks code (most likely)
+		val javaParamTypeRef = TypesFactory.eINSTANCE.createClassifierReference
+		javaParamTypeRef.target = newJavaType
+		javaParam.typeReference = javaParamTypeRef
+	}
+}
+
+reaction RenamedExceptionType {
+	after attribute replaced at pcm::ExceptionType[exceptionName]
+	call {
+	}
+}
+
+routine renameJavaInterfaceMethodException(pcm::ExceptionType pcmExcType, String newName) {
+	match {
+		val javaExcRef = retrieve java::NamespaceClassifierReference corresponding to pcmExcType
+	}
+	update {
+		var matchingJavaExcs = JavaModelAccess.findPotentialConcreteClassifiers(newName)
+
+		if (matchingJavaExcs.size() == 1) {
+			// TODO Check if changing exception type breaks code (most likely)
+			// TODO User interaction to resolve issues
+			javaExcRef.target = matchingJavaExcs.get(0)
+		} else if (matchingJavaExcs.size() > 1) {
+			// TODO User interaction to ask for which exception is correct
+		}
+	}
+}

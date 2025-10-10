@@ -10,4 +10,5 @@ import interfaceRequiringEntity
 import repositoryDataTypesExistential
 import repositoryDataTypesAttributes
 import repositoryInterfacesExistential
+import repositoryInterfacesAttributes
 

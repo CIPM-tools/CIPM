@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
@@ -18,6 +19,7 @@ import org.emftext.language.java.containers.ContainersFactory;
 import org.emftext.language.java.containers.JavaRoot;
 import org.emftext.language.java.containers.Origin;
 import org.emftext.language.java.members.Method;
+import org.emftext.language.java.types.TypeReference;
 import org.palladiosimulator.pcm.repository.OperationSignature;
 
 import com.google.common.base.Preconditions;
@@ -46,8 +48,9 @@ public final class PcmJavaCPRUtils {
 	 *         ConcreteClassifier has to be created alongside its CompilationUnit,
 	 *         since its namespace comes from its container).
 	 */
-	public static <O extends Commentable, C extends Iterable<O>> Commentable findOrCreateOrDecideJavaCorrespondent(
-			EObject pcmElement, C listOfPossibleJavaCorrespondents) {
+	public static <P extends EObject, O extends Commentable, C extends Iterable<O>> Commentable findOrCreateOrDecideJavaCorrespondent(
+			P pcmElement, C listOfPossibleJavaCorrespondents, Function<P, O> javaCorrespondentCreator,
+			Function<C, O> javaCorrespondentDecider) {
 		var it = listOfPossibleJavaCorrespondents.iterator();
 		if (it.hasNext()) {
 			var firstElem = it.next();
@@ -55,15 +58,14 @@ public final class PcmJavaCPRUtils {
 				// Only one possible Java correspondent, return it
 				return firstElem;
 			} else {
-				var allElems = List.of(listOfPossibleJavaCorrespondents);
 				// Multiple possible Java correspondents, pick one
-
+				return javaCorrespondentDecider.apply(listOfPossibleJavaCorrespondents);
 				// TODO User interaction for deciding which corresponding is the correct one
 				// TODO Make sure to allow taking no action / leaving a developer task
 			}
 		} else {
 			// No possible Java correspondents, create one
-
+			return javaCorrespondentCreator.apply(pcmElement);
 			// TODO User interaction for corresponding element (stub) creation
 			// TODO Make sure to allow taking no action / leaving a developer task
 		}
@@ -164,6 +166,33 @@ public final class PcmJavaCPRUtils {
 	}
 
 	/**
+	 * Adds all missing imports to given CompilationUnit
+	 */
+	public static void prepareJavaCompilationUnit(CompilationUnit cu) {
+		var allTypeReferences = new ArrayList<TypeReference>();
+		cu.eAllContents().forEachRemaining((o) -> {
+			if (o instanceof TypeReference)
+				allTypeReferences.add((TypeReference) o);
+		});
+
+		for (var ref : allTypeReferences) {
+			if (cu.getImports().stream().noneMatch((i) -> i.getImportedClassifiers().stream()
+					.anyMatch((cls) -> ref.getPureClassifierReference().getTarget() == cls))) {
+				cu.addImport(ref.getPureClassifierReference().getTarget().getName());
+			}
+		}
+	}
+
+	/**
+	 * Adds all missing imports to given Java Classifier
+	 */
+	public static void prepareJavaClassifier(ConcreteClassifier javaCls) {
+		if (javaCls.getContainingCompilationUnit() != null) {
+			prepareJavaCompilationUnit(javaCls.getContainingCompilationUnit());
+		}
+	}
+
+	/**
 	 * Adds a correspondence between pcmElem and Java Classifier.
 	 * <p>
 	 * If Java correspondent is located, it will be a ConcreteClassifier. If Java
@@ -179,7 +208,9 @@ public final class PcmJavaCPRUtils {
 			var castedCU = (CompilationUnit) javaClsOrCU;
 			var javaCls = castedCU.getClassifiers().get(0);
 			PcmJavaCPRUtils.addCorrespondenceToJavaCorrespondent(corView, pcmElem, javaCls);
-			PcmJavaCPRUtils.addJavaClassifierIntoResource(javaModelResource, javaCls, castedCU.getNamespaces());
+			if (!isInResource(javaModelResource, javaCls)) {
+				PcmJavaCPRUtils.addJavaClassifierIntoResource(javaModelResource, javaCls, castedCU.getNamespaces());
+			}
 		}
 	}
 
