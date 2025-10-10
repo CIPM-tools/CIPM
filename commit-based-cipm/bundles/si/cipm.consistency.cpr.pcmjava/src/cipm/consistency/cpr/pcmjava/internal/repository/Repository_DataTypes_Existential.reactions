@@ -8,7 +8,6 @@ import org.palladiosimulator.pcm.repository.CompositeDataType
 import cipm.consistency.cpr.pcmjava.PcmJavaCPRUtils
 import de.uka.ipd.sdq.identifier.Identifier
 import org.emftext.language.java.classifiers.ConcreteClassifier
-import org.emftext.language.java.commons.NamespaceAwareElement
 import org.emftext.language.java.containers.CompilationUnit
 
 import "http://www.emftext.org/java" as java
@@ -21,7 +20,7 @@ execute actions in java
 reaction AddedDataType {
 	after element pcm::DataType inserted in pcm::Repository[dataTypes__Repository]
 	call {
-		createOrLocateJavaClassifierForDataType(newValue)
+		findOrCreateOrDecideJavaClassifierForDataType(newValue)
 	}
 }
 
@@ -226,13 +225,13 @@ routine removeJavaFieldCorrespondencesForInnerDeclaration(pcm::InnerDeclaration 
 	}
 }
 
-routine createOrLocateJavaClassifierForDataType(pcm::DataType type) {
+routine findOrCreateOrDecideJavaClassifierForDataType(pcm::DataType pcmDataType) {
 	// Concept:
 	// 1) Check if a corresponding classifier exists. Add correspondence if it does
 	// 2) Add correspondences between DataType and all references to it (so that they can be adapted accordingly)
-	// TODO Clarify if corresponding classifier could have a correspondence to a component
+	// Corresponding classifier either has a correspondence to a component or to a DataType (limitation)
 	match {
-		require absence of java::ConcreteClassifier corresponding to type
+		require absence of java::ConcreteClassifier corresponding to pcmDataType
 	}
 	update {
 		// Only match based on names, as it is assumed that PCM DataTypes and their
@@ -241,21 +240,16 @@ routine createOrLocateJavaClassifierForDataType(pcm::DataType type) {
 		// However, there could still be multiple matches since differences in namespaces are possible.
 		// In such cases, user has to be asked for conflict resolution
 		var matchingClassifiers = JavaModelAccess.findPotentialConcreteClassifiers(
-			PcmJavaTypeUtil.getDataTypeName(type)).filter [
-			PcmJavaTypeUtil.doTypesMatch(type, it)
+			PcmJavaTypeUtil.getDataTypeName(pcmDataType)).filter [
+			PcmJavaTypeUtil.doTypesMatch(pcmDataType, it)
 		]
 
-		var typeAsIdentifier = type as Identifier
-		var javaCorrespondentOfType = PcmJavaCPRUtils.findOrCreateOrDecideJavaCorrespondent(typeAsIdentifier,
+		var pcmDataTypeAsIdentifier = pcmDataType as Identifier
+		var javaCorrespondentOfType = PcmJavaCPRUtils.findOrCreateOrDecideJavaCorrespondent(pcmDataTypeAsIdentifier,
 			matchingClassifiers)
-		if (javaCorrespondentOfType instanceof ConcreteClassifier) {
-			PcmJavaCPRUtils.addCorrespondenceToJavaCorrespondent(correspondenceModel, typeAsIdentifier,
-				javaCorrespondentOfType)
-		} else if (javaCorrespondentOfType instanceof CompilationUnit) {
-			val javaCls = javaCorrespondentOfType.classifiers.get(0)
-			PcmJavaCPRUtils.addCorrespondenceToJavaCorrespondent(correspondenceModel, typeAsIdentifier, javaCls)
-			PcmJavaCPRUtils.addJavaClassifierIntoResource(JavaModelAccess.javaModel, javaCls,
-				javaCorrespondentOfType.namespaces)
-		}
+
+		// TODO Deal with the required imports (from freshly created Java Classifier as well)
+		PcmJavaCPRUtils.integrateJavaClassifierCorrespondent(correspondenceModel, pcmDataTypeAsIdentifier,
+			JavaModelAccess.javaModel, javaCorrespondentOfType)
 	}
 }

@@ -1,29 +1,29 @@
 package cipm.consistency.cpr.pcmjava;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import de.uka.ipd.sdq.identifier.Identifier;
 import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emftext.language.java.classifiers.Classifier;
 import org.emftext.language.java.classifiers.ConcreteClassifier;
+import org.emftext.language.java.classifiers.Interface;
 import org.emftext.language.java.commons.Commentable;
 import org.emftext.language.java.containers.CompilationUnit;
 import org.emftext.language.java.containers.ContainersFactory;
 import org.emftext.language.java.containers.JavaRoot;
 import org.emftext.language.java.containers.Origin;
+import org.emftext.language.java.members.Method;
+import org.palladiosimulator.pcm.repository.OperationSignature;
 
 import com.google.common.base.Preconditions;
 
 public final class PcmJavaCPRUtils {
+
 	/**
 	 * Method for finding or creating or deciding or ignoring the Java correspondent
 	 * of a PCM element.
@@ -47,7 +47,7 @@ public final class PcmJavaCPRUtils {
 	 *         since its namespace comes from its container).
 	 */
 	public static <O extends Commentable, C extends Iterable<O>> Commentable findOrCreateOrDecideJavaCorrespondent(
-			Identifier pcmElement, C listOfPossibleJavaCorrespondents) {
+			EObject pcmElement, C listOfPossibleJavaCorrespondents) {
 		var it = listOfPossibleJavaCorrespondents.iterator();
 		if (it.hasNext()) {
 			var firstElem = it.next();
@@ -70,12 +70,48 @@ public final class PcmJavaCPRUtils {
 	}
 
 	/**
+	 * Adds correspondences between PCM OperationSignature and Java Method. Assumes
+	 * them to match and does not check whether they match.
+	 */
+	public static void addCorrespondencesForPcmOperationSignatureAndJavaInterfaceMethod(
+			EditableCorrespondenceModelView<?> corView, OperationSignature pcmSig, Method javaMet) {
+		Preconditions.checkArgument(javaMet.eContainer() instanceof Interface,
+				"Given Java method is not an interface method");
+
+		// Add correspondences between method signatures (as a whole)
+		addCorrespondenceToJavaCorrespondent(corView, pcmSig, javaMet);
+
+		// Add correspondences between parameters (if existent)
+		// Note: PCM parameters are NOT first class entities
+		var pcmParams = pcmSig.getParameters__OperationSignature();
+		var javaParams = javaMet.getParameters();
+		for (int i = 0; i < pcmParams.size(); i++) {
+			addCorrespondenceToJavaCorrespondent(corView, pcmParams.get(i), javaParams.get(i));
+		}
+
+		// Add correspondences between PCM exception types and Java References to
+		// exception Classifiers (if existent)
+		//
+		// Note: PCM exception types are NOT first class entities
+		//
+		// Since exception types could be excluded while looking for matching PCM and
+		// Java Method signatures, it is important to re-check whether they match
+		pcmSig.getExceptions__Signature().forEach((pcmExc) -> {
+			var javaExc = javaMet.getExceptions().stream().filter((javaExcRef) -> javaExcRef
+					.getPureClassifierReference().getTarget().getName().equals(pcmExc.getExceptionName())).findFirst();
+			if (javaExc.isPresent()) {
+				addCorrespondenceToJavaCorrespondent(corView, pcmExc, javaExc.get());
+			}
+		});
+	}
+
+	/**
 	 * Adds the correspondence (pcmElement, javaCorrespondent, tag) to given corView
 	 * 
 	 * @return javaCorrespondent
 	 */
 	public static <O extends Commentable> O addCorrespondenceToJavaCorrespondent(
-			EditableCorrespondenceModelView<?> corView, Identifier pcmElement, O javaCorrespondent, String tag) {
+			EditableCorrespondenceModelView<?> corView, EObject pcmElement, O javaCorrespondent, String tag) {
 		if (javaCorrespondent != null) {
 			corView.addCorrespondenceBetween(pcmElement, javaCorrespondent, tag);
 		}
@@ -90,7 +126,7 @@ public final class PcmJavaCPRUtils {
 	 * @return javaCorrespondent
 	 */
 	public static <O extends Commentable> O addCorrespondenceToJavaCorrespondent(
-			EditableCorrespondenceModelView<?> corView, Identifier pcmElement, O javaCorrespondent) {
+			EditableCorrespondenceModelView<?> corView, EObject pcmElement, O javaCorrespondent) {
 		return addCorrespondenceToJavaCorrespondent(corView, pcmElement, javaCorrespondent, null);
 	}
 
@@ -127,12 +163,35 @@ public final class PcmJavaCPRUtils {
 		return addToJavaModelIfNotThere(null, javaCorrespondent, (r, o) -> placeInJavaModelResourceFunc.accept(o));
 	}
 
+	/**
+	 * Adds a correspondence between pcmElem and Java Classifier.
+	 * <p>
+	 * If Java correspondent is located, it will be a ConcreteClassifier. If Java
+	 * correspondent is freshly created, it will be a ConcreteClassifier contained
+	 * in a CompilationUnit. The reason is that ConcreteClassifiers do not directly
+	 * support the namespace feature, it is instead derived from its containers.
+	 */
+	public static void integrateJavaClassifierCorrespondent(EditableCorrespondenceModelView<?> corView, EObject pcmElem,
+			Resource javaModelResource, Commentable javaClsOrCU) {
+		if (javaClsOrCU instanceof ConcreteClassifier) {
+			PcmJavaCPRUtils.addCorrespondenceToJavaCorrespondent(corView, pcmElem, javaClsOrCU);
+		} else if (javaClsOrCU instanceof CompilationUnit) {
+			var castedCU = (CompilationUnit) javaClsOrCU;
+			var javaCls = castedCU.getClassifiers().get(0);
+			PcmJavaCPRUtils.addCorrespondenceToJavaCorrespondent(corView, pcmElem, javaCls);
+			PcmJavaCPRUtils.addJavaClassifierIntoResource(javaModelResource, javaCls, castedCU.getNamespaces());
+		}
+	}
+
+	/**
+	 * @return Whether the given obj is in the given resource r
+	 */
 	public static boolean isInResource(Resource r, EObject obj) {
 		EObject objInR = null;
 		var it = r.getAllContents();
 		while (it.hasNext() && objInR == null) {
 			var currentObj = it.next();
-			if (currentObj == obj || EcoreUtil.equals(currentObj, obj)) {
+			if (currentObj == obj) {
 				objInR = currentObj;
 				break;
 			}
@@ -140,6 +199,13 @@ public final class PcmJavaCPRUtils {
 		return objInR != null;
 	}
 
+	/**
+	 * Adds the given Java Classifier into the given Resource, if it is not already
+	 * there.
+	 * 
+	 * @return All JavaRoot instances that were created to add javaCls with given
+	 *         namespaces to r
+	 */
 	public static List<JavaRoot> addJavaClassifierIntoResource(Resource r, ConcreteClassifier javaCls,
 			List<String> javaClsNss) {
 		if (isInResource(r, javaCls)) {
@@ -175,9 +241,10 @@ public final class PcmJavaCPRUtils {
 	}
 
 	/**
-	 * Inserts javaCls into jrOfJavaCls, which in return inserts javaCls into the
-	 * Java model resource. If jrOfJavaCls is null, all packages and the compilation
-	 * unit leading to javaCls will be constructed.
+	 * Inserts javaCls (directly or indirectly depending on concrete JavaRoot type)
+	 * into jrOfJavaCls, which in return inserts javaCls into the Java model
+	 * resource. If jrOfJavaCls is null, all packages and the compilation unit
+	 * leading to javaCls will be constructed.
 	 * <p>
 	 * Assumption: If a Java Module for javaCls were to exist, it would have existed
 	 * already. Therefore, no Java Modules will be constructed.
@@ -212,6 +279,15 @@ public final class PcmJavaCPRUtils {
 		}
 	}
 
+	/**
+	 * Inserts javaCls (indirectly) into moduleOfJavaCls, which in return inserts
+	 * javaCls into the Java model resource. All packages and the compilation unit
+	 * leading to javaCls will be constructed.
+	 * <p>
+	 * 
+	 * @return All parent Java containers that were freshly created, which were
+	 *         required to insert javaCls into the Java model resource
+	 */
 	public static List<JavaRoot> addJavaClassifierIntoJavaModule(
 			org.emftext.language.java.containers.Module moduleOfJavaCls, ConcreteClassifier javaCls,
 			List<String> javaClsNss) {
@@ -240,6 +316,16 @@ public final class PcmJavaCPRUtils {
 		return createdContainers;
 	}
 
+	/**
+	 * Inserts javaCls (directly or indirectly depending on whether parentPackage's
+	 * namespace matches) into parentPackage, which in return inserts javaCls into
+	 * the Java model resource. All packages and the compilation unit leading to
+	 * javaCls will be constructed.
+	 * <p>
+	 * 
+	 * @return All parent Java containers that were freshly created, which were
+	 *         required to insert javaCls into the Java model resource
+	 */
 	public static List<JavaRoot> addJavaClassifierIntoJavaPackage(
 			org.emftext.language.java.containers.Module moduleOfJavaCls,
 			org.emftext.language.java.containers.Package parentPackage, ConcreteClassifier javaCls,
@@ -293,6 +379,12 @@ public final class PcmJavaCPRUtils {
 		return createdContainers;
 	}
 
+	/**
+	 * Inserts given Java Classifier into an appropriately created CompilationUnit
+	 * 
+	 * @return A CompilationUnit for the given Java Classifier with the given
+	 *         namespaces
+	 */
 	public static CompilationUnit createCompilationUnitForJavaClassifier(ConcreteClassifier javaCls,
 			List<String> javaClsNss) {
 		var cu = ContainersFactory.eINSTANCE.createCompilationUnit();
@@ -307,6 +399,10 @@ public final class PcmJavaCPRUtils {
 		return cu;
 	}
 
+	/**
+	 * @return A Java Package with the given module and namespaces. The given module
+	 *         may be null.
+	 */
 	public static org.emftext.language.java.containers.Package createJavaPackage(
 			org.emftext.language.java.containers.Module moduleOfJavaCls, List<String> javaPacNss) {
 		var pac = ContainersFactory.eINSTANCE.createPackage();

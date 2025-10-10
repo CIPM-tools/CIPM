@@ -3,6 +3,7 @@ package cipm.consistency.cpr.pcmjava;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -88,8 +89,6 @@ public final class PCMElementUtil {
 	}
 
 	/**
-	 * TODO Clarify whether generic elements matter here (ex: TypeArguments)
-	 * 
 	 * @param checkExceptions Whether exceptions should match as well
 	 * @return Whether the given PCM method signature matches with the signature of
 	 *         the given Java method
@@ -113,14 +112,30 @@ public final class PCMElementUtil {
 		}
 
 		// Check parameter types
-		if (!pcmSig.getParameters__OperationSignature().stream()
-				.allMatch((pcmParam) -> javaMet.getParameters().stream()
-						.anyMatch((javaParam) -> PcmJavaTypeUtil.doTypesMatch(pcmParam.getDataType__Parameter(),
-								javaParam.getTypeReference())))) {
+		if (!doMethodParametersMatch(pcmSig.getParameters__OperationSignature(), javaMet.getParameters())) {
 			return false;
 		}
 
 		return true;
+	}
+
+	public static boolean doMethodParametersMatch(List<org.palladiosimulator.pcm.repository.Parameter> pcmParams,
+			List<org.emftext.language.java.parameters.Parameter> javaParams) {
+		if (pcmParams.size() != javaParams.size())
+			return false;
+
+		for (int i = 0; i < pcmParams.size(); i++) {
+			if (!doMethodParametersMatch(pcmParams.get(i), javaParams.get(i)))
+				return false;
+		}
+
+		return true;
+	}
+
+	public static boolean doMethodParametersMatch(org.palladiosimulator.pcm.repository.Parameter pcmParam,
+			org.emftext.language.java.parameters.Parameter javaParam) {
+		return pcmParam.getParameterName().equals(javaParam.getName())
+				&& PcmJavaTypeUtil.doTypesMatch(pcmParam.getDataType__Parameter(), javaParam.getTypeReference());
 	}
 
 	/**
