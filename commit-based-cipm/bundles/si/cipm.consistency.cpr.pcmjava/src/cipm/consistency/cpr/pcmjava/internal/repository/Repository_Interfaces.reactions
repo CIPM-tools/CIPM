@@ -22,8 +22,19 @@ reaction AddedInterface {
 reaction RemovedInterface {
 	after element pcm::OperationInterface removed from pcm::Repository[interfaces__Repository]
 	call {
+		removeJavaInterface(oldValue)
+	}
+}
+
+routine removeJavaInterface(pcm::OperationInterface pcmIfc) {
+	match {
+		val javaIfc = retrieve java::Interface corresponding to pcmIfc
+	}
+	update {
 		// TODO Ask if Java correspondent should be removed
 		// Check for dependencies and remove if not referenced
+		
+		javaIfc.eContainer.eContents.remove(javaIfc)
 	}
 }
 
