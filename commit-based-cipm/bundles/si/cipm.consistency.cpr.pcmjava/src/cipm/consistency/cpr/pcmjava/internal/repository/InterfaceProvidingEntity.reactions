@@ -1,5 +1,3 @@
-import cipm.consistency.cpr.pcmjava.PCMElementUtil
-
 import "http://www.emftext.org/java" as java
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
 
@@ -10,53 +8,39 @@ execute actions in java
 reaction AddedProvidedRole {
 	after element pcm::OperationProvidedRole inserted in pcm::InterfaceProvidingEntity[providedRoles_InterfaceProvidingEntity]
 	call {
-		checkForProvidedDependencies(newValue)
+		addProvidingRoleToProvidingEntity(affectedEObject, newValue)
 	}
 }
 
 reaction RemovedProvidedRole {
 	after element pcm::OperationProvidedRole removed from pcm::InterfaceProvidingEntity[providedRoles_InterfaceProvidingEntity]
 	call {
-		// TODO Implement
-		// Ask the user whether the provided Java methods should be deleted / their visibilities lowered
+		removeProvidingRoleFromProvidingEntity(oldValue)
 	}
 }
 
-routine checkForProvidedDependencies(pcm::OperationProvidedRole role) {
+routine addProvidingRoleToProvidingEntity(pcm::InterfaceProvidingEntity entity, pcm::OperationProvidedRole role) {
+	match {
+		val javaCorrespondents = retrieve many java::ConcreteClassifier corresponding to entity
+		val requiredJavaIfc = retrieve java::Interface corresponding to role.providedInterface__OperationProvidedRole
+	}
 	update {
-		val entity = role.providingEntity_ProvidedRole
-		val providedIfc = role.providedInterface__OperationProvidedRole
-
-		val publicMets = PCMElementUtil.getAllVisibleJavaCorrespondentsOfType(entity, correspondenceModel,
-			org.emftext.language.java.members.Method, null
-		)
-
-		val presentSignatures = PCMElementUtil.getPCMMethodsWithJavaCorrespondences(
-			providedIfc.signatures__OperationInterface, publicMets, true)
-
-		// Add correspondences between PCM and Java methods
-		for (e : presentSignatures.entrySet) {
-			val sig = e.key
-			val met = e.value
-			if (!getCorrespondingElements(sig, org.emftext.language.java.members.Method, null, null).contains(met)) {
-				sig.addCorrespondenceBetween(met)
-			}
-		}
-
-		// Look for any missing dependencies
-		val missingSignatures = PCMElementUtil.getPCMMethodsWithoutJavaCorrespondences(
-			providedIfc.signatures__OperationInterface, publicMets, true)
-
-		for (md : missingSignatures) {
-			addMissingSignaturesToJavaCode(entity, md)
-		}
+		// TODO Add import(s) to requiredJavaIfc in chosen javaCorrespondents (by user)
+		// TODO Generate method stubs for missing Java methods
+		
+		// TODO Developer task to properly implement the interface in code
 	}
 }
 
-routine addMissingSignaturesToJavaCode(pcm::InterfaceProvidingEntity entity, pcm::OperationSignature missingMetSign) {
+routine removeProvidingRoleFromProvidingEntity(pcm::OperationProvidedRole role) {
+	match {
+		val requiringJavaPositions = retrieve many java::TypeReference corresponding to role
+		val requiredJavaIfc = retrieve java::Interface corresponding to role.providedInterface__OperationProvidedRole
+	}
 	update {
-		// TODO Add the missing Java method stub (use common.createCorrespondingJavaMethodFor(...) )
-		// Ask whether a new classifier is necessary for the stub
-		// Ask where to put the stub (in terms of classifiers)
+		// TODO Remove redundant imports to requiredJavaIfc
+		// TODO Remove method stubs created in addProvidingRoleToProvidingEntity
+		
+		// TODO Developer task to de-integrate the interface in code
 	}
 }

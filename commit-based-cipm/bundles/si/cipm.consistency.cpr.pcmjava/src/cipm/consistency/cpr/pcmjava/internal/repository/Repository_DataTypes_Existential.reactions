@@ -117,9 +117,6 @@ routine createOrLocateCorrespondingFieldForInnerDeclaration(pcm::InnerDeclaratio
 		field.name = pcmInnerDecl.entityName
 		field.typeReference = newTypeRef
 
-		// TODO Consider adding a special tag "CREATED_BY_CHANGE_PROP"
-		// to signal that it should be removed, if the PCM DataType is removed
-		//
 		outerCls.members += field
 		addCorrespondenceBetween(field, pcmInnerDecl)
 	}
@@ -243,6 +240,7 @@ routine findOrCreateOrDecideJavaClassifierForDataType(pcm::DataType pcmDataType)
 			PcmJavaTypeUtil.doTypesMatch(pcmDataType, it)
 		]
 
+		// TODO Implement Java Classifier creation code and decision code
 		var javaCorrespondentOfType = PcmJavaCPRUtils.findOrCreateOrDecideJavaCorrespondent(pcmDataType,
 			matchingClassifiers)
 
@@ -256,7 +254,6 @@ routine findOrCreateOrDecideJavaClassifierForDataType(pcm::DataType pcmDataType)
 			}
 		}
 
-		// TODO Deal with the required imports (from freshly created Java Classifier as well)
 		PcmJavaCPRUtils.integrateJavaClassifierCorrespondent(correspondenceModel, pcmDataType,
 			JavaModelAccess.javaModel, javaCorrespondentOfType)
 	}

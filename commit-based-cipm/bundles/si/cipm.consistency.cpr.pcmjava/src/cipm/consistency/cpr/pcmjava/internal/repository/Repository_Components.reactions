@@ -1,0 +1,45 @@
+import org.palladiosimulator.pcm.repository.BasicComponent
+import org.palladiosimulator.pcm.repository.CompositeComponent
+
+import "http://www.emftext.org/java" as java
+import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
+
+reactions: repositoryComponents
+in reaction to changes in pcm
+execute actions in java
+
+reaction AddedBasicComponentToRepository {
+	after element pcm::BasicComponent inserted in pcm::Repository[components__Repository]
+	call {
+		// TODO Ask for Java correspondents (Module, Package, Classifier), if not already done
+		// TODO Ask for any name correspondences [name only, namespace only, full name], if not already done
+	}
+}
+
+reaction AddedCompositeComponentToRepository {
+	after element pcm::CompositeComponent inserted in pcm::Repository[components__Repository]
+	call {
+		// TODO Ask for Java correspondents (Module, Package, Classifier), if not already done
+		// TODO Ask for any name correspondences [name only, namespace only, full name], if not already done
+	}
+}
+
+// Only possible to implement via AssemblyContext, due to PCM limitations
+reaction AddedBasicComponentToCompositeComponent {
+	after element pcm::AssemblyContext inserted in pcm::CompositeComponent[assemblyContexts__ComposedStructure]
+	with newValue.encapsulatedComponent__AssemblyContext instanceof BasicComponent
+	call {
+		// TODO Ask for Java correspondents (Module, Package, Classifier), if not already done
+		// TODO Ask for any name correspondences [name only, namespace only, full name], if not already done
+	}
+}
+
+// Only possible to implement via AssemblyContext, due to PCM limitations
+reaction AddedCompositeComponentToCompositeComponent {
+	after element pcm::AssemblyContext inserted in pcm::CompositeComponent[assemblyContexts__ComposedStructure]
+	with newValue.encapsulatedComponent__AssemblyContext instanceof CompositeComponent
+	call {
+		// TODO Ask for Java correspondents (Module, Package, Classifier), if not already done
+		// TODO Ask for any name correspondences [name only, namespace only, full name], if not already done
+	}
+}
