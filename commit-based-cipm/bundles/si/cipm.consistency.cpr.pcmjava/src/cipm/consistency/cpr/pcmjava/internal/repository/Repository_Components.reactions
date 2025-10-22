@@ -8,6 +8,9 @@ reactions: repositoryComponents
 in reaction to changes in pcm
 execute actions in java
 
+// TODO If a component is renamed, ask its impact on Java code via user interaction
+// then use tagged correspondences to save that relation (module namespace, package & module common namespaces, all common namespaces)
+//
 reaction AddedBasicComponentToRepository {
 	after element pcm::BasicComponent inserted in pcm::Repository[components__Repository]
 	call {

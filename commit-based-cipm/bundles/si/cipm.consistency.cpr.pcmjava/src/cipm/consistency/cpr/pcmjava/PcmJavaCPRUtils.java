@@ -1,5 +1,6 @@
 package cipm.consistency.cpr.pcmjava;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -11,20 +12,210 @@ import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emftext.language.java.classifiers.ConcreteClassifier;
+import org.emftext.language.java.classifiers.Implementor;
 import org.emftext.language.java.classifiers.Interface;
 import org.emftext.language.java.commons.Commentable;
 import org.emftext.language.java.containers.CompilationUnit;
 import org.emftext.language.java.containers.ContainersFactory;
 import org.emftext.language.java.containers.JavaRoot;
 import org.emftext.language.java.containers.Origin;
+import org.emftext.language.java.expressions.Expression;
+import org.emftext.language.java.literals.LiteralsFactory;
+import org.emftext.language.java.members.ExceptionThrower;
+import org.emftext.language.java.members.InterfaceMethod;
+import org.emftext.language.java.members.MembersFactory;
 import org.emftext.language.java.members.Method;
+import org.emftext.language.java.modifiers.Abstract;
+import org.emftext.language.java.modifiers.AnnotableAndModifiable;
+import org.emftext.language.java.modifiers.Default;
+import org.emftext.language.java.parameters.Parametrizable;
+import org.emftext.language.java.references.PrimitiveTypeReference;
+import org.emftext.language.java.statements.StatementsFactory;
+import org.emftext.language.java.types.PrimitiveType;
 import org.emftext.language.java.types.TypeReference;
+import org.emftext.language.java.types.TypesFactory;
 import org.palladiosimulator.pcm.repository.OperationSignature;
 
 import com.google.common.base.Preconditions;
 
 public final class PcmJavaCPRUtils {
+	private static final String abstractModifierName = Abstract.class.getSimpleName();
+	private static final String defaultModifierName = Default.class.getSimpleName();
+
+	public static List<org.emftext.language.java.members.Method> getAllNonStaticMethodsOf(ConcreteClassifier javaCls) {
+		return javaCls.getMethods().stream().filter((m) -> !m.isStatic())
+				.collect(Collectors.toCollection(ArrayList::new));
+	}
+
+	public static List<org.emftext.language.java.members.Method> getAllNonStaticNonAbstractMethodsOf(
+			ConcreteClassifier javaCls) {
+		return javaCls.getMethods().stream().filter((m) -> !m.isStatic() && !isJavaElementAbstract(m))
+				.collect(Collectors.toCollection(ArrayList::new));
+	}
+
+	public static List<org.emftext.language.java.members.Method> getAllJavaMethodsRequiringImplementation(
+			ConcreteClassifier javaCls) {
+		return javaCls.getMethods().stream().filter((m) -> doesJavaMethodRequireImplementation(m))
+				.collect(Collectors.toCollection(ArrayList::new));
+	}
+
+	public static boolean doesJavaMethodRequireImplementation(org.emftext.language.java.members.Method javaMet) {
+		return !javaMet.isStatic() && (isJavaElementAbstract(javaMet)
+				|| (javaMet instanceof InterfaceMethod && !isJavaElementDefault(javaMet)));
+	}
+
+	public static TypeReference implementJavaInterfaceInJavaClassifier(Implementor javaCls, Interface javaIfc) {
+		if (javaCls.getImplements().stream().anyMatch((tr) -> tr.getPureClassifierReference().getTarget() == javaIfc))
+			return null;
+
+		var implementsRef = TypesFactory.eINSTANCE.createClassifierReference();
+		implementsRef.setTarget(javaIfc);
+		javaCls.getImplements().add(implementsRef);
+
+		return implementsRef;
+	}
+
+	public static List<org.emftext.language.java.members.Method> generateJavaInterfaceMethodStubsInJavaClassifier(
+			Implementor javaCls, Interface javaIfc) {
+		var methodStubs = new ArrayList<org.emftext.language.java.members.Method>();
+
+		/*
+		 * Note: Even if javaCls is abstract, javaIfc method stubs will be added to it
+		 * instead of each sub class of javaCls
+		 */
+		
+		// All Implementor instances are actually also ConcreteClassifier instances
+		// since concrete Implementors are either Class or Enumeration
+		var castedJavaCls = (ConcreteClassifier) javaCls;
+		var javaIfcMets = getAllJavaMethodsRequiringImplementation(javaIfc);
+		for (var javaIfcMet : javaIfcMets) {
+			if (!doesJavaClassifierImplementMethod(castedJavaCls, javaIfcMet)) {
+				var metStub = getJavaMethodStubFor(javaIfcMet);
+				methodStubs.add(metStub);
+				castedJavaCls.getMembers().add(metStub);
+			}
+		}
+
+		return methodStubs;
+	}
+
+	public static org.emftext.language.java.members.Method getJavaMethodStubFor(
+			org.emftext.language.java.members.Method javaMetToImplement) {
+		var stub = EcoreUtil.copy(javaMetToImplement);
+
+		// stub.getStatement(): The block of the method
+		// stub.getStatements(): Individual statements in method body
+		//
+		// Ensure that the method stub has a block, otherwise inserting
+		// statements will not work (EMFText limitation)
+		if (stub.getBlock() == null)
+			stub.setStatement(StatementsFactory.eINSTANCE.createBlock());
+
+		stub.getStatements().clear();
+
+		var returnSt = StatementsFactory.eINSTANCE.createReturn();
+		Expression returnVal = null;
+		var returnType = javaMetToImplement.getTypeReference().getTarget();
+		var returnTypeCls = returnType.getClass();
+		if (PrimitiveType.class.isAssignableFrom(returnTypeCls)) {
+			if (org.emftext.language.java.types.Boolean.class.equals(returnTypeCls)) {
+				var boolLit = LiteralsFactory.eINSTANCE.createBooleanLiteral();
+				boolLit.setValue(false);
+				returnVal = boolLit;
+			} else if (org.emftext.language.java.types.Void.class.equals(returnTypeCls)) {
+				returnVal = null;
+			} else if (org.emftext.language.java.types.Char.class.equals(returnTypeCls)) {
+				var charLit = LiteralsFactory.eINSTANCE.createCharacterLiteral();
+				charLit.setValue("");
+				returnVal = charLit;
+			} else {
+				var numLit = LiteralsFactory.eINSTANCE.createDecimalIntegerLiteral();
+				numLit.setDecimalValue(BigInteger.ZERO);
+				returnVal = numLit;
+			}
+		} else {
+			var nullLit = LiteralsFactory.eINSTANCE.createNullLiteral();
+			returnVal = nullLit;
+		}
+
+		if (returnVal != null) {
+			returnSt.setReturnValue(returnVal);
+			stub.getStatements().add(returnSt);
+		}
+
+		return stub;
+	}
+
+	public static boolean doesJavaClassifierImplementMethod(ConcreteClassifier javaCls,
+			org.emftext.language.java.members.Method met) {
+		return getAllNonStaticMethodsOf(javaCls).stream().anyMatch((jcm) -> jcm.isSignatureMatching(met));
+	}
+
+	public static boolean areJavaReturnTypesMatching(org.emftext.language.java.members.Method implementingMet,
+			org.emftext.language.java.members.Method metToImplement) {
+		var rt1 = implementingMet.getTypeReference().getPureClassifierReference().getTarget();
+		var rt2 = metToImplement.getTypeReference().getPureClassifierReference().getTarget();
+
+		return EcoreUtil.equals(rt1, rt2)
+				|| rt2.getAllSuperClassifiers().stream().anyMatch((sc) -> EcoreUtil.equals(rt1, sc));
+	}
+
+	public static boolean areJavaExceptionsEqual(ExceptionThrower et1, ExceptionThrower et2) {
+		var excs1 = et1.getExceptions();
+		var excs2 = et2.getExceptions();
+
+		if (excs1.size() != excs2.size())
+			return false;
+
+		for (int i = 0; i < excs1.size(); i++) {
+			if (!EcoreUtil.equals(excs1.get(i), excs2.get(i)))
+				return false;
+		}
+
+		return true;
+	}
+
+	public static boolean areJavaModifiersEqual(AnnotableAndModifiable aam1, AnnotableAndModifiable aam2) {
+		var mods1 = aam1.getModifiers();
+		var mods2 = aam2.getModifiers();
+
+		if (mods1.size() != mods2.size())
+			return false;
+
+		for (int i = 0; i < mods1.size(); i++) {
+			if (!EcoreUtil.equals(mods1.get(i), mods2.get(i)))
+				return false;
+		}
+
+		return true;
+	}
+
+	public static boolean areJavaParametersEqual(Parametrizable p1, Parametrizable p2) {
+		var params1 = p1.getParameters();
+		var params2 = p2.getParameters();
+
+		if (params1.size() != params2.size())
+			return false;
+
+		for (int i = 0; i < params1.size(); i++) {
+			if (!EcoreUtil.equals(params1.get(i), params2.get(i)))
+				return false;
+		}
+
+		return true;
+	}
+
+	public static boolean isJavaElementAbstract(AnnotableAndModifiable javaElem) {
+		return javaElem.getModifiers().stream()
+				.anyMatch((m) -> m.getClass().getSimpleName().equals(abstractModifierName));
+	}
+
+	public static boolean isJavaElementDefault(AnnotableAndModifiable javaElem) {
+		return javaElem.getModifiers().stream()
+				.anyMatch((m) -> m.getClass().getSimpleName().equals(defaultModifierName));
+	}
 
 	/**
 	 * Method for finding or creating or deciding or ignoring the Java correspondent

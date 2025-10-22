@@ -1,3 +1,7 @@
+import org.emftext.language.java.imports.ImportsFactory
+import cipm.consistency.cpr.pcmjava.PcmJavaCPRUtils
+import org.emftext.language.java.classifiers.Implementor
+
 import "http://www.emftext.org/java" as java
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
 
@@ -22,25 +26,59 @@ reaction RemovedProvidedRole {
 routine addProvidingRoleToProvidingEntity(pcm::InterfaceProvidingEntity entity, pcm::OperationProvidedRole role) {
 	match {
 		val javaCorrespondents = retrieve many java::ConcreteClassifier corresponding to entity
-		val requiredJavaIfc = retrieve java::Interface corresponding to role.providedInterface__OperationProvidedRole
+		val providedJavaIfc = retrieve java::Interface corresponding to role.providedInterface__OperationProvidedRole
 	}
 	update {
-		// TODO Add import(s) to requiredJavaIfc in chosen javaCorrespondents (by user)
-		// TODO Generate method stubs for missing Java methods
-		
-		// TODO Developer task to properly implement the interface in code
+		// TODO Replace with selection of user via user interaction
+		// Do not use user interaction, if there is only one javaCorrespondent
+		var chosenProvidingClss = javaCorrespondents
+
+		// Filter out the chosenProvidingClss that are either in the same package as providedJavaIfc
+		// or those that already import it
+		var importingClss = chosenProvidingClss.filter [
+			!it.package.classifiersInSamePackage.contains(providedJavaIfc) &&
+				!it.containingCompilationUnit.imports.exists[it.classifier == providedJavaIfc]
+		]
+
+		// importingClss should each have an import to requiredJavaIfc,
+		// since they use that interface
+		for (importingCls : importingClss) {
+			var imp = ImportsFactory.eINSTANCE.createClassifierImport
+			imp.classifier = providedJavaIfc
+			importingCls.containingCompilationUnit.imports.add(imp)
+		}
+
+		// Each importingClss should implement providedJavaIfc
+		val nonImplementingClss = importingClss.filter[!it.superTypeReferences.exists[it.target == providedJavaIfc]].
+			toList
+
+		for (cls : nonImplementingClss) {
+			val tRef = PcmJavaCPRUtils.implementJavaInterfaceInJavaClassifier(cls as Implementor, providedJavaIfc)
+			PcmJavaCPRUtils.generateJavaInterfaceMethodStubsInJavaClassifier(cls as Implementor, providedJavaIfc)
+
+			if (tRef !== null) {
+				addCorrespondenceBetween(tRef, role)
+			}
+		}
+
+	// TODO Developer task to properly implement the interface in code
 	}
 }
 
 routine removeProvidingRoleFromProvidingEntity(pcm::OperationProvidedRole role) {
 	match {
-		val requiringJavaPositions = retrieve many java::TypeReference corresponding to role
-		val requiredJavaIfc = retrieve java::Interface corresponding to role.providedInterface__OperationProvidedRole
+		val providedJavaPositions = retrieve many java::TypeReference corresponding to role
+		val providedJavaIfc = retrieve java::Interface corresponding to role.providedInterface__OperationProvidedRole
 	}
 	update {
-		// TODO Remove redundant imports to requiredJavaIfc
-		// TODO Remove method stubs created in addProvidingRoleToProvidingEntity
-		
-		// TODO Developer task to de-integrate the interface in code
+		// Remove the "implements providedJavaIfc" part only
+		// Keep the import that is potentially associated with it, since
+		// it may still be desirable to have it, even after the interface is no longer implemented
+		providedJavaPositions.forEach[it.eContainer.eContents.remove(it)]
+
+	// Do not remove the potentially generated method stubs, as it may still be
+	// desirable to have them as Java class members, even after the interface is no longer implemented
+	//
+	// TODO Developer task to de-integrate the interface in code
 	}
 }

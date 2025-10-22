@@ -1,0 +1,55 @@
+import org.palladiosimulator.pcm.repository.OperationSignature
+
+import "http://www.emftext.org/java" as java
+import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
+
+reactions: seffExistential
+in reaction to changes in pcm
+execute actions in java
+
+// StartAction: Start of method body, no Java correspondent
+// StopAction: End of method body, no Java correspondent
+//
+// TEAMMATESCITest-5-ce4463a examined with regex:
+// xsi:type="seff:(?!(?:StartAction|StopAction|InternalAction|ExternalCallAction|LoopAction|BranchAction|ProbabilisticBranchTransition|ResourceDemandingSEFF))
+//
+// => Only the SEFF elements mentioned in regex appear in Teammates case
+//
+reaction SEFFAdded {
+	after element pcm::ServiceEffectSpecification inserted in pcm::BasicComponent[serviceEffectSpecifications__BasicComponent]
+	call {
+		addCorrespondenceBetweenComponentAndSEFFJavaClass(newValue)
+	}
+}
+
+reaction SEFFRemoved {
+	after element pcm::ServiceEffectSpecification removed from pcm::BasicComponent[serviceEffectSpecifications__BasicComponent]
+	call {
+		removeCorrespondenceBetweenComponentAndSEFFJavaClass(oldValue)
+	}
+}
+
+routine addCorrespondenceBetweenComponentAndSEFFJavaClass(pcm::ServiceEffectSpecification seff) {
+	match {
+		val javaMet = retrieve java::Method corresponding to (seff.describedService__SEFF as OperationSignature).
+			interface__OperationSignature
+	}
+	update {
+		addCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, javaMet.containingConcreteClassifier)
+
+	// TODO Add correspondence to module / package / compilation unit / outer class, if all nested classifiers have a correspondence to component
+	}
+}
+
+routine removeCorrespondenceBetweenComponentAndSEFFJavaClass(pcm::ServiceEffectSpecification seff) {
+	match {
+		val javaMet = retrieve java::Method corresponding to (seff.describedService__SEFF as OperationSignature).
+			interface__OperationSignature
+	}
+	update {
+		val javaCls = javaMet.containingConcreteClassifier
+		removeCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, javaCls)
+
+	// TODO Remove correspondences to module / package / compilation unit / outer class
+	}
+}

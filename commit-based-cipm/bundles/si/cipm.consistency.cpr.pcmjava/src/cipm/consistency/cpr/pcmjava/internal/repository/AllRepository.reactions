@@ -12,3 +12,5 @@ import repositoryDataTypesAttributes
 import repositoryInterfacesExistential
 import repositoryInterfacesAttributes
 
+// Note: PCM Connectors, AssemblyContexts are not supported by CIPM currently
+// Therefore, they are excluded for the moment
