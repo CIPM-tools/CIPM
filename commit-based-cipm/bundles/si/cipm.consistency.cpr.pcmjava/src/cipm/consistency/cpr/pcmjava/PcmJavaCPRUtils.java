@@ -22,16 +22,19 @@ import org.emftext.language.java.containers.ContainersFactory;
 import org.emftext.language.java.containers.JavaRoot;
 import org.emftext.language.java.containers.Origin;
 import org.emftext.language.java.expressions.Expression;
+import org.emftext.language.java.literals.Literal;
 import org.emftext.language.java.literals.LiteralsFactory;
 import org.emftext.language.java.members.ExceptionThrower;
 import org.emftext.language.java.members.InterfaceMethod;
-import org.emftext.language.java.members.MembersFactory;
 import org.emftext.language.java.members.Method;
 import org.emftext.language.java.modifiers.Abstract;
 import org.emftext.language.java.modifiers.AnnotableAndModifiable;
 import org.emftext.language.java.modifiers.Default;
 import org.emftext.language.java.parameters.Parametrizable;
-import org.emftext.language.java.references.PrimitiveTypeReference;
+import org.emftext.language.java.statements.LocalVariableStatement;
+import org.emftext.language.java.statements.Statement;
+import org.emftext.language.java.statements.StatementContainer;
+import org.emftext.language.java.statements.StatementListContainer;
 import org.emftext.language.java.statements.StatementsFactory;
 import org.emftext.language.java.types.PrimitiveType;
 import org.emftext.language.java.types.TypeReference;
@@ -43,6 +46,47 @@ import com.google.common.base.Preconditions;
 public final class PcmJavaCPRUtils {
 	private static final String abstractModifierName = Abstract.class.getSimpleName();
 	private static final String defaultModifierName = Default.class.getSimpleName();
+
+	public static List<LocalVariableStatement> getLocalVariableStatements(Statement st) {
+		if (st instanceof LocalVariableStatement) {
+			return List.of((LocalVariableStatement) st);
+		}
+		return List.of();
+	}
+
+	public static List<LocalVariableStatement> getLocalVariableStatements(StatementContainer sc) {
+		return getLocalVariableStatements(sc.getStatement());
+	}
+
+	public static List<LocalVariableStatement> getLocalVariableStatements(StatementListContainer slc) {
+		return getLocalVariableStatements(slc.getStatements());
+	}
+
+	public static List<LocalVariableStatement> getLocalVariableStatements(List<Statement> statementList) {
+		var localVars = new ArrayList<LocalVariableStatement>();
+		statementList.forEach((s) -> localVars.addAll(getLocalVariableStatements(s)));
+		return localVars;
+	}
+
+	public static List<LocalVariableStatement> getAllLocalVariableStatements(Statement st) {
+		var localVars = new ArrayList<LocalVariableStatement>();
+		if (st instanceof LocalVariableStatement) {
+			localVars.add((LocalVariableStatement) st);
+		}
+		if (st instanceof StatementContainer) {
+			localVars.addAll(getAllLocalVariableStatements(((StatementContainer) st).getStatement()));
+		}
+		if (st instanceof StatementListContainer) {
+			localVars.addAll(getAllLocalVariableStatements(((StatementListContainer) st).getStatements()));
+		}
+		return localVars;
+	}
+
+	public static List<LocalVariableStatement> getAllLocalVariableStatements(List<Statement> statementList) {
+		var localVars = new ArrayList<LocalVariableStatement>();
+		statementList.forEach((s) -> localVars.addAll(getAllLocalVariableStatements(s)));
+		return localVars;
+	}
 
 	public static List<org.emftext.language.java.members.Method> getAllNonStaticMethodsOf(ConcreteClassifier javaCls) {
 		return javaCls.getMethods().stream().filter((m) -> !m.isStatic())
@@ -85,7 +129,7 @@ public final class PcmJavaCPRUtils {
 		 * Note: Even if javaCls is abstract, javaIfc method stubs will be added to it
 		 * instead of each sub class of javaCls
 		 */
-		
+
 		// All Implementor instances are actually also ConcreteClassifier instances
 		// since concrete Implementors are either Class or Enumeration
 		var castedJavaCls = (ConcreteClassifier) javaCls;
@@ -99,6 +143,33 @@ public final class PcmJavaCPRUtils {
 		}
 
 		return methodStubs;
+	}
+
+	public static Literal getJavaParameterStubFor(TypeReference tref) {
+		Literal literalStub = null;
+		var returnType = tref.getTarget();
+		var returnTypeCls = returnType.getClass();
+		if (PrimitiveType.class.isAssignableFrom(returnTypeCls)) {
+			if (org.emftext.language.java.types.Boolean.class.equals(returnTypeCls)) {
+				var boolLit = LiteralsFactory.eINSTANCE.createBooleanLiteral();
+				boolLit.setValue(false);
+				literalStub = boolLit;
+			} else if (org.emftext.language.java.types.Void.class.equals(returnTypeCls)) {
+				literalStub = null;
+			} else if (org.emftext.language.java.types.Char.class.equals(returnTypeCls)) {
+				var charLit = LiteralsFactory.eINSTANCE.createCharacterLiteral();
+				charLit.setValue("");
+				literalStub = charLit;
+			} else {
+				var numLit = LiteralsFactory.eINSTANCE.createDecimalIntegerLiteral();
+				numLit.setDecimalValue(BigInteger.ZERO);
+				literalStub = numLit;
+			}
+		} else {
+			var nullLit = LiteralsFactory.eINSTANCE.createNullLiteral();
+			literalStub = nullLit;
+		}
+		return literalStub;
 	}
 
 	public static org.emftext.language.java.members.Method getJavaMethodStubFor(
@@ -117,29 +188,9 @@ public final class PcmJavaCPRUtils {
 
 		var returnSt = StatementsFactory.eINSTANCE.createReturn();
 		Expression returnVal = null;
-		var returnType = javaMetToImplement.getTypeReference().getTarget();
-		var returnTypeCls = returnType.getClass();
-		if (PrimitiveType.class.isAssignableFrom(returnTypeCls)) {
-			if (org.emftext.language.java.types.Boolean.class.equals(returnTypeCls)) {
-				var boolLit = LiteralsFactory.eINSTANCE.createBooleanLiteral();
-				boolLit.setValue(false);
-				returnVal = boolLit;
-			} else if (org.emftext.language.java.types.Void.class.equals(returnTypeCls)) {
-				returnVal = null;
-			} else if (org.emftext.language.java.types.Char.class.equals(returnTypeCls)) {
-				var charLit = LiteralsFactory.eINSTANCE.createCharacterLiteral();
-				charLit.setValue("");
-				returnVal = charLit;
-			} else {
-				var numLit = LiteralsFactory.eINSTANCE.createDecimalIntegerLiteral();
-				numLit.setDecimalValue(BigInteger.ZERO);
-				returnVal = numLit;
-			}
-		} else {
-			var nullLit = LiteralsFactory.eINSTANCE.createNullLiteral();
-			returnVal = nullLit;
-		}
+		var returnType = javaMetToImplement.getTypeReference();
 
+		returnVal = getJavaParameterStubFor(returnType);
 		if (returnVal != null) {
 			returnSt.setReturnValue(returnVal);
 			stub.getStatements().add(returnSt);
