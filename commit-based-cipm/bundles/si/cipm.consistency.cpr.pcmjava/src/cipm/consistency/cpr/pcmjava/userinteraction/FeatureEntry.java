@@ -1,4 +1,4 @@
-package cipm.consistency.vsum.test.pcm.userinteraction;
+package cipm.consistency.cpr.pcmjava.userinteraction;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package cipm.consistency.vsum.test.pcm.cprunittests;
+package cipm.consistency.vsum.test.pcm.cprunittests.dummy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +10,7 @@ import org.palladiosimulator.pcm.core.entity.EntityPackage;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryFactory;
 
+import cipm.consistency.vsum.test.pcm.cprunittests.AbstractPcmJavaCprTest;
 import mir.reactions.dummyPCMJavaCorrespondenceCPRs.DummyPCMJavaCorrespondenceCPRsChangePropagationSpecification;
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
 
@@ -26,7 +27,7 @@ public class PcmJavaCprCorrespondenceTest extends AbstractPcmJavaCprTest {
 		var javaResource = this.getJavaModelResourceFromJavaFacade();
 //		Assertions.assertEquals(0, javaResource.getContents().size());
 
-		final var pcmInterfaceName = PcmCPRTestConstants.correspondenceTestPCMInterfaceName;
+		final var pcmInterfaceName = PcmCPRDummyTestConstants.correspondenceTestPCMInterfaceName;
 
 		var originalRepoRes = this.getResourceFromPcmFacade(repositoryFileName);
 

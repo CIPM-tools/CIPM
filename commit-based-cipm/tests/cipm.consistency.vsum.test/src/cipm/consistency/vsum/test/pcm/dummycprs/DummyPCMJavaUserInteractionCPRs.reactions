@@ -1,5 +1,5 @@
 import cipm.consistency.cpr.pcmjava.JavaModelAccess
-import cipm.consistency.vsum.test.pcm.cprunittests.PcmCPRTestConstants
+import cipm.consistency.vsum.test.pcm.cprunittests.dummy.PcmCPRDummyTestConstants
 import cipm.consistency.vsum.test.pcm.userinteraction.PcmUserInteractionManager
 import cipm.consistency.vsum.test.pcm.userinteraction.NameUserInteraction
 import cipm.consistency.vsum.test.pcm.userinteraction.DistributionUserInteraction
@@ -18,7 +18,7 @@ import dummyPCMCPRCommons
 
 reaction AddedUserInteractionTestInterface {
 	after element pcm::Interface inserted in pcm::Repository[interfaces__Repository]
-	with newValue.entityName == PcmCPRTestConstants.userInteractionTestPCMInterfaceName
+	with newValue.entityName == PcmCPRDummyTestConstants.userInteractionTestPCMInterfaceName
 	call {
 		createUserInteractionTestInterface(newValue)
 	}
@@ -26,7 +26,7 @@ reaction AddedUserInteractionTestInterface {
 
 reaction DeletedUserInteractionTestComponent {
 	after element pcm::BasicComponent removed from pcm::Repository[components__Repository]
-	with oldValue.entityName == PcmCPRTestConstants.componentContentDistributionTestDeletedComponentName
+	with oldValue.entityName == PcmCPRDummyTestConstants.componentContentDistributionTestDeletedComponentName
 	call {
 		removeUserInteractionTestComponent(oldValue, affectedEObject)
 	}
@@ -34,7 +34,7 @@ reaction DeletedUserInteractionTestComponent {
 
 reaction AddedUserInteractionNamespaceTestModule {
 	after element pcm::BasicComponent inserted in pcm::Repository[components__Repository]
-	with newValue.entityName == PcmCPRTestConstants.namespaceTestComponentName
+	with newValue.entityName == PcmCPRDummyTestConstants.namespaceTestComponentName
 	call {
 		createUserInteractionNamespaceTestInterface(newValue)
 	}
@@ -42,7 +42,7 @@ reaction AddedUserInteractionNamespaceTestModule {
 
 routine createUserInteractionTestInterface(pcm::Interface addedInterface) {
 	match {
-		check addedInterface.entityName == PcmCPRTestConstants.userInteractionTestPCMInterfaceName
+		check addedInterface.entityName == PcmCPRDummyTestConstants.userInteractionTestPCMInterfaceName
 	}
 	create {
 		val javaInterface = new java::Interface
@@ -64,7 +64,7 @@ routine createUserInteractionTestInterface(pcm::Interface addedInterface) {
 
 routine removeUserInteractionTestComponent(pcm::BasicComponent cmp, pcm::Repository repo) {
 	match {
-		check cmp.entityName == PcmCPRTestConstants.componentContentDistributionTestDeletedComponentName
+		check cmp.entityName == PcmCPRDummyTestConstants.componentContentDistributionTestDeletedComponentName
 	}
 	update {
 		val javaCorrespondents = new ArrayList<EObject>(correspondenceModel.getCorrespondingEObjects(cmp))
@@ -87,7 +87,7 @@ routine removeUserInteractionTestComponent(pcm::BasicComponent cmp, pcm::Reposit
 
 routine createUserInteractionNamespaceTestInterface(pcm::BasicComponent cmp) {
 	match {
-		check cmp.entityName == PcmCPRTestConstants.namespaceTestComponentName
+		check cmp.entityName == PcmCPRDummyTestConstants.namespaceTestComponentName
 	}
 	create {
 		val javaMod = new java::Module

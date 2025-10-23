@@ -10,6 +10,9 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.palladiosimulator.pcm.core.entity.Entity;
 
+import cipm.consistency.cpr.pcmjava.userinteraction.AbstractUserInteraction;
+import cipm.consistency.cpr.pcmjava.userinteraction.CorrespondenceEntry;
+import cipm.consistency.cpr.pcmjava.userinteraction.FeatureEntry;
 import tools.vitruv.change.interaction.UserInteractionFactory;
 
 public class DistributionUserInteraction extends AbstractUserInteraction {

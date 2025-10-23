@@ -1,4 +1,4 @@
-package cipm.consistency.vsum.test.pcm.cprunittests;
+package cipm.consistency.vsum.test.pcm.cprunittests.dummy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +14,11 @@ import org.palladiosimulator.pcm.repository.BasicComponent;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryFactory;
 
-import cipm.consistency.vsum.test.pcm.userinteraction.ConflictResolutionStrategy;
+import cipm.consistency.cpr.pcmjava.userinteraction.ConflictResolutionStrategy;
+import cipm.consistency.cpr.pcmjava.userinteraction.PcmUserInteractionManager;
+import cipm.consistency.vsum.test.pcm.cprunittests.AbstractPcmJavaCprTest;
 import cipm.consistency.vsum.test.pcm.userinteraction.DummyNameConflictResolutionStrategy;
 import cipm.consistency.vsum.test.pcm.userinteraction.DummyNamespaceConflictResolutionStrategy;
-import cipm.consistency.vsum.test.pcm.userinteraction.PcmUserInteractionManager;
 import mir.reactions.dummyPCMJavaUserInteractionCPRs.DummyPCMJavaUserInteractionCPRsChangePropagationSpecification;
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
 
@@ -34,7 +35,7 @@ public class PcmJavaCprModuleQualifiedNameUserInteractionTest extends AbstractPc
 			List<String> expectedModuleNss) {
 		var javaResource = this.getJavaModelResourceFromJavaFacade();
 
-		final var pcmCmpName = PcmCPRTestConstants.namespaceTestComponentName;
+		final var pcmCmpName = PcmCPRDummyTestConstants.namespaceTestComponentName;
 
 		var originalRepoRes = this.getResourceFromPcmFacade(repositoryFileName);
 
@@ -102,8 +103,8 @@ public class PcmJavaCprModuleQualifiedNameUserInteractionTest extends AbstractPc
 
 	@Test
 	public void testJavaPCMUserInteraction_ModuleQualifiedName_Intercepted() {
-		var expModName = PcmCPRTestConstants.namespaceTestComponentModuleName;
-		var expModNss = PcmCPRTestConstants.namespaceTestComponentModuleNamespaces;
+		var expModName = PcmCPRDummyTestConstants.namespaceTestComponentModuleName;
+		var expModNss = PcmCPRDummyTestConstants.namespaceTestComponentModuleNamespaces;
 
 		pcmModuleQualifiedNameTest((te) -> {
 			return new ConflictResolutionStrategy[] { new DummyNameConflictResolutionStrategy(te, expModName),

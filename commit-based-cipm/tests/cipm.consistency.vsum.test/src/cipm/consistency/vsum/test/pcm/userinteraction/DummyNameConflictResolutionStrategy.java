@@ -3,6 +3,10 @@ package cipm.consistency.vsum.test.pcm.userinteraction;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 
+import cipm.consistency.cpr.pcmjava.userinteraction.AbstractUserInteraction;
+import cipm.consistency.cpr.pcmjava.userinteraction.ConflictResolutionStrategy;
+import cipm.consistency.cpr.pcmjava.userinteraction.PcmUserInteractionManager;
+
 public class DummyNameConflictResolutionStrategy extends ConflictResolutionStrategy {
 	private String predefinedName;
 	private EObject triggeringElement;

@@ -1,8 +1,8 @@
-package cipm.consistency.vsum.test.pcm.cprunittests;
+package cipm.consistency.vsum.test.pcm.cprunittests.dummy;
 
 import java.util.List;
 
-public final class PcmCPRTestConstants {
+public final class PcmCPRDummyTestConstants {
 	public static final String correspondenceTestPCMInterfaceName = "pcmIfc";
 
 	public static final String userInteractionTestPCMInterfaceName = "userInteractionPcmIfc";

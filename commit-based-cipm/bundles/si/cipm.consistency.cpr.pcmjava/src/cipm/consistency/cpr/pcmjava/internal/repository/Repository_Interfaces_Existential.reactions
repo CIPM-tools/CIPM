@@ -29,7 +29,8 @@ routine findOrCreateOrDecideJavaInterface(pcm::OperationInterface pcmIfc) {
 		val matchingJavaIfcs = JavaModelAccess.findPotentialConcreteClassifiers(pcmIfc.entityName)
 
 		// Since CIPM has PCM Interfaces have no namespaces, user disambiguation is necessary in general
-		var javaCorrespondentOfType = PcmJavaCPRUtils.findOrCreateOrDecideJavaCorrespondent(pcmIfc, matchingJavaIfcs)
+		var javaCorrespondentOfType = matchingJavaIfcs.get(0)
+		// PcmJavaCPRUtils.findOrCreateOrDecideJavaCorrespondent(pcmIfc, matchingJavaIfcs)
 
 		PcmJavaCPRUtils.integrateJavaClassifierCorrespondent(correspondenceModel, pcmIfc, JavaModelAccess.javaModel,
 			javaCorrespondentOfType)

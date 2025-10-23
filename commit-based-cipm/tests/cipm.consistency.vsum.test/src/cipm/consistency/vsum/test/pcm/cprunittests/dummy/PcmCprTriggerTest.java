@@ -1,4 +1,4 @@
-package cipm.consistency.vsum.test.pcm.cprunittests;
+package cipm.consistency.vsum.test.pcm.cprunittests.dummy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,22 +11,22 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.palladiosimulator.pcm.core.entity.EntityPackage;
 
-import cipm.consistency.vsum.test.pcm.compchanges.DummyCompositeChangeMarker;
-import mir.reactions.dummyPCMCompCPRs.DummyPCMCompCPRsChangePropagationSpecification;
+import cipm.consistency.vsum.test.pcm.cprunittests.AbstractPcmCprTest;
+import mir.reactions.dummyPCMCPRs.DummyPCMCPRsChangePropagationSpecification;
 import tools.vitruv.change.atomic.feature.attribute.AttributeFactory;
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
 
-public class PcmCompCprTest extends AbstractPcmCprTest {
+public class PcmCprTriggerTest extends AbstractPcmCprTest {
 	private static final Function<Resource, EObject> repoObjLocator = (r) -> r.getContents().get(0);
 
 	@Override
 	protected List<ChangePropagationSpecification> getCPRs() {
 		var list = new ArrayList<ChangePropagationSpecification>();
-		list.add(new DummyPCMCompCPRsChangePropagationSpecification());
+		list.add(new DummyPCMCPRsChangePropagationSpecification());
 		return list;
 	}
 
-	public void compCprTest(Resource pcmRepoResource) {
+	public void cprTriggerTest(Resource pcmRepoResource) {
 		var repoEObj = repoObjLocator.apply(pcmRepoResource);
 		var repoEObjFragment = pcmRepoResource.getURIFragment(repoEObj);
 		var repoEObjURI = pcmRepoResource.getURI().appendFragment(repoEObjFragment).toString();
@@ -34,39 +34,24 @@ public class PcmCompCprTest extends AbstractPcmCprTest {
 		// Ensure that the URI fragments are accurate and lead to the desired object
 		Assertions.assertEquals(repoEObj, pcmRepoResource.getEObject(repoEObjFragment));
 
+		var newEntityName = "en";
+
+		var attrChange = AttributeFactory.eINSTANCE.createReplaceSingleValuedEAttribute();
+		attrChange.setAffectedEObject(repoEObj);
+		attrChange.setAffectedEObjectID(repoEObjURI.toString());
 		var attr = EntityPackage.Literals.NAMED_ELEMENT__ENTITY_NAME;
-
-		var compChangeMark = "compChange";
-		var compChange1 = AttributeFactory.eINSTANCE.createReplaceSingleValuedEAttribute();
-		compChange1.setAffectedEObject(repoEObj);
-		compChange1.setAffectedEObjectID(repoEObjURI.toString());
-		compChange1.setAffectedFeature(attr);
-		compChange1.setOldValue(repoEObj.eGet(attr));
-		compChange1.setNewValue("name1");
-		DummyCompositeChangeMarker.markChange(compChange1, compChangeMark);
-
-		var compChange2 = AttributeFactory.eINSTANCE.createReplaceSingleValuedEAttribute();
-		compChange2.setAffectedEObject(repoEObj);
-		compChange2.setAffectedEObjectID(repoEObjURI.toString());
-		compChange2.setAffectedFeature(attr);
-		compChange2.setOldValue(repoEObj.eGet(attr));
-		compChange2.setNewValue("name2");
-		DummyCompositeChangeMarker.markChange(compChange2, compChangeMark);
-
-		var atomicChange = AttributeFactory.eINSTANCE.createReplaceSingleValuedEAttribute();
-		atomicChange.setAffectedEObject(repoEObj);
-		atomicChange.setAffectedEObjectID(repoEObjURI.toString());
-		atomicChange.setAffectedFeature(attr);
-		atomicChange.setOldValue(repoEObj.eGet(attr));
-		atomicChange.setNewValue("name3");
+		attrChange.setAffectedFeature(attr);
+		attrChange.setOldValue(repoEObj.eGet(attr));
+		attrChange.setNewValue(newEntityName);
 
 		// Ensure that the change is not applied prior to propagation
 		Assertions.assertEquals(1, pcmRepoResource.getContents().size());
 		Assertions.assertEquals(repoEObj, pcmRepoResource.getContents().get(0));
+		Assertions.assertNotEquals(newEntityName, repoEObj.eGet(attr));
 
 		// Propagate the changes to repoRes, which results in applying the change to the
 		// Resource in PcmFacade
-		var props = propagatePcmChanges(pcmRepoResource, List.of(compChange1, compChange2, atomicChange));
+		var props = propagatePcmChanges(pcmRepoResource, List.of(attrChange));
 		// The propagation DOES NOT change the passed Resource instance (repoRes here)
 		// It instead applies the change to the Resource inside the PcmFacade
 
@@ -78,6 +63,7 @@ public class PcmCompCprTest extends AbstractPcmCprTest {
 		var propagatedResource = this.getResourceFromPcmFacade(AbstractPcmCprTest.repositoryFileName);
 		Assertions.assertEquals(1, propagatedResource.getContents().size());
 		var propagatedRepoEObj = propagatedResource.getContents().get(0);
+		Assertions.assertEquals(newEntityName, propagatedRepoEObj.eGet(attr));
 
 		// Ensure that the Resource is saved after changes are applied
 		var res = this.loadNewResourceInstance(propagatedResource);
@@ -86,19 +72,18 @@ public class PcmCompCprTest extends AbstractPcmCprTest {
 		Assertions.assertEquals(1, res.getContents().size());
 		var resRepoEObj = res.getContents().get(0);
 		Assertions.assertTrue(EcoreUtil.equals(resRepoEObj, propagatedRepoEObj));
-
-		DummyCompositeChangeMarker.reset();
+		Assertions.assertEquals(newEntityName, resRepoEObj.eGet(attr));
 	}
 
 	@Test
 	public void testCprTrigger_OnDifferentResourceInstance() {
 		var pcmRes = this.getNewInstanceForResourceFromPcmFacade(AbstractPcmCprTest.repositoryFileName);
-		compCprTest(pcmRes);
+		cprTriggerTest(pcmRes);
 	}
 
 	@Test
 	public void testCprTrigger_OnSameResourceInstance() {
 		var pcmRes = this.getResourceFromPcmFacade(AbstractPcmCprTest.repositoryFileName);
-		compCprTest(pcmRes);
+		cprTriggerTest(pcmRes);
 	}
 }

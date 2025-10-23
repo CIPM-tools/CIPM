@@ -9,6 +9,9 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.emftext.language.java.commons.CommonsPackage;
 import org.emftext.language.java.commons.NamespaceAwareElement;
 
+import cipm.consistency.cpr.pcmjava.userinteraction.AbstractUserInteraction;
+import cipm.consistency.cpr.pcmjava.userinteraction.CorrespondenceEntry;
+import cipm.consistency.cpr.pcmjava.userinteraction.FeatureEntry;
 import tools.vitruv.change.interaction.UserInteractionFactory;
 
 public class NamespaceUserInteraction extends AbstractUserInteraction {

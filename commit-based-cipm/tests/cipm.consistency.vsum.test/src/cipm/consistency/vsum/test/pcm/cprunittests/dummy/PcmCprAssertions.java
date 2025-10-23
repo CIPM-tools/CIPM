@@ -1,4 +1,4 @@
-package cipm.consistency.vsum.test.pcm.cprunittests;
+package cipm.consistency.vsum.test.pcm.cprunittests.dummy;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,9 +14,9 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.junit.jupiter.api.Assertions;
 
+import cipm.consistency.cpr.pcmjava.userinteraction.CorrespondenceEntry;
+import cipm.consistency.cpr.pcmjava.userinteraction.PcmUserInteractionManager;
 import cipm.consistency.vsum.test.pcm.PcmVsumFacade;
-import cipm.consistency.vsum.test.pcm.userinteraction.CorrespondenceEntry;
-import cipm.consistency.vsum.test.pcm.userinteraction.PcmUserInteractionManager;
 
 public final class PcmCprAssertions {
 

@@ -18,8 +18,8 @@ import cipm.consistency.commitintegration.lang.detection.strategy.ComponentDetec
 import cipm.consistency.commitintegration.lang.java.JavaModelFacade;
 import cipm.consistency.commitintegration.settings.CommitIntegrationSettingsContainer;
 import cipm.consistency.cpr.pcmjava.JavaModelAccess;
+import cipm.consistency.cpr.pcmjava.userinteraction.PcmUserInteractionManager;
 import cipm.consistency.models.ModelFacade;
-import cipm.consistency.vsum.test.pcm.userinteraction.PcmUserInteractionManager;
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.framework.views.changederivation.DefaultStateBasedChangeResolutionStrategy;
 

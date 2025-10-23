@@ -1,4 +1,4 @@
-package cipm.consistency.vsum.test.pcm.cprunittests;
+package cipm.consistency.vsum.test.pcm.cprunittests.dummy;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -16,10 +16,11 @@ import org.palladiosimulator.pcm.repository.BasicComponent;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryFactory;
 
-import cipm.consistency.vsum.test.pcm.userinteraction.ConflictResolutionStrategy;
-import cipm.consistency.vsum.test.pcm.userinteraction.CorrespondenceEntry;
+import cipm.consistency.cpr.pcmjava.userinteraction.ConflictResolutionStrategy;
+import cipm.consistency.cpr.pcmjava.userinteraction.CorrespondenceEntry;
+import cipm.consistency.cpr.pcmjava.userinteraction.PcmUserInteractionManager;
+import cipm.consistency.vsum.test.pcm.cprunittests.AbstractPcmJavaCprTest;
 import cipm.consistency.vsum.test.pcm.userinteraction.DummyDistributionConflictResolutionStrategy;
-import cipm.consistency.vsum.test.pcm.userinteraction.PcmUserInteractionManager;
 import mir.reactions.dummyPCMJavaUserInteractionCPRs.DummyPCMJavaUserInteractionCPRsChangePropagationSpecification;
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
 import tools.vitruv.dsls.reactions.runtime.correspondence.CorrespondenceFactory;
@@ -31,17 +32,17 @@ public class PcmJavaCprComponentContentDistributionUserInteractionTest extends A
 	private static final Function<Resource, BasicComponent> cmpToBeDeletedLocator = (
 			r) -> (BasicComponent) repoObjLocator.apply(r).getComponents__Repository().stream()
 					.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
-							.equals(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentName))
+							.equals(PcmCPRDummyTestConstants.componentContentDistributionTestDeletedComponentName))
 					.findFirst().get();
 	private static final Function<Resource, BasicComponent> cmpToPersistOneLocator = (
 			r) -> (BasicComponent) repoObjLocator.apply(r).getComponents__Repository().stream()
 					.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
-							.equals(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentOneName))
+							.equals(PcmCPRDummyTestConstants.componentContentDistributionTestPersistingComponentOneName))
 					.findFirst().get();
 	private static final Function<Resource, BasicComponent> cmpToPersistTwoLocator = (
 			r) -> (BasicComponent) repoObjLocator.apply(r).getComponents__Repository().stream()
 					.filter((c) -> c instanceof BasicComponent && ((BasicComponent) c).getEntityName()
-							.equals(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentTwoName))
+							.equals(PcmCPRDummyTestConstants.componentContentDistributionTestPersistingComponentTwoName))
 					.findFirst().get();
 
 	// Java model element locators
@@ -49,13 +50,13 @@ public class PcmJavaCprComponentContentDistributionUserInteractionTest extends A
 			r) -> (org.emftext.language.java.classifiers.Class) r.getContents().stream()
 					.filter((c) -> c instanceof org.emftext.language.java.classifiers.Class
 							&& ((org.emftext.language.java.classifiers.Class) c).getName().equals(
-									PcmCPRTestConstants.componentContentDistributionTestDeletedComponentClassOneName))
+									PcmCPRDummyTestConstants.componentContentDistributionTestDeletedComponentClassOneName))
 					.findFirst().get();
 	private static final Function<Resource, org.emftext.language.java.classifiers.Class> cls2Locator = (
 			r) -> (org.emftext.language.java.classifiers.Class) r.getContents().stream()
 					.filter((c) -> c instanceof org.emftext.language.java.classifiers.Class
 							&& ((org.emftext.language.java.classifiers.Class) c).getName().equals(
-									PcmCPRTestConstants.componentContentDistributionTestDeletedComponentClassTwoName))
+									PcmCPRDummyTestConstants.componentContentDistributionTestDeletedComponentClassTwoName))
 					.findFirst().get();
 
 	@Override
@@ -71,17 +72,17 @@ public class PcmJavaCprComponentContentDistributionUserInteractionTest extends A
 			var repoObj = (Repository) r.getContents().get(0);
 
 			var cmpToBeDeleted = RepositoryFactory.eINSTANCE.createBasicComponent();
-			cmpToBeDeleted.setEntityName(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentName);
+			cmpToBeDeleted.setEntityName(PcmCPRDummyTestConstants.componentContentDistributionTestDeletedComponentName);
 			repoObj.getComponents__Repository().add(cmpToBeDeleted);
 
 			var cmpToPersistOne = RepositoryFactory.eINSTANCE.createBasicComponent();
 			cmpToPersistOne
-					.setEntityName(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentOneName);
+					.setEntityName(PcmCPRDummyTestConstants.componentContentDistributionTestPersistingComponentOneName);
 			repoObj.getComponents__Repository().add(cmpToPersistOne);
 
 			var cmpToPersistTwo = RepositoryFactory.eINSTANCE.createBasicComponent();
 			cmpToPersistTwo
-					.setEntityName(PcmCPRTestConstants.componentContentDistributionTestPersistingComponentTwoName);
+					.setEntityName(PcmCPRDummyTestConstants.componentContentDistributionTestPersistingComponentTwoName);
 			repoObj.getComponents__Repository().add(cmpToPersistTwo);
 		});
 	}
@@ -89,11 +90,11 @@ public class PcmJavaCprComponentContentDistributionUserInteractionTest extends A
 	private void setUpJavaModel() {
 		var javaResource = this.getJavaModelResourceFromJavaFacade();
 		var cls1 = ClassifiersFactory.eINSTANCE.createClass();
-		cls1.setName(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentClassOneName);
+		cls1.setName(PcmCPRDummyTestConstants.componentContentDistributionTestDeletedComponentClassOneName);
 		javaResource.getContents().add(cls1);
 
 		var cls2 = ClassifiersFactory.eINSTANCE.createClass();
-		cls2.setName(PcmCPRTestConstants.componentContentDistributionTestDeletedComponentClassTwoName);
+		cls2.setName(PcmCPRDummyTestConstants.componentContentDistributionTestDeletedComponentClassTwoName);
 		javaResource.getContents().add(cls2);
 		this.getJavaFacade().saveToDisk();
 	}

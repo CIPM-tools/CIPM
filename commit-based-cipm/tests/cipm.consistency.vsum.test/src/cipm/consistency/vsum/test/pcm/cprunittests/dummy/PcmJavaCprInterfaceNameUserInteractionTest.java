@@ -1,4 +1,4 @@
-package cipm.consistency.vsum.test.pcm.cprunittests;
+package cipm.consistency.vsum.test.pcm.cprunittests.dummy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +14,10 @@ import org.palladiosimulator.pcm.repository.Interface;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryFactory;
 
-import cipm.consistency.vsum.test.pcm.userinteraction.ConflictResolutionStrategy;
+import cipm.consistency.cpr.pcmjava.userinteraction.ConflictResolutionStrategy;
+import cipm.consistency.cpr.pcmjava.userinteraction.PcmUserInteractionManager;
+import cipm.consistency.vsum.test.pcm.cprunittests.AbstractPcmJavaCprTest;
 import cipm.consistency.vsum.test.pcm.userinteraction.DummyNameConflictResolutionStrategy;
-import cipm.consistency.vsum.test.pcm.userinteraction.PcmUserInteractionManager;
 import mir.reactions.dummyPCMJavaUserInteractionCPRs.DummyPCMJavaUserInteractionCPRsChangePropagationSpecification;
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
 
@@ -33,7 +34,7 @@ public class PcmJavaCprInterfaceNameUserInteractionTest extends AbstractPcmJavaC
 		var javaResource = this.getJavaModelResourceFromJavaFacade();
 		// Assertions.assertEquals(0, javaResource.getContents().size());
 
-		final var pcmInterfaceName = PcmCPRTestConstants.userInteractionTestPCMInterfaceName;
+		final var pcmInterfaceName = PcmCPRDummyTestConstants.userInteractionTestPCMInterfaceName;
 		final var createdInterface = new Interface[1];
 		var originalRepoRes = this.getResourceFromPcmFacade(repositoryFileName);
 
@@ -90,8 +91,8 @@ public class PcmJavaCprInterfaceNameUserInteractionTest extends AbstractPcmJavaC
 	public void testJavaPCMUserInteraction_InterfaceName_Intercepted() {
 		this.javaInterfaceNameTest((te) -> {
 			return new ConflictResolutionStrategy[] { new DummyNameConflictResolutionStrategy(te,
-					PcmCPRTestConstants.userInteractionTestJavaInterfaceName) };
-		}, PcmCPRTestConstants.userInteractionTestJavaInterfaceName);
+					PcmCPRDummyTestConstants.userInteractionTestJavaInterfaceName) };
+		}, PcmCPRDummyTestConstants.userInteractionTestJavaInterfaceName);
 	}
 
 	@Disabled("Enable if manual user interaction is to be tested")

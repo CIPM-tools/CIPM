@@ -4,6 +4,11 @@ import java.util.List;
 
 import org.palladiosimulator.pcm.core.entity.Entity;
 
+import cipm.consistency.cpr.pcmjava.userinteraction.AbstractUserInteraction;
+import cipm.consistency.cpr.pcmjava.userinteraction.ConflictResolutionStrategy;
+import cipm.consistency.cpr.pcmjava.userinteraction.CorrespondenceEntry;
+import cipm.consistency.cpr.pcmjava.userinteraction.PcmUserInteractionManager;
+
 public class DummyDistributionConflictResolutionStrategy extends ConflictResolutionStrategy {
 	private Entity deletedElement;
 	private List<CorrespondenceEntry> correspondences;
