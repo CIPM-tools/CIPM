@@ -21,8 +21,23 @@ public class DataTypeTest extends AbstractPcmJavaCprTest {
 		return List.of(new AllRepositoryChangePropagationSpecification());
 	}
 
+	// TODO Test locating a standard Java library class
+	//
+	// TODO Test locating a standard Java library class, while there being another
+	// class with the same name but different namespace
+	//
+	// TODO Test creating a new Java class in different scenarios
+
 	@Test
 	public void dataTypeCreationTest() {
+		/*
+		 * TODO Refactor:
+		 * 
+		 * Make this test method flexible, similar to dummy CPR tests. Then provide
+		 * different types of input to user interaction manager and test for different
+		 * scenarios
+		 */
+
 		var javaResource = this.getJavaModelResourceFromJavaFacade();
 //		Assertions.assertEquals(0, javaResource.getContents().size());
 
