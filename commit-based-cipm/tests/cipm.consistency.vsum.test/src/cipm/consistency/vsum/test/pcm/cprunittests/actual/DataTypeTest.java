@@ -30,7 +30,9 @@ public class DataTypeTest extends AbstractPcmJavaCprTest {
 	// TODO Test locating a standard Java library class, while there being another
 	// class with the same name but different namespace
 	//
-	// TODO Test creating a new Java class in different scenarios
+	// TODO Test creating a new Java class with pre-existing packages
+	//
+	// TODO Test creating a new Java class with pre-existing modules
 
 	private boolean namespacesEqual(List<String> nss1, List<String> nss2) {
 		if (nss1.size() != nss2.size())
