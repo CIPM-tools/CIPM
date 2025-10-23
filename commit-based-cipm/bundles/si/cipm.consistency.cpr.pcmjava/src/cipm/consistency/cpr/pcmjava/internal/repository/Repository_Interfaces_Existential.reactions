@@ -4,6 +4,12 @@ import org.emftext.language.java.types.TypesFactory
 import cipm.consistency.cpr.pcmjava.PCMElementUtil
 import org.emftext.language.java.parameters.ParametersFactory
 import org.emftext.language.java.members.MembersFactory
+import org.emftext.language.java.classifiers.ClassifiersFactory
+import cipm.consistency.cpr.pcmjava.userinteraction.PcmUserInteractionManager
+import cipm.consistency.cpr.pcmjava.userinteraction.NamespaceUserInteraction
+import cipm.consistency.cpr.pcmjava.userinteraction.JavaCorrespondentDecisionUserInteraction
+import java.util.ArrayList
+import org.eclipse.emf.ecore.EObject
 
 import "http://www.emftext.org/java" as java
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
@@ -29,11 +35,31 @@ routine findOrCreateOrDecideJavaInterface(pcm::OperationInterface pcmIfc) {
 		val matchingJavaIfcs = JavaModelAccess.findPotentialConcreteClassifiers(pcmIfc.entityName)
 
 		// Since CIPM has PCM Interfaces have no namespaces, user disambiguation is necessary in general
-		var javaCorrespondentOfType = matchingJavaIfcs.get(0)
-		// PcmJavaCPRUtils.findOrCreateOrDecideJavaCorrespondent(pcmIfc, matchingJavaIfcs)
+		if (matchingJavaIfcs.isEmpty) {
+			var cls = ClassifiersFactory.eINSTANCE.createInterface
+			cls.name = pcmIfc.entityName
 
-		PcmJavaCPRUtils.integrateJavaClassifierCorrespondent(correspondenceModel, pcmIfc, JavaModelAccess.javaModel,
-			javaCorrespondentOfType)
+			var namespacesUI = new NamespaceUserInteraction(pcmIfc, cls)
+			PcmUserInteractionManager.addUserInteraction(namespacesUI)
+			namespacesUI.resolveAll
+
+			PcmJavaCPRUtils.prepareJavaClassifier(cls)
+
+			PcmJavaCPRUtils.integrateJavaClassifierCorrespondent(correspondenceModel, pcmIfc,
+				JavaModelAccess.javaModel, cls, namespacesUI.namespaces)
+
+		} else if (matchingJavaIfcs.size == 1) {
+			addCorrespondenceBetween(pcmIfc, matchingJavaIfcs.get(0), "")
+		// TODO Adapt tag
+		} else {
+			var ifcList = new ArrayList<EObject>(matchingJavaIfcs)
+			val ui = new JavaCorrespondentDecisionUserInteraction(pcmIfc, ifcList, "")
+			PcmUserInteractionManager.addUserInteraction(ui)
+			ui.resolveAll
+
+			addCorrespondenceBetween(pcmIfc, ui.javaCorrespondent, "")
+		// TODO Adapt tag
+		}
 	}
 }
 

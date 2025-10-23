@@ -31,12 +31,12 @@ routine renameClassifierCorrespondingToCollectionDataType(pcm::CollectionDataTyp
 		val cls = retrieve java::ConcreteClassifier corresponding to e
 	}
 	update {
-		if (cls.package.classifiers.exists[it.name.equals(newName)]) {
-			// FIXME Conflict => There is a Classifier under the same package
-			// with "newName", which violates Java language rules
-			//
-			// TODO Deal with the conflict and continue
-		}
+//		if (cls.package.classifiers.exists[it.name.equals(newName)]) {
+//			// FIXME Conflict => There is a Classifier under the same package
+//			// with "newName", which violates Java language rules
+//			//
+//			// TODO Deal with the conflict and continue
+//		}
 
 		// TODO Check if simply setting the name of the concrete classifier is enough
 		cls.name = newName
@@ -48,12 +48,12 @@ routine renameClassifierCorrespondingToCompositeDataType(pcm::CompositeDataType 
 		val cls = retrieve java::ConcreteClassifier corresponding to e
 	}
 	update {
-		if (cls.package.classifiers.exists[it.name.equals(newName)]) {
-			// FIXME Conflict => There is a Classifier under the same package
-			// with "newName", which violates Java language rules
-			//
-			// TODO Deal with the conflict and continue
-		}
+//		if (cls.package.classifiers.exists[it.name.equals(newName)]) {
+//			// FIXME Conflict => There is a Classifier under the same package
+//			// with "newName", which violates Java language rules
+//			//
+//			// TODO Deal with the conflict and continue
+//		}
 
 		// TODO Check if simply setting the name of the concrete classifier is enough
 		cls.name = newName
@@ -66,12 +66,12 @@ routine renameFieldCorrespondingToInnerDeclaration(pcm::InnerDeclaration innerDe
 		val fieldCls = retrieve java::ConcreteClassifier corresponding to innerDecl.compositeDataType_InnerDeclaration
 	}
 	update {
-		if (fieldCls.fields.exists[it.name.equals(newName)]) {
-			// FIXME Conflict => There is a Field in the same concrete classifier
-			// with "newName", which violates Java language rules
-			//
-			// TODO Deal with the conflict and continue
-		}
+//		if (fieldCls.fields.exists[it.name.equals(newName)]) {
+//			// FIXME Conflict => There is a Field in the same concrete classifier
+//			// with "newName", which violates Java language rules
+//			//
+//			// TODO Deal with the conflict and continue
+//		}
 
 		// TODO Check if simply setting the name of the field is enough
 		field.name = newName

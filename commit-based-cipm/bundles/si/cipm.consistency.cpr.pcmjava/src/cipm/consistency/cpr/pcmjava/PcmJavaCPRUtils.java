@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
@@ -269,51 +268,6 @@ public final class PcmJavaCPRUtils {
 	}
 
 	/**
-	 * Method for finding or creating or deciding or ignoring the Java correspondent
-	 * of a PCM element.
-	 * <p>
-	 * Extracted here, since this is a recurring operation across many CPRs.
-	 * 
-	 * @param pcmElement                       The PCM element, for which a Java
-	 *                                         correspondent is sought
-	 * @param listOfPossibleJavaCorrespondents Collection of possible Java
-	 *                                         correspondents for the given PCM
-	 *                                         element
-	 * @return The Java element, which should correspond to the given PCM element.
-	 *         The resulting Java element could be created freshly and may require
-	 *         inserting into the Java model resource. This method returns null,
-	 *         there should be no Java correspondent for the given PCM element among
-	 *         the given possible Java correspondents. The returned element may not
-	 *         always be of the same type as elements of
-	 *         listOfPossibleJavaCorrespondents, as sometimes it is necessary to
-	 *         create the container of a correspondent instead (example: A Java
-	 *         ConcreteClassifier has to be created alongside its CompilationUnit,
-	 *         since its namespace comes from its container).
-	 */
-	public static <P extends EObject, O extends Commentable, C extends Iterable<O>> Commentable findOrCreateOrDecideJavaCorrespondent(
-			P pcmElement, C listOfPossibleJavaCorrespondents, Function<P, O> javaCorrespondentCreator,
-			Function<C, O> javaCorrespondentDecider) {
-		var it = listOfPossibleJavaCorrespondents.iterator();
-		if (it.hasNext()) {
-			var firstElem = it.next();
-			if (!it.hasNext()) {
-				// Only one possible Java correspondent, return it
-				return firstElem;
-			} else {
-				// Multiple possible Java correspondents, pick one
-				return javaCorrespondentDecider.apply(listOfPossibleJavaCorrespondents);
-				// TODO User interaction for deciding which corresponding is the correct one
-				// TODO Make sure to allow taking no action / leaving a developer task
-			}
-		} else {
-			// No possible Java correspondents, create one
-			return javaCorrespondentCreator.apply(pcmElement);
-			// TODO User interaction for corresponding element (stub) creation
-			// TODO Make sure to allow taking no action / leaving a developer task
-		}
-	}
-
-	/**
 	 * Adds correspondences between PCM OperationSignature and Java Method. Assumes
 	 * them to match and does not check whether they match.
 	 */
@@ -443,17 +397,8 @@ public final class PcmJavaCPRUtils {
 	 * support the namespace feature, it is instead derived from its containers.
 	 */
 	public static void integrateJavaClassifierCorrespondent(EditableCorrespondenceModelView<?> corView, EObject pcmElem,
-			Resource javaModelResource, Commentable javaClsOrCU) {
-		if (javaClsOrCU instanceof ConcreteClassifier) {
-			PcmJavaCPRUtils.addCorrespondenceToJavaCorrespondent(corView, pcmElem, javaClsOrCU);
-		} else if (javaClsOrCU instanceof CompilationUnit) {
-			var castedCU = (CompilationUnit) javaClsOrCU;
-			var javaCls = castedCU.getClassifiers().get(0);
-			PcmJavaCPRUtils.addCorrespondenceToJavaCorrespondent(corView, pcmElem, javaCls);
-			if (!isInResource(javaModelResource, javaCls)) {
-				PcmJavaCPRUtils.addJavaClassifierIntoResource(javaModelResource, javaCls, castedCU.getNamespaces());
-			}
-		}
+			Resource javaModelResource, ConcreteClassifier javaCls, List<String> namespaces) {
+		PcmJavaCPRUtils.addJavaClassifierIntoResource(javaModelResource, javaCls, namespaces);
 	}
 
 	/**
@@ -510,7 +455,9 @@ public final class PcmJavaCPRUtils {
 			}
 		}
 
-		return addJavaClassifierIntoJavaRoot(bottomMostExistingParentContainer, javaCls, javaClsNss);
+		var containers = addJavaClassifierIntoJavaRoot(bottomMostExistingParentContainer, javaCls, javaClsNss);
+		r.getContents().addAll(containers);
+		return containers;
 	}
 
 	/**
@@ -635,8 +582,8 @@ public final class PcmJavaCPRUtils {
 
 		var createdPacs = new ArrayList<org.emftext.language.java.containers.Package>();
 		// Create the necessary packages
-		for (int i = 1; i < remainingNss.size(); i++) {
-			createdPacs.add(createJavaPackage(moduleOfJavaCls, javaClsNss.subList(0, i + longestNsPrefix.size())));
+		for (int i = 0; i < remainingNss.size(); i++) {
+			createdPacs.add(createJavaPackage(moduleOfJavaCls, javaClsNss.subList(0, i + longestNsPrefix.size() + 1)));
 		}
 
 		if (!createdPacs.isEmpty()) {
@@ -645,7 +592,7 @@ public final class PcmJavaCPRUtils {
 		}
 
 		// Create the necessary CompilationUnit
-		if (javaCls.getContainingCompilationUnit() != null) {
+		if (javaCls.getContainingCompilationUnit() == null) {
 			createdContainers.add(createCompilationUnitForJavaClassifier(javaCls, javaClsNss));
 		}
 
