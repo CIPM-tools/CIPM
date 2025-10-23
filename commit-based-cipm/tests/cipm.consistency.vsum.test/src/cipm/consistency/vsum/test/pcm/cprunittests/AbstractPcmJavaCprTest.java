@@ -122,7 +122,7 @@ public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 		var changes = d.getChangeSequenceBetween(modifiedResDupl, unmodifiedResDupl).getEChanges();
 //		for (var c : changes) {
 //			for (var feat : c.eClass().getEAllReferences()) {
-//				var val = (EObject) c.eGet(feat);
+//				var val = (EObject) c.eGet(c.eClass().getEStructuralFeature(feat.getName()));
 //				if (!(val instanceof EModelElement)) {
 //					var it = resourceInModelFacade.getAllContents();
 //					while (it.hasNext()) {

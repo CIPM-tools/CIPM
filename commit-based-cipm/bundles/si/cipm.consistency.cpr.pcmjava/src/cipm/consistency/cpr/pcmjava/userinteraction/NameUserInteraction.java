@@ -1,22 +1,22 @@
 package cipm.consistency.cpr.pcmjava.userinteraction;
 
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
 import org.emftext.language.java.commons.CommonsPackage;
-import org.emftext.language.java.commons.NamedElement;
 
 import tools.vitruv.change.interaction.UserInteractionFactory;
 
 public class NameUserInteraction extends AbstractUserInteraction {
 	private final static EStructuralFeature clsNameFeat = CommonsPackage.Literals.NAMED_ELEMENT__NAME;
 
-	private NamedElement toBeNamed;
+	private EObject toBeNamed;
 	private EObject triggeringPCMElement;
 
-	public NameUserInteraction(EObject triggeringPCMElement, NamedElement toBeNamed) {
+	public NameUserInteraction(EObject triggeringPCMElement, EObject toBeNamed) {
 		this.triggeringPCMElement = triggeringPCMElement;
 		this.toBeNamed = toBeNamed;
 	}
@@ -66,7 +66,7 @@ public class NameUserInteraction extends AbstractUserInteraction {
 		return this.triggeringPCMElement;
 	}
 
-	public NamedElement getElementToBeNamed() {
+	public EObject getElementToBeNamed() {
 		return this.toBeNamed;
 	}
 
@@ -89,5 +89,20 @@ public class NameUserInteraction extends AbstractUserInteraction {
 			EStructuralFeature feat) {
 		return clsNameFeat == feat && this.triggeringPCMElement == triggeringPCMElement
 				&& (affectedJavaElement == null || this.toBeNamed == affectedJavaElement);
+	}
+
+	@Override
+	public List<EObject> getTriggeringPCMelements() {
+		return List.of(triggeringPCMElement);
+	}
+
+	@Override
+	public List<EObject> getAffectedJavaElements() {
+		return List.of(toBeNamed);
+	}
+
+	@Override
+	public List<EObject> getAffectedPCMElements() {
+		return List.of(triggeringPCMElement);
 	}
 }

@@ -94,4 +94,19 @@ public class NamespaceUserInteraction extends AbstractUserInteraction {
 		return clsNamespacesFeat == feat && this.triggeringPCMElement == triggeringPCMElement
 				&& (affectedJavaElement == null || this.toBeAssignedNamespace == affectedJavaElement);
 	}
+
+	@Override
+	public List<EObject> getTriggeringPCMelements() {
+		return List.of(triggeringPCMElement);
+	}
+
+	@Override
+	public List<EObject> getAffectedJavaElements() {
+		return List.of(toBeAssignedNamespace);
+	}
+
+	@Override
+	public List<EObject> getAffectedPCMElements() {
+		return List.of(triggeringPCMElement);
+	}
 }

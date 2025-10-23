@@ -1,5 +1,6 @@
 package cipm.consistency.vsum.test.pcm.userinteraction;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -120,5 +121,23 @@ public class DistributionUserInteraction extends AbstractUserInteraction {
 	public boolean hasDesiredFeature(EObject triggeringPCMElement, EObject affectedJavaElement,
 			EStructuralFeature feat) {
 		return false;
+	}
+
+	@Override
+	public List<EObject> getTriggeringPCMelements() {
+		return List.of(deletedElement);
+	}
+
+	@Override
+	public List<EObject> getAffectedJavaElements() {
+		return List.copyOf(correspondingContentsToDistribute);
+	}
+
+	@Override
+	public List<EObject> getAffectedPCMElements() {
+		var pcmElems = new ArrayList<EObject>();
+		pcmElems.add(deletedElement);
+		pcmElems.addAll(possibleDistributionTargets);
+		return pcmElems;
 	}
 }

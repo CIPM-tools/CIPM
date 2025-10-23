@@ -41,13 +41,14 @@ public class PcmCprTriggerTest extends AbstractPcmCprTest {
 		attrChange.setAffectedEObjectID(repoEObjURI.toString());
 		var attr = EntityPackage.Literals.NAMED_ELEMENT__ENTITY_NAME;
 		attrChange.setAffectedFeature(attr);
-		attrChange.setOldValue(repoEObj.eGet(attr));
+		attrChange.setOldValue(repoEObj.eGet(repoEObj.eClass().getEStructuralFeature(attr.getName())));
 		attrChange.setNewValue(newEntityName);
 
 		// Ensure that the change is not applied prior to propagation
 		Assertions.assertEquals(1, pcmRepoResource.getContents().size());
 		Assertions.assertEquals(repoEObj, pcmRepoResource.getContents().get(0));
-		Assertions.assertNotEquals(newEntityName, repoEObj.eGet(attr));
+		Assertions.assertNotEquals(newEntityName,
+				repoEObj.eGet(repoEObj.eClass().getEStructuralFeature(attr.getName())));
 
 		// Propagate the changes to repoRes, which results in applying the change to the
 		// Resource in PcmFacade
@@ -63,7 +64,8 @@ public class PcmCprTriggerTest extends AbstractPcmCprTest {
 		var propagatedResource = this.getResourceFromPcmFacade(AbstractPcmCprTest.repositoryFileName);
 		Assertions.assertEquals(1, propagatedResource.getContents().size());
 		var propagatedRepoEObj = propagatedResource.getContents().get(0);
-		Assertions.assertEquals(newEntityName, propagatedRepoEObj.eGet(attr));
+		Assertions.assertEquals(newEntityName,
+				propagatedRepoEObj.eGet(propagatedRepoEObj.eClass().getEStructuralFeature(attr.getName())));
 
 		// Ensure that the Resource is saved after changes are applied
 		var res = this.loadNewResourceInstance(propagatedResource);
@@ -72,7 +74,8 @@ public class PcmCprTriggerTest extends AbstractPcmCprTest {
 		Assertions.assertEquals(1, res.getContents().size());
 		var resRepoEObj = res.getContents().get(0);
 		Assertions.assertTrue(EcoreUtil.equals(resRepoEObj, propagatedRepoEObj));
-		Assertions.assertEquals(newEntityName, resRepoEObj.eGet(attr));
+		Assertions.assertEquals(newEntityName,
+				resRepoEObj.eGet(resRepoEObj.eClass().getEStructuralFeature(attr.getName())));
 	}
 
 	@Test

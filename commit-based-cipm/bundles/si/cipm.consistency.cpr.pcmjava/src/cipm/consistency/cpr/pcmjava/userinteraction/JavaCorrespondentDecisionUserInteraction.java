@@ -1,8 +1,6 @@
 package cipm.consistency.cpr.pcmjava.userinteraction;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -90,5 +88,20 @@ public class JavaCorrespondentDecisionUserInteraction extends AbstractUserIntera
 
 	public EObject getJavaCorrespondent() {
 		return javaCorrespondent;
+	}
+
+	@Override
+	public List<EObject> getTriggeringPCMelements() {
+		return List.of(triggeringPCMelement);
+	}
+
+	@Override
+	public List<EObject> getAffectedJavaElements() {
+		return List.copyOf(possibleJavaCorrespondents);
+	}
+
+	@Override
+	public List<EObject> getAffectedPCMElements() {
+		return List.of(triggeringPCMelement);
 	}
 }

@@ -1,12 +1,17 @@
 package cipm.consistency.cpr.pcmjava.userinteraction;
 
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
 public abstract class AbstractUserInteraction {
-	// TODO Add logging to all user interactions, so that user input is visible
+	public abstract List<EObject> getTriggeringPCMelements();
+	
+	public abstract List<EObject> getAffectedPCMElements();
+
+	public abstract List<EObject> getAffectedJavaElements();
 
 	public abstract void performManualUserInteraction();
 

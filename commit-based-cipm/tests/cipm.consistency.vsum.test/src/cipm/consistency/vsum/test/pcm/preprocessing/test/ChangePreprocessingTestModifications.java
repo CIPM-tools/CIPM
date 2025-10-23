@@ -100,7 +100,7 @@ public class ChangePreprocessingTestModifications {
 		Preconditions.checkArgument(obj.eClass().getEAllStructuralFeatures().contains(feat),
 				"Given obj must support feat");
 
-		var currentVal = obj.eGet(feat);
+		var currentVal = obj.eGet(obj.eClass().getEStructuralFeature(feat.getName()));
 		if (currentVal == null)
 			return new BasicEList<T>();
 		return new ArrayList<>((List<T>) currentVal);

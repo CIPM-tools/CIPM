@@ -3,12 +3,16 @@ package cipm.consistency.vsum.test.pcm.cprunittests.actual;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.emftext.language.java.commons.CommonsPackage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.palladiosimulator.pcm.core.entity.EntityPackage;
+import org.palladiosimulator.pcm.repository.CollectionDataType;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryFactory;
 
+import cipm.consistency.cpr.pcmjava.userinteraction.FeatureInputConflictResolutionStrategy;
+import cipm.consistency.cpr.pcmjava.userinteraction.PcmUserInteractionManager;
 import cipm.consistency.vsum.test.pcm.cprunittests.AbstractPcmJavaCprTest;
 import cipm.consistency.vsum.test.pcm.cprunittests.dummy.PcmCprAssertions;
 import mir.reactions.allRepository.AllRepositoryChangePropagationSpecification;
@@ -28,6 +32,18 @@ public class DataTypeTest extends AbstractPcmJavaCprTest {
 	//
 	// TODO Test creating a new Java class in different scenarios
 
+	private boolean namespacesEqual(List<String> nss1, List<String> nss2) {
+		if (nss1.size() != nss2.size())
+			return false;
+
+		for (int i = 0; i < nss1.size(); i++) {
+			if (!nss1.get(i).equals(nss2.get(i)))
+				return false;
+		}
+
+		return true;
+	}
+
 	@Test
 	public void dataTypeCreationTest() {
 		/*
@@ -42,15 +58,21 @@ public class DataTypeTest extends AbstractPcmJavaCprTest {
 //		Assertions.assertEquals(0, javaResource.getContents().size());
 
 		final var dataTypeName = "pcmIfc";
+		final var nss = List.of("ns1", "ns2");
+		final var dataType = new CollectionDataType[1];
 
 		var originalRepoRes = this.getResourceFromPcmFacade(repositoryFileName);
 
 		var changes = this.getEChangesFor(originalRepoRes, (r) -> {
-			final var dataType = RepositoryFactory.eINSTANCE.createCollectionDataType();
-			dataType.setEntityName(dataTypeName);
+			dataType[0] = RepositoryFactory.eINSTANCE.createCollectionDataType();
+			dataType[0].setEntityName(dataTypeName);
 			var rRepoEObj = (Repository) r.getContents().get(0);
-			rRepoEObj.getDataTypes__Repository().add(dataType);
+			rRepoEObj.getDataTypes__Repository().add(dataType[0]);
 		});
+
+		PcmUserInteractionManager
+				.addConflictResolutionStrategy(new FeatureInputConflictResolutionStrategy(List.of(dataType[0]), null,
+						List.of(CommonsPackage.Literals.NAMESPACE_AWARE_ELEMENT__NAMESPACES), List.of(nss)));
 
 		this.propagateChangesToResource(originalRepoRes, changes);
 
@@ -73,6 +95,9 @@ public class DataTypeTest extends AbstractPcmJavaCprTest {
 		this.removePlaceholderInJavaModelResource();
 		var persistedJavaResource = this.getJavaModelResourceFromJavaFacade();
 
+		PcmCprAssertions.assertFeatureValueInPcmManagerEquals(dataType[0],
+				CommonsPackage.Literals.NAMESPACE_AWARE_ELEMENT__NAMESPACES, nss);
+
 		PcmCprAssertions.assertForAllEqualResources((r) -> {
 			var rContents = r.getContents();
 			var rPacs = rContents.stream().filter((c) -> c instanceof org.emftext.language.java.containers.Package)
@@ -85,13 +110,15 @@ public class DataTypeTest extends AbstractPcmJavaCprTest {
 
 			Assertions.assertEquals(3, rContents.size());
 
-			Assertions.assertEquals(2, rPacs.size());
-			Assertions.assertTrue(rPacs.stream().anyMatch((p) -> p.getNamespacesAsString().equals("ns1.")));
-			Assertions.assertTrue(rPacs.stream().anyMatch((p) -> p.getNamespacesAsString().equals("ns1.ns2.")));
+			Assertions.assertEquals(nss.size(), rPacs.size());
+			for (int i = 0; i < nss.size(); i++) {
+				var expectedNs = nss.subList(0, i + 1);
+				Assertions.assertTrue(rPacs.stream().anyMatch((p) -> namespacesEqual(p.getNamespaces(), expectedNs)));
+			}
 
 			Assertions.assertEquals(1, rCUs.size());
 			var cu = rCUs.get(0);
-			Assertions.assertTrue(cu.getNamespacesAsString().equals("ns1.ns2."));
+			Assertions.assertTrue(namespacesEqual(cu.getNamespaces(), nss));
 			Assertions.assertEquals(1, cu.getClassifiers().size());
 
 			var cls = cu.getClassifiers().get(0);

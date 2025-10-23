@@ -1,5 +1,6 @@
 package cipm.consistency.vsum.test.pcm.userinteraction;
 
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
@@ -92,5 +93,20 @@ public class NameUserInteraction extends AbstractUserInteraction {
 			EStructuralFeature feat) {
 		return this.nameField == feat && this.triggeringPCMElement == triggeringPCMElement
 				&& (affectedJavaElement == null || this.toBeNamed == affectedJavaElement);
+	}
+
+	@Override
+	public List<EObject> getTriggeringPCMelements() {
+		return List.of(triggeringPCMElement);
+	}
+
+	@Override
+	public List<EObject> getAffectedPCMElements() {
+		return List.of(triggeringPCMElement);
+	}
+
+	@Override
+	public List<EObject> getAffectedJavaElements() {
+		return List.of(toBeNamed);
 	}
 }

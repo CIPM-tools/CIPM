@@ -87,7 +87,12 @@ public final class PcmCprAssertions {
 	 * {@code obj.feat =?= expectedValue}
 	 */
 	public static void assertFeatureValueEquals(EObject obj, EStructuralFeature feat, Object expectedValue) {
-		var objFeatVal = obj.eGet(feat);
+		var featInObj = obj.eClass().getEStructuralFeature(feat.getName());
+		if (featInObj == null)
+			Assertions.fail(String.format("Given feature %s is not inside the given object of type %s", feat.getName(),
+					obj.getClass()));
+
+		var objFeatVal = obj.eGet(featInObj);
 		if (!feat.isMany()) {
 			Assertions.assertEquals(expectedValue, objFeatVal);
 		} else {
@@ -134,8 +139,8 @@ public final class PcmCprAssertions {
 	/**
 	 * {@code PcmUserInteractionManager.(triggeringPCMElement, affectedJavaElementFeat) =?= affectedJavaElement.affectedJavaElementFeat}
 	 */
-	public static void assertFeatureValueInPcmManagerConsistent(EObject triggeringPCMElement, EObject affectedJavaElement,
-			EStructuralFeature affectedJavaElementFeat) {
+	public static void assertFeatureValueInPcmManagerConsistent(EObject triggeringPCMElement,
+			EObject affectedJavaElement, EStructuralFeature affectedJavaElementFeat) {
 		Assertions.assertTrue(
 				PcmUserInteractionManager.hasDesiredFeatureValue(triggeringPCMElement, affectedJavaElementFeat));
 		var pcmManagerFeatVal = PcmUserInteractionManager.getDesiredFeatureValue(triggeringPCMElement,
@@ -148,14 +153,17 @@ public final class PcmCprAssertions {
 
 		Assertions.assertEquals(pcmManagerFeatVal, fullPcmManagerFeatVal);
 
-		if (!affectedJavaElementFeat.isMany()) {
-			assertFeatureValueEquals(affectedJavaElement, affectedJavaElementFeat, pcmManagerFeatVal);
-		} else {
-			var correspondentFeatVal = (List<?>) affectedJavaElement.eGet(affectedJavaElementFeat);
-			var castedPcmManagerFeatVal = (List<?>) pcmManagerFeatVal;
-			Assertions.assertEquals(castedPcmManagerFeatVal.size(), correspondentFeatVal.size());
-			Assertions.assertTrue(castedPcmManagerFeatVal.containsAll(correspondentFeatVal));
-		}
+		// TODO Move inside if-block, in case of errors
+		assertFeatureValueEquals(affectedJavaElement, affectedJavaElementFeat, pcmManagerFeatVal);
+
+//		if (!affectedJavaElementFeat.isMany()) {
+//		} else {
+//			var correspondentFeatVal = (List<?>) affectedJavaElement
+//					.eGet(affectedJavaElement.eClass().getEStructuralFeature(affectedJavaElementFeat.getName()));
+//			var castedPcmManagerFeatVal = (List<?>) pcmManagerFeatVal;
+//			Assertions.assertEquals(castedPcmManagerFeatVal.size(), correspondentFeatVal.size());
+//			Assertions.assertTrue(castedPcmManagerFeatVal.containsAll(correspondentFeatVal));
+//		}
 	}
 
 	/**

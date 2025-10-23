@@ -42,7 +42,7 @@ public class PcmCompCprTest extends AbstractPcmCprTest {
 		compChange1.setAffectedEObject(repoEObj);
 		compChange1.setAffectedEObjectID(repoEObjURI.toString());
 		compChange1.setAffectedFeature(attr);
-		compChange1.setOldValue(repoEObj.eGet(attr));
+		compChange1.setOldValue(repoEObj.eGet(repoEObj.eClass().getEStructuralFeature(attr.getName())));
 		compChange1.setNewValue("name1");
 		DummyCompositeChangeMarker.markChange(compChange1, compChangeMark);
 
@@ -50,7 +50,7 @@ public class PcmCompCprTest extends AbstractPcmCprTest {
 		compChange2.setAffectedEObject(repoEObj);
 		compChange2.setAffectedEObjectID(repoEObjURI.toString());
 		compChange2.setAffectedFeature(attr);
-		compChange2.setOldValue(repoEObj.eGet(attr));
+		compChange2.setOldValue(repoEObj.eGet(repoEObj.eClass().getEStructuralFeature(attr.getName())));
 		compChange2.setNewValue("name2");
 		DummyCompositeChangeMarker.markChange(compChange2, compChangeMark);
 
@@ -58,7 +58,7 @@ public class PcmCompCprTest extends AbstractPcmCprTest {
 		atomicChange.setAffectedEObject(repoEObj);
 		atomicChange.setAffectedEObjectID(repoEObjURI.toString());
 		atomicChange.setAffectedFeature(attr);
-		atomicChange.setOldValue(repoEObj.eGet(attr));
+		atomicChange.setOldValue(repoEObj.eGet(repoEObj.eClass().getEStructuralFeature(attr.getName())));
 		atomicChange.setNewValue("name3");
 
 		// Ensure that the change is not applied prior to propagation
