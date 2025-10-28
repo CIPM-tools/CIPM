@@ -356,6 +356,10 @@ public abstract class AbstractPcmCprTest {
 		return prop;
 	}
 
+	protected ImFacade getImFacade() {
+		return this.imFacade;
+	}
+
 	protected void reloadVsumFacade() {
 		imFacade = this.setupImFacade();
 		pcmFacade = this.setupPcmFacade();

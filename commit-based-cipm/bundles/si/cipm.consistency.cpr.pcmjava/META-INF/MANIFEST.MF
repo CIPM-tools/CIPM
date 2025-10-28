@@ -6,6 +6,7 @@ Bundle-Version: 0.2.0.qualifier
 Export-Package: cipm.consistency.cpr.pcmjava,
  cipm.consistency.cpr.pcmjava.internal,
  cipm.consistency.cpr.pcmjava.userinteraction,
+ mir.reactions.allPcm,
  mir.reactions.allRepository
 Require-Bundle: org.palladiosimulator.pcm,
  org.apache.log4j,

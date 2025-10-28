@@ -4,7 +4,12 @@ import java.nio.file.Path;
 
 public class PcmToJavaChangePropagationDirLayout {
 
-	private Path changesRootPath;
+	private static final String repositoryFileName = "Repository.repository";
+	
+	// Paths to existing Teammates test results / resources
+
+	private Path javaChangesPath;
+	private Path pcmChangesPath;
 
 	private Path oldJavaModelResourcePath;
 	private Path newJavaModelResourcePath;
@@ -15,22 +20,35 @@ public class PcmToJavaChangePropagationDirLayout {
 	private Path oldImResourcePath;
 	private Path newImResourcePath;
 
-	private Path javaChangesPath;
-	private Path pcmChangesPath;
-
 	private Path javaToPCMPropagationEvalPath;
 	private Path pcmToJavaPropagationEvalPath;
 
 	private Path javaToPcmToImPropagationEvalPath;
 	private Path pcmToImPropagationEvalPath;
 
-	public PcmToJavaChangePropagationDirLayout(Path changesRootPath) {
-		this.changesRootPath = changesRootPath;
-		// TODO Implement
-	}
+	// Paths to experiment results / resources
 
-	public Path getChangesRootPath() {
-		return changesRootPath;
+	private Path copiedJavaChangesPath;
+	private Path copiedPcmChangesPath;
+
+	private Path copiedOldJavaModelResourcePath;
+	private Path copiedNewJavaModelResourcePath;
+
+	private Path copiedOldPcmRepositoryResourcePath;
+	private Path copiedNewPcmRepositoryResourcePath;
+
+	private Path copiedOldImResourcePath;
+	private Path copiedNewImResourcePath;
+
+	private Path propagatedRootPath;
+	private Path propagatedJavaModelPath;
+	private Path propagatedPcmModelPath;
+	private Path propagatedImModelPath;
+	
+	private Path experimentResultSavePath;
+
+	public PcmToJavaChangePropagationDirLayout(Path changesRootPath) {
+		// TODO Implement
 	}
 
 	public Path getJavaChangesPath() {
@@ -57,4 +75,83 @@ public class PcmToJavaChangePropagationDirLayout {
 		return newPcmRepositoryResourcePath;
 	}
 
+	public Path getOldImResourcePath() {
+		return oldImResourcePath;
+	}
+
+	public Path getNewImResourcePath() {
+		return newImResourcePath;
+	}
+
+	public Path getJavaToPCMPropagationEvalPath() {
+		return javaToPCMPropagationEvalPath;
+	}
+
+	public Path getPcmToJavaPropagationEvalPath() {
+		return pcmToJavaPropagationEvalPath;
+	}
+
+	public Path getJavaToPcmToImPropagationEvalPath() {
+		return javaToPcmToImPropagationEvalPath;
+	}
+
+	public Path getPcmToImPropagationEvalPath() {
+		return pcmToImPropagationEvalPath;
+	}
+
+	public Path getExperimentResultSavePath() {
+		return experimentResultSavePath;
+	}
+
+	public Path getCopiedJavaChangesPath() {
+		return copiedJavaChangesPath;
+	}
+
+	public Path getCopiedPcmChangesPath() {
+		return copiedPcmChangesPath;
+	}
+
+	public Path getCopiedOldJavaModelResourcePath() {
+		return copiedOldJavaModelResourcePath;
+	}
+
+	public Path getCopiedNewJavaModelResourcePath() {
+		return copiedNewJavaModelResourcePath;
+	}
+
+	public Path getCopiedOldPcmRepositoryResourcePath() {
+		return copiedOldPcmRepositoryResourcePath;
+	}
+
+	public Path getCopiedNewPcmRepositoryResourcePath() {
+		return copiedNewPcmRepositoryResourcePath;
+	}
+
+	public Path getCopiedOldImResourcePath() {
+		return copiedOldImResourcePath;
+	}
+
+	public Path getCopiedNewImResourcePath() {
+		return copiedNewImResourcePath;
+	}
+
+	public Path getPropagatedRootPath() {
+		return propagatedRootPath;
+	}
+
+	public Path getPropagatedJavaModelPath() {
+		return propagatedJavaModelPath;
+	}
+
+	public Path getPropagatedPcmModelPath() {
+		return propagatedPcmModelPath;
+	}
+
+	public Path getPropagatedImModelPath() {
+		return propagatedImModelPath;
+	}
+
+	public String getRepositoryFileName() {
+		return repositoryFileName;
+	}
 }

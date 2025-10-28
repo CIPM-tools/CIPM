@@ -16,7 +16,6 @@ import org.palladiosimulator.pcm.repository.RepositoryFactory;
 
 import cipm.consistency.cpr.pcmjava.userinteraction.ConflictResolutionStrategy;
 import cipm.consistency.cpr.pcmjava.userinteraction.PcmUserInteractionManager;
-import cipm.consistency.vsum.test.pcm.ChangeSaver;
 import cipm.consistency.vsum.test.pcm.cprunittests.AbstractPcmJavaCprTest;
 import cipm.consistency.vsum.test.pcm.userinteraction.DummyNameConflictResolutionStrategy;
 import mir.reactions.dummyPCMJavaUserInteractionCPRs.DummyPCMJavaUserInteractionCPRsChangePropagationSpecification;
