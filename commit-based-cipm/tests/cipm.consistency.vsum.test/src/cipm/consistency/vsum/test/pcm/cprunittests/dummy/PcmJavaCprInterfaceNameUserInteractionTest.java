@@ -16,9 +16,11 @@ import org.palladiosimulator.pcm.repository.RepositoryFactory;
 
 import cipm.consistency.cpr.pcmjava.userinteraction.ConflictResolutionStrategy;
 import cipm.consistency.cpr.pcmjava.userinteraction.PcmUserInteractionManager;
+import cipm.consistency.vsum.test.pcm.ChangeSaver;
 import cipm.consistency.vsum.test.pcm.cprunittests.AbstractPcmJavaCprTest;
 import cipm.consistency.vsum.test.pcm.userinteraction.DummyNameConflictResolutionStrategy;
 import mir.reactions.dummyPCMJavaUserInteractionCPRs.DummyPCMJavaUserInteractionCPRsChangePropagationSpecification;
+import mir.reactions.pcmImUpdate.PcmImUpdateChangePropagationSpecification;
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
 
 public class PcmJavaCprInterfaceNameUserInteractionTest extends AbstractPcmJavaCprTest {
@@ -26,6 +28,7 @@ public class PcmJavaCprInterfaceNameUserInteractionTest extends AbstractPcmJavaC
 	protected List<ChangePropagationSpecification> getCPRs() {
 		var list = new ArrayList<ChangePropagationSpecification>();
 		list.add(new DummyPCMJavaUserInteractionCPRsChangePropagationSpecification());
+		list.add(new PcmImUpdateChangePropagationSpecification());
 		return list;
 	}
 

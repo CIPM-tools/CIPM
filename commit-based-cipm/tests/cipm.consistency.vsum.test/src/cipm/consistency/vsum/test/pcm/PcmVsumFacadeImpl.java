@@ -214,8 +214,6 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 			this.removeChange(propagatedEChange);
 		}
 
-		logPropagatedChanges(resource, propagation);
-
 		return propagation;
 	}
 

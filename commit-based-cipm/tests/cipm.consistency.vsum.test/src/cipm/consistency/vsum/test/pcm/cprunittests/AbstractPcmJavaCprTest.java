@@ -47,27 +47,6 @@ public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 		super.tearDown();
 	}
 
-//	protected File createJavaSettingsFile() {
-//		var filePath = this.getPropagatedModelsRootPath().resolve(javaCommitIntegrationSettingsContainer);
-//		var file = filePath.toFile();
-//		file.getParentFile().mkdirs();
-//		try {
-//			file.createNewFile();
-//			var writer = new FileWriter(file);
-//			writer.write("cipm.consistency.settings.cpr.pcmim=true\r\n"
-//					+ "cipm.consistency.settings.reconstruction.finegrained=false\r\n"
-//					+ "cipm.consistency.settings.instrumentation.full=false\r\n"
-//					+ "cipm.consistency.settings.path.preprocess=\r\n" + "cipm.consistency.settings.path.compile=\r\n"
-//					+ "cipm.consistency.settings.parser.excludes=\r\n" + "cipm.consistency.settings.rest.packages=\r\n"
-//					+ "");
-//			writer.flush();
-//			writer.close();
-//		} catch (IOException e) {
-//			this.failTest(e);
-//		}
-//		return file;
-//	}
-
 	/**
 	 * Sets up and returns a {@link JavaModelFacade} to be used in tests. <br>
 	 * <br>
@@ -120,36 +99,6 @@ public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 		modifications.accept(modifiedResDupl);
 		var d = new DefaultStateBasedChangeResolutionStrategy(UseIdentifiers.NEVER);
 		var changes = d.getChangeSequenceBetween(modifiedResDupl, unmodifiedResDupl).getEChanges();
-//		for (var c : changes) {
-//			for (var feat : c.eClass().getEAllReferences()) {
-//				var val = (EObject) c.eGet(c.eClass().getEStructuralFeature(feat.getName()));
-//				if (!(val instanceof EModelElement)) {
-//					var it = resourceInModelFacade.getAllContents();
-//					while (it.hasNext()) {
-//						var elem = it.next();
-//						if (EcoreUtil.equals(c, elem)) {
-//							c.eSet(feat, elem);
-//							break;
-//						}
-//					}
-//				}
-//			}
-//		}
-
-//		for (var c : changes) {
-//			if (c instanceof ReplaceSingleValuedEReference) {
-//				var cc = (ReplaceSingleValuedEReference) c;
-//				var repo = (Repository) resourceInModelFacade.getContents().get(0);
-//				var deletedCmp = repo.getComponents__Repository().get(0);
-//				cc.setAffectedEObject(deletedCmp);
-//				if (resourceInModelFacade
-//						.getEObject(resourceInModelFacade.getURIFragment(deletedCmp).toString()) == null)
-//					throw new IllegalStateException("");
-//
-//				cc.setAffectedEObjectID(resourceInModelFacade.getURI()
-//						.appendFragment(resourceInModelFacade.getURIFragment(deletedCmp)).toString());
-//			}
-//		}
 		return changes;
 	}
 

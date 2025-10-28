@@ -29,6 +29,7 @@ import org.palladiosimulator.pcm.system.util.SystemResourceFactoryImpl;
 import org.palladiosimulator.pcm.usagemodel.util.UsagemodelResourceFactoryImpl;
 
 import cipm.consistency.models.ModelFacade;
+import cipm.consistency.models.im.ImFacade;
 import cipm.consistency.models.pcm.PcmFacade;
 import cipm.consistency.vsum.Propagation;
 import cipm.consistency.vsum.test.appspace.LoggingSetup;
@@ -58,12 +59,14 @@ public abstract class AbstractPcmCprTest {
 
 	private PcmVsumFacade vsumFacade;
 	private PcmFacade pcmFacade;
+	private ImFacade imFacade;
 
 	@BeforeEach
 	public void setup() {
 		this.setupModelResources();
 		this.copyOldModelFilesToPropagatedModelFiles();
 
+		imFacade = this.setupImFacade();
 		pcmFacade = this.setupPcmFacade();
 		vsumFacade = this.setupVsumFacade();
 	}
@@ -147,6 +150,12 @@ public abstract class AbstractPcmCprTest {
 		return pcmFacade;
 	}
 
+	protected ImFacade setupImFacade() {
+		var imFacade = new ImFacade();
+		imFacade.initialize(this.getPropagatedModelsRootPath());
+		return imFacade;
+	}
+
 	/**
 	 * Use {@link #getRootPath()} as the root directory of the PcmVsumFacade.<br>
 	 * <br>
@@ -164,6 +173,7 @@ public abstract class AbstractPcmCprTest {
 	protected List<ModelFacade> getVsumFacadeModels() {
 		var list = new ArrayList<ModelFacade>();
 		list.add(pcmFacade);
+		list.add(imFacade);
 		return list;
 	}
 
@@ -343,11 +353,11 @@ public abstract class AbstractPcmCprTest {
 		this.getPcmVsumFacade().addChanges(changes);
 		var prop = this.getPcmVsumFacade().propagateResource(res);
 		Assertions.assertNull(prop.getException());
-		this.logPropagatedChanges(prop);
 		return prop;
 	}
 
 	protected void reloadVsumFacade() {
+		imFacade = this.setupImFacade();
 		pcmFacade = this.setupPcmFacade();
 		vsumFacade = this.setupVsumFacade();
 	}
