@@ -12,7 +12,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 
 import com.google.common.base.Preconditions;
 
-public class CorrespondenceEntry {
+public class CorrespondenceEntry implements IPcmUserInteractionManagerEntry {
 	private final EObject knownElement;
 	private final Set<EObject> correspondents;
 	private String correspondenceTag;

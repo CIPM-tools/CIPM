@@ -9,7 +9,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 
 import com.google.common.base.Preconditions;
 
-public class FeatureEntry {
+public class FeatureEntry implements IPcmUserInteractionManagerEntry {
 	/**
 	 * Indicates that the value is unset. Null cannot be used for that purpose,
 	 * since some features are allowed to have a null value assigned to them.

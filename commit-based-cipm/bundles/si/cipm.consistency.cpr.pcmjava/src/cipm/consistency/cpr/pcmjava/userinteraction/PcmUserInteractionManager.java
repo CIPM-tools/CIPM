@@ -8,6 +8,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
 public final class PcmUserInteractionManager {
+	private static final List<PcmUserInteractionLogger> loggers = new ArrayList<PcmUserInteractionLogger>();
+
 	private static final List<AbstractUserInteraction> wrappers = new ArrayList<AbstractUserInteraction>();
 
 	private static final List<ConflictResolutionStrategy> resolutionStrats = new ArrayList<ConflictResolutionStrategy>();

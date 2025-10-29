@@ -1,11 +1,11 @@
-package cipm.consistency.vsum.test.pcm.preprocessing.rules.atomic;
+package cipm.consistency.cpr.pcmjava.preprocessing.rules.atomic;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import cipm.consistency.vsum.test.pcm.preprocessing.ChangeUtil;
-import cipm.consistency.vsum.test.pcm.preprocessing.rules.ChangePreprocessingRule;
+import cipm.consistency.cpr.pcmjava.preprocessing.ChangeUtil;
+import cipm.consistency.cpr.pcmjava.preprocessing.rules.ChangePreprocessingRule;
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.atomic.feature.list.InsertInListEChange;
 import tools.vitruv.change.atomic.feature.list.RemoveFromListEChange;

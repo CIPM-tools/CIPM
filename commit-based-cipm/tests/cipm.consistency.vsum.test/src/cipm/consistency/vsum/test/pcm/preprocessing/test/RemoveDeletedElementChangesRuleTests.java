@@ -11,9 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.palladiosimulator.pcm.repository.RepositoryFactory;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
 
+import cipm.consistency.cpr.pcmjava.preprocessing.rules.ChangePreprocessingRule;
+import cipm.consistency.cpr.pcmjava.preprocessing.rules.atomic.RemoveRedundantChangesRule;
 import cipm.consistency.vsum.test.pcm.cprunittests.ChangeComputer;
-import cipm.consistency.vsum.test.pcm.preprocessing.rules.ChangePreprocessingRule;
-import cipm.consistency.vsum.test.pcm.preprocessing.rules.atomic.RemoveRedundantChangesRule;
 import tools.vitruv.change.atomic.eobject.DeleteEObject;
 import tools.vitruv.change.atomic.root.RemoveRootEObject;
 

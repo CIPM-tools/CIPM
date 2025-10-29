@@ -1,4 +1,4 @@
-package cipm.consistency.vsum.test.pcm.preprocessing.rules.atomic;
+package cipm.consistency.cpr.pcmjava.preprocessing.rules.atomic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +13,8 @@ import org.eclipse.xtext.util.UriUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
-import cipm.consistency.vsum.test.pcm.preprocessing.ChangeUtil;
-import cipm.consistency.vsum.test.pcm.preprocessing.rules.ChangePreprocessingRule;
-import edu.kit.ipd.sdq.commons.util.org.eclipse.emf.common.util.URIUtil;
+import cipm.consistency.cpr.pcmjava.preprocessing.ChangeUtil;
+import cipm.consistency.cpr.pcmjava.preprocessing.rules.ChangePreprocessingRule;
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.atomic.root.InsertRootEObject;
 import tools.vitruv.change.atomic.root.RemoveRootEObject;

@@ -1,4 +1,4 @@
-package cipm.consistency.vsum.test.pcm.preprocessing.rules.atomic;
+package cipm.consistency.cpr.pcmjava.preprocessing.rules.atomic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +13,8 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 
 import com.google.common.collect.Lists;
 
-import cipm.consistency.vsum.test.pcm.preprocessing.ChangeUtil;
-import cipm.consistency.vsum.test.pcm.preprocessing.rules.ChangePreprocessingRule;
+import cipm.consistency.cpr.pcmjava.preprocessing.ChangeUtil;
+import cipm.consistency.cpr.pcmjava.preprocessing.rules.ChangePreprocessingRule;
 import de.uka.ipd.sdq.identifier.Identifier;
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.atomic.eobject.DeleteEObject;

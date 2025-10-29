@@ -1,4 +1,4 @@
-package cipm.consistency.vsum.test.pcm.preprocessing;
+package cipm.consistency.cpr.pcmjava.preprocessing;
 
 import java.io.IOException;
 import java.util.HashSet;

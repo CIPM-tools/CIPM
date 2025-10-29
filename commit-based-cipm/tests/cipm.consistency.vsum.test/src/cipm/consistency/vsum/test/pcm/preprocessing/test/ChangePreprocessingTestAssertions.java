@@ -7,8 +7,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.junit.jupiter.api.Assertions;
 
+import cipm.consistency.cpr.pcmjava.preprocessing.ChangeUtil;
 import cipm.consistency.vsum.test.pcm.cprunittests.ChangeComputer;
-import cipm.consistency.vsum.test.pcm.preprocessing.ChangeUtil;
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.composite.description.TransactionalChange;
 import tools.vitruv.change.composite.description.VitruviusChangeFactory;

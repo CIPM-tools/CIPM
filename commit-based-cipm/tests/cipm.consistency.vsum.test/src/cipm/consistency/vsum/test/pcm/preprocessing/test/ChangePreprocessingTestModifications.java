@@ -13,7 +13,7 @@ import org.palladiosimulator.pcm.core.entity.EntityPackage;
 
 import com.google.common.base.Preconditions;
 
-import cipm.consistency.vsum.test.pcm.preprocessing.ChangeUtil;
+import cipm.consistency.cpr.pcmjava.preprocessing.ChangeUtil;
 
 public class ChangePreprocessingTestModifications {
 	/**

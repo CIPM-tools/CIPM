@@ -1,4 +1,4 @@
-package cipm.consistency.vsum.test.pcm.preprocessing.rules;
+package cipm.consistency.cpr.pcmjava.preprocessing.rules;
 
 import java.util.List;
 
