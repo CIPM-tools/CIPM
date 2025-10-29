@@ -28,6 +28,7 @@ import org.palladiosimulator.pcm.resourceenvironment.util.ResourceenvironmentRes
 import org.palladiosimulator.pcm.system.util.SystemResourceFactoryImpl;
 import org.palladiosimulator.pcm.usagemodel.util.UsagemodelResourceFactoryImpl;
 
+import cipm.consistency.cpr.pcmjava.JavaModelAccess;
 import cipm.consistency.models.ModelFacade;
 import cipm.consistency.models.im.ImFacade;
 import cipm.consistency.models.pcm.PcmFacade;
@@ -73,6 +74,9 @@ public abstract class AbstractPcmCprTest {
 
 	@AfterEach
 	public void tearDown() {
+		vsumFacade.close();
+		JavaModelAccess.removeJavaModel();
+
 		var root = rootPath.toFile();
 		if (root.exists()) {
 			try {

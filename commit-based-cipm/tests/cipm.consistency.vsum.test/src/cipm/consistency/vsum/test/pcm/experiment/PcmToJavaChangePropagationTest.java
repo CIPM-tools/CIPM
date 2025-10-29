@@ -10,6 +10,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,6 +54,12 @@ public class PcmToJavaChangePropagationTest {
 	private Resource newJavaResourceCopy;
 	private Resource newPcmRepoResourceCopy;
 	private Resource newImResourceCopy;
+
+	private JaccardCoefficientResult jcOfJavaInJavaToPcmProp;
+	private JaccardCoefficientResult jcOfPcmInJavaToPcmProp;
+	private ImUpdateEvalData fScoreOfImInJavaToPcmProp;
+
+	private Resource pcmChangeRes;
 
 	/**
 	 * Creates, loads and returns a Resource instance for the given URI.
@@ -118,6 +125,54 @@ public class PcmToJavaChangePropagationTest {
 		pcmFacade = this.setupPcmFacade();
 		javaFacade = this.setupJavaFacade();
 		vsumFacade = this.setupVsumFacade();
+
+		computeEvaluationResultsForJavaToPcmPropagation();
+
+		pcmChangeRes = getChangesResource(dirLayout.getPcmChangesPath());
+	}
+
+	@AfterEach
+	public void tearDown() {
+		// Closes all underlying models too
+		vsumFacade.close();
+		vsumFacade = null;
+
+		dirLayout = null;
+
+		removeResource(oldJavaResourceCopy);
+		oldJavaResourceCopy = null;
+
+		removeResource(oldPcmRepoResourceCopy);
+		oldPcmRepoResourceCopy = null;
+
+		removeResource(oldImResourceCopy);
+		oldImResourceCopy = null;
+
+		removeResource(newJavaResourceCopy);
+		newJavaResourceCopy = null;
+
+		removeResource(newPcmRepoResourceCopy);
+		newPcmRepoResourceCopy = null;
+
+		removeResource(newImResourceCopy);
+		newImResourceCopy = null;
+
+		removeResource(pcmChangeRes);
+		pcmChangeRes = null;
+
+		jcOfJavaInJavaToPcmProp = null;
+		jcOfPcmInJavaToPcmProp = null;
+		fScoreOfImInJavaToPcmProp = null;
+
+		JavaModelAccess.removeJavaModel();
+	}
+
+	private void removeResource(Resource res) {
+		if (res.getResourceSet() != null) {
+			res.getResourceSet().getResources().remove(res);
+		}
+		res.unload();
+		res.getContents().clear();
 	}
 
 	/**
@@ -139,6 +194,13 @@ public class PcmToJavaChangePropagationTest {
 		var pcmFacade = new PcmFacade();
 		pcmFacade.initialize(dirLayout.getPropagatedPcmModelPath());
 		return pcmFacade;
+	}
+
+	private void computeEvaluationResultsForJavaToPcmPropagation() {
+		jcOfJavaInJavaToPcmProp = computeJCForJava(newJavaResourceCopy, oldJavaResourceCopy);
+		jcOfPcmInJavaToPcmProp = computeJCForPcm(newPcmRepoResourceCopy, oldPcmRepoResourceCopy);
+		fScoreOfImInJavaToPcmProp = computeFScoreForIm((Repository) newPcmRepoResourceCopy.getContents().get(0),
+				(InstrumentationModel) newImResourceCopy.getContents().get(0));
 	}
 
 	/**
@@ -195,13 +257,6 @@ public class PcmToJavaChangePropagationTest {
 
 	@Test
 	public void pcmToJavaChangePropagationTestTemplate() {
-		// TODO Extract to BeforeEach method and extract fields
-		var jcOfJavaInJavaToPcmProp = computeJCForJava(newJavaResourceCopy, oldJavaResourceCopy);
-		var jcOfPcmInJavaToPcmProp = computeJCForPcm(newPcmRepoResourceCopy, oldPcmRepoResourceCopy);
-		var fScoreOfImInJavaToPcmProp = computeFScoreForIm((Repository) newPcmRepoResourceCopy.getContents().get(0),
-				(InstrumentationModel) newImResourceCopy.getContents().get(0));
-
-		var pcmChangeRes = getChangesResource(dirLayout.getPcmChangesPath());
 		var pcmChangeList = new ArrayList<EChange>();
 		pcmChangeRes.getContents().stream().filter((c) -> c instanceof EChange).map((c) -> (EChange) c)
 				.forEach(pcmChangeList::add);
@@ -218,8 +273,12 @@ public class PcmToJavaChangePropagationTest {
 		var fScoreOfImInPcmToJavaProp = computeFScoreForIm((Repository) newPcmRepoRes.getContents().get(0),
 				this.getImFacade().getModel());
 
-		var result = new ExperimentResult(jcOfJavaInPcmToJavaProp, jcOfPcmInPcmToJavaProp, fScoreOfImInPcmToJavaProp,
+		computeAndSaveExperimentResult(jcOfJavaInPcmToJavaProp, jcOfPcmInPcmToJavaProp, fScoreOfImInPcmToJavaProp,
 				jcOfJavaInJavaToPcmProp, jcOfPcmInJavaToPcmProp, fScoreOfImInJavaToPcmProp);
+	}
+
+	private void computeAndSaveExperimentResult(Object... objs) {
+		var result = new ExperimentResult(objs);
 		result.interpretResults();
 		result.save(dirLayout.getExperimentResultSavePath());
 	}

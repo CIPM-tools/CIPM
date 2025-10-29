@@ -17,7 +17,7 @@ import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
 import tools.vitruv.framework.vsum.internal.InternalVirtualModel;
 
 @SuppressWarnings("restriction")
-public interface PcmVsumFacade {
+public interface PcmVsumFacade extends AutoCloseable {
 
 	/**
 	 * @param models The models which should be loaded into the VSUM
@@ -80,4 +80,11 @@ public interface PcmVsumFacade {
 	 * effective changes and propagate them.
 	 */
 	void saveCorrespondences();
+
+	void closeAllModels();
+
+	public default void close() {
+		this.cleanChanges();
+		this.closeAllModels();
+	}
 }

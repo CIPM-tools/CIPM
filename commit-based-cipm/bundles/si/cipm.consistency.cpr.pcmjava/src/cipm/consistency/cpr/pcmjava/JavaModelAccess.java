@@ -88,6 +88,17 @@ public final class JavaModelAccess {
 		}
 	}
 
+	public static void removeJavaModel() {
+		unloadJavaModel();
+		if (javaModel != null) {
+			var resSet = javaModel.getResourceSet();
+			if (resSet != null) {
+				resSet.getResources().clear();
+			}
+			javaModel = null;
+		}
+	}
+
 	/**
 	 * Loads the Java code model at the given URI.
 	 */

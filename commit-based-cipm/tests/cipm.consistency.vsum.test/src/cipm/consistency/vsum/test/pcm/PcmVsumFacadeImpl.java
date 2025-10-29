@@ -356,4 +356,9 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 	public void cleanChanges() {
 		this.changesToPropagate.clear();
 	}
+
+	@Override
+	public void closeAllModels() {
+		this.models.forEach((m) -> m.close());
+	}
 }
