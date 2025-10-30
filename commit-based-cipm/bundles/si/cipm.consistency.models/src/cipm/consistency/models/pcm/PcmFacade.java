@@ -3,9 +3,11 @@ package cipm.consistency.models.pcm;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationFactory;
@@ -23,50 +25,63 @@ import cipm.consistency.base.shared.pcm.InMemoryPCM;
 import cipm.consistency.models.ModelFacade;
 
 public class PcmFacade implements ModelFacade {
-    private static final Logger LOGGER = Logger.getLogger(PcmFacade.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(PcmFacade.class.getName());
 
-    private InMemoryPCM pcm;
-    private PcmDirLayout fileLayout;
+	private InMemoryPCM pcm;
+	private PcmDirLayout fileLayout;
 
-    public PcmFacade() {
-        fileLayout = new PcmDirLayout();
-    }
+	public PcmFacade() {
+		fileLayout = new PcmDirLayout();
+	}
 
-    @Override
-    public void initialize(Path rootPath) {
-        fileLayout.initialize(rootPath);
-        loadOrCreateModelResources();
-    }
-    
-    @Override
-    public void reload() {
-        loadOrCreateModelResources();
-    }
+	@Override
+	public void initialize(Path rootPath) {
+		fileLayout.initialize(rootPath);
+		loadOrCreateModelResources();
+	}
 
-    private void loadOrCreateModelResources() {
-        if (!existsOnDisk()) {
-            createModelResources();
-        } else {
-            loadFromDisk();
-        }
-    }
+	@Override
+	public void reload() {
+		loadOrCreateModelResources();
+	}
 
-    public void createModelResources() {
-        LOGGER.info("Creating new PCM");
+	private void loadOrCreateModelResources() {
+		if (!existsOnDisk()) {
+			createModelResources();
+		} else {
+			loadFromDisk();
+		}
+	}
 
-        var systemModel = SystemFactory.eINSTANCE.createSystem();
-        var repoModel = RepositoryFactory.eINSTANCE.createRepository();
-        var resourceEnvModel = ResourceenvironmentFactory.eINSTANCE.createResourceEnvironment();
-        var usageModel = UsagemodelFactory.eINSTANCE.createUsageModel();
-        var allocationModel = AllocationFactory.eINSTANCE.createAllocation();
+	private <T extends EObject> T loadIfExistentOrElse(Path pathToResource, Class<T> clsToParse, Supplier<T> orElse) {
+		if (pathToResource.toFile().exists()) {
+			return ModelUtil.readFromFile(pathToResource.toFile(), clsToParse);
+		} else {
+			return orElse.get();
+		}
+	}
 
-        pcm = new InMemoryPCM(repoModel, systemModel, usageModel, allocationModel, resourceEnvModel);
+	public void createModelResources() {
+		LOGGER.info("Creating new PCM");
 
-        // Create files and resources before binding the allocation
-        saveToDisk();
+		var systemModel = loadIfExistentOrElse(this.fileLayout.getPcmSystemPath(), System.class,
+				SystemFactory.eINSTANCE::createSystem);
+		var repoModel = loadIfExistentOrElse(this.fileLayout.getPcmRepositoryPath(), Repository.class,
+				RepositoryFactory.eINSTANCE::createRepository);
+		var resourceEnvModel = loadIfExistentOrElse(this.fileLayout.getPcmResourceEnvironmentPath(),
+				ResourceEnvironment.class, ResourceenvironmentFactory.eINSTANCE::createResourceEnvironment);
+		var usageModel = loadIfExistentOrElse(this.fileLayout.getPcmUsageModelPath(), UsageModel.class,
+				UsagemodelFactory.eINSTANCE::createUsageModel);
+		var allocationModel = loadIfExistentOrElse(this.fileLayout.getPcmAllocationPath(), Allocation.class,
+				AllocationFactory.eINSTANCE::createAllocation);
 
-        // Bind the allocation
-        // This needs to occur after pcm.saveToFile
+		pcm = new InMemoryPCM(repoModel, systemModel, usageModel, allocationModel, resourceEnvModel);
+
+		// Create files and resources before binding the allocation
+		saveToDisk();
+
+		// Bind the allocation
+		// This needs to occur after pcm.saveToFile
 //        allocationModel.setSystem_Allocation(systemModel);
 //        allocationModel.setTargetResourceEnvironment_Allocation(resourceEnvModel);
 //
@@ -79,74 +94,63 @@ public class PcmFacade implements ModelFacade {
 //            // TODO Auto-generated catch block
 //            e.printStackTrace();
 //        }
-    }
+	}
 
-    private boolean existsOnDisk() {
-        return !List
-            .of(fileLayout.getPcmRepositoryPath(), fileLayout.getPcmResourceEnvironmentPath(),
-                    fileLayout.getPcmUsageModelPath(), fileLayout.getPcmAllocationPath(), fileLayout.getPcmSystemPath())
-            .stream()
-            .map(p -> p.toFile()
-                .isFile())
-            .collect(Collectors.toList())
-            .contains(false);
-    }
+	private boolean existsOnDisk() {
+		return !List.of(fileLayout.getPcmRepositoryPath(), fileLayout.getPcmResourceEnvironmentPath(),
+				fileLayout.getPcmUsageModelPath(), fileLayout.getPcmAllocationPath(), fileLayout.getPcmSystemPath())
+				.stream().map(p -> p.toFile().isFile()).collect(Collectors.toList()).contains(false);
+	}
 
-    private void loadFromDisk() {
-        LOGGER.debug("Loading PCM from disk");
+	private void loadFromDisk() {
+		LOGGER.debug("Loading PCM from disk");
 
-        var files = fileLayout.getFilePCM();
-        pcm = new InMemoryPCM();
+		var files = fileLayout.getFilePCM();
+		pcm = new InMemoryPCM();
 
-        // using createFromFilesystem causes strange errors when propagating the resource
-        // -> so we don't use it
+		// using createFromFilesystem causes strange errors when propagating the
+		// resource
+		// -> so we don't use it
 //        pcm = InMemoryPCM.createFromFilesystem(filePcm);
-        pcm.setSystem(ModelUtil.readFromFile(files.getSystemFile(), System.class));
-        pcm.setRepository(ModelUtil.readFromFile(files.getRepositoryFile(), Repository.class));
-        pcm.setResourceEnvironmentModel(
-                ModelUtil.readFromFile(files.getResourceEnvironmentFile(), ResourceEnvironment.class));
-        pcm.setUsageModel(ModelUtil.readFromFile(files.getUsageModelFile(), UsageModel.class));
-        pcm.setAllocationModel(ModelUtil.readFromFile(files.getAllocationModelFile(), Allocation.class));
-        saveToDisk();
-    }
+		pcm.setSystem(ModelUtil.readFromFile(files.getSystemFile(), System.class));
+		pcm.setRepository(ModelUtil.readFromFile(files.getRepositoryFile(), Repository.class));
+		pcm.setResourceEnvironmentModel(
+				ModelUtil.readFromFile(files.getResourceEnvironmentFile(), ResourceEnvironment.class));
+		pcm.setUsageModel(ModelUtil.readFromFile(files.getUsageModelFile(), UsageModel.class));
+		pcm.setAllocationModel(ModelUtil.readFromFile(files.getAllocationModelFile(), Allocation.class));
+		saveToDisk();
+	}
 
-    public void saveToDisk() {
-        pcm.saveToFilesystem(fileLayout.getFilePCM());
-    }
+	public void saveToDisk() {
+		pcm.saveToFilesystem(fileLayout.getFilePCM());
+	}
 
-    @Override
-    public List<Resource> getResources() {
-        return List.of(pcm.getSystem()
-            .eResource(),
-                pcm.getRepository()
-                    .eResource(),
-                pcm.getResourceEnvironmentModel()
-                    .eResource(),
-                pcm.getUsageModel()
-                    .eResource(),
-                pcm.getAllocationModel()
-                    .eResource());
-    }
+	@Override
+	public List<Resource> getResources() {
+		return List.of(pcm.getSystem().eResource(), pcm.getRepository().eResource(),
+				pcm.getResourceEnvironmentModel().eResource(), pcm.getUsageModel().eResource(),
+				pcm.getAllocationModel().eResource());
+	}
 
-    @Override
-    public Resource getResource() {
-        return null;
-    }
+	@Override
+	public Resource getResource() {
+		return null;
+	}
 
-    public PcmDirLayout getDirLayout() {
-        return fileLayout;
-    }
+	public PcmDirLayout getDirLayout() {
+		return fileLayout;
+	}
 
-    public InMemoryPCM getInMemoryPCM() {
-        return pcm;
-    }
+	public InMemoryPCM getInMemoryPCM() {
+		return pcm;
+	}
 
-    public Path createNamedCopyOfRepositoryModel(String name) throws IOException {
-        var path = getDirLayout().getPcmRepositoryPath();
-        var copyPath = path.resolveSibling("Repository-" + name + ".repository");
+	public Path createNamedCopyOfRepositoryModel(String name) throws IOException {
+		var path = getDirLayout().getPcmRepositoryPath();
+		var copyPath = path.resolveSibling("Repository-" + name + ".repository");
 
-        FileUtils.copyFile(path.toFile(), copyPath.toFile());
+		FileUtils.copyFile(path.toFile(), copyPath.toFile());
 
-        return copyPath;
-    }
+		return copyPath;
+	}
 }

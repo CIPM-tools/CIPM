@@ -21,6 +21,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import cipm.consistency.commitintegration.CommitIntegrationDirLayout;
 import cipm.consistency.commitintegration.CommitIntegrationState;
 import cipm.consistency.commitintegration.lang.java.JavaModelFacade;
 import cipm.consistency.commitintegration.settings.CommitIntegrationSettingsContainer;
@@ -170,8 +171,20 @@ public class TEAMMATESCITestController {
 					continue;
 				}
 
+				/*
+				 * Each propagation in propagations has the changes to a different model. Make
+				 * sure to check if the respective propagation instances do exist, since there
+				 * is no guarantee that there will be non-Java changes.
+				 * 
+				 * 0: Java changes
+				 * 
+				 * 1: PCM changes
+				 * 
+				 * 2: IM changes
+				 */
+
 				var propagation = propagations.get(0).get();
-				saveChanges(propagation);
+				saveChanges(propagation, propagation.getCommitIntegrationStateCopyPath().toAbsolutePath());
 				if (evaluateImmediately) {
 					var eval = evaluatePropagation(propagation);
 					commitHistoryEvaluator.addEvaluationDataContainer(eval);
@@ -236,11 +249,11 @@ public class TEAMMATESCITestController {
 		return evaluationDataContainer;
 	}
 
-	protected void saveChanges(Propagation prop) {
+	protected void saveChanges(Propagation prop, Path rootDirPath) {
 	}
 
-	protected Path getRootPath() {
-		return this.state.getDirLayout().getRootDirPath();
+	protected CommitIntegrationDirLayout getDirLayout() {
+		return this.state.getDirLayout();
 	}
 
 	@Test

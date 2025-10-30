@@ -1,5 +1,12 @@
 package cipm.consistency.vsum.test.pcm.experiment;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
 import cipm.consistency.vsum.Propagation;
 import cipm.consistency.vsum.test.java.TEAMMATESCITestController;
 import cipm.consistency.vsum.test.pcm.ChangeSaver;
@@ -9,13 +16,50 @@ import cipm.consistency.vsum.test.pcm.ChangeSaver;
  * TEAMMATESCITestController
  */
 public class TeammatesChangeGeneratingTest extends TEAMMATESCITestController {
-	private ChangeGeneratingTestDirLayout changesDirLayout;
+	private static final String experimentRootDirNamePrefix = "Teammates-Experiment-";
+
+	private static final List<ChangeGeneratingCommitIntegrationDirLayout> dirLayouts = new ArrayList<>();
 
 	@Override
-	protected void saveChanges(Propagation prop) {
+	protected void saveChanges(Propagation prop, Path rootDirPath) {
+		var layout = new ChangeGeneratingCommitIntegrationDirLayout(this.getDirLayout());
+		dirLayouts.add(layout);
 		// TODO Run all Teammates tests and save the Java and PCM changes
 //		new ChangeSaver(this.getRootPath()).saveChanges(prop, true);
-		new ChangeSaver(changesDirLayout.getChangesRootPath()).saveChanges(prop, true);
+		new ChangeSaver(layout).saveUnresolvedChanges(prop);
 		System.out.println("Changes are saved for: " + prop.getCommitId());
+	}
+
+	@Override
+	protected void setup(boolean overwrite) {
+	}
+	
+	@Override
+	public void cleanupAfterTest() {
+	}
+	
+	@Test
+	@Override
+	public void testTeammates() {
+//		super.testTeammates();
+
+		dirLayouts.add(new ChangeGeneratingCommitIntegrationDirLayout(Paths.get(
+				"C:\\Users\\atora\\CIPM\\commit-based-cipm\\tests\\cipm.consistency.vsum.test\\target\\TEAMMATESCITest-1-6484257")));
+		dirLayouts.add(new ChangeGeneratingCommitIntegrationDirLayout(Paths.get(
+				"C:\\Users\\atora\\CIPM\\commit-based-cipm\\tests\\cipm.consistency.vsum.test\\target\\TEAMMATESCITest-2-48b67ba")));
+		dirLayouts.add(new ChangeGeneratingCommitIntegrationDirLayout(Paths.get(
+				"C:\\Users\\atora\\CIPM\\commit-based-cipm\\tests\\cipm.consistency.vsum.test\\target\\TEAMMATESCITest-3-83f518e")));
+		dirLayouts.add(new ChangeGeneratingCommitIntegrationDirLayout(Paths.get(
+				"C:\\Users\\atora\\CIPM\\commit-based-cipm\\tests\\cipm.consistency.vsum.test\\target\\TEAMMATESCITest-4-f33d0bc")));
+		dirLayouts.add(new ChangeGeneratingCommitIntegrationDirLayout(Paths.get(
+				"C:\\Users\\atora\\CIPM\\commit-based-cipm\\tests\\cipm.consistency.vsum.test\\target\\TEAMMATESCITest-5-ce4463a")));
+
+		var pcmToJavaPropTest = new PcmToJavaChangePropagationTest();
+
+		for (int i = 1; i < dirLayouts.size() - 1; i++) {
+			pcmToJavaPropTest.pcmToJavaChangePropagationTestTemplate(
+					new PcmToJavaChangePropagationDirLayout(dirLayouts.get(i - 1), dirLayouts.get(i),
+							Path.of("target", experimentRootDirNamePrefix + (i - 1) + "-to-" + i).toAbsolutePath()));
+		}
 	}
 }

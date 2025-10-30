@@ -2,80 +2,89 @@ package cipm.consistency.vsum.test.pcm;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.emftext.language.java.JavaPackage;
 import org.junit.jupiter.api.Assertions;
+import org.palladiosimulator.pcm.PcmPackage;
 
+import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationModelPackage;
 import cipm.consistency.vsum.Propagation;
+import cipm.consistency.vsum.test.pcm.experiment.ChangeGeneratingCommitIntegrationDirLayout;
 import tools.vitruv.change.atomic.EChange;
-import tools.vitruv.change.composite.description.VitruviusChange;
+import tools.vitruv.change.atomic.resolve.EChangeResolverAndApplicator;
 
 public class ChangeSaver {
-	// TODO Extract this part to some DirLayout class
-	
-	private static final String changesDirName = "changes";
-	private static final String javaChangesFileName = "javaChanges.changes";
-	private static final String pcmChangesFileName = "pcmChanges.changes";
+	private final ChangeGeneratingCommitIntegrationDirLayout dirLayout;
 
-	private final Path rootPath;
-	private final Path changesPath;
-	private final Path javaChangesFilePath;
-	private final Path pcmChangesFilePath;
-
-	public ChangeSaver(Path rootPath) {
-		this.rootPath = rootPath;
-		this.changesPath = rootPath.resolve(changesDirName);
-		this.javaChangesFilePath = this.changesPath.resolve(javaChangesFileName);
-		this.pcmChangesFilePath = this.changesPath.resolve(pcmChangesFileName);
+	public ChangeSaver(ChangeGeneratingCommitIntegrationDirLayout dirLayout) {
+		this.dirLayout = dirLayout;
 	}
 
-	public void saveChanges(Propagation prop, boolean isJavaConsequential) {
-		if (isJavaConsequential) {
-			saveChanges(getAllConsequentialEChangesInOrder(prop), getAllOriginalEChangesInOrder(prop));
-		} else {
-			saveChanges(getAllOriginalEChangesInOrder(prop), getAllConsequentialEChangesInOrder(prop));
+	public void saveUnresolvedChanges(Propagation prop) {
+		// Use LinkedHashSet to ensure that a change is present exactly once and that
+		// all changes retain their insertion order
+
+		var javaChanges = new LinkedHashSet<EChange>();
+		var pcmChanges = new LinkedHashSet<EChange>();
+		var imChanges = new LinkedHashSet<EChange>();
+
+		var propChanges = prop.getChanges();
+		if (propChanges != null) {
+			propChanges.stream().forEach((pc) -> {
+				var oc = pc.getOriginalChange();
+				if (oc != null) {
+					var metamodelNs = oc.getAffectedEObjectsMetamodelDescriptors().iterator().next().getNsUris()
+							.iterator().next();
+					if (metamodelNs.contains(JavaPackage.eNS_URI)) {
+						javaChanges.addAll(oc.getEChanges());
+					} else if (metamodelNs.contains(PcmPackage.eNS_URI)) {
+						pcmChanges.addAll(oc.getEChanges());
+					} else if (metamodelNs.contains(InstrumentationModelPackage.eNS_URI)) {
+						imChanges.addAll(oc.getEChanges());
+					}
+				}
+
+				var cc = pc.getConsequentialChanges();
+				if (cc != null) {
+					var changes = cc.getEChanges();
+					for (var c : changes) {
+						if (c.eCrossReferences().stream()
+								.anyMatch((cr) -> JavaPackage.eINSTANCE.getEClassifiers().contains(cr.eClass()))) {
+							javaChanges.add(c);
+						} else if (c.eCrossReferences().stream()
+								.anyMatch((cr) -> PcmPackage.eINSTANCE.getEClassifiers().contains(cr.eClass()))) {
+							pcmChanges.add(c);
+						} else if (c.eCrossReferences().stream().anyMatch((cr) -> InstrumentationModelPackage.eINSTANCE
+								.getEClassifiers().contains(cr.eClass()))) {
+							imChanges.add(c);
+						}
+					}
+				}
+			});
 		}
+
+		saveUnresolvedChanges(javaChanges, dirLayout.getJavaChangesSaveFilePath());
+		saveUnresolvedChanges(pcmChanges, dirLayout.getPcmChangesSaveFilePath());
+		saveUnresolvedChanges(imChanges, dirLayout.getImChangesSaveFilePath());
 	}
 
-	public void saveChanges(List<EChange> javaChanges, List<EChange> pcmChanges) {
-		var javaChangesResSet = new ResourceSetImpl();
-		var javaChangesRes = javaChangesResSet
-				.createResource(URI.createFileURI(javaChangesFilePath.toFile().getAbsolutePath()));
-		javaChangesRes.getContents().addAll(javaChanges);
+	public void saveUnresolvedChanges(Collection<EChange> changes, Path savePath) {
+		// Unresolve the changes before saving, since they would otherwise need the
+		// model resources to work
 
-		var pcmChangesResSet = new ResourceSetImpl();
-		var pcmChangesRes = pcmChangesResSet
-				.createResource(URI.createFileURI(pcmChangesFilePath.toFile().getAbsolutePath()));
-		pcmChangesRes.getContents().addAll(pcmChanges);
+		var changesResSet = new ResourceSetImpl();
+		var changesRes = changesResSet.createResource(URI.createFileURI(savePath.toFile().getAbsolutePath()));
+		changes.stream().forEach((c) -> changesRes.getContents().add(EChangeResolverAndApplicator.unresolve(c)));
 
 		try {
-			javaChangesRes.save(null);
-			pcmChangesRes.save(null);
+			changesRes.save(null);
 		} catch (IOException e) {
 			e.printStackTrace();
 			Assertions.fail(e);
 		}
-	}
-
-	/**
-	 * @return All original changes in {@code prop.getChanges().get(0)}, since
-	 *         changes are duplicated in {@code prop.getChanges().get(1)}
-	 */
-	public List<EChange> getAllOriginalEChangesInOrder(Propagation prop) {
-		return getAllEChangesInOrder(prop.getChanges().get(0).getOriginalChange());
-	}
-
-	/**
-	 * @return All consequential changes in {@code prop.getChanges().get(0)}, since
-	 *         changes are duplicated in {@code prop.getChanges().get(1)}
-	 */
-	public List<EChange> getAllConsequentialEChangesInOrder(Propagation prop) {
-		return getAllEChangesInOrder(prop.getChanges().get(0).getConsequentialChanges());
-	}
-
-	public List<EChange> getAllEChangesInOrder(VitruviusChange change) {
-		return change.getEChanges();
 	}
 }
