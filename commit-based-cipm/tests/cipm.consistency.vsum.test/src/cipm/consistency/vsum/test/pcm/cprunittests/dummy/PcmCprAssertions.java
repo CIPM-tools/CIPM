@@ -25,6 +25,25 @@ public final class PcmCprAssertions {
 	private static final Logger LOGGER = Logger.getLogger(PcmCprAssertions.class);
 
 	/**
+	 * Ensures that eAllContent() of both resources yield equal EObjects in equal
+	 * order.
+	 */
+	public static void assertAllContentsEqual(Resource res1, Resource res2) {
+		var it1 = res1.getAllContents();
+		var it2 = res2.getAllContents();
+
+		var idx = 0;
+		while (it1.hasNext() || it2.hasNext()) {
+			if (it1.hasNext() ^ it2.hasNext())
+				Assertions.fail("Given resources have differing eAllContents size");
+
+			Assertions.assertTrue(EcoreUtil.equals(it1.next(), it2.next()),
+					"Given resources eAllContents differ at iteration: " + idx);
+			idx++;
+		}
+	}
+
+	/**
 	 * Ensures that the correspondence (obj1, obj2, tag) = (obj2, obj1, tag) exists
 	 * within the correspondence view.
 	 */
@@ -248,14 +267,14 @@ public final class PcmCprAssertions {
 	 * PcmUserInteractionManager
 	 */
 	public static void assertNoCorrespondencesInPcmManager() {
-		Assertions.assertEquals(0, PcmUserInteractionManager.getAllCompleteCorrespondences());
+		Assertions.assertTrue(PcmUserInteractionManager.getAllCompleteCorrespondences().isEmpty());
 	}
 
 	/**
 	 * Ensures that there are no assigned features in PcmUserInteractionManager
 	 */
 	public static void assertNoFeaturesInPcmManager() {
-		Assertions.assertEquals(0, PcmUserInteractionManager.getAllAssignedFeatures());
+		Assertions.assertTrue(PcmUserInteractionManager.getAllAssignedFeatures().isEmpty());
 	}
 
 	/**

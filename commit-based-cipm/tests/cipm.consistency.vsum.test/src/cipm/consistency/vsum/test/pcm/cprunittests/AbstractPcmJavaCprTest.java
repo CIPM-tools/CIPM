@@ -68,8 +68,7 @@ public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 		// Otherwise it will be deleted (by Vitruvius)
 		var modelRes = model.getResource();
 		if (modelRes.getContents().isEmpty()) {
-			placeholder = ClassifiersFactory.eINSTANCE.createClass();
-			((org.emftext.language.java.classifiers.Class) placeholder).setName(placeholderName);
+			this.createPlaceholderForJavaModelResource();
 			modelRes.getContents().add(placeholder);
 			try {
 				modelRes.save(null);
@@ -81,6 +80,25 @@ public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 		}
 		JavaModelAccess.setJavaModel(modelRes);
 		return model;
+	}
+
+	protected void createPlaceholderForJavaModelResource() {
+		placeholder = ClassifiersFactory.eINSTANCE.createClass();
+		((org.emftext.language.java.classifiers.Class) placeholder).setName(placeholderName);
+	}
+
+	protected void addPlaceholderToJavaModelResource(Resource modelRes) {
+		if (modelRes.getContents().isEmpty()) {
+			if (placeholder == null) {
+				this.createPlaceholderForJavaModelResource();
+			}
+			modelRes.getContents().add(placeholder);
+			try {
+				modelRes.save(null);
+			} catch (IOException e) {
+				this.failTest(e);
+			}
+		}
 	}
 
 	/**

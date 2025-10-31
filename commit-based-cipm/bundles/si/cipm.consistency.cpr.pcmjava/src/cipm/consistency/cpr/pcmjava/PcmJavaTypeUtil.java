@@ -59,7 +59,8 @@ public class PcmJavaTypeUtil {
 		if (!pcmName.equals(javaType.getName()))
 			return false;
 
-		return getJavaFieldForIn(pcmType.getInnerType_CollectionDataType(), javaType) != null;
+		var matchingField = getJavaFieldForIn(pcmType.getInnerType_CollectionDataType(), javaType);
+		return pcmType.getInnerType_CollectionDataType() == null || matchingField != null;
 	}
 
 	/**

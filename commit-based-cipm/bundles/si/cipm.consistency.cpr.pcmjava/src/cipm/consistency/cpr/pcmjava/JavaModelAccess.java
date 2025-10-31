@@ -71,10 +71,7 @@ public final class JavaModelAccess {
 
 		getAllJavaModelElements().stream().filter((o) -> o instanceof ConcreteClassifier)
 				.map((cls) -> ((ConcreteClassifier) cls))
-				.filter((cls) -> cls.getName() != null && cls.getName().equals(name)).forEach((cls) -> {
-					if (clsSet.stream().noneMatch((c) -> EcoreUtil.equals(c, cls)))
-						clsSet.add(cls);
-				});
+				.filter((cls) -> cls.getName() != null && cls.getName().equals(name)).forEach(clsSet::add);
 
 		return clsSet;
 	}
@@ -126,6 +123,15 @@ public final class JavaModelAccess {
 				e.printStackTrace();
 				throw new IllegalArgumentException(e);
 			}
+		}
+	}
+
+	public static void saveJavaModel() {
+		try {
+			javaModel.save(null);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new IllegalStateException(e);
 		}
 	}
 
