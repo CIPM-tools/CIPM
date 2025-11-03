@@ -7,7 +7,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emftext.language.java.classifiers.ClassifiersFactory;
@@ -33,15 +32,12 @@ import mir.reactions.allRepository.AllRepositoryChangePropagationSpecification;
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
 
 public class DataTypeTest extends AbstractPcmJavaCprTest {
+	private static final String namespaceSeparatorRegex = "\\.";
 
 	@Override
 	protected List<ChangePropagationSpecification> getCPRs() {
 		return List.of(new AllRepositoryChangePropagationSpecification());
 	}
-
-	// TODO Test creating a new Java class with pre-existing packages
-	//
-	// TODO Test creating a new Java class with pre-existing modules
 
 	private boolean namespacesEqual(List<String> nss1, List<String> nss2) {
 		if (nss1.size() != nss2.size())
@@ -191,8 +187,6 @@ public class DataTypeTest extends AbstractPcmJavaCprTest {
 			PcmCprAssertions.assertNoFeaturesInPcmManager();
 		});
 	}
-
-	private static final String namespaceSeparatorRegex = "\\.";
 
 	@Test
 	public void withMultipleExistingJavaClasses() {
