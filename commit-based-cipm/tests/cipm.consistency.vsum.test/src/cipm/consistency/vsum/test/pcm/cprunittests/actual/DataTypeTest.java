@@ -26,29 +26,14 @@ import cipm.consistency.cpr.pcmjava.userinteraction.ConflictResolutionStrategy;
 import cipm.consistency.cpr.pcmjava.userinteraction.CorrespondenceInputConflictResolutionStrategy;
 import cipm.consistency.cpr.pcmjava.userinteraction.FeatureInputConflictResolutionStrategy;
 import cipm.consistency.cpr.pcmjava.userinteraction.PcmUserInteractionManager;
-import cipm.consistency.vsum.test.pcm.cprunittests.AbstractPcmJavaCprTest;
 import cipm.consistency.vsum.test.pcm.cprunittests.dummy.PcmCprAssertions;
 import mir.reactions.allRepository.AllRepositoryChangePropagationSpecification;
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
 
-public class DataTypeTest extends AbstractPcmJavaCprTest {
-	private static final String namespaceSeparatorRegex = "\\.";
-
+public class DataTypeTest extends AbstractClassifierTest {
 	@Override
 	protected List<ChangePropagationSpecification> getCPRs() {
 		return List.of(new AllRepositoryChangePropagationSpecification());
-	}
-
-	private boolean namespacesEqual(List<String> nss1, List<String> nss2) {
-		if (nss1.size() != nss2.size())
-			return false;
-
-		for (int i = 0; i < nss1.size(); i++) {
-			if (!nss1.get(i).equals(nss2.get(i)))
-				return false;
-		}
-
-		return true;
 	}
 
 	public <T extends DataType & NamedElement> void dataTypeCreationTestTemplate(Supplier<T> dataTypeFac,
@@ -166,9 +151,9 @@ public class DataTypeTest extends AbstractPcmJavaCprTest {
 
 	@Test
 	public void withExistingJavaClass() {
-		var listCls = List.class;
+		var listCls = ArrayList.class;
 		var dtName = listCls.getSimpleName();
-		var nss = List.of(listCls.getPackageName().split("\\."));
+		var nss = List.of(listCls.getPackageName().split(namespaceSeparatorRegex));
 
 		forEachDataType((d) -> {
 			this.removePlaceholderInJavaModelResource();
@@ -190,7 +175,7 @@ public class DataTypeTest extends AbstractPcmJavaCprTest {
 
 	@Test
 	public void withMultipleExistingJavaClasses() {
-		var listCls = List.class;
+		var listCls = ArrayList.class;
 		var dtName = listCls.getSimpleName();
 		var extraNs = "special";
 		var listPacNss = List.of(listCls.getPackageName().split(namespaceSeparatorRegex));
@@ -347,39 +332,5 @@ public class DataTypeTest extends AbstractPcmJavaCprTest {
 			Assertions.assertEquals(dtName, ((org.emftext.language.java.containers.Module) JavaModelAccess
 					.getJavaModel().getEObject(modFragment)).getConcreteClassifier(fullyQualifiedClsName).getName());
 		});
-	}
-
-	private void saveAndReloadJavaModelResource() {
-		JavaModelAccess.saveJavaModel();
-		this.getJavaFacade().reload();
-		JavaModelAccess.setJavaModel(this.getJavaFacade().getResource());
-	}
-
-	private org.emftext.language.java.classifiers.Class addClassToJavaModelResource(Resource modelRes, String className,
-			List<String> classNss) {
-		var cls = ClassifiersFactory.eINSTANCE.createClass();
-		cls.setName(className);
-		var jrs = PcmJavaCPRUtils.addJavaClassifierIntoResource(modelRes, cls, classNss);
-		modelRes.getContents().addAll(jrs);
-		return cls;
-	}
-
-	private org.emftext.language.java.containers.Package addPackageToJavaModelResource(Resource modelRes,
-			List<String> pacNss) {
-		var pac = ContainersFactory.eINSTANCE.createPackage();
-		pac.getNamespaces().addAll(pacNss);
-		modelRes.getContents().add(pac);
-		return pac;
-	}
-
-	private org.emftext.language.java.containers.Module addModuleToJavaModelResource(Resource modelRes,
-			List<String> modNss) {
-		var mod = ContainersFactory.eINSTANCE.createModule();
-		mod.getNamespaces().addAll(modNss);
-
-		// Remove the superfluous dot in mod.getNamespacesAsString()
-		mod.setName(mod.getNamespacesAsString().substring(0, mod.getNamespacesAsString().length() - 1));
-		modelRes.getContents().add(mod);
-		return mod;
 	}
 }

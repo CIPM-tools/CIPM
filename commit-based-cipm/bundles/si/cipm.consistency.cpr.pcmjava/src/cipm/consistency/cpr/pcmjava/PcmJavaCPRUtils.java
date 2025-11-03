@@ -120,6 +120,19 @@ public final class PcmJavaCPRUtils {
 		return implementsRef;
 	}
 
+	public static List<org.emftext.language.java.members.Method> generateJavaInterfaceMethodStubsInImplementors(
+			Interface javaIfc) {
+		var generatedStubs = new ArrayList<org.emftext.language.java.members.Method>();
+		javaIfc.eCrossReferences().stream().filter((cr) -> cr instanceof TypeReference)
+				.map((tr) -> ((TypeReference) tr).getContainingConcreteClassifier())
+				.filter((cls) -> cls instanceof Implementor).forEach((cls) -> {
+					var stubs = generateJavaInterfaceMethodStubsInJavaClassifier((Implementor) cls, javaIfc);
+					generatedStubs.addAll(stubs);
+					cls.getMembers().addAll(stubs);
+				});
+		return generatedStubs;
+	}
+
 	public static List<org.emftext.language.java.members.Method> generateJavaInterfaceMethodStubsInJavaClassifier(
 			Implementor javaCls, Interface javaIfc) {
 		var methodStubs = new ArrayList<org.emftext.language.java.members.Method>();

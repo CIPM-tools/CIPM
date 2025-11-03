@@ -10,6 +10,7 @@ import cipm.consistency.cpr.pcmjava.userinteraction.NamespaceUserInteraction
 import cipm.consistency.cpr.pcmjava.userinteraction.JavaCorrespondentDecisionUserInteraction
 import java.util.ArrayList
 import org.eclipse.emf.ecore.EObject
+import org.emftext.language.java.classifiers.ConcreteClassifier
 
 import "http://www.emftext.org/java" as java
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
@@ -47,6 +48,8 @@ routine findOrCreateOrDecideJavaInterface(pcm::OperationInterface pcmIfc) {
 
 			PcmJavaCPRUtils.integrateJavaClassifierCorrespondent(correspondenceModel, pcmIfc,
 				JavaModelAccess.javaModel, cls, namespacesUI.namespaces)
+
+			addCorrespondenceBetween(pcmIfc, cls, "")
 
 		} else if (matchingJavaIfcs.size == 1) {
 			addCorrespondenceBetween(pcmIfc, matchingJavaIfcs.get(0), "")
@@ -106,11 +109,27 @@ routine findOrCreateJavaInterfaceMethod(pcm::OperationSignature pcmSig) {
 			val javaInterfaceMethod = MembersFactory.eINSTANCE.createInterfaceMethod
 			javaInterfaceMethod.name = pcmSig.entityName
 
-		// FIXME Change all java::Interface types into java::InterfaceMethod
-		// TODO Depending on the return type, either "return;", "return 0;", "return null;", "return false;"
-		// TODO Check if only adding the Java method stub with "return" is enough
-		//
-		// That should be the case, since all other Java elements will be added in other CPRs
+			val returnTref = TypesFactory.eINSTANCE.createClassifierReference
+			returnTref.target = javaReturnType
+			javaInterfaceMethod.typeReference = returnTref
+
+			for (p : pcmSig.parameters__OperationSignature) {
+				val pType = p.dataType__Parameter
+				val javaType = getCorrespondingElement(pType, ConcreteClassifier, null, "", true)
+
+				val paramRef = TypesFactory.eINSTANCE.createClassifierReference
+				paramRef.target = javaType
+
+				val javaParam = ParametersFactory.eINSTANCE.createOrdinaryParameter
+				javaParam.name = p.parameterName
+				javaParam.typeReference = paramRef
+
+				javaInterfaceMethod.parameters += javaParam
+			}
+
+			javaIfc.members += javaInterfaceMethod
+
+			PcmJavaCPRUtils.generateJavaInterfaceMethodStubsInImplementors(javaIfc)
 		}
 	}
 }
