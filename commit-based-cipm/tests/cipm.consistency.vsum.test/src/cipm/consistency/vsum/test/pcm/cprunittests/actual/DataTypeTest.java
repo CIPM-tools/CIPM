@@ -8,10 +8,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.eclipse.emf.ecore.resource.Resource;
-import org.emftext.language.java.classifiers.ClassifiersFactory;
 import org.emftext.language.java.commons.CommonsPackage;
-import org.emftext.language.java.containers.ContainersFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.palladiosimulator.pcm.core.entity.EntityPackage;
@@ -21,7 +18,6 @@ import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryFactory;
 
 import cipm.consistency.cpr.pcmjava.JavaModelAccess;
-import cipm.consistency.cpr.pcmjava.PcmJavaCPRUtils;
 import cipm.consistency.cpr.pcmjava.userinteraction.ConflictResolutionStrategy;
 import cipm.consistency.cpr.pcmjava.userinteraction.CorrespondenceInputConflictResolutionStrategy;
 import cipm.consistency.cpr.pcmjava.userinteraction.FeatureInputConflictResolutionStrategy;
