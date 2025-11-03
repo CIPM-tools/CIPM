@@ -295,12 +295,12 @@ public class DataTypeTest extends AbstractPcmJavaCprTest {
 		var nss = List.of("ns1", "ns2");
 		final var dt = new DataType[1];
 
-		var mod = this.addModuleToJavaModelResource(JavaModelAccess.getJavaModel(), nss.subList(0, 1), nss.get(1));
+		var mod = this.addModuleToJavaModelResource(JavaModelAccess.getJavaModel(), nss);
 		this.removePlaceholderInJavaModelResource();
-		// Segment building results in "/", if the module is the only content of the
-		// resource fix it by appending a "0" to it, so that it contains the index of
-		// the module "/0"
-		var modFragment = mod.eResource().getURIFragment(mod) + "0";
+
+		var fullyQualifiedClsName = mod.getNamespacesAsString() + dtName;
+
+		var modFragment = mod.eResource().getURIFragment(mod);
 		saveAndReloadJavaModelResource();
 
 		this.dataTypeCreationTestTemplate(() -> RepositoryFactory.eINSTANCE.createCollectionDataType(), (dataType) -> {
@@ -324,7 +324,7 @@ public class DataTypeTest extends AbstractPcmJavaCprTest {
 		Assertions.assertNotNull(JavaModelAccess.getJavaModel().getEObject(modFragment));
 		Assertions.assertEquals(dtName,
 				((org.emftext.language.java.containers.Module) JavaModelAccess.getJavaModel().getEObject(modFragment))
-						.getClassifiersInSamePackage().get(0).getName());
+						.getConcreteClassifier(fullyQualifiedClsName).getName());
 	}
 
 	private void saveAndReloadJavaModelResource() {
@@ -351,10 +351,12 @@ public class DataTypeTest extends AbstractPcmJavaCprTest {
 	}
 
 	private org.emftext.language.java.containers.Module addModuleToJavaModelResource(Resource modelRes,
-			List<String> modNss, String modName) {
+			List<String> modNss) {
 		var mod = ContainersFactory.eINSTANCE.createModule();
-		mod.setName(modName);
 		mod.getNamespaces().addAll(modNss);
+
+		// Remove the superfluous dot in mod.getNamespacesAsString()
+		mod.setName(mod.getNamespacesAsString().substring(0, mod.getNamespacesAsString().length() - 1));
 		modelRes.getContents().add(mod);
 		return mod;
 	}

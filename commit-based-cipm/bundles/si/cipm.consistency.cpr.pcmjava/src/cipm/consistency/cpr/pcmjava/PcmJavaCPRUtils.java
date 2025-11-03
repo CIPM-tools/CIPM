@@ -590,7 +590,9 @@ public final class PcmJavaCPRUtils {
 
 		if (!createdPacs.isEmpty()) {
 			createdContainers.addAll(createdPacs);
-			createdPacs.get(createdPacs.size() - 1).getClassifiers().add(javaCls);
+			var pacOfCls = createdPacs.get(createdPacs.size() - 1);
+			pacOfCls.getClassifiers().add(javaCls);
+			javaCls.setPackage(pacOfCls);
 		}
 
 		// Create the necessary CompilationUnit
