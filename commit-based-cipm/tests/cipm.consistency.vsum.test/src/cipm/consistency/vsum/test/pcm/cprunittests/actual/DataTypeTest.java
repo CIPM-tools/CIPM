@@ -160,8 +160,8 @@ public class DataTypeTest extends AbstractPcmJavaCprTest {
 
 		this.removePlaceholderInJavaModelResource();
 		this.addClassToJavaModelResource(JavaModelAccess.getJavaModel(), dtName, nss);
-		JavaModelAccess.saveJavaModel();
-		this.getJavaFacade().reload();
+
+		saveAndReloadJavaModelResource();
 
 		var oldJavaResource = this.loadNewResourceInstance(JavaModelAccess.getJavaModel());
 
@@ -196,9 +196,7 @@ public class DataTypeTest extends AbstractPcmJavaCprTest {
 		var cls1Fragment = cls1.eResource().getURIFragment(cls1);
 		var cls2Fragment = cls2.eResource().getURIFragment(cls2);
 
-		JavaModelAccess.saveJavaModel();
-		this.getJavaFacade().reload();
-		JavaModelAccess.setJavaModel(this.getJavaFacade().getResource());
+		saveAndReloadJavaModelResource();
 
 		final var cls1Final = (org.emftext.language.java.classifiers.Class) JavaModelAccess.getJavaModel()
 				.getEObject(cls1Fragment);
@@ -217,6 +215,84 @@ public class DataTypeTest extends AbstractPcmJavaCprTest {
 
 		// Ensure that no new Java element is created
 		PcmCprAssertions.assertAllContentsEqual(oldJavaResource, newJavaResource);
+	}
+
+	@Test
+	public void withExistingPackages() {
+		var dtName = "pcmIfc";
+		var nss = List.of("ns1", "ns2");
+		final var dt = new DataType[1];
+
+		var parentPac = this.addPackageToJavaModelResource(JavaModelAccess.getJavaModel(), nss.subList(0, 1));
+		var childPac = this.addPackageToJavaModelResource(JavaModelAccess.getJavaModel(), nss.subList(0, 2));
+
+		var parentPacFragment = parentPac.eResource().getURIFragment(parentPac);
+		var childPacFragment = childPac.eResource().getURIFragment(childPac);
+
+		this.removePlaceholderInJavaModelResource();
+
+		saveAndReloadJavaModelResource();
+
+		this.dataTypeCreationTestTemplate(() -> RepositoryFactory.eINSTANCE.createCollectionDataType(), (dataType) -> {
+			dt[0] = dataType;
+			return new ConflictResolutionStrategy[] { new FeatureInputConflictResolutionStrategy(List.of(dataType),
+					null, List.of(CommonsPackage.Literals.NAMESPACE_AWARE_ELEMENT__NAMESPACES), List.of(nss)) };
+		}, dtName, nss);
+
+		PcmCprAssertions.assertFeatureValueInPcmManagerEquals(dt[0],
+				CommonsPackage.Literals.NAMESPACE_AWARE_ELEMENT__NAMESPACES, nss);
+
+		// There should be 2 packages and 1 compilation unit as root content
+		Assertions.assertEquals(3, JavaModelAccess.getJavaModel().getContents().size());
+		Assertions.assertEquals(2, JavaModelAccess.getJavaModel().getContents().stream()
+				.filter((c) -> c instanceof org.emftext.language.java.containers.Package).count());
+		Assertions.assertEquals(1, JavaModelAccess.getJavaModel().getContents().stream()
+				.filter((c) -> c instanceof org.emftext.language.java.containers.CompilationUnit).count());
+
+		Assertions.assertNotNull(JavaModelAccess.getJavaModel().getEObject(parentPacFragment));
+		Assertions.assertEquals(dtName, ((org.emftext.language.java.containers.Package) JavaModelAccess.getJavaModel()
+				.getEObject(parentPacFragment)).getClassifiers().get(0).getName());
+		Assertions.assertNotNull(JavaModelAccess.getJavaModel().getEObject(childPacFragment));
+	}
+
+	@Test
+	public void withExistingParentPackage() {
+		var dtName = "pcmIfc";
+		var nss = List.of("ns1", "ns2");
+		final var dt = new DataType[1];
+
+		var parentPac = this.addPackageToJavaModelResource(JavaModelAccess.getJavaModel(), nss.subList(0, 1));
+		var parentPacFragment = parentPac.eResource().getURIFragment(parentPac);
+
+		this.removePlaceholderInJavaModelResource();
+
+		saveAndReloadJavaModelResource();
+
+		this.dataTypeCreationTestTemplate(() -> RepositoryFactory.eINSTANCE.createCollectionDataType(), (dataType) -> {
+			dt[0] = dataType;
+			return new ConflictResolutionStrategy[] { new FeatureInputConflictResolutionStrategy(List.of(dataType),
+					null, List.of(CommonsPackage.Literals.NAMESPACE_AWARE_ELEMENT__NAMESPACES), List.of(nss)) };
+		}, dtName, nss);
+
+		PcmCprAssertions.assertFeatureValueInPcmManagerEquals(dt[0],
+				CommonsPackage.Literals.NAMESPACE_AWARE_ELEMENT__NAMESPACES, nss);
+
+		// There should be 2 packages and 1 compilation unit as root content
+		Assertions.assertEquals(3, JavaModelAccess.getJavaModel().getContents().size());
+		Assertions.assertEquals(2, JavaModelAccess.getJavaModel().getContents().stream()
+				.filter((c) -> c instanceof org.emftext.language.java.containers.Package).count());
+		Assertions.assertEquals(1, JavaModelAccess.getJavaModel().getContents().stream()
+				.filter((c) -> c instanceof org.emftext.language.java.containers.CompilationUnit).count());
+
+		Assertions.assertNotNull(JavaModelAccess.getJavaModel().getEObject(parentPacFragment));
+		Assertions.assertEquals(dtName, ((org.emftext.language.java.containers.Package) JavaModelAccess.getJavaModel()
+				.getEObject(parentPacFragment)).getClassifiers().get(0).getName());
+	}
+
+	private void saveAndReloadJavaModelResource() {
+		JavaModelAccess.saveJavaModel();
+		this.getJavaFacade().reload();
+		JavaModelAccess.setJavaModel(this.getJavaFacade().getResource());
 	}
 
 	private org.emftext.language.java.classifiers.Class addClassToJavaModelResource(Resource modelRes, String className,
