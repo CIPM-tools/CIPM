@@ -512,28 +512,33 @@ public final class PcmJavaCPRUtils {
 			org.emftext.language.java.containers.Module moduleOfJavaCls, ConcreteClassifier javaCls,
 			List<String> javaClsNss) {
 		if (javaCls.getPackage() != null) {
-			return null;
+			return List.of();
+		} else {
+			return addJavaClassifierIntoJavaPackage(moduleOfJavaCls, null, javaCls, javaClsNss);
 		}
 
-		var createdContainers = new ArrayList<JavaRoot>();
-
-		var longestNsPrefix = getLongestCommonNamespacePrefix(moduleOfJavaCls.getNamespaces(), javaClsNss);
-		if (longestNsPrefix.size() == javaClsNss.size()) {
-			// Module's namespace matches directly with that of Java Classifier
-			// create a package for the Java Classifier as well as a CompilationUnit
-			var pac = createJavaPackage(moduleOfJavaCls, javaClsNss);
-			pac.getClassifiers().add(javaCls);
-			createdContainers.add(pac);
-
-			if (javaCls.getContainingCompilationUnit() == null) {
-				createdContainers.add(createCompilationUnitForJavaClassifier(javaCls, javaClsNss));
-			}
-		}
-
-		// Create the necessary Packages
-		createdContainers.addAll(addJavaClassifierIntoJavaPackage(moduleOfJavaCls, null, javaCls, javaClsNss));
-
-		return createdContainers;
+//		var createdContainers = new ArrayList<JavaRoot>();
+//
+//		var longestNsPrefix = getLongestCommonNamespacePrefix(moduleOfJavaCls.getNamespaces(), javaClsNss);
+//		if (longestNsPrefix.size() == javaClsNss.size()) {
+//			// Module's namespace matches directly with that of Java Classifier
+//			// create a package for the Java Classifier as well as a CompilationUnit
+//			var pacs = createJavaPackages(moduleOfJavaCls, javaClsNss);
+//			createdContainers.addAll(pacs);
+//			pacs.get(pacs.size() - 1).getClassifiers().add(javaCls);
+//
+//			if (javaCls.getContainingCompilationUnit() == null) {
+//				createdContainers.add(createCompilationUnitForJavaClassifier(javaCls, javaClsNss));
+//			}
+//		} else {
+//			// Create the necessary Packages
+//			var cons = addJavaClassifierIntoJavaPackage(moduleOfJavaCls, null, javaCls, javaClsNss);
+//			createdContainers
+//					.addAll(cons.stream().filter((c) -> c instanceof org.emftext.language.java.containers.Package)
+//							.collect(Collectors.toList()));
+//		}
+//
+//		return createdContainers;
 	}
 
 	/**
@@ -569,9 +574,6 @@ public final class PcmJavaCPRUtils {
 					return List.of();
 				}
 			}
-
-		} else if (moduleOfJavaCls != null) {
-			longestNsPrefix = getLongestCommonNamespacePrefix(moduleOfJavaCls.getNamespaces(), javaClsNss);
 		} else {
 			longestNsPrefix = List.of();
 		}
@@ -629,6 +631,7 @@ public final class PcmJavaCPRUtils {
 
 		if (moduleOfJavaCls != null) {
 			pac.setModule(moduleOfJavaCls);
+			moduleOfJavaCls.getPackages().add(pac);
 		}
 
 		// Since all added Java model elements are to be saved into source files,
@@ -641,6 +644,17 @@ public final class PcmJavaCPRUtils {
 		pac.getNamespaces().addAll(javaPacNss);
 
 		return pac;
+	}
+
+	public static List<org.emftext.language.java.containers.Package> createJavaPackages(
+			org.emftext.language.java.containers.Module moduleOfJavaCls, List<String> javaPacNss) {
+		var createdPacs = new ArrayList<org.emftext.language.java.containers.Package>();
+		// Create the necessary packages
+		for (int i = 0; i < javaPacNss.size(); i++) {
+			createdPacs.add(createJavaPackage(moduleOfJavaCls, javaPacNss.subList(0, i + javaPacNss.size() + 1)));
+		}
+
+		return createdPacs;
 	}
 
 	/**

@@ -289,6 +289,44 @@ public class DataTypeTest extends AbstractPcmJavaCprTest {
 				.getEObject(parentPacFragment)).getClassifiers().get(0).getName());
 	}
 
+	@Test
+	public void withExistingModule() {
+		var dtName = "pcmIfc";
+		var nss = List.of("ns1", "ns2");
+		final var dt = new DataType[1];
+
+		var mod = this.addModuleToJavaModelResource(JavaModelAccess.getJavaModel(), nss.subList(0, 1), nss.get(1));
+		this.removePlaceholderInJavaModelResource();
+		// Segment building results in "/", if the module is the only content of the
+		// resource fix it by appending a "0" to it, so that it contains the index of
+		// the module "/0"
+		var modFragment = mod.eResource().getURIFragment(mod) + "0";
+		saveAndReloadJavaModelResource();
+
+		this.dataTypeCreationTestTemplate(() -> RepositoryFactory.eINSTANCE.createCollectionDataType(), (dataType) -> {
+			dt[0] = dataType;
+			return new ConflictResolutionStrategy[] { new FeatureInputConflictResolutionStrategy(List.of(dataType),
+					null, List.of(CommonsPackage.Literals.NAMESPACE_AWARE_ELEMENT__NAMESPACES), List.of(nss)) };
+		}, dtName, nss);
+
+		PcmCprAssertions.assertFeatureValueInPcmManagerEquals(dt[0],
+				CommonsPackage.Literals.NAMESPACE_AWARE_ELEMENT__NAMESPACES, nss);
+
+		// There should be 1 module, 2 packages and 1 compilation unit as root content
+		Assertions.assertEquals(4, JavaModelAccess.getJavaModel().getContents().size());
+		Assertions.assertEquals(1, JavaModelAccess.getJavaModel().getContents().stream()
+				.filter((c) -> c instanceof org.emftext.language.java.containers.Module).count());
+		Assertions.assertEquals(2, JavaModelAccess.getJavaModel().getContents().stream()
+				.filter((c) -> c instanceof org.emftext.language.java.containers.Package).count());
+		Assertions.assertEquals(1, JavaModelAccess.getJavaModel().getContents().stream()
+				.filter((c) -> c instanceof org.emftext.language.java.containers.CompilationUnit).count());
+
+		Assertions.assertNotNull(JavaModelAccess.getJavaModel().getEObject(modFragment));
+		Assertions.assertEquals(dtName,
+				((org.emftext.language.java.containers.Module) JavaModelAccess.getJavaModel().getEObject(modFragment))
+						.getClassifiersInSamePackage().get(0).getName());
+	}
+
 	private void saveAndReloadJavaModelResource() {
 		JavaModelAccess.saveJavaModel();
 		this.getJavaFacade().reload();
@@ -310,5 +348,14 @@ public class DataTypeTest extends AbstractPcmJavaCprTest {
 		pac.getNamespaces().addAll(pacNss);
 		modelRes.getContents().add(pac);
 		return pac;
+	}
+
+	private org.emftext.language.java.containers.Module addModuleToJavaModelResource(Resource modelRes,
+			List<String> modNss, String modName) {
+		var mod = ContainersFactory.eINSTANCE.createModule();
+		mod.setName(modName);
+		mod.getNamespaces().addAll(modNss);
+		modelRes.getContents().add(mod);
+		return mod;
 	}
 }
