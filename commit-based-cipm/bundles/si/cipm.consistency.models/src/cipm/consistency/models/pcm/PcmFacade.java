@@ -2,6 +2,7 @@ package cipm.consistency.models.pcm;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -127,9 +128,26 @@ public class PcmFacade implements ModelFacade {
 
 	@Override
 	public List<Resource> getResources() {
-		return List.of(pcm.getSystem().eResource(), pcm.getRepository().eResource(),
-				pcm.getResourceEnvironmentModel().eResource(), pcm.getUsageModel().eResource(),
-				pcm.getAllocationModel().eResource());
+		if (pcm == null)
+			return List.of();
+
+		var resources = new ArrayList<Resource>();
+		if (pcm.getSystem() != null && pcm.getSystem().eResource() != null)
+			resources.add(pcm.getSystem().eResource());
+
+		if (pcm.getRepository() != null && pcm.getRepository().eResource() != null)
+			resources.add(pcm.getRepository().eResource());
+
+		if (pcm.getResourceEnvironmentModel() != null && pcm.getResourceEnvironmentModel().eResource() != null)
+			resources.add(pcm.getResourceEnvironmentModel().eResource());
+
+		if (pcm.getUsageModel() != null && pcm.getUsageModel().eResource() != null)
+			resources.add(pcm.getUsageModel().eResource());
+
+		if (pcm.getAllocationModel() != null && pcm.getAllocationModel().eResource() != null)
+			resources.add(pcm.getAllocationModel().eResource());
+
+		return resources;
 	}
 
 	@Override
