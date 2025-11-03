@@ -83,7 +83,11 @@ public class JavaCorrespondentDecisionUserInteraction extends AbstractUserIntera
 
 	@Override
 	public void resolveAll() {
-		resolveForCorrespondence(triggeringPCMelement, this.correspondenceTagToUse);
+		var corEntry = resolveForCorrespondence(triggeringPCMelement, this.correspondenceTagToUse);
+		var cors = corEntry.getCorrespondentsForKnownElement();
+		if (!cors.isEmpty()) {
+			this.javaCorrespondent = cors.iterator().next();
+		}
 	}
 
 	public EObject getJavaCorrespondent() {

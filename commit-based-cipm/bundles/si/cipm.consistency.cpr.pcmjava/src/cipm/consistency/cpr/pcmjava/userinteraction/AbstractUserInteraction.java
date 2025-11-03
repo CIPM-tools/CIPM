@@ -83,7 +83,7 @@ public abstract class AbstractUserInteraction {
 		return PcmUserInteractionManager.getDesiredFeatureValue(triggeringPCMElement, affectedJavaElement, feat, true);
 	}
 
-	public Object resolveForCorrespondence(EObject knownSide, String correspondenceTag) {
+	public CorrespondenceEntry resolveForCorrespondence(EObject knownSide, String correspondenceTag) {
 		return PcmUserInteractionManager.getDesiredCorrespondence(knownSide, correspondenceTag, true);
 	}
 }

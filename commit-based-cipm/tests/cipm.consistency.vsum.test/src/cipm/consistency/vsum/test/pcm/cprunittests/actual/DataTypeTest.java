@@ -1,5 +1,6 @@
 package cipm.consistency.vsum.test.pcm.cprunittests.actual;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -9,6 +10,7 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emftext.language.java.classifiers.ClassifiersFactory;
 import org.emftext.language.java.commons.CommonsPackage;
+import org.emftext.language.java.containers.ContainersFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.palladiosimulator.pcm.core.entity.EntityPackage;
@@ -53,7 +55,7 @@ public class DataTypeTest extends AbstractPcmJavaCprTest {
 
 	public <T extends DataType & NamedElement> void dataTypeCreationTestTemplate(Supplier<T> dataTypeFac,
 			Function<T, ConflictResolutionStrategy[]> createdDataTypeToStratFunc, String dataTypeName,
-			List<String> javaClsNss) {
+			List<String> expectedJavaClsNss) {
 
 		var javaResource = this.getJavaModelResourceFromJavaFacade();
 
@@ -68,6 +70,8 @@ public class DataTypeTest extends AbstractPcmJavaCprTest {
 			rRepoEObj.getDataTypes__Repository().add(dt);
 			dataType[0] = dt;
 		});
+
+		var dataTypeFragment = dataType[0].eResource().getURIFragment(dataType[0]);
 
 		if (createdDataTypeToStratFunc != null) {
 			@SuppressWarnings("unchecked")
@@ -86,10 +90,7 @@ public class DataTypeTest extends AbstractPcmJavaCprTest {
 		// Ensure that the Resource is saved after changes are applied
 		// Ensure that the loaded Resource has the expected contents
 		PcmCprAssertions.assertForAllEqualResources((r) -> {
-			Assertions.assertEquals(1, r.getContents().size());
-			var rRepoEObj = r.getContents().get(0);
-			Assertions.assertEquals(1, rRepoEObj.eContents().size());
-			var rDataType = rRepoEObj.eContents().get(0);
+			var rDataType = r.getEObject(dataTypeFragment);
 			PcmCprAssertions.assertFeatureValueEquals(rDataType, EntityPackage.Literals.NAMED_ELEMENT__ENTITY_NAME,
 					dataTypeName);
 		}, originalRepoRes, propagatedRepoResource, loadedRepoResource);
@@ -97,6 +98,8 @@ public class DataTypeTest extends AbstractPcmJavaCprTest {
 		// Ensure that consequential changes to Java are done too
 		this.removePlaceholderInJavaModelResource();
 		var persistedJavaResource = this.getJavaModelResourceFromJavaFacade();
+
+		final var clsFragment = new String[1];
 
 		PcmCprAssertions.assertForAllEqualResources((r) -> {
 			var rContents = r.getContents();
@@ -108,35 +111,33 @@ public class DataTypeTest extends AbstractPcmJavaCprTest {
 					.map((c) -> (org.emftext.language.java.containers.CompilationUnit) c)
 					.collect(Collectors.toUnmodifiableList());
 
-			Assertions.assertEquals(javaClsNss.size(), rPacs.size());
-			for (int i = 0; i < javaClsNss.size(); i++) {
-				var expectedNs = javaClsNss.subList(0, i + 1);
+			// Ensure that all necessary packages exist
+			for (int i = 0; i < expectedJavaClsNss.size(); i++) {
+				var expectedNs = expectedJavaClsNss.subList(0, i + 1);
 				Assertions.assertTrue(rPacs.stream().anyMatch((p) -> namespacesEqual(p.getNamespaces(), expectedNs)));
 			}
 
-			Assertions.assertEquals(1, rCUs.size());
-			var cu = rCUs.get(0);
-			Assertions.assertTrue(namespacesEqual(cu.getNamespaces(), javaClsNss));
-			Assertions.assertEquals(1, cu.getClassifiers().size());
-
-			var cls = cu.getClassifiers().get(0);
-			Assertions.assertTrue(cls.getName().equals(dataTypeName));
+			// Ensure that the corresponding class exists
+			var cuOpt = rCUs.stream().filter((cu) -> namespacesEqual(cu.getNamespaces(), expectedJavaClsNss))
+					.findFirst();
+			Assertions.assertTrue(cuOpt.isPresent());
+			Assertions.assertEquals(dataTypeName, cuOpt.get().getName());
+			Assertions.assertEquals(1, cuOpt.get().getClassifiers().size());
+			var cls = cuOpt.get().getClassifiers().get(0);
+			Assertions.assertEquals(dataTypeName, cls.getName());
+			clsFragment[0] = cls.eResource().getURIFragment(cls);
 		}, javaResource, persistedJavaResource);
 
 		// Ensure that correspondences are persistent
-		var persistedDataType = propagatedRepoResource.getContents().get(0).eContents().get(0);
-		var persistedJavaCls = persistedJavaResource.getContents().stream()
-				.filter((c) -> c instanceof org.emftext.language.java.containers.CompilationUnit)
-				.map((c) -> (org.emftext.language.java.containers.CompilationUnit) c).findFirst().get().getClassifiers()
-				.get(0);
+		var persistedDataType = propagatedRepoResource.getEObject(dataTypeFragment);
+		var persistedJavaCls = persistedJavaResource.getEObject(clsFragment[0]);
 
 		PcmCprAssertions.assertCorrespondenceInCorrespondenceView(getPcmVsumFacade(), persistedDataType,
 				persistedJavaCls, "");
-
 	}
 
 	@Test
-	public void collectionDataTypeCreationTest_WithoutExistingJavaClass() {
+	public void withoutExistingJavaClass() {
 		var dtName = "pcmIfc";
 		var nss = List.of("ns1", "ns2");
 		final var dt = new DataType[1];
@@ -152,7 +153,7 @@ public class DataTypeTest extends AbstractPcmJavaCprTest {
 	}
 
 	@Test
-	public void collectionDataTypeCreationTest_WithExistingJavaClass() {
+	public void withExistingJavaClass() {
 		var listCls = List.class;
 		var dtName = listCls.getSimpleName();
 		var nss = List.of(listCls.getPackageName().split("\\."));
@@ -175,28 +176,41 @@ public class DataTypeTest extends AbstractPcmJavaCprTest {
 	}
 
 	@Test
-	public void collectionDataTypeCreationTest_WithMultipleExistingJavaClasses() {
+	public void withMultipleExistingJavaClasses() {
 		var listCls = List.class;
 		var dtName = listCls.getSimpleName();
 
-		var nss1 = List.of(listCls.getPackageName().split("\\."));
-		var nss2 = List.of("java", "util", "special");
+		var listPacNss = List.of(listCls.getPackageName().split("\\."));
+		var nss1 = List.copyOf(listPacNss);
+		var nss2 = new ArrayList<>(listPacNss);
+		nss2.remove(nss2.size() - 1);
+		nss2.add("special");
 
 		this.removePlaceholderInJavaModelResource();
-		
+
 		// Add Java clss to a resource, so that their URI fragments can be found
-		
+
 		var cls1 = this.addClassToJavaModelResource(JavaModelAccess.getJavaModel(), dtName, nss1);
 		var cls2 = this.addClassToJavaModelResource(JavaModelAccess.getJavaModel(), dtName, nss2);
+
+		var cls1Fragment = cls1.eResource().getURIFragment(cls1);
+		var cls2Fragment = cls2.eResource().getURIFragment(cls2);
+
 		JavaModelAccess.saveJavaModel();
 		this.getJavaFacade().reload();
+		JavaModelAccess.setJavaModel(this.getJavaFacade().getResource());
+
+		final var cls1Final = (org.emftext.language.java.classifiers.Class) JavaModelAccess.getJavaModel()
+				.getEObject(cls1Fragment);
+		final var cls2Final = (org.emftext.language.java.classifiers.Class) JavaModelAccess.getJavaModel()
+				.getEObject(cls2Fragment);
 
 		var oldJavaResource = this.loadNewResourceInstance(JavaModelAccess.getJavaModel());
 
 		this.dataTypeCreationTestTemplate(() -> RepositoryFactory.eINSTANCE.createCollectionDataType(),
 				(dataType) -> new ConflictResolutionStrategy[] { new CorrespondenceInputConflictResolutionStrategy(
-						List.of(dataType), List.of(cls1, cls2), Map.of(dataType.eResource().getURIFragment(dataType),
-								List.of(cls2.eResource().getURIFragment(cls2)))) },
+						List.of(dataType), List.of(cls1Final, cls2Final),
+						Map.of(dataType.eResource().getURIFragment(dataType), List.of(cls2Fragment))) },
 				dtName, nss2);
 
 		var newJavaResource = JavaModelAccess.getJavaModel();
@@ -212,5 +226,13 @@ public class DataTypeTest extends AbstractPcmJavaCprTest {
 		var jrs = PcmJavaCPRUtils.addJavaClassifierIntoResource(modelRes, cls, classNss);
 		modelRes.getContents().addAll(jrs);
 		return cls;
+	}
+
+	private org.emftext.language.java.containers.Package addPackageToJavaModelResource(Resource modelRes,
+			List<String> pacNss) {
+		var pac = ContainersFactory.eINSTANCE.createPackage();
+		pac.getNamespaces().addAll(pacNss);
+		modelRes.getContents().add(pac);
+		return pac;
 	}
 }
