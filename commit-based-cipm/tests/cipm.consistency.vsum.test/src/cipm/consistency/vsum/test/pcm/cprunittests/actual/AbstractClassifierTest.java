@@ -13,18 +13,6 @@ import cipm.consistency.vsum.test.pcm.cprunittests.AbstractPcmJavaCprTest;
 public abstract class AbstractClassifierTest extends AbstractPcmJavaCprTest {
 	protected static final String namespaceSeparatorRegex = "\\.";
 
-	protected boolean namespacesEqual(List<String> nss1, List<String> nss2) {
-		if (nss1.size() != nss2.size())
-			return false;
-
-		for (int i = 0; i < nss1.size(); i++) {
-			if (!nss1.get(i).equals(nss2.get(i)))
-				return false;
-		}
-
-		return true;
-	}
-
 	protected void saveAndReloadJavaModelResource() {
 		JavaModelAccess.saveJavaModel();
 		this.getJavaFacade().reload();

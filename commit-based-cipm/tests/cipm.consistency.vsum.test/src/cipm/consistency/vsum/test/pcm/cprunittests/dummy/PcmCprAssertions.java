@@ -3,8 +3,10 @@ package cipm.consistency.vsum.test.pcm.cprunittests.dummy;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EObject;
@@ -12,6 +14,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emftext.language.java.classifiers.ConcreteClassifier;
 import org.junit.jupiter.api.Assertions;
 
 import cipm.consistency.cpr.pcmjava.userinteraction.CorrespondenceEntry;
@@ -23,6 +26,60 @@ public final class PcmCprAssertions {
 	// TODO Add logging to all methods, so that assertion flow is clear
 
 	private static final Logger LOGGER = Logger.getLogger(PcmCprAssertions.class);
+
+	public static void assertJavaClassLayoutCorrect(Resource r) {
+		var allClss = new HashSet<ConcreteClassifier>();
+		var it = r.getAllContents();
+		while (it.hasNext()) {
+			var currentElem = it.next();
+			if (currentElem instanceof ConcreteClassifier) {
+				allClss.add((ConcreteClassifier) currentElem);
+			}
+		}
+		for (var cls : allClss) {
+			Assertions.assertNotNull(cls.getContainingCompilationUnit());
+			assertJavaClassLayoutCorrectForJavaClassifier(r, cls.getContainingCompilationUnit().getNamespaces(),
+					cls.getName());
+		}
+	}
+
+	public static void assertJavaClassLayoutCorrectForJavaClassifier(Resource r, List<String> expectedNss,
+			String expectedJavaClsName) {
+		var rContents = r.getContents();
+
+		var rPacs = rContents.stream().filter((c) -> c instanceof org.emftext.language.java.containers.Package)
+				.map((c) -> (org.emftext.language.java.containers.Package) c).collect(Collectors.toUnmodifiableList());
+
+		var rCUs = rContents.stream().filter((c) -> c instanceof org.emftext.language.java.containers.CompilationUnit)
+				.map((c) -> (org.emftext.language.java.containers.CompilationUnit) c)
+				.collect(Collectors.toUnmodifiableList());
+
+		// Ensure that all necessary packages exist
+		for (int i = 0; i < expectedNss.size(); i++) {
+			var expectedNs = expectedNss.subList(0, i + 1);
+			Assertions.assertTrue(rPacs.stream().anyMatch((p) -> namespacesEqual(p.getNamespaces(), expectedNs)));
+		}
+
+		// Ensure that the corresponding class exists
+		var cuOpt = rCUs.stream().filter((cu) -> namespacesEqual(cu.getNamespaces(), expectedNss)).findFirst();
+		Assertions.assertTrue(cuOpt.isPresent());
+		Assertions.assertEquals(expectedJavaClsName, cuOpt.get().getName());
+		Assertions.assertEquals(1, cuOpt.get().getClassifiers().size());
+		var cls = cuOpt.get().getClassifiers().get(0);
+		Assertions.assertEquals(expectedJavaClsName, cls.getName());
+	}
+
+	public static boolean namespacesEqual(List<String> nss1, List<String> nss2) {
+		if (nss1.size() != nss2.size())
+			return false;
+
+		for (int i = 0; i < nss1.size(); i++) {
+			if (!nss1.get(i).equals(nss2.get(i)))
+				return false;
+		}
+
+		return true;
+	}
 
 	/**
 	 * Ensures that eAllContent() of both resources yield equal EObjects in equal
@@ -78,6 +135,11 @@ public final class PcmCprAssertions {
 		LOGGER.debug("Content (and content order) equal");
 	}
 
+	/**
+	 * Ensures that all contents of the given resources are equal (wrt.
+	 * {@link EcoreUtil#equals(List, List)}). Accounts for order differences as
+	 * well.
+	 */
 	public static void assertAllResourceInstancesEqual(Resource... resources) {
 		for (int i = 0; i < resources.length - 1; i++) {
 			assertResourceInstancesEqual(resources[i], resources[i + 1]);
@@ -248,6 +310,10 @@ public final class PcmCprAssertions {
 		}
 	}
 
+	/**
+	 * Ensures that the given correspondence and its counterpart stored in
+	 * PcmUserInteractionManager are equal
+	 */
 	public static void assertCorrespondenceViewAndPcmManagerConsistent(PcmVsumFacade pcmVsum, EObject knownSide,
 			String tag) {
 		var knownSidePcmManagerCorEntry = PcmUserInteractionManager.getDesiredCorrespondence(knownSide, tag, false);

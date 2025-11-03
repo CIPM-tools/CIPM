@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.emftext.language.java.commons.CommonsPackage;
+import org.emftext.language.java.containers.CompilationUnit;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.palladiosimulator.pcm.core.entity.EntityPackage;
@@ -69,40 +70,20 @@ public class InterfaceTest extends AbstractClassifierTest {
 		// Ensure that consequential changes to Java are done too
 		this.removePlaceholderInJavaModelResource();
 		var persistedJavaResource = this.getJavaModelResourceFromJavaFacade();
+		var persistedOpIfc = propagatedRepoResource.getEObject(opIfcFragment);
+		var persistedJavaClsCU = persistedJavaResource.getContents().stream()
+				.filter((c) -> (c instanceof CompilationUnit)
+						&& PcmCprAssertions.namespacesEqual(((CompilationUnit) c).getNamespaces(), expectedJavaIfcNss))
+				.map((c) -> ((CompilationUnit) c)).findFirst();
+		Assertions.assertTrue(persistedJavaClsCU.isPresent());
+		Assertions.assertEquals(1, persistedJavaClsCU.get().getClassifiers().size());
+		var persistedJavaIfc = persistedJavaClsCU.get().getClassifiers().get(0);
+		Assertions.assertEquals(opIfcName, persistedJavaIfc.getName());
 
-		final var javaIfcFragment = new String[1];
-
-		PcmCprAssertions.assertForAllEqualResources((r) -> {
-			var rContents = r.getContents();
-			var rPacs = rContents.stream().filter((c) -> c instanceof org.emftext.language.java.containers.Package)
-					.map((c) -> (org.emftext.language.java.containers.Package) c)
-					.collect(Collectors.toUnmodifiableList());
-			var rCUs = rContents.stream()
-					.filter((c) -> c instanceof org.emftext.language.java.containers.CompilationUnit)
-					.map((c) -> (org.emftext.language.java.containers.CompilationUnit) c)
-					.collect(Collectors.toUnmodifiableList());
-
-			// Ensure that all necessary packages exist
-			for (int i = 0; i < expectedJavaIfcNss.size(); i++) {
-				var expectedNs = expectedJavaIfcNss.subList(0, i + 1);
-				Assertions.assertTrue(rPacs.stream().anyMatch((p) -> namespacesEqual(p.getNamespaces(), expectedNs)));
-			}
-
-			// Ensure that the corresponding class exists
-			var cuOpt = rCUs.stream().filter((cu) -> namespacesEqual(cu.getNamespaces(), expectedJavaIfcNss))
-					.findFirst();
-			Assertions.assertTrue(cuOpt.isPresent());
-			Assertions.assertEquals(opIfcName, cuOpt.get().getName());
-			Assertions.assertEquals(1, cuOpt.get().getClassifiers().size());
-			var javaIfc = cuOpt.get().getClassifiers().get(0);
-			Assertions.assertEquals(opIfcName, javaIfc.getName());
-			javaIfcFragment[0] = javaIfc.eResource().getURIFragment(javaIfc);
-		}, javaResource, persistedJavaResource);
+		PcmCprAssertions.assertForAllEqualResources((r) -> PcmCprAssertions.assertJavaClassLayoutCorrect(r),
+				javaResource, persistedJavaResource);
 
 		// Ensure that correspondences are persistent
-		var persistedOpIfc = propagatedRepoResource.getEObject(opIfcFragment);
-		var persistedJavaIfc = persistedJavaResource.getEObject(javaIfcFragment[0]);
-
 		PcmCprAssertions.assertCorrespondenceInCorrespondenceView(getPcmVsumFacade(), persistedOpIfc, persistedJavaIfc,
 				"");
 	}
