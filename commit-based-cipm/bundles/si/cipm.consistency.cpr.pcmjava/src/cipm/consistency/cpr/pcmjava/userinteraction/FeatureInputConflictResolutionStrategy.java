@@ -9,10 +9,10 @@ public class FeatureInputConflictResolutionStrategy extends ConflictResolutionSt
 	private final List<EObject> triggeringPCMelement;
 	private final List<EObject> javaContext;
 	private final List<EStructuralFeature> featList;
-	private final List<Object> featValList;
+	private final List<?> featValList;
 
 	public FeatureInputConflictResolutionStrategy(List<EObject> triggeringPCMelement, List<EObject> javaContext,
-			List<EStructuralFeature> featList, List<Object> featValList) {
+			List<EStructuralFeature> featList, List<?> featValList) {
 		this.triggeringPCMelement = triggeringPCMelement;
 		this.javaContext = javaContext;
 		this.featList = featList;

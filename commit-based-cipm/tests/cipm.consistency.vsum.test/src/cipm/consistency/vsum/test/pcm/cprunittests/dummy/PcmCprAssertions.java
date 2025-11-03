@@ -27,6 +27,10 @@ public final class PcmCprAssertions {
 
 	private static final Logger LOGGER = Logger.getLogger(PcmCprAssertions.class);
 
+	/**
+	 * Ensures that the class layout foreseen by Java syntax is represented
+	 * correctly within the given resource.
+	 */
 	public static void assertJavaClassLayoutCorrect(Resource r) {
 		var allClss = new HashSet<ConcreteClassifier>();
 		var it = r.getAllContents();
@@ -43,6 +47,15 @@ public final class PcmCprAssertions {
 		}
 	}
 
+	/**
+	 * Ensures that the class layout foreseen by Java syntax is represented
+	 * correctly within the given resource, for the Java Classifier with the given
+	 * namespaces and the given name.
+	 * <p>
+	 * For each possible namespace prefix, a Java package must exist. Furthermore, a
+	 * compilation unit must exist for the Java Classifier with the given namespaces
+	 * and the given name.
+	 */
 	public static void assertJavaClassLayoutCorrectForJavaClassifier(Resource r, List<String> expectedNss,
 			String expectedJavaClsName) {
 		var rContents = r.getContents();
@@ -69,6 +82,9 @@ public final class PcmCprAssertions {
 		Assertions.assertEquals(expectedJavaClsName, cls.getName());
 	}
 
+	/**
+	 * @return Whether the given namespaces as String lists are equal
+	 */
 	public static boolean namespacesEqual(List<String> nss1, List<String> nss2) {
 		if (nss1.size() != nss2.size())
 			return false;

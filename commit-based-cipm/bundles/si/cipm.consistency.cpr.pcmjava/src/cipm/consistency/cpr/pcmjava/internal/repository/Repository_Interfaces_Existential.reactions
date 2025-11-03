@@ -152,6 +152,8 @@ routine removeJavaInterfaceMethod(pcm::OperationSignature pcmSig) {
 	}
 }
 
+// TODO Ignore PCM exceptions from change propagation, CIPM does not support
+// them
 reaction AddedExceptionTypeToOperationSignature {
 	after element pcm::ExceptionType inserted in pcm::OperationSignature[exceptions__Signature]
 	call {
@@ -159,6 +161,8 @@ reaction AddedExceptionTypeToOperationSignature {
 	}
 }
 
+// TODO Ignore PCM exceptions from change propagation, CIPM does not support
+// them
 routine addExceptionTypeToJavaInterfaceMethod(pcm::OperationSignature pcmSig, pcm::ExceptionType pcmExcType) {
 	match {
 		val javaMet = retrieve java::Method corresponding to pcmSig
@@ -179,6 +183,8 @@ routine addExceptionTypeToJavaInterfaceMethod(pcm::OperationSignature pcmSig, pc
 	}
 }
 
+// TODO Ignore PCM exceptions from change propagation, CIPM does not support
+// them
 reaction RemovedExceptionTypeToOperationSignature {
 	after element pcm::ExceptionType removed from pcm::OperationSignature[exceptions__Signature]
 	call {
@@ -186,6 +192,8 @@ reaction RemovedExceptionTypeToOperationSignature {
 	}
 }
 
+// TODO Ignore PCM exceptions from change propagation, CIPM does not support
+// them
 routine removeExceptionTypeFromJavaInterfaceMethod(pcm::OperationSignature pcmSig, pcm::ExceptionType pcmExcType) {
 	match {
 		val javaMet = retrieve java::Method corresponding to pcmSig

@@ -149,12 +149,16 @@ routine replaceParameterTypeOfJavaInterfaceMethodParameter(pcm::Parameter pcmPar
 	}
 }
 
+// TODO Ignore PCM exceptions from change propagation, CIPM does not support
+// them
 reaction RenamedExceptionType {
 	after attribute replaced at pcm::ExceptionType[exceptionName]
 	call {
 	}
 }
 
+// TODO Ignore PCM exceptions from change propagation, CIPM does not support
+// them
 routine renameJavaInterfaceMethodException(pcm::ExceptionType pcmExcType, String newName) {
 	match {
 		val javaExcRef = retrieve java::NamespaceClassifierReference corresponding to pcmExcType

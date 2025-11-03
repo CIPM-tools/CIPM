@@ -88,6 +88,9 @@ public final class PCMElementUtil {
 		return classifiers;
 	}
 
+	// TODO Ignore PCM exceptions from change propagation, CIPM does not support
+	// them
+
 	/**
 	 * @param checkExceptions Whether exceptions should match as well
 	 * @return Whether the given PCM method signature matches with the signature of
@@ -138,6 +141,9 @@ public final class PCMElementUtil {
 				&& PcmJavaTypeUtil.doTypesMatch(pcmParam.getDataType__Parameter(), javaParam.getTypeReference());
 	}
 
+	// TODO Ignore PCM exceptions from change propagation, CIPM does not support
+	// them
+
 	/**
 	 * @param checkExceptions Whether exceptions should match as well
 	 * @return A mapping of PCM OperationSignatures to their (signature-wise)
@@ -159,6 +165,9 @@ public final class PCMElementUtil {
 
 		return matches;
 	}
+
+	// TODO Ignore PCM exceptions from change propagation, CIPM does not support
+	// them
 
 	/**
 	 * @param checkExceptions Whether exceptions should match as well

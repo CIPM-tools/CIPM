@@ -43,6 +43,9 @@ import org.palladiosimulator.pcm.repository.OperationSignature;
 import com.google.common.base.Preconditions;
 
 public final class PcmJavaCPRUtils {
+	// TODO Ignore PCM exceptions from change propagation, CIPM does not support
+	// them
+
 	private static final String abstractModifierName = Abstract.class.getSimpleName();
 	private static final String defaultModifierName = Default.class.getSimpleName();
 
