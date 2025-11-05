@@ -69,7 +69,7 @@ public class FeatureEntryContainer {
 		return null;
 	}
 
-	public void setDesiredFeatureValue(AbstractUserInteraction userInteraction, FeatureEntry featEntry) {
+	public void setDesiredFeatureValue(FeatureEntry featEntry) {
 		var valOpt = getAssignedDesiredFeatureEntry(featEntry.getTriggeringPCMElement(),
 				featEntry.getAffectedJavaElementFeature());
 		if (valOpt.isPresent()) {

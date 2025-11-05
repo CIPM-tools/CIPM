@@ -6,9 +6,12 @@ import java.util.Set;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
-public abstract class AbstractUserInteraction {
+import cipm.consistency.cpr.pcmjava.logger.PcmCprLogger;
+import tools.vitruv.change.interaction.builder.InteractionBuilder;
+
+public abstract class AbstractUserInteraction implements CanModifyEntries {
 	public abstract List<EObject> getTriggeringPCMelements();
-	
+
 	public abstract List<EObject> getAffectedPCMElements();
 
 	public abstract List<EObject> getAffectedJavaElements();
@@ -42,7 +45,9 @@ public abstract class AbstractUserInteraction {
 	}
 
 	protected void reportDesiredFeatureValue(FeatureEntry featEntry) {
+		PcmCprLogger.getInstance().userInteractionReportingFeature(this, featEntry);
 		PcmUserInteractionManager.setDesiredFeatureValue(this, featEntry);
+		PcmCprLogger.getInstance().userInteractionReportedFeature(this, featEntry);
 	}
 
 	protected Object retrieveDesiredFeatureValueIfPresent(EObject triggeringPCMElement, EStructuralFeature feat) {
@@ -51,7 +56,13 @@ public abstract class AbstractUserInteraction {
 
 	protected Object retrieveDesiredFeatureValueIfPresent(EObject triggeringPCMElement, EObject affectedJavaElement,
 			EStructuralFeature feat) {
-		return PcmUserInteractionManager.getDesiredFeatureValue(triggeringPCMElement, affectedJavaElement, feat, false);
+		PcmCprLogger.getInstance().userInteractionAskedForFeature(this, triggeringPCMElement,
+				affectedJavaElement, feat, false);
+		var result = PcmUserInteractionManager.getDesiredFeatureValue(triggeringPCMElement, affectedJavaElement, feat,
+				false);
+		PcmCprLogger.getInstance().userInteractionGotFeatureFor(this, result, triggeringPCMElement,
+				affectedJavaElement, feat, false);
+		return result;
 	}
 
 	protected boolean isDesiredCorrespondencePresent(EObject knownSide, String correspondenceTag) {
@@ -59,15 +70,24 @@ public abstract class AbstractUserInteraction {
 	}
 
 	protected void reportDesiredCorrespondence(CorrespondenceEntry corEntry) {
+		PcmCprLogger.getInstance().userInteractionReportingCorrespondence(this, corEntry);
 		PcmUserInteractionManager.setDesiredCorrespondence(this, corEntry);
+		PcmCprLogger.getInstance().userInteractionReportedCorrespondence(this, corEntry);
 	}
 
 	protected void finaliseUserInteraction() {
+		PcmCprLogger.getInstance().userInteractionFinalising(this);
 		PcmUserInteractionManager.removeUserInteraction(this);
+		PcmCprLogger.getInstance().userInteractionFinalised(this);
 	}
 
 	protected CorrespondenceEntry retrieveDesiredCorrespondenceIfPresent(EObject knownSide, String correspondenceTag) {
-		return PcmUserInteractionManager.getDesiredCorrespondence(knownSide, correspondenceTag, false);
+		PcmCprLogger.getInstance().userInteractionAskedForCorrespondence(this, knownSide, correspondenceTag,
+				false);
+		var result = PcmUserInteractionManager.getDesiredCorrespondence(knownSide, correspondenceTag, false);
+		PcmCprLogger.getInstance().userInteractionGotCorrespondenceFor(this, result, knownSide,
+				correspondenceTag, true);
+		return result;
 	}
 
 	public abstract boolean isResolved();
@@ -80,10 +100,28 @@ public abstract class AbstractUserInteraction {
 
 	public Object resolveForFeature(EObject triggeringPCMElement, EObject affectedJavaElement,
 			EStructuralFeature feat) {
-		return PcmUserInteractionManager.getDesiredFeatureValue(triggeringPCMElement, affectedJavaElement, feat, true);
+		PcmCprLogger.getInstance().userInteractionAskedForFeature(this, triggeringPCMElement,
+				affectedJavaElement, feat, true);
+		var result = PcmUserInteractionManager.getDesiredFeatureValue(triggeringPCMElement, affectedJavaElement, feat,
+				true);
+		PcmCprLogger.getInstance().userInteractionGotFeatureFor(this, result, triggeringPCMElement,
+				affectedJavaElement, feat, true);
+		return result;
 	}
 
 	public CorrespondenceEntry resolveForCorrespondence(EObject knownSide, String correspondenceTag) {
-		return PcmUserInteractionManager.getDesiredCorrespondence(knownSide, correspondenceTag, true);
+		PcmCprLogger.getInstance().userInteractionAskedForCorrespondence(this, knownSide, correspondenceTag,
+				true);
+		var result = PcmUserInteractionManager.getDesiredCorrespondence(knownSide, correspondenceTag, true);
+		PcmCprLogger.getInstance().userInteractionGotCorrespondenceFor(this, result, knownSide,
+				correspondenceTag, true);
+		return result;
+	}
+
+	public <T> T triggerManualUserInteraction(InteractionBuilder<T, ?> vitruvUserInteraction) {
+		PcmCprLogger.getInstance().manualUserInteractionHappening(this, vitruvUserInteraction);
+		var result = vitruvUserInteraction.startInteraction();
+		PcmCprLogger.getInstance().manualUserInteractionHappened(this, result, vitruvUserInteraction);
+		return result;
 	}
 }

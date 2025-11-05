@@ -1,12 +1,14 @@
-package cipm.consistency.cpr.pcmjava.userinteraction;
+package cipm.consistency.cpr.pcmjava.logger;
 
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 
 import cipm.consistency.cpr.pcmjava.preprocessing.rules.ChangePreprocessingRule;
+import cipm.consistency.cpr.pcmjava.userinteraction.AbstractUserInteraction;
+import cipm.consistency.cpr.pcmjava.userinteraction.ConflictResolutionStrategy;
 
-public class PcmUserInteractionLoggerEntry {
+public class PcmCprEntry {
 	// General
 	private AbstractUserInteraction userInteraction;
 	private List<Exception> userInteractionExceptions;
@@ -27,4 +29,8 @@ public class PcmUserInteractionLoggerEntry {
 
 	// PREVENTED_BY_CHANGE_PREPROCESSING
 	private List<ChangePreprocessingRule> relevantChangePreprocesingRules;
+
+	public void setUserInteraction(AbstractUserInteraction userInteraction) {
+		this.userInteraction = userInteraction;
+	}
 }

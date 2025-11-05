@@ -6,15 +6,29 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 
-public abstract class ConflictResolutionStrategy {
-	public abstract void applyFor(AbstractUserInteraction userInteraction);
+import cipm.consistency.cpr.pcmjava.logger.PcmCprLogger;
 
-	public boolean isApplicableFor(AbstractUserInteraction userInteraction, List<EObject> triggeringPCMelement,
-			List<EObject> javaContext, List<EStructuralFeature> featList) {
-		return isApplicableFor(userInteraction, triggeringPCMelement, false, javaContext, false, featList, false);
+public abstract class ConflictResolutionStrategy implements CanModifyEntries {
+	public boolean applyIfPossible(AbstractUserInteraction userInteraction) {
+		var applicable = checkInternalApplicationConditions(userInteraction);
+		if (applicable) {
+			PcmCprLogger.getInstance().conflictResolutionStrategyApplyingFor(this, userInteraction);
+			applyStrategy(userInteraction);
+			PcmCprLogger.getInstance().conflictResolutionStrategyAppliedFor(this, userInteraction);
+		}
+		return applicable;
 	}
 
-	public boolean isApplicableFor(AbstractUserInteraction userInteraction, List<EObject> triggeringPCMelement,
+	protected abstract void applyStrategy(AbstractUserInteraction userInteraction);
+
+	protected abstract boolean checkInternalApplicationConditions(AbstractUserInteraction userInteraction);
+
+	public boolean isRelevantFor(AbstractUserInteraction userInteraction, List<EObject> triggeringPCMelement,
+			List<EObject> javaContext, List<EStructuralFeature> featList) {
+		return isRelevantFor(userInteraction, triggeringPCMelement, false, javaContext, false, featList, false);
+	}
+
+	public boolean isRelevantFor(AbstractUserInteraction userInteraction, List<EObject> triggeringPCMelement,
 			boolean considerTriggeringPCMelementSubset, List<EObject> javaContext, boolean considerJavaContextSubset,
 			List<EStructuralFeature> featList, boolean considerFeatListSubset) {
 		return (isApplicableForTriggeringPCMElements(userInteraction, triggeringPCMelement,

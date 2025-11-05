@@ -19,12 +19,15 @@ public class DummyNamespaceConflictResolutionStrategy extends ConflictResolution
 	}
 
 	@Override
-	public void applyFor(AbstractUserInteraction userInteraction) {
-		if (userInteraction instanceof NamespaceUserInteraction && (EcoreUtil
-				.equals(((NamespaceUserInteraction) userInteraction).getTriggeringElement(), this.triggeringElement))) {
-			var entry = userInteraction.getDesiredFeatures().iterator().next();
-			entry.addValues(this.nss);
-			PcmUserInteractionManager.setDesiredFeatureValue(null, entry);
-		}
+	protected void applyStrategy(AbstractUserInteraction userInteraction) {
+		var entry = userInteraction.getDesiredFeatures().iterator().next();
+		entry.addValues(this.nss);
+		PcmUserInteractionManager.setDesiredFeatureValue(null, entry);
+	}
+
+	@Override
+	protected boolean checkInternalApplicationConditions(AbstractUserInteraction userInteraction) {
+		return userInteraction instanceof NamespaceUserInteraction && (EcoreUtil
+				.equals(((NamespaceUserInteraction) userInteraction).getTriggeringElement(), this.triggeringElement));
 	}
 }

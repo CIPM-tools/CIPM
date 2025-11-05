@@ -20,12 +20,15 @@ public class DummyDistributionConflictResolutionStrategy extends ConflictResolut
 	}
 
 	@Override
-	public void applyFor(AbstractUserInteraction userInteraction) {
-		if (userInteraction instanceof DistributionUserInteraction && this.deletedElement.getId()
-				.equals(((DistributionUserInteraction) userInteraction).getDeletedElement().getId())) {
-			for (var cor : this.correspondences) {
-				PcmUserInteractionManager.setDesiredCorrespondence(null, cor);
-			}
+	protected void applyStrategy(AbstractUserInteraction userInteraction) {
+		for (var cor : this.correspondences) {
+			PcmUserInteractionManager.setDesiredCorrespondence(null, cor);
 		}
+	}
+
+	@Override
+	protected boolean checkInternalApplicationConditions(AbstractUserInteraction userInteraction) {
+		return userInteraction instanceof DistributionUserInteraction && this.deletedElement.getId()
+				.equals(((DistributionUserInteraction) userInteraction).getDeletedElement().getId());
 	}
 }

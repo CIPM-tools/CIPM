@@ -61,7 +61,7 @@ public class CorrespondenceEntryContainer {
 		return cor;
 	}
 
-	public void setDesiredCorrespondence(AbstractUserInteraction userInteraction, CorrespondenceEntry corEntry) {
+	public void setDesiredCorrespondence(CorrespondenceEntry corEntry) {
 		var corEntryOpt = getDesiredCorrespondenceEntry(corEntry.getKnownElement(), corEntry.getCorrespondenceTag());
 		var ce = corEntryOpt.orElseGet(() -> null);
 		if (ce != null) {

@@ -7,9 +7,9 @@ import java.util.Set;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
-public final class PcmUserInteractionManager {
-	private static final List<PcmUserInteractionLogger> loggers = new ArrayList<PcmUserInteractionLogger>();
+import cipm.consistency.cpr.pcmjava.logger.PcmCprLogger;
 
+public final class PcmUserInteractionManager {
 	private static final List<AbstractUserInteraction> wrappers = new ArrayList<AbstractUserInteraction>();
 
 	private static final List<ConflictResolutionStrategy> resolutionStrats = new ArrayList<ConflictResolutionStrategy>();
@@ -25,15 +25,13 @@ public final class PcmUserInteractionManager {
 				(df) -> !hasDesiredFeatureValue(df.getTriggeringPCMElement(), df.getAffectedJavaElementFeature()))
 				|| userInteraction.getDesiredCorrespondences().stream()
 						.anyMatch((dc) -> !hasDesiredCorrespondence(dc.getKnownElement(), dc.getCorrespondenceTag()))) {
-			resolutionStrats.forEach((s) -> s.applyFor(userInteraction));
+			resolutionStrats.forEach((s) -> s.applyIfPossible(userInteraction));
 		}
 
 		// Split this part from conflict resolution, since they have to be applied first
 		if (userInteraction.getDesiredFeatures().stream().anyMatch(
 				(df) -> !hasDesiredFeatureValue(df.getTriggeringPCMElement(), df.getAffectedJavaElementFeature()))) {
-			if (!wrappers.contains(userInteraction)) {
-				wrappers.add(userInteraction);
-			}
+			addUserInteractionStrategy(userInteraction);
 			userInteraction.getDesiredFeatures().forEach((feat) -> {
 				var setVal = desiredFeatureValues.getAssignedDesiredFeatureEntry(feat.getTriggeringPCMElement(),
 						feat.getAffectedJavaElementFeature());
@@ -51,9 +49,7 @@ public final class PcmUserInteractionManager {
 		// Split this part from conflict resolution, since they have to be applied first
 		if (userInteraction.getDesiredCorrespondences().stream()
 				.anyMatch((dc) -> !hasDesiredCorrespondence(dc.getKnownElement(), dc.getCorrespondenceTag()))) {
-			if (!wrappers.contains(userInteraction)) {
-				wrappers.add(userInteraction);
-			}
+			addUserInteractionStrategy(userInteraction);
 			userInteraction.getDesiredCorrespondences().forEach((cor) -> {
 				var completeCorOpt = desiredCorrespondences.getCompleteDesiredCorrespondence(cor.getKnownElement(),
 						cor.getCorrespondenceTag());
@@ -68,7 +64,17 @@ public final class PcmUserInteractionManager {
 	}
 
 	public static void removeUserInteraction(AbstractUserInteraction userInteraction) {
-		wrappers.remove(userInteraction);
+		if (wrappers.contains(userInteraction)) {
+			wrappers.remove(userInteraction);
+			PcmCprLogger.getInstance().userInteractionRemoved(userInteraction);
+		}
+	}
+
+	public static void removeConflictResolutionStrategy(ConflictResolutionStrategy strat) {
+		if (resolutionStrats.contains(strat)) {
+			resolutionStrats.remove(strat);
+			PcmCprLogger.getInstance().conflictResolutionStrategyRemoved(strat);
+		}
 	}
 
 	private static void computeAbsentFeatureValue(FeatureEntry entry) {
@@ -125,8 +131,8 @@ public final class PcmUserInteractionManager {
 		return desiredFeatureValues.removeDesiredFeatureValue(triggeringPCMElement, affectedJavaElement, feat, value);
 	}
 
-	public static void setDesiredFeatureValue(AbstractUserInteraction userInteraction, FeatureEntry featEntry) {
-		desiredFeatureValues.setDesiredFeatureValue(userInteraction, featEntry);
+	public static void setDesiredFeatureValue(CanModifyEntries modifierOfFeatEntry, FeatureEntry featEntry) {
+		desiredFeatureValues.setDesiredFeatureValue(featEntry);
 	}
 
 	public static CorrespondenceEntry getDesiredCorrespondence(EObject knownSide, String correspondenceTag,
@@ -173,17 +179,28 @@ public final class PcmUserInteractionManager {
 		return desiredCorrespondences.removeDesiredCorrespondence(knownSide, otherSide, correspondenceTag);
 	}
 
-	public static void setDesiredCorrespondence(AbstractUserInteraction userInteraction, CorrespondenceEntry corEntry) {
-		desiredCorrespondences.setDesiredCorrespondence(userInteraction, corEntry);
+	public static void setDesiredCorrespondence(CanModifyEntries modifierOfCorEntry, CorrespondenceEntry corEntry) {
+		desiredCorrespondences.setDesiredCorrespondence(corEntry);
+	}
+
+	private static void addUserInteractionStrategy(AbstractUserInteraction userInteraction) {
+		if (!wrappers.contains(userInteraction)) {
+			wrappers.add(userInteraction);
+			PcmCprLogger.getInstance().userInteractionRegistered(userInteraction);
+		}
 	}
 
 	public static void addConflictResolutionStrategy(ConflictResolutionStrategy strat) {
-		resolutionStrats.add(strat);
+		if (!resolutionStrats.contains(strat)) {
+			resolutionStrats.add(strat);
+			PcmCprLogger.getInstance().conflictResolutionStrategyRegistered(strat);
+		}
 	}
 
 	public static void reset() {
-		wrappers.clear();
+		List.copyOf(wrappers).forEach((w) -> removeUserInteraction(w));
 		desiredFeatureValues.clear();
+		List.copyOf(resolutionStrats).forEach((s) -> removeConflictResolutionStrategy(s));
 		resolutionStrats.clear();
 		desiredCorrespondences.clear();
 	}

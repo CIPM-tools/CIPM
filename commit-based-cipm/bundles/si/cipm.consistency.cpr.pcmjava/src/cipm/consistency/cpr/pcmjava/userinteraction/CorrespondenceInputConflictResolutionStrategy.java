@@ -18,23 +18,25 @@ public class CorrespondenceInputConflictResolutionStrategy extends ConflictResol
 	}
 
 	@Override
-	public void applyFor(AbstractUserInteraction userInteraction) {
-		if (pcmToJavaCorrespondentURIFragments != null
-				&& isApplicableFor(userInteraction, triggeringPCMelement, javaContext, null)) {
-			for (var entry : userInteraction.getDesiredCorrespondences()) {
-				var knownElement = entry.getKnownElement();
-				var corIDs = pcmToJavaCorrespondentURIFragments
-						.get(knownElement.eResource().getURIFragment(knownElement));
-				if (corIDs != null) {
-					for (var corID : corIDs) {
-						var corElem = getEObjectWithURIFragment(corID);
-						if (corElem != null)
-							entry.addCorrespondent(corElem);
-					}
-				}
+	protected boolean checkInternalApplicationConditions(AbstractUserInteraction userInteraction) {
+		return pcmToJavaCorrespondentURIFragments != null
+				&& isRelevantFor(userInteraction, triggeringPCMelement, javaContext, null);
+	}
 
-				PcmUserInteractionManager.setDesiredCorrespondence(null, entry);
+	@Override
+	protected void applyStrategy(AbstractUserInteraction userInteraction) {
+		for (var entry : userInteraction.getDesiredCorrespondences()) {
+			var knownElement = entry.getKnownElement();
+			var corIDs = pcmToJavaCorrespondentURIFragments.get(knownElement.eResource().getURIFragment(knownElement));
+			if (corIDs != null) {
+				for (var corID : corIDs) {
+					var corElem = getEObjectWithURIFragment(corID);
+					if (corElem != null)
+						entry.addCorrespondent(corElem);
+				}
 			}
+
+			PcmUserInteractionManager.setDesiredCorrespondence(null, entry);
 		}
 	}
 

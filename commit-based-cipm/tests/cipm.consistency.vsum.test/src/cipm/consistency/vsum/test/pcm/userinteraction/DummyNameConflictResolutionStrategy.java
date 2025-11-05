@@ -17,12 +17,15 @@ public class DummyNameConflictResolutionStrategy extends ConflictResolutionStrat
 	}
 
 	@Override
-	public void applyFor(AbstractUserInteraction userInteraction) {
-		if (userInteraction instanceof NameUserInteraction && (EcoreUtil
-				.equals(((NameUserInteraction) userInteraction).getTriggeringElement(), this.triggeringElement))) {
-			var entry = userInteraction.getDesiredFeatures().iterator().next();
-			entry.setOrAddValue(predefinedName);
-			PcmUserInteractionManager.setDesiredFeatureValue(null, entry);
-		}
+	protected void applyStrategy(AbstractUserInteraction userInteraction) {
+		var entry = userInteraction.getDesiredFeatures().iterator().next();
+		entry.setOrAddValue(predefinedName);
+		PcmUserInteractionManager.setDesiredFeatureValue(null, entry);
+	}
+
+	@Override
+	protected boolean checkInternalApplicationConditions(AbstractUserInteraction userInteraction) {
+		return userInteraction instanceof NameUserInteraction && (EcoreUtil
+				.equals(((NameUserInteraction) userInteraction).getTriggeringElement(), this.triggeringElement));
 	}
 }

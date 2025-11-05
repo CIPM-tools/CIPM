@@ -20,27 +20,30 @@ public class FeatureInputConflictResolutionStrategy extends ConflictResolutionSt
 	}
 
 	@Override
-	public void applyFor(AbstractUserInteraction userInteraction) {
-		if (featValList != null && isApplicableFor(userInteraction, triggeringPCMelement, javaContext, featList)) {
-			for (var entry : userInteraction.getDesiredFeatures()) {
-				var feat = entry.getAffectedJavaElementFeature();
-				int featIdx = featList.indexOf(feat);
-				Object featVal = null;
+	protected void applyStrategy(AbstractUserInteraction userInteraction) {
+		for (var entry : userInteraction.getDesiredFeatures()) {
+			var feat = entry.getAffectedJavaElementFeature();
+			int featIdx = featList.indexOf(feat);
+			Object featVal = null;
 
-				if (featIdx != -1) {
-					featVal = featValList.get(featIdx);
-				} else {
-					continue;
-				}
-
-				if (!feat.isMany()) {
-					entry.setOrAddValue(featVal);
-				} else {
-					entry.setMultipleValues((List<?>) featVal);
-				}
-
-				PcmUserInteractionManager.setDesiredFeatureValue(null, entry);
+			if (featIdx != -1) {
+				featVal = featValList.get(featIdx);
+			} else {
+				continue;
 			}
+
+			if (!feat.isMany()) {
+				entry.setOrAddValue(featVal);
+			} else {
+				entry.setMultipleValues((List<?>) featVal);
+			}
+
+			PcmUserInteractionManager.setDesiredFeatureValue(null, entry);
 		}
+	}
+
+	@Override
+	protected boolean checkInternalApplicationConditions(AbstractUserInteraction userInteraction) {
+		return featValList != null && isRelevantFor(userInteraction, triggeringPCMelement, javaContext, featList);
 	}
 }
