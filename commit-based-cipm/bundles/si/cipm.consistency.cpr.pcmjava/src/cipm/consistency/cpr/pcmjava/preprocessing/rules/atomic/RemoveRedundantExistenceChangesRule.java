@@ -62,7 +62,7 @@ public class RemoveRedundantExistenceChangesRule extends ChangePreprocessingRule
 					var pair = matchingPair.get();
 					newChangeList.remove(pair[0]);
 					newChangeList.remove(nextChange);
-					fixChangeSequence(newChangeList, pair[1], currentChange);
+//					fixChangeSequence(newChangeList, pair[1], currentChange);
 
 					newChangeList.remove(pair[1]);
 					newChangeList.remove(currentChange);
