@@ -87,6 +87,11 @@ public class RemoveRedundantChangesRule extends ChangePreprocessingRule {
 			}
 		};
 
+		// TODO Use full URIs instead of fragments, since it can cause issues with the
+		// case "/0"
+		// TODO Add all generated EObjects to the same resource as the original ones
+		// TODO Check for prefixes in URIs and replace them using uriConverter
+
 		var adaptedResource = changeSequence.get(0).eResource();
 		adaptedResource.eAdapters().add(adapter);
 		var returnValue = // Create, InsertRoot, RemoveRoot, Delete changes
@@ -107,14 +112,14 @@ public class RemoveRedundantChangesRule extends ChangePreprocessingRule {
 			var oldObj = ChangeUtil.getOldValue(processedChange);
 			var newObj = ChangeUtil.getNewValue(processedChange);
 
-			if (affectedObj != null) {
+			if (affectedObj != null && uriConverter.containsKey(affectedObj)) {
 				ChangeUtil.setAffectedEObjectID(processedChange, uriConverter.get(affectedObj).getElement2());
 			}
-			if (oldObj != null) {
-				ChangeUtil.setAffectedEObjectID(processedChange, uriConverter.get(oldObj).getElement2());
+			if (oldObj != null && uriConverter.containsKey(oldObj)) {
+				ChangeUtil.setOldValueID(processedChange, uriConverter.get(oldObj).getElement2());
 			}
-			if (newObj != null) {
-				ChangeUtil.setAffectedEObjectID(processedChange, uriConverter.get(newObj).getElement2());
+			if (newObj != null && uriConverter.containsKey(newObj)) {
+				ChangeUtil.setNewValueID(processedChange, uriConverter.get(newObj).getElement2());
 			}
 		}
 

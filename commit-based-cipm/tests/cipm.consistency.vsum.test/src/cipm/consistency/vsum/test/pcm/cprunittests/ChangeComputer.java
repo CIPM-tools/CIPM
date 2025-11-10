@@ -73,9 +73,11 @@ public class ChangeComputer {
 	public List<EChange> getEChangesFor(Resource oldRes, Consumer<Resource> modifications) {
 		var unmodifiedResDupl = this.getResourceCopy(oldRes);
 		modifications.accept(oldRes);
+		var changeRes = new ResourceSetImpl().createResource(URI.createFileURI(new File("").getAbsolutePath()));
 		var d = new DefaultStateBasedChangeResolutionStrategy(UseIdentifiers.WHEN_AVAILABLE);
 		var changes = d.getChangeSequenceBetween(oldRes, unmodifiedResDupl).getEChanges();
-		return new ArrayList<>(changes);
+		changeRes.getContents().addAll(changes);
+		return changes;
 	}
 
 	/**
