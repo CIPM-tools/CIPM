@@ -13,14 +13,14 @@ import org.palladiosimulator.pcm.PcmPackage;
 
 import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationModelPackage;
 import cipm.consistency.vsum.Propagation;
-import cipm.consistency.vsum.test.pcm.experiment.ChangeGeneratingCommitIntegrationDirLayout;
+import cipm.consistency.vsum.test.pcm.experiment.JavaToPcmPropagationDirLayout;
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.atomic.resolve.EChangeResolverAndApplicator;
 
 public class ChangeSaver {
-	private final ChangeGeneratingCommitIntegrationDirLayout dirLayout;
+	private final JavaToPcmPropagationDirLayout dirLayout;
 
-	public ChangeSaver(ChangeGeneratingCommitIntegrationDirLayout dirLayout) {
+	public ChangeSaver(JavaToPcmPropagationDirLayout dirLayout) {
 		this.dirLayout = dirLayout;
 	}
 

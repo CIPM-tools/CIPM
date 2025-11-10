@@ -1,13 +1,11 @@
 package cipm.consistency.vsum.test.pcm.experiment;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.junit.jupiter.api.Assertions;
@@ -28,7 +26,6 @@ import cipm.consistency.vsum.test.IMUpdateEvaluator;
 import cipm.consistency.vsum.test.pcm.PcmVsumFacade;
 import cipm.consistency.vsum.test.pcm.PcmVsumFacadeImpl;
 import cipm.consistency.vsum.test.pcm.cprunittests.UnnamedModuleComponentDetectionStrategy;
-import cipm.consistency.vsum.test.pcm.newviews.ResourceCopier;
 import mir.reactions.allPcm.AllPcmChangePropagationSpecification;
 import mir.reactions.imInit.ImInitChangePropagationSpecification;
 import mir.reactions.pcmImUpdate.PcmImUpdateChangePropagationSpecification;
@@ -45,6 +42,16 @@ public class PcmToJavaChangePropagationTest {
 
 	private PcmToJavaChangePropagationDirLayout dirLayout;
 
+	private JavaToPcmPropagationWrapper oldWrapper;
+	private JavaToPcmPropagationWrapper newWrapper;
+
+	private JavaToPcmPropagationWrapper oldCopyWrapper;
+	private JavaToPcmPropagationWrapper newCopyWrapper;
+
+	private JavaToPcmPropagationWrapper propWrapper;
+
+	private ResourceSet resSet;
+
 	private Resource oldJavaResourceCopy;
 	private Resource oldPcmRepoResourceCopy;
 	private Resource oldImResourceCopy;
@@ -53,45 +60,11 @@ public class PcmToJavaChangePropagationTest {
 	private Resource newPcmRepoResourceCopy;
 	private Resource newImResourceCopy;
 
-	private Resource javaResourceToPropagate;
-	private Resource pcmResourceToPropagate;
-	private Resource imResourceToPropagate;
-
 	private JaccardCoefficientResult jcOfJavaInJavaToPcmProp;
 	private JaccardCoefficientResult jcOfPcmInJavaToPcmProp;
 	private ImUpdateEvalData fScoreOfImInJavaToPcmProp;
 
 	private Resource pcmChangeRes;
-
-	/**
-	 * Creates, loads and returns a Resource instance for the given URI.
-	 */
-	protected Resource loadResource(URI uri) {
-		var resSet = new ResourceSetImpl();
-		return this.loadResource(resSet.createResource(uri));
-	}
-
-	/**
-	 * Creates, loads and returns a new Resource instance for the same URI. Can be
-	 * used to create a separate Resource instance for the given resource.
-	 */
-	protected Resource loadNewResourceInstance(Resource resource) {
-		return this.loadResource(resource.getURI());
-	}
-
-	/**
-	 * Loads and returns the given resource. Does not create a new resource
-	 * instance.
-	 */
-	protected Resource loadResource(Resource resource) {
-		try {
-			resource.load(null);
-		} catch (IOException e) {
-			e.printStackTrace();
-			Assertions.fail(e);
-		}
-		return resource;
-	}
 
 	public PcmFacade getPcmFacade() {
 		return this.pcmFacade;
@@ -116,41 +89,8 @@ public class PcmToJavaChangePropagationTest {
 		return this.javaFacade;
 	}
 
-	private void createDirs(Path path) {
-		var f = path.toFile();
-
-		if (f.isDirectory()) {
-			f.mkdirs();
-		} else {
-			f.getParentFile().mkdirs();
-		}
-	}
-
-	private void createDirsInLayout(PcmToJavaChangePropagationDirLayout dirLayout) {
-		createDirs(dirLayout.getCopiedJavaChangesPath());
-		createDirs(dirLayout.getCopiedPcmChangesPath());
-		createDirs(dirLayout.getCopiedImChangesPath());
-
-		createDirs(dirLayout.getCopiedOldJavaModelResourcePath());
-		createDirs(dirLayout.getCopiedOldPcmRepositoryResourcePath());
-		createDirs(dirLayout.getCopiedOldImResourcePath());
-
-		createDirs(dirLayout.getCopiedNewJavaModelResourcePath());
-		createDirs(dirLayout.getCopiedNewPcmRepositoryResourcePath());
-		createDirs(dirLayout.getCopiedNewImResourcePath());
-
-		createDirs(dirLayout.getPropagatedJavaChangesPath());
-		createDirs(dirLayout.getPropagatedPcmChangesPath());
-		createDirs(dirLayout.getPropagatedImChangesPath());
-
-		createDirs(dirLayout.getPropagatedJavaModelPath());
-		createDirs(dirLayout.getPropagatedPcmModelPath());
-		createDirs(dirLayout.getPropagatedImModelPath());
-	}
-
 	public void setUp(PcmToJavaChangePropagationDirLayout dirLayout) {
 		this.dirLayout = dirLayout;
-		createDirsInLayout(dirLayout);
 
 		this.copyTestResources();
 
@@ -160,8 +100,6 @@ public class PcmToJavaChangePropagationTest {
 		vsumFacade = this.setupVsumFacade();
 
 		computeEvaluationResultsForJavaToPcmPropagation();
-
-		pcmChangeRes = getChangesResource(this.dirLayout.getCopiedPcmChangesPath());
 	}
 
 	public void tearDown() {
@@ -171,40 +109,23 @@ public class PcmToJavaChangePropagationTest {
 
 		dirLayout = null;
 
-		removeResource(oldJavaResourceCopy);
-		oldJavaResourceCopy = null;
+		oldWrapper.close();
+		newWrapper.close();
+		oldCopyWrapper.close();
+		newCopyWrapper.close();
+		propWrapper.close();
 
-		removeResource(oldPcmRepoResourceCopy);
-		oldPcmRepoResourceCopy = null;
-
-		removeResource(oldImResourceCopy);
-		oldImResourceCopy = null;
-
-		removeResource(newJavaResourceCopy);
-		newJavaResourceCopy = null;
-
-		removeResource(newPcmRepoResourceCopy);
-		newPcmRepoResourceCopy = null;
-
-		removeResource(newImResourceCopy);
-		newImResourceCopy = null;
-
-		removeResource(pcmChangeRes);
-		pcmChangeRes = null;
+		oldWrapper = null;
+		newWrapper = null;
+		oldCopyWrapper = null;
+		newCopyWrapper = null;
+		propWrapper = null;
 
 		jcOfJavaInJavaToPcmProp = null;
 		jcOfPcmInJavaToPcmProp = null;
 		fScoreOfImInJavaToPcmProp = null;
 
 		JavaModelAccess.removeJavaModel();
-	}
-
-	private void removeResource(Resource res) {
-		if (res.getResourceSet() != null) {
-			res.getResourceSet().getResources().remove(res);
-		}
-		res.unload();
-		res.getContents().clear();
 	}
 
 	/**
@@ -224,7 +145,7 @@ public class PcmToJavaChangePropagationTest {
 	 */
 	protected PcmFacade setupPcmFacade() {
 		var pcmFacade = new PcmFacade();
-		pcmFacade.initialize(dirLayout.getPropagatedPcmModelPath().getParent());
+		pcmFacade.initialize(dirLayout.getPropagatedDirLayout().getPcmDirPath().getParent());
 		return pcmFacade;
 	}
 
@@ -246,8 +167,8 @@ public class PcmToJavaChangePropagationTest {
 	 * @return The VSUM facade for the PCM that will be used in this test.
 	 */
 	protected PcmVsumFacade setupVsumFacade() {
-		return new PcmVsumFacadeImpl(dirLayout.getPropagatedRootPath(), List.of(pcmFacade, imFacade, javaFacade),
-				this.getCPRs());
+		return new PcmVsumFacadeImpl(dirLayout.getPropagatedDirLayout().getRootPath(),
+				List.of(pcmFacade, imFacade, javaFacade), this.getCPRs());
 	}
 
 	/**
@@ -261,39 +182,29 @@ public class PcmToJavaChangePropagationTest {
 	 * designated paths and let the ModelFacades load them.
 	 */
 	private void copyTestResources() {
-		var oldJavaResource = loadResource(dirLayout.getOldJavaToPcmPropagationDirLayout().getVsumCodeModelURI());
-		oldJavaResourceCopy = copyAndSaveResource(oldJavaResource,
-				pathToURI(dirLayout.getCopiedOldJavaModelResourcePath()));
-		javaResourceToPropagate = copyAndSaveResource(oldJavaResource,
-				pathToURI(dirLayout.getPropagatedJavaModelPath()));
+		this.resSet = new ResourceSetImpl();
 
-		var newJavaResource = loadResource(dirLayout.getNewJavaToPcmPropagationDirLayout().getVsumCodeModelURI());
-		newJavaResourceCopy = copyAndSaveResource(newJavaResource,
-				pathToURI(dirLayout.getCopiedNewJavaModelResourcePath()));
+		oldWrapper = new JavaToPcmPropagationWrapper(this.resSet);
+		oldWrapper.initialise(this.dirLayout.getOldJavaToPcmPropagationDirLayout());
+		newWrapper = new JavaToPcmPropagationWrapper(this.resSet);
+		newWrapper.initialise(this.dirLayout.getNewJavaToPcmPropagationDirLayout());
 
-		var oldPcmResource = loadResource(pathToURI(dirLayout.getOldJavaToPcmPropagationDirLayout().getPcmDirPath()
-				.resolve(PcmToJavaChangePropagationDirLayout.getRepositoryfilename())));
-		oldPcmRepoResourceCopy = copyAndSaveResource(oldPcmResource,
-				pathToURI(dirLayout.getCopiedOldPcmRepositoryResourcePath()));
-		pcmResourceToPropagate = copyAndSaveResource(oldPcmResource, pathToURI(dirLayout.getPropagatedPcmModelPath()));
+		oldCopyWrapper = oldWrapper.copyTo(this.dirLayout.getCopiedOldJavaToPcmPropagationDirLayout().getRootPath());
+		newCopyWrapper = newWrapper.copyTo(this.dirLayout.getCopiedNewJavaToPcmPropagationDirLayout().getRootPath());
 
-		var newPcmResource = loadResource(pathToURI(dirLayout.getNewJavaToPcmPropagationDirLayout().getPcmDirPath()
-				.resolve(PcmToJavaChangePropagationDirLayout.getRepositoryfilename())));
-		newPcmRepoResourceCopy = copyAndSaveResource(newPcmResource,
-				pathToURI(dirLayout.getCopiedNewPcmRepositoryResourcePath()));
+		// All Resource instances that will be used for propagation are to be found
+		// under this layout
+		propWrapper = oldWrapper.copyTo(this.dirLayout.getPropagatedDirLayout().getRootPath());
 
-		var oldImResource = loadResource(pathToURI(dirLayout.getOldJavaToPcmPropagationDirLayout().getImDirPath()
-				.resolve(PcmToJavaChangePropagationDirLayout.getImfilename())));
-		oldImResourceCopy = copyAndSaveResource(oldImResource, pathToURI(dirLayout.getCopiedOldImResourcePath()));
-		imResourceToPropagate = copyAndSaveResource(oldImResource, pathToURI(dirLayout.getPropagatedImModelPath()));
+		oldJavaResourceCopy = oldCopyWrapper.getJavaModel();
+		oldPcmRepoResourceCopy = oldCopyWrapper.getPcmRepository();
+		oldImResourceCopy = oldCopyWrapper.getIm();
 
-		var newImResource = loadResource(pathToURI(dirLayout.getNewJavaToPcmPropagationDirLayout().getImDirPath()
-				.resolve(PcmToJavaChangePropagationDirLayout.getImfilename())));
-		newImResourceCopy = copyAndSaveResource(newImResource, pathToURI(dirLayout.getCopiedNewImResourcePath()));
+		newJavaResourceCopy = newCopyWrapper.getJavaModel();
+		newPcmRepoResourceCopy = newCopyWrapper.getPcmRepository();
+		newImResourceCopy = newCopyWrapper.getIm();
 
-		var newPcmChangesRes = loadResource(
-				pathToURI(dirLayout.getNewJavaToPcmPropagationDirLayout().getPcmChangesSaveFilePath()));
-		pcmChangeRes = copyAndSaveResource(newPcmChangesRes, pathToURI(dirLayout.getCopiedPcmChangesPath()));
+		pcmChangeRes = oldCopyWrapper.getPcmChanges();
 	}
 
 	public void pcmToJavaChangePropagationTestTemplate(PcmToJavaChangePropagationDirLayout dirLayout) {
@@ -303,7 +214,8 @@ public class PcmToJavaChangePropagationTest {
 		pcmChangeRes.getContents().stream().filter((c) -> c instanceof EChange).map((c) -> (EChange) c)
 				.forEach(pcmChangeList::add);
 
-		var newPcmRepoRes = this.getResourceFromPcmFacade(PcmToJavaChangePropagationDirLayout.getRepositoryfilename());
+		var newPcmRepoRes = this
+				.getResourceFromPcmFacade(PcmToJavaChangePropagationDirLayoutConstants.getPcmrepositoryfilename());
 
 		// Propagate PCM changes
 		var pcmToJavaProp = this.propagateChangesToResource(newPcmRepoRes, pcmChangeList);
@@ -341,26 +253,10 @@ public class PcmToJavaChangePropagationTest {
 				.filter((r) -> r.getURI().lastSegment().equals(resourceFileName)).findFirst().get();
 	}
 
-	private Resource copyAndSaveResource(Resource resToCopy, URI copyLocationURI) {
-		var copy = ResourceCopier.copyViewResource(resToCopy, new ResourceSetImpl());
-		copy.setURI(copyLocationURI);
-		try {
-			copy.save(null);
-		} catch (IOException e) {
-			e.printStackTrace();
-			Assertions.fail(e);
-		}
-		return copy;
-	}
-
-	private URI pathToURI(Path path) {
-		return URI.createFileURI(path.toAbsolutePath().toString());
-	}
-
 	protected JavaModelFacade setupJavaFacade() {
 		var model = new JavaModelFacade();
 		model.setComponentDetectionStrategies(List.of(new UnnamedModuleComponentDetectionStrategy()));
-		model.initialize(dirLayout.getPropagatedJavaModelPath().getParent());
+		model.initialize(dirLayout.getPropagatedDirLayout().getCodeDirPath());
 		var modelRes = model.getResource();
 		JavaModelAccess.setJavaModel(modelRes);
 		return model;
@@ -368,7 +264,7 @@ public class PcmToJavaChangePropagationTest {
 
 	protected ImFacade setupImFacade() {
 		var imFacade = new ImFacade();
-		imFacade.initialize(this.dirLayout.getPropagatedImModelPath().getParent());
+		imFacade.initialize(dirLayout.getPropagatedDirLayout().getImDirPath());
 		return imFacade;
 	}
 
@@ -393,12 +289,6 @@ public class PcmToJavaChangePropagationTest {
 		assertResourceNotModified(newJavaResourceCopy);
 		assertResourceNotModified(newPcmRepoResourceCopy);
 		assertResourceNotModified(newImResourceCopy);
-	}
-
-	private Resource getChangesResource(Path resourcePath) {
-		// TODO Adapt URIs in EObjects' IDs in changes
-
-		return loadResource(URI.createFileURI(resourcePath.toAbsolutePath().toString()));
 	}
 
 	private JaccardCoefficientResult computeJCForJava(Resource newJavaModel, Resource oldJavaModel) {

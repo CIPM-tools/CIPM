@@ -18,11 +18,11 @@ import cipm.consistency.vsum.test.pcm.ChangeSaver;
 public class TeammatesChangeGeneratingTest extends TEAMMATESCITestController {
 	private static final String experimentRootDirNamePrefix = "Teammates-Experiment-";
 
-	private static final List<ChangeGeneratingCommitIntegrationDirLayout> dirLayouts = new ArrayList<>();
+	private static final List<JavaToPcmPropagationDirLayout> dirLayouts = new ArrayList<>();
 
 	@Override
 	protected void saveChanges(Propagation prop, Path rootDirPath) {
-		var layout = new ChangeGeneratingCommitIntegrationDirLayout(this.getDirLayout());
+		var layout = new JavaToPcmPropagationDirLayout(this.getDirLayout());
 		dirLayouts.add(layout);
 		// TODO Run all Teammates tests and save the Java and PCM changes
 //		new ChangeSaver(this.getRootPath()).saveChanges(prop, true);
@@ -44,15 +44,15 @@ public class TeammatesChangeGeneratingTest extends TEAMMATESCITestController {
 		super.testTeammates();
 
 		dirLayouts
-				.add(new ChangeGeneratingCommitIntegrationDirLayout(Paths.get("target", "TEAMMATESCITest-1-6484257")));
+				.add(new JavaToPcmPropagationDirLayout(Paths.get("target", "TEAMMATESCITest-1-6484257")));
 		dirLayouts
-				.add(new ChangeGeneratingCommitIntegrationDirLayout(Paths.get("target", "TEAMMATESCITest-2-48b67ba")));
+				.add(new JavaToPcmPropagationDirLayout(Paths.get("target", "TEAMMATESCITest-2-48b67ba")));
 		dirLayouts
-				.add(new ChangeGeneratingCommitIntegrationDirLayout(Paths.get("target", "TEAMMATESCITest-3-83f518e")));
+				.add(new JavaToPcmPropagationDirLayout(Paths.get("target", "TEAMMATESCITest-3-83f518e")));
 		dirLayouts
-				.add(new ChangeGeneratingCommitIntegrationDirLayout(Paths.get("target", "TEAMMATESCITest-4-f33d0bc")));
+				.add(new JavaToPcmPropagationDirLayout(Paths.get("target", "TEAMMATESCITest-4-f33d0bc")));
 		dirLayouts
-				.add(new ChangeGeneratingCommitIntegrationDirLayout(Paths.get("target", "TEAMMATESCITest-5-ce4463a")));
+				.add(new JavaToPcmPropagationDirLayout(Paths.get("target", "TEAMMATESCITest-5-ce4463a")));
 
 		var pcmToJavaPropTest = new PcmToJavaChangePropagationTest();
 
