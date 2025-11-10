@@ -21,10 +21,6 @@ Require-Bundle: org.palladiosimulator.pcm,
  cipm.consistency.models.instrumentation,
  org.eclipse.xtext,
  org.emftext.language.java,
- org.apache.commons.lang,
- org.eclipse.emf.henshin.model,
- org.eclipse.emf.henshin.model.source,
- org.eclipse.emf.henshin.interpreter,
- org.eclipse.emf.henshin.interpreter.source
+ org.apache.commons.lang
 Automatic-Module-Name: cipm.consistency.cpr.pcmjava
 Bundle-RequiredExecutionEnvironment: JavaSE-11
