@@ -30,29 +30,29 @@ public class TeammatesChangeGeneratingTest extends TEAMMATESCITestController {
 		System.out.println("Changes are saved for: " + prop.getCommitId());
 	}
 
-	@Override
-	protected void setup(boolean overwrite) {
-	}
-	
-	@Override
-	public void cleanupAfterTest() {
-	}
-	
+//	@Override
+//	protected void setup(boolean overwrite) {
+//	}
+//	
+//	@Override
+//	public void cleanupAfterTest() {
+//	}
+
 	@Test
 	@Override
 	public void testTeammates() {
-//		super.testTeammates();
+		super.testTeammates();
 
-		dirLayouts.add(new ChangeGeneratingCommitIntegrationDirLayout(Paths.get(
-				"C:\\Users\\atora\\CIPM\\commit-based-cipm\\tests\\cipm.consistency.vsum.test\\target\\TEAMMATESCITest-1-6484257")));
-		dirLayouts.add(new ChangeGeneratingCommitIntegrationDirLayout(Paths.get(
-				"C:\\Users\\atora\\CIPM\\commit-based-cipm\\tests\\cipm.consistency.vsum.test\\target\\TEAMMATESCITest-2-48b67ba")));
-		dirLayouts.add(new ChangeGeneratingCommitIntegrationDirLayout(Paths.get(
-				"C:\\Users\\atora\\CIPM\\commit-based-cipm\\tests\\cipm.consistency.vsum.test\\target\\TEAMMATESCITest-3-83f518e")));
-		dirLayouts.add(new ChangeGeneratingCommitIntegrationDirLayout(Paths.get(
-				"C:\\Users\\atora\\CIPM\\commit-based-cipm\\tests\\cipm.consistency.vsum.test\\target\\TEAMMATESCITest-4-f33d0bc")));
-		dirLayouts.add(new ChangeGeneratingCommitIntegrationDirLayout(Paths.get(
-				"C:\\Users\\atora\\CIPM\\commit-based-cipm\\tests\\cipm.consistency.vsum.test\\target\\TEAMMATESCITest-5-ce4463a")));
+		dirLayouts
+				.add(new ChangeGeneratingCommitIntegrationDirLayout(Paths.get("target", "TEAMMATESCITest-1-6484257")));
+		dirLayouts
+				.add(new ChangeGeneratingCommitIntegrationDirLayout(Paths.get("target", "TEAMMATESCITest-2-48b67ba")));
+		dirLayouts
+				.add(new ChangeGeneratingCommitIntegrationDirLayout(Paths.get("target", "TEAMMATESCITest-3-83f518e")));
+		dirLayouts
+				.add(new ChangeGeneratingCommitIntegrationDirLayout(Paths.get("target", "TEAMMATESCITest-4-f33d0bc")));
+		dirLayouts
+				.add(new ChangeGeneratingCommitIntegrationDirLayout(Paths.get("target", "TEAMMATESCITest-5-ce4463a")));
 
 		var pcmToJavaPropTest = new PcmToJavaChangePropagationTest();
 

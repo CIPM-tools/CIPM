@@ -186,8 +186,8 @@ public class PcmToJavaChangePropagationTest {
 		removeResource(newPcmRepoResourceCopy);
 		newPcmRepoResourceCopy = null;
 
-//		removeResource(newImResourceCopy);
-//		newImResourceCopy = null;
+		removeResource(newImResourceCopy);
+		newImResourceCopy = null;
 
 		removeResource(pcmChangeRes);
 		pcmChangeRes = null;
@@ -231,8 +231,8 @@ public class PcmToJavaChangePropagationTest {
 	private void computeEvaluationResultsForJavaToPcmPropagation() {
 		jcOfJavaInJavaToPcmProp = computeJCForJava(newJavaResourceCopy, oldJavaResourceCopy);
 		jcOfPcmInJavaToPcmProp = computeJCForPcm(newPcmRepoResourceCopy, oldPcmRepoResourceCopy);
-//		fScoreOfImInJavaToPcmProp = computeFScoreForIm((Repository) newPcmRepoResourceCopy.getContents().get(0),
-//				(InstrumentationModel) newImResourceCopy.getContents().get(0));
+		fScoreOfImInJavaToPcmProp = computeFScoreForIm((Repository) newPcmRepoResourceCopy.getContents().get(0),
+				(InstrumentationModel) newImResourceCopy.getContents().get(0));
 	}
 
 	/**
@@ -287,9 +287,9 @@ public class PcmToJavaChangePropagationTest {
 		oldImResourceCopy = copyAndSaveResource(oldImResource, pathToURI(dirLayout.getCopiedOldImResourcePath()));
 		imResourceToPropagate = copyAndSaveResource(oldImResource, pathToURI(dirLayout.getPropagatedImModelPath()));
 
-//		var newImResource = loadResource(pathToURI(dirLayout.getNewJavaToPcmPropagationDirLayout().getImDirPath()
-//				.resolve(PcmToJavaChangePropagationDirLayout.getImfilename())));
-//		newImResourceCopy = copyAndSaveResource(newImResource, pathToURI(dirLayout.getCopiedNewImResourcePath()));
+		var newImResource = loadResource(pathToURI(dirLayout.getNewJavaToPcmPropagationDirLayout().getImDirPath()
+				.resolve(PcmToJavaChangePropagationDirLayout.getImfilename())));
+		newImResourceCopy = copyAndSaveResource(newImResource, pathToURI(dirLayout.getCopiedNewImResourcePath()));
 
 		var newPcmChangesRes = loadResource(
 				pathToURI(dirLayout.getNewJavaToPcmPropagationDirLayout().getPcmChangesSaveFilePath()));
@@ -392,12 +392,12 @@ public class PcmToJavaChangePropagationTest {
 		assertResourceNotModified(oldImResourceCopy);
 		assertResourceNotModified(newJavaResourceCopy);
 		assertResourceNotModified(newPcmRepoResourceCopy);
-//		assertResourceNotModified(newImResourceCopy);
+		assertResourceNotModified(newImResourceCopy);
 	}
 
 	private Resource getChangesResource(Path resourcePath) {
 		// TODO Adapt URIs in EObjects' IDs in changes
-		
+
 		return loadResource(URI.createFileURI(resourcePath.toAbsolutePath().toString()));
 	}
 
