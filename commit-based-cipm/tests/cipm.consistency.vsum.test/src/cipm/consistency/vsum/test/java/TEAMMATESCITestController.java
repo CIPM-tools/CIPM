@@ -160,20 +160,12 @@ public class TEAMMATESCITestController {
 			for (int i = startFromNull ? 0 : 1; i < commitIds.length; i++) {
 				var commitId = commitIds[i];
 				if (commitId == null) {
-					// do an empty propagation to reset the models
-					var initialProp = this.teammatesController.propagateChanges(commitId);
-
-					if (!initialProp.isEmpty() && initialProp.get(0).isPresent()) {
-						var propagation = initialProp.get(0).get();
-						saveChanges(propagation, propagation.getCommitIntegrationStateCopyPath().toAbsolutePath());
-					}
-
 					continue;
 				}
 
 				var propagations = this.teammatesController.propagateChanges(previousCommitId, commitId);
 				previousCommitId = commitId;
-				if (propagations.isEmpty() || propagations.get(0).isEmpty()) {
+				if (propagations.isEmpty() || propagations.size() > 1 || propagations.get(0).isEmpty()) {
 					continue;
 				}
 
@@ -191,11 +183,6 @@ public class TEAMMATESCITestController {
 
 				var propagation = propagations.get(0).get();
 				saveChanges(propagation, propagation.getCommitIntegrationStateCopyPath().toAbsolutePath());
-
-				if (propagations.size() > 1) {
-					continue;
-				}
-
 				if (evaluateImmediately) {
 					var eval = evaluatePropagation(propagation);
 					commitHistoryEvaluator.addEvaluationDataContainer(eval);
