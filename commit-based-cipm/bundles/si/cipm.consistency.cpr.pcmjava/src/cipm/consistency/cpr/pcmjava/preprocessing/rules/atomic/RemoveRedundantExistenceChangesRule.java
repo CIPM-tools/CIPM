@@ -3,6 +3,7 @@ package cipm.consistency.cpr.pcmjava.preprocessing.rules.atomic;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 import cipm.consistency.cpr.pcmjava.preprocessing.ChangeUtil;
@@ -59,16 +60,12 @@ public class RemoveRedundantExistenceChangesRule extends ChangePreprocessingRule
 
 				if (matchingPair.isPresent()) {
 					var pair = matchingPair.get();
-//					newChangeList.remove(pair[0]);
-//					newChangeList.remove(nextChange);
-					ChangeUtil.removeChange(pair[0], newChangeList);
-					ChangeUtil.removeChange(nextChange, newChangeList);
+					newChangeList.remove(pair[0]);
+					newChangeList.remove(nextChange);
 //					fixChangeSequence(newChangeList, pair[1], currentChange);
 
-//					newChangeList.remove(pair[1]);
-//					newChangeList.remove(currentChange);
-					ChangeUtil.removeChange(pair[1], newChangeList);
-					ChangeUtil.removeChange(currentChange, newChangeList);
+					newChangeList.remove(pair[1]);
+					newChangeList.remove(currentChange);
 					createInsertPairs.remove(pair);
 				}
 			}
@@ -77,109 +74,109 @@ public class RemoveRedundantExistenceChangesRule extends ChangePreprocessingRule
 		return newChangeList;
 	}
 
-//	private void fixChangeSequence(List<EChange> newChangeList, EChange removedInsertChange,
-//			EChange removedRemoveChange) {
-//		Preconditions.checkArgument(ChangeUtil.newAndOldValuesPresentAndEqual(removedInsertChange, removedRemoveChange),
-//				"Given root changes do not match");
-//
-//		var removedObjID = ChangeUtil.getOldValueID(removedRemoveChange);
-//
-//		/*
-//		 * Fix EObject IDs and indices (in root changes) of affected changes
-//		 */
-//		for (var c : newChangeList.subList(newChangeList.indexOf(removedInsertChange) + 1,
-//				newChangeList.indexOf(removedRemoveChange))) {
-//			var cAffectedObjID = ChangeUtil.getAffectedEObjectID(c);
-//			if (cAffectedObjID != null) {
-//				ChangeUtil.setAffectedEObjectID(c, getNewID(removedObjID, cAffectedObjID));
-//			}
-//
-//			var cNewValID = ChangeUtil.getNewValueID(c);
-//			if (cNewValID != null) {
-//				var newID = getNewID(removedObjID, cNewValID);
-//				ChangeUtil.setNewValueID(c, newID);
-//				if (c instanceof InsertRootEObject) {
-//					((InsertRootEObject<?>) c).setIndex(getResourceContentIndex(newID));
-//				}
-//			}
-//
-//			var cOldValID = ChangeUtil.getOldValueID(c);
-//			if (cOldValID != null) {
-//				var newID = getNewID(removedObjID, cOldValID);
-//				ChangeUtil.setOldValueID(c, newID);
-//				if (c instanceof RemoveRootEObject) {
-//					((RemoveRootEObject<?>) c).setIndex(getResourceContentIndex(newID));
-//				}
-//			}
-//		}
-//	}
-//
-//	private int getResourceContentIndex(String id) {
-//		var fragments = id.split("/");
-//		return Integer.parseInt(fragments[fragments.length - 1]);
-//	}
-//
-//	private String[] getIDFragments(String id) {
-//		return id.split("/");
-//	}
-//
-//	private int[] getIndicesInIDFragments(String[] fragments) {
-//		var indices = new int[fragments.length - 1];
-//		for (int i = 1; i < fragments.length; i++) {
-//			indices[i - 1] = Integer.parseInt(fragments[i].replaceAll("\\\\D", ""));
-//		}
-//		return indices;
-//	}
-//
-//	private int getFragmentMismatchIndex(String[] fragments1, String[] fragments2) {
-//		var shortestFragments = fragments1.length < fragments2.length ? fragments1 : fragments2;
-//
-//		if (!fragments1[0].equals(fragments2[0]))
-//			return -1;
-//
-//		for (int i = 0; i < shortestFragments.length; i++) {
-//			if (!fragments1[i].equals(fragments2[i])) {
-//				return i;
-//			}
-//		}
-//		return -1;
-//	}
-//
-//	private String reconstructID(String[] fragments, int[] newIndices) {
-//		var resultingID = fragments[0] + "/";
-//
-//		for (int i = 1; i < fragments.length; i++) {
-//			resultingID += fragments[i].replaceAll("\\d+$", String.valueOf(newIndices[i - 1])) + "/";
-//		}
-//		return resultingID.substring(0, resultingID.length() - 1);
-//	}
-//
-//	private String getNewID(String removedObjID, String currentObjID) {
-//		var removedObjIDFragments = getIDFragments(removedObjID);
-//		var removedObjIDFragmentIndices = getIndicesInIDFragments(removedObjIDFragments);
-//
-//		var currentObjIDfragments = getIDFragments(currentObjID);
-//		var mismatchingFragmentIdx = getFragmentMismatchIndex(removedObjIDFragments, currentObjIDfragments);
-//
-//		if (mismatchingFragmentIdx == -1) {
-//			return currentObjID;
-//		}
-//
-//		var mismatchingIdxIdx = mismatchingFragmentIdx - 1;
-//
-//		var currentObjIDFragmentIdxs = getIndicesInIDFragments(currentObjIDfragments);
-//
-//		var removedObjIDFragmentsMismatchingIdx = removedObjIDFragmentIndices[mismatchingIdxIdx];
-//		var currentObjIDFragmentsMismatchingIdx = currentObjIDFragmentIdxs[mismatchingIdxIdx];
-//
-//		/*
-//		 * For index-based fragments, if /1/2 is removed, /1/3 should shift to /1/2
-//		 */
-//		if (removedObjIDFragmentsMismatchingIdx < currentObjIDFragmentsMismatchingIdx) {
-//			currentObjIDFragmentIdxs[mismatchingIdxIdx] -= 1;
-//			return this.reconstructID(currentObjIDfragments, currentObjIDFragmentIdxs);
-//		} else {
-//			return currentObjID;
-//		}
-//	}
+	private void fixChangeSequence(List<EChange> newChangeList, EChange removedInsertChange,
+			EChange removedRemoveChange) {
+		Preconditions.checkArgument(ChangeUtil.newAndOldValuesPresentAndEqual(removedInsertChange, removedRemoveChange),
+				"Given root changes do not match");
+
+		var removedObjID = ChangeUtil.getOldValueID(removedRemoveChange);
+
+		/*
+		 * Fix EObject IDs and indices (in root changes) of affected changes
+		 */
+		for (var c : newChangeList.subList(newChangeList.indexOf(removedInsertChange) + 1,
+				newChangeList.indexOf(removedRemoveChange))) {
+			var cAffectedObjID = ChangeUtil.getAffectedEObjectID(c);
+			if (cAffectedObjID != null) {
+				ChangeUtil.setAffectedEObjectID(c, getNewID(removedObjID, cAffectedObjID));
+			}
+
+			var cNewValID = ChangeUtil.getNewValueID(c);
+			if (cNewValID != null) {
+				var newID = getNewID(removedObjID, cNewValID);
+				ChangeUtil.setNewValueID(c, newID);
+				if (c instanceof InsertRootEObject) {
+					((InsertRootEObject<?>) c).setIndex(getResourceContentIndex(newID));
+				}
+			}
+
+			var cOldValID = ChangeUtil.getOldValueID(c);
+			if (cOldValID != null) {
+				var newID = getNewID(removedObjID, cOldValID);
+				ChangeUtil.setOldValueID(c, newID);
+				if (c instanceof RemoveRootEObject) {
+					((RemoveRootEObject<?>) c).setIndex(getResourceContentIndex(newID));
+				}
+			}
+		}
+	}
+
+	private int getResourceContentIndex(String id) {
+		var fragments = id.split("/");
+		return Integer.parseInt(fragments[fragments.length - 1]);
+	}
+
+	private String[] getIDFragments(String id) {
+		return id.split("/");
+	}
+
+	private int[] getIndicesInIDFragments(String[] fragments) {
+		var indices = new int[fragments.length - 1];
+		for (int i = 1; i < fragments.length; i++) {
+			indices[i - 1] = Integer.parseInt(fragments[i].replaceAll("\\\\D", ""));
+		}
+		return indices;
+	}
+
+	private int getFragmentMismatchIndex(String[] fragments1, String[] fragments2) {
+		var shortestFragments = fragments1.length < fragments2.length ? fragments1 : fragments2;
+
+		if (!fragments1[0].equals(fragments2[0]))
+			return -1;
+
+		for (int i = 0; i < shortestFragments.length; i++) {
+			if (!fragments1[i].equals(fragments2[i])) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	private String reconstructID(String[] fragments, int[] newIndices) {
+		var resultingID = fragments[0] + "/";
+
+		for (int i = 1; i < fragments.length; i++) {
+			resultingID += fragments[i].replaceAll("\\d+$", String.valueOf(newIndices[i - 1])) + "/";
+		}
+		return resultingID.substring(0, resultingID.length() - 1);
+	}
+
+	private String getNewID(String removedObjID, String currentObjID) {
+		var removedObjIDFragments = getIDFragments(removedObjID);
+		var removedObjIDFragmentIndices = getIndicesInIDFragments(removedObjIDFragments);
+
+		var currentObjIDfragments = getIDFragments(currentObjID);
+		var mismatchingFragmentIdx = getFragmentMismatchIndex(removedObjIDFragments, currentObjIDfragments);
+
+		if (mismatchingFragmentIdx == -1) {
+			return currentObjID;
+		}
+
+		var mismatchingIdxIdx = mismatchingFragmentIdx - 1;
+
+		var currentObjIDFragmentIdxs = getIndicesInIDFragments(currentObjIDfragments);
+
+		var removedObjIDFragmentsMismatchingIdx = removedObjIDFragmentIndices[mismatchingIdxIdx];
+		var currentObjIDFragmentsMismatchingIdx = currentObjIDFragmentIdxs[mismatchingIdxIdx];
+
+		/*
+		 * For index-based fragments, if /1/2 is removed, /1/3 should shift to /1/2
+		 */
+		if (removedObjIDFragmentsMismatchingIdx < currentObjIDFragmentsMismatchingIdx) {
+			currentObjIDFragmentIdxs[mismatchingIdxIdx] -= 1;
+			return this.reconstructID(currentObjIDfragments, currentObjIDFragmentIdxs);
+		} else {
+			return currentObjID;
+		}
+	}
 }

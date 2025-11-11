@@ -94,12 +94,11 @@ public class RemoveDeletedElementChangesRuleTests {
 		var repoName = "repoName";
 		var res = cc.getEmptyResourceInstance();
 		// Add repository to res, discard changes
-		cc.getEChangesFor(cc.getEmptyResourceInstance(), res,
-				ChangePreprocessingTestModifications.addRootToResourceAction(repo));
+		cc.getEChangesFor(res, ChangePreprocessingTestModifications.addRootToResourceAction(repo));
 		var baseRes = cc.getResourceCopy(res);
 
 		// Set repo's name, then delete it
-		var changes = cc.getEChangesFor(cc.getEmptyResourceInstance(), res,
+		var changes = cc.getEChangesFor(res,
 				List.of(ChangePreprocessingTestModifications.setEntityNameAction(repo, repoName),
 						ChangePreprocessingTestModifications.removeRootFromResourceAction(repo)));
 
@@ -122,13 +121,13 @@ public class RemoveDeletedElementChangesRuleTests {
 		final var repo = RepositoryFactory.eINSTANCE.createRepository();
 		final var cmp = RepositoryFactory.eINSTANCE.createBasicComponent();
 		var res = cc.getEmptyResourceInstance();
-		cc.getEChangesFor(cc.getEmptyResourceInstance(), res,
+		cc.getEChangesFor(res,
 				List.of(ChangePreprocessingTestModifications.addRootToResourceAction(repo),
 						ChangePreprocessingTestModifications.addToManyValuedFeatAction(repo,
 								RepositoryPackage.Literals.REPOSITORY__COMPONENTS_REPOSITORY, cmp)));
 		var baseRes = cc.getResourceCopy(res);
 
-		var changes = cc.getEChangesFor(cc.getEmptyResourceInstance(), res,
+		var changes = cc.getEChangesFor(res,
 				List.of(ChangePreprocessingTestModifications.removeFromManyValuedFeatAction(repo,
 						RepositoryPackage.Literals.REPOSITORY__COMPONENTS_REPOSITORY, cmp)));
 
@@ -160,7 +159,7 @@ public class RemoveDeletedElementChangesRuleTests {
 
 		var baseRes = cc.getResourceCopy(res);
 
-		var changes = cc.getEChangesFor(cc.getEmptyResourceInstance(), res,
+		var changes = cc.getEChangesFor(res,
 				List.of(ChangePreprocessingTestModifications.unsetSingleValuedFeatAction(tr1,
 						TypesPackage.Literals.CLASSIFIER_REFERENCE__TARGET),
 						ChangePreprocessingTestModifications.unsetSingleValuedFeatAction(tr2,
@@ -189,7 +188,7 @@ public class RemoveDeletedElementChangesRuleTests {
 		final var type2 = RepositoryFactory.eINSTANCE.createPrimitiveDataType();
 		final var param = RepositoryFactory.eINSTANCE.createParameter();
 		var res = cc.getEmptyResourceInstance();
-		cc.getEChangesFor(cc.getEmptyResourceInstance(), res,
+		cc.getEChangesFor(res,
 				List.of(ChangePreprocessingTestModifications.addRootToResourceAction(type1),
 						ChangePreprocessingTestModifications.addRootToResourceAction(type2),
 						ChangePreprocessingTestModifications.addRootToResourceAction(param)
@@ -202,7 +201,7 @@ public class RemoveDeletedElementChangesRuleTests {
 		var baseRes = cc.getResourceCopy(res);
 		Assertions.assertEquals(3, baseRes.getContents().size());
 
-		var changes = cc.getEChangesFor(cc.getEmptyResourceInstance(), res,
+		var changes = cc.getEChangesFor(res,
 				List.of(ChangePreprocessingTestModifications.setSingleValuedFeatAction(param,
 						RepositoryPackage.Literals.PARAMETER__DATA_TYPE_PARAMETER, type1),
 						ChangePreprocessingTestModifications.removeRootFromResourceAction(type1)));

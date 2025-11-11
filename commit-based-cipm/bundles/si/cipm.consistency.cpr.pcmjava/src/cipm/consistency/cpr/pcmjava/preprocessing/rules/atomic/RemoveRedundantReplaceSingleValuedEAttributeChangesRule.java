@@ -36,7 +36,7 @@ public class RemoveRedundantReplaceSingleValuedEAttributeChangesRule extends Cha
 					.collect(Collectors.toCollection(ArrayList::new));
 
 			for (var affectedChange : affectedChanges) {
-				ChangeUtil.removeChange(affectedChange, newChangesList);
+				newChangesList.remove(affectedChange);
 			}
 		}
 		return newChangesList;
