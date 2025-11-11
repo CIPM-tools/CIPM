@@ -44,32 +44,29 @@ public final class ChangeUtil {
 		return uri.startsWith(cacheIDPrefix);
 	}
 
-	public static void adaptChangeURIs(Resource changeResource) {
+	public static void adaptChangeURIs(Resource changeResource, Resource targetModelResource) {
 		for (var change : changeResource.getContents()) {
 			if (change instanceof EChange)
-				adaptChangeURIs((EChange) change);
+				adaptChangeURIs((EChange) change, targetModelResource);
 		}
 	}
 
-	public static void adaptChangeURIs(EChange change) {
-		if (change.eResource() == null)
-			return;
-
+	public static void adaptChangeURIs(EChange change, Resource targetModelResource) {
 		var affectedID = getAffectedEObjectID(change);
 		if (affectedID != null) {
-			setAffectedEObjectID(change, adaptURI(affectedID, change.eResource()));
+			setAffectedEObjectID(change, adaptURI(affectedID, targetModelResource));
 		}
 		var oldID = getOldValueID(change);
 		if (oldID != null) {
-			setOldValueID(change, adaptURI(oldID, change.eResource()));
+			setOldValueID(change, adaptURI(oldID, targetModelResource));
 		}
 		var newID = getNewValueID(change);
 		if (newID != null) {
-			setNewValueID(change, adaptURI(newID, change.eResource()));
+			setNewValueID(change, adaptURI(newID, targetModelResource));
 		}
 		var uri = getRootChangeURI(change);
 		if (uri != null) {
-			setRootChangeURI(change, change.eResource().getURI().toString());
+			setRootChangeURI(change, targetModelResource.getURI().toString());
 		}
 	}
 

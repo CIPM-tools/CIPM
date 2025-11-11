@@ -2,16 +2,20 @@ package cipm.consistency.vsum.test.pcm.experiment;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.junit.jupiter.api.Assertions;
 
 import cipm.consistency.cpr.pcmjava.preprocessing.ChangeUtil;
+import tools.vitruv.change.correspondence.Correspondences;
 
 public class JavaToPcmPropagationWrapper implements AutoCloseable {
 	private ResourceSet resSet;
@@ -50,41 +54,43 @@ public class JavaToPcmPropagationWrapper implements AutoCloseable {
 		javaChanges = loadResource(resSet, pathToURI(layout.getJavaChangesSaveFilePath()));
 		pcmChanges = loadResource(resSet, pathToURI(layout.getPcmChangesSaveFilePath()));
 		imChanges = loadResource(resSet, pathToURI(layout.getImChangesSaveFilePath()));
-		adaptIDsInChanges();
 
 		correspondences = loadResource(resSet, pathToURI(layout.getVSUMCorrespondencesPath()));
 	}
 
-	public JavaToPcmPropagationWrapper copyTo(Path copyPath) {
-		var newResSet = new ResourceSetImpl();
+	public JavaToPcmPropagationWrapper copyTo(ResourceSet resSetToCopyTo, Path copyPath) {
 		var newLayout = new JavaToPcmPropagationDirLayout(copyPath);
-		var newWrapper = new JavaToPcmPropagationWrapper(newResSet);
+		var newWrapper = new JavaToPcmPropagationWrapper(resSetToCopyTo);
 
-		newWrapper.javaModel = copyAndSaveResource(newResSet, javaModel, pathToURI(newLayout.getJavaModelSavePath()));
+		newWrapper.javaModel = copyAndSaveResource(resSetToCopyTo, javaModel,
+				pathToURI(newLayout.getJavaModelSavePath()));
 
-		newWrapper.pcmRepository = copyAndSaveResource(newResSet, pcmRepository,
+		newWrapper.pcmRepository = copyAndSaveResource(resSetToCopyTo, pcmRepository,
 				pathToURI(newLayout.getPcmRepositoryPath()));
-		newWrapper.pcmSystem = copyAndSaveResource(newResSet, pcmSystem, pathToURI(newLayout.getPcmSystemPath()));
-		newWrapper.pcmAllocation = copyAndSaveResource(newResSet, pcmAllocation,
+		newWrapper.pcmSystem = copyAndSaveResource(resSetToCopyTo, pcmSystem, pathToURI(newLayout.getPcmSystemPath()));
+		newWrapper.pcmAllocation = copyAndSaveResource(resSetToCopyTo, pcmAllocation,
 				pathToURI(newLayout.getPcmAllocationPath()));
-		newWrapper.pcmResEnv = copyAndSaveResource(newResSet, pcmResEnv,
+		newWrapper.pcmResEnv = copyAndSaveResource(resSetToCopyTo, pcmResEnv,
 				pathToURI(newLayout.getPcmResourceEnvironmentPath()));
-		newWrapper.pcmUsage = copyAndSaveResource(newResSet, pcmUsage, pathToURI(newLayout.getPcmUsagePath()));
+		newWrapper.pcmUsage = copyAndSaveResource(resSetToCopyTo, pcmUsage, pathToURI(newLayout.getPcmUsagePath()));
 
-		newWrapper.im = copyAndSaveResource(newResSet, im, pathToURI(newLayout.getIMSavePath()));
+		newWrapper.im = copyAndSaveResource(resSetToCopyTo, im, pathToURI(newLayout.getIMSavePath()));
 
-		newWrapper.javaChanges = copyAndSaveResource(newResSet, javaChanges,
+		newWrapper.javaChanges = copyAndSaveResource(resSetToCopyTo, javaChanges,
 				pathToURI(newLayout.getJavaChangesSaveFilePath()));
-		newWrapper.pcmChanges = copyAndSaveResource(newResSet, pcmChanges,
+		newWrapper.pcmChanges = copyAndSaveResource(resSetToCopyTo, pcmChanges,
 				pathToURI(newLayout.getPcmChangesSaveFilePath()));
-		newWrapper.imChanges = copyAndSaveResource(newResSet, imChanges,
+		newWrapper.imChanges = copyAndSaveResource(resSetToCopyTo, imChanges,
 				pathToURI(newLayout.getImChangesSaveFilePath()));
-		newWrapper.adaptIDsInChanges();
 
-		newWrapper.correspondences = copyAndSaveResource(newResSet, correspondences,
+		newWrapper.correspondences = copyAndSaveResource(resSetToCopyTo, correspondences,
 				pathToURI(newLayout.getVSUMCorrespondencesPath()));
 
 		return newWrapper;
+	}
+
+	public JavaToPcmPropagationWrapper copyTo(Path copyPath) {
+		return copyTo(new ResourceSetImpl(), copyPath);
 	}
 
 	/**
@@ -125,9 +131,19 @@ public class JavaToPcmPropagationWrapper implements AutoCloseable {
 		return resource;
 	}
 
-	private void adaptIDsInChanges() {
-		for (var res : List.of(javaChanges, pcmChanges, imChanges)) {
-			ChangeUtil.adaptChangeURIs(res);
+	private void adaptURIsInChanges() {
+		ChangeUtil.adaptChangeURIs(javaChanges, javaModel);
+		ChangeUtil.adaptChangeURIs(pcmChanges, pcmRepository);
+		ChangeUtil.adaptChangeURIs(imChanges, im);
+	}
+
+	public void adaptURIsInPCMChangeResource(Resource targetPCMRepository) {
+		ChangeUtil.adaptChangeURIs(pcmChanges, targetPCMRepository);
+	}
+
+	private void adaptURIsInCorrespondences() {
+		for (var cor : ((Correspondences) correspondences.getContents().get(0)).getCorrespondences()) {
+			cor.getTag();
 		}
 	}
 
@@ -156,13 +172,17 @@ public class JavaToPcmPropagationWrapper implements AutoCloseable {
 	private Resource copyAndSaveResource(ResourceSet resSet, Resource resToCopy, URI copyLocationURI) {
 		var res = resSet.createResource(copyLocationURI);
 		res.getContents().addAll(EcoreUtil.copyAll(resToCopy.getContents()));
+		saveResource(res);
+		return res;
+	}
+
+	private void saveResource(Resource res) {
 		try {
 			res.save(null);
 		} catch (IOException e) {
 			e.printStackTrace();
 			Assertions.fail(e);
 		}
-		return res;
 	}
 
 	@Override
