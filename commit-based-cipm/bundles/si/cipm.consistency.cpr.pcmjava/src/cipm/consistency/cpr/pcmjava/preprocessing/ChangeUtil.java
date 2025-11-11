@@ -27,11 +27,43 @@ import tools.vitruv.change.atomic.root.InsertRootEObject;
 import tools.vitruv.change.atomic.root.RemoveRootEObject;
 
 public final class ChangeUtil {
+	private static final String cacheURIPrefix = "cache:/";
 	/*
 	 * FIXME Unless 2 EObjects are created with features that make them unique,
 	 * there is no precise way to determine their equality. Dependencies across
 	 * changes have to be analysed to determine what concrete instances are used.
 	 */
+
+	public static boolean isCacheID(String id) {
+		return id != null && id.startsWith(cacheURIPrefix);
+	}
+
+	public static void removeChange(EChange change, List<EChange> changeSequence) {
+		changeSequence.remove(change);
+		if (change.eResource() != null) {
+			change.eResource().getContents().remove(change);
+		}
+	}
+
+	/**
+	 * Assumes that newChange is neither in Resource nor in changeSequence
+	 */
+	public static void replaceChange(EChange oldChange, EChange newChange, List<EChange> changeSequence) {
+		var oldChangeIdxInChangeSeq = changeSequence.indexOf(oldChange);
+		var oldChangeIdxInRes = -1;
+
+		if (oldChange.eResource() != null) {
+			oldChangeIdxInRes = oldChange.eResource().getContents().indexOf(oldChange);
+		}
+
+		changeSequence.add(oldChangeIdxInChangeSeq, newChange);
+		changeSequence.remove(oldChange);
+
+		if (oldChange.eResource() != null) {
+			oldChange.eResource().getContents().add(oldChangeIdxInRes, newChange);
+			oldChange.eResource().getContents().remove(oldChange);
+		}
+	}
 
 	public static boolean eObjectsNonNullAndEqual(EObject obj1, EObject obj2) {
 		if (obj1 == null || obj2 == null)

@@ -4,13 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.xtext.util.UriUtil;
-
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 import cipm.consistency.cpr.pcmjava.preprocessing.ChangeUtil;
@@ -45,8 +38,10 @@ public class RemoveRedundantRootChangesRule extends ChangePreprocessingRule {
 					.filter((ic) -> ChangeUtil.areMatchingRootEChanges(ic, removingChange)).findFirst();
 			if (matchingInsert.isPresent()) {
 //				fixChangeSequence(newChangeList, matchingInsert.get(), removingChange);
-				newChangeList.remove(matchingInsert.get());
-				newChangeList.remove(removingChange);
+//				newChangeList.remove(matchingInsert.get());
+				ChangeUtil.removeChange(matchingInsert.get(), newChangeList);
+//				newChangeList.remove(removingChange);
+				ChangeUtil.removeChange(removingChange, newChangeList);
 			}
 		}
 

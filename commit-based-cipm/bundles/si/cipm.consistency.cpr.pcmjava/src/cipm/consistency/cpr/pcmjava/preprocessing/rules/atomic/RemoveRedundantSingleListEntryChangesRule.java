@@ -28,8 +28,10 @@ public class RemoveRedundantSingleListEntryChangesRule extends ChangePreprocessi
 			var matchingInsert = insertChanges.stream()
 					.filter((ic) -> ChangeUtil.areMatchingSingleListEntryEChanges(ic, rc)).findFirst();
 			if (matchingInsert.isPresent()) {
-				newChangeList.remove(matchingInsert.get());
-				newChangeList.remove(rc);
+				ChangeUtil.removeChange(matchingInsert.get(), newChangeList);
+//				newChangeList.remove(matchingInsert.get());
+				ChangeUtil.removeChange(rc, newChangeList);
+//				newChangeList.remove(rc);
 			}
 		}
 

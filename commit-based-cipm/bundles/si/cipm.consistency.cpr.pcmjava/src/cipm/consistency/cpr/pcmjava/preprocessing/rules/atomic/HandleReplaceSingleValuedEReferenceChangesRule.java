@@ -4,22 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.eclipse.emf.common.notify.Adapter;
-import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.common.notify.Notifier;
-import org.eclipse.emf.common.notify.impl.AdapterImpl;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.util.EcoreUtil;
-
 import com.google.common.collect.Lists;
 
 import cipm.consistency.cpr.pcmjava.preprocessing.ChangeUtil;
 import cipm.consistency.cpr.pcmjava.preprocessing.rules.ChangePreprocessingRule;
-import de.uka.ipd.sdq.identifier.Identifier;
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.atomic.eobject.DeleteEObject;
 import tools.vitruv.change.atomic.feature.FeatureFactory;
-import tools.vitruv.change.atomic.feature.FeaturePackage;
 import tools.vitruv.change.atomic.feature.UnsetFeature;
 import tools.vitruv.change.atomic.feature.reference.ReplaceSingleValuedEReference;
 
@@ -76,7 +67,7 @@ public class HandleReplaceSingleValuedEReferenceChangesRule extends ChangePrepro
 					unsetOldValueOfReplaceChange(affectedChange);
 				} else {
 					// Case 4)
-					newChangesList.remove(affectedChange);
+					ChangeUtil.removeChange(affectedChange, newChangesList);
 				}
 
 				// TODO Fix if an EObject can be involved in a change in indirect ways (i.e.
@@ -90,9 +81,7 @@ public class HandleReplaceSingleValuedEReferenceChangesRule extends ChangePrepro
 			ReplaceSingleValuedEReference<?, ?> castedChange, List<EChange> deletingChanges) {
 		// Either deletedElement is new value OR deletedElement is old value and new
 		// value is null
-		var idx = newChangesList.indexOf(castedChange);
-		newChangesList.add(idx, this.getUnsetChangeFor(castedChange));
-		newChangesList.remove(castedChange);
+		ChangeUtil.replaceChange(castedChange, this.getUnsetChangeFor(castedChange), newChangesList);
 	}
 
 	private UnsetFeature<?, ?> getUnsetChangeFor(ReplaceSingleValuedEReference<?, ?> change) {

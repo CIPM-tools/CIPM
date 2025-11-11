@@ -50,7 +50,8 @@ public class RemoveRedundantUnsetChangesRule extends ChangePreprocessingRule {
 			for (var unsetChange : affectedUnsetChanges) {
 				var unsetChangeFeat = unsetChange.getAffectedFeature();
 				if (!(unsetChangeFeat instanceof EReference) || ((EReference) unsetChangeFeat).getEOpposite() == null) {
-					newChangesList.remove(unsetChange);
+					ChangeUtil.removeChange(unsetChange, newChangesList);
+//					newChangesList.remove(unsetChange);
 				}
 			}
 		}

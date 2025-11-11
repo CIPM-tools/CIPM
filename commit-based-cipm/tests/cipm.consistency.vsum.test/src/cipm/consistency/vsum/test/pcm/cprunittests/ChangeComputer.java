@@ -59,21 +59,20 @@ public class ChangeComputer {
 	}
 
 	public List<EChange> getEChangesFor(List<Consumer<Resource>> modifications) {
-		return this.getEChangesFor(this.getEmptyResourceInstance(), modifications);
+		return this.getEChangesFor(this.getEmptyResourceInstance(), this.getEmptyResourceInstance(), modifications);
 	}
 
 	public List<EChange> getEChangesFor(Consumer<Resource> modifications) {
-		return this.getEChangesFor(this.getEmptyResourceInstance(), modifications);
+		return this.getEChangesFor(this.getEmptyResourceInstance(), this.getEmptyResourceInstance(), modifications);
 	}
 
 	/**
 	 * Modifies oldRes along the way. This allows using the original oldRes contents
 	 * in modifications.
 	 */
-	public List<EChange> getEChangesFor(Resource oldRes, Consumer<Resource> modifications) {
+	public List<EChange> getEChangesFor(Resource changeRes, Resource oldRes, Consumer<Resource> modifications) {
 		var unmodifiedResDupl = this.getResourceCopy(oldRes);
 		modifications.accept(oldRes);
-		var changeRes = new ResourceSetImpl().createResource(URI.createFileURI(new File("").getAbsolutePath()));
 		var d = new DefaultStateBasedChangeResolutionStrategy(UseIdentifiers.WHEN_AVAILABLE);
 		var changes = d.getChangeSequenceBetween(oldRes, unmodifiedResDupl).getEChanges();
 		changeRes.getContents().addAll(changes);
@@ -83,10 +82,10 @@ public class ChangeComputer {
 	/**
 	 * Modifies oldRes along the way
 	 */
-	public List<EChange> getEChangesFor(Resource oldRes, List<Consumer<Resource>> modifications) {
+	public List<EChange> getEChangesFor(Resource changeRes, Resource oldRes, List<Consumer<Resource>> modifications) {
 		var changes = new ArrayList<EChange>();
 		for (var mod : modifications) {
-			changes.addAll(this.getEChangesFor(oldRes, mod));
+			changes.addAll(this.getEChangesFor(changeRes, oldRes, mod));
 		}
 		return changes;
 	}

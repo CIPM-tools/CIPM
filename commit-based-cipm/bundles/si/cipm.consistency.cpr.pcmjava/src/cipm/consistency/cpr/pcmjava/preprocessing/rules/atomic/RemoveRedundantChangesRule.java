@@ -1,21 +1,25 @@
 package cipm.consistency.cpr.pcmjava.preprocessing.rules.atomic;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.net4j.util.collection.Pair;
 
 import cipm.consistency.cpr.pcmjava.preprocessing.ChangeUtil;
 import cipm.consistency.cpr.pcmjava.preprocessing.rules.ChangePreprocessingRule;
 import tools.vitruv.change.atomic.EChange;
+import tools.vitruv.change.atomic.feature.UnsetFeature;
 
 public class RemoveRedundantChangesRule extends ChangePreprocessingRule {
 	private static final ChangePreprocessingRule removeRedundantRootChanges = new RemoveRedundantRootChangesRule();
@@ -42,17 +46,17 @@ public class RemoveRedundantChangesRule extends ChangePreprocessingRule {
 
 			if (affectedID != null) {
 				uriConverter.put(ChangeUtil.getAffectedEObject(change),
-						new Pair<>(URI.createURI(affectedID).fragment(), URI.createURI(affectedID).fragment()));
+						new Pair<>(URI.createURI(affectedID).toString(), URI.createURI(affectedID).toString()));
 //				eobjsInChanges.add(ChangeUtil.getAffectedEObject(change));
 			}
 			if (oldID != null) {
 				uriConverter.put((EObject) ChangeUtil.getOldValue(change),
-						new Pair<>(URI.createURI(oldID).fragment(), URI.createURI(oldID).fragment()));
+						new Pair<>(URI.createURI(oldID).toString(), URI.createURI(oldID).toString()));
 //				eobjsInChanges.add((EObject) ChangeUtil.getOldValue(change));
 			}
 			if (newID != null) {
 				uriConverter.put((EObject) ChangeUtil.getNewValue(change),
-						new Pair<>(URI.createURI(newID).fragment(), URI.createURI(newID).fragment()));
+						new Pair<>(URI.createURI(newID).toString(), URI.createURI(newID).toString()));
 //				eobjsInChanges.add((EObject) ChangeUtil.getNewValue(change));
 			}
 		}
@@ -62,28 +66,33 @@ public class RemoveRedundantChangesRule extends ChangePreprocessingRule {
 			public void notifyChanged(Notification notification) {
 				super.notifyChanged(notification);
 
-				var eobjs = new ArrayList<EObject>();
+				var allObjs = new ArrayList<Object>();
 
-				switch (notification.getEventType()) {
-				case Notification.ADD:
-					eobjs.add((EObject) notification.getNewValue());
-				case Notification.REMOVE:
-					eobjs.add((EObject) notification.getOldValue());
-				case Notification.MOVE:
-					eobjs.add((EObject) notification.getNewValue());
-					eobjs.add((EObject) notification.getOldValue());
-				case Notification.ADD_MANY:
-					eobjs.addAll((EList<EObject>) notification.getNewValue());
-				case Notification.REMOVE_MANY:
-					eobjs.addAll((EList<EObject>) notification.getOldValue());
-				default:
+				allObjs.add(notification.getNewValue());
+				allObjs.add(notification.getOldValue());
+				allObjs.add(notification.getNotifier());
+				allObjs.add(notification.getFeature());
+
+				var eobjs = new ArrayList<EObject>();
+				for (var obj : allObjs) {
+					filterEObjects(obj, eobjs);
 				}
 
 				for (var obj : eobjs) {
 					if (uriConverter.containsKey(obj)) {
-						uriConverter.get(obj).setElement2(obj.eResource().getURIFragment(obj));
+						uriConverter.get(obj).setElement2(obj.eResource().getURI()
+								.appendFragment(obj.eResource().getURIFragment(obj)).toString());
 					}
 				}
+			}
+
+			private void filterEObjects(Object obj, List<EObject> eobjList) {
+				if (obj == null || obj instanceof EChange || obj instanceof EStructuralFeature)
+					return;
+				if (obj instanceof Collection)
+					((Collection<?>) obj).stream().forEach((o) -> filterEObjects(o, eobjList));
+				if (obj instanceof EObject)
+					eobjList.add((EObject) obj);
 			}
 		};
 
@@ -106,6 +115,10 @@ public class RemoveRedundantChangesRule extends ChangePreprocessingRule {
 												removeRedundantReplaceSingleValuedEAttributeChanges.apply(
 
 														changeSequence)))));
+
+		returnValue.stream().filter((c) -> c instanceof UnsetFeature<?, ?>).map((c) -> (UnsetFeature<?, ?>) c)
+				.filter((c) -> ChangeUtil.isCacheID(c.getAffectedEObjectID())).collect(Collectors.toList())
+				.forEach(returnValue::remove);
 
 		for (var processedChange : returnValue) {
 			var affectedObj = ChangeUtil.getAffectedEObject(processedChange);
