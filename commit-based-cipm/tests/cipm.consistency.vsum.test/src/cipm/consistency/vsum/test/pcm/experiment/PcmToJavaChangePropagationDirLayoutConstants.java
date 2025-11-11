@@ -1,6 +1,8 @@
 package cipm.consistency.vsum.test.pcm.experiment;
 
 public final class PcmToJavaChangePropagationDirLayoutConstants {
+	private static final String vsumDirName = "vsum";
+
 	private static final String changesSaveDirName = "changes";
 	private static final String javaChangesSaveFileName = "javaChanges.changes";
 	private static final String pcmChangesSaveFileName = "pcmChanges.changes";
@@ -24,7 +26,11 @@ public final class PcmToJavaChangePropagationDirLayoutConstants {
 	private static final String propagatedModelRootDirName = "models";
 	private static final String experimentResultsFileName = "experimentResults.json";
 
-	private static final String vsumCorrespondenceModelName = "correspondence.correspondence";
+	private static final String vsumCorrespondenceModelName = "correspondences.correspondence";
+
+	public static String getVsumdirname() {
+		return vsumDirName;
+	}
 
 	public static String getChangessavedirname() {
 		return changesSaveDirName;

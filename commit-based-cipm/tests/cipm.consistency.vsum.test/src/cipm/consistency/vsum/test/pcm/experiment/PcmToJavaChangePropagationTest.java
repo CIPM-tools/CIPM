@@ -128,24 +128,9 @@ public class PcmToJavaChangePropagationTest {
 		JavaModelAccess.removeJavaModel();
 	}
 
-	/**
-	 * Use {@link #getPropagatedModelsRootPath()} as the root directory, so that the
-	 * initial states of the models are not modified, allowing them to be used in
-	 * assertions later on. <br>
-	 * <br>
-	 * It is not recommended to call the super method from the concrete classes
-	 * while overriding this method, in order to keep the construction clear and to
-	 * avoid possible side effects. If only a minimal PCM is desired, the super
-	 * method can be used.
-	 * 
-	 * @implSpec AbstractPcmCprTest: Creates a minimal PCM without any
-	 *           correspondences by default
-	 * 
-	 * @return The PCM facade that will be used within this test.
-	 */
 	protected PcmFacade setupPcmFacade() {
 		var pcmFacade = new PcmFacade();
-		pcmFacade.initialize(dirLayout.getPropagatedDirLayout().getPcmDirPath().getParent());
+		pcmFacade.initialize(dirLayout.getPropagatedDirLayout().getPcmDirPath());
 		return pcmFacade;
 	}
 

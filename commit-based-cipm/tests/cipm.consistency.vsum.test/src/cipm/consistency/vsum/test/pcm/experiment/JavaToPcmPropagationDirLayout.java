@@ -56,11 +56,11 @@ public class JavaToPcmPropagationDirLayout extends CommitIntegrationDirLayout {
 	}
 
 	public Path getJavaModelSavePath() {
-		return this.getCodeDirPath();
+		return this.getCodeDirPath().resolve(PcmToJavaChangePropagationDirLayoutConstants.getJavafilename());
 	}
 
 	public Path getIMSavePath() {
-		return this.getIMSavePath();
+		return this.getImDirPath().resolve(PcmToJavaChangePropagationDirLayoutConstants.getImfilename());
 	}
 
 	public Path getPcmRepositoryPath() {
@@ -85,7 +85,7 @@ public class JavaToPcmPropagationDirLayout extends CommitIntegrationDirLayout {
 	}
 
 	public Path getVSUMCorrespondencesPath() {
-		return this.getVsumDirPath()
+		return this.getVsumDirPath().resolve(PcmToJavaChangePropagationDirLayoutConstants.getVsumdirname())
 				.resolve(PcmToJavaChangePropagationDirLayoutConstants.getVsumcorrespondencemodelname());
 	}
 }

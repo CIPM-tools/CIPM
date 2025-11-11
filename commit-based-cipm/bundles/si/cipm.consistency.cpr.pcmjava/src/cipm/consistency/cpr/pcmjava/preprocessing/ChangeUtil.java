@@ -7,6 +7,7 @@ import java.util.List;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 
 import de.uka.ipd.sdq.identifier.Identifier;
@@ -25,13 +26,60 @@ import tools.vitruv.change.atomic.feature.list.RemoveFromListEChange;
 import tools.vitruv.change.atomic.feature.list.UpdateSingleListEntryEChange;
 import tools.vitruv.change.atomic.root.InsertRootEObject;
 import tools.vitruv.change.atomic.root.RemoveRootEObject;
+import tools.vitruv.change.atomic.root.RootEChange;
 
 public final class ChangeUtil {
+	private static final String cacheIDPrefix = "cache:/";
 	/*
 	 * FIXME Unless 2 EObjects are created with features that make them unique,
 	 * there is no precise way to determine their equality. Dependencies across
 	 * changes have to be analysed to determine what concrete instances are used.
 	 */
+
+	public static boolean isCacheURI(URI uri) {
+		return isCacheURI(uri.toString());
+	}
+
+	public static boolean isCacheURI(String uri) {
+		return uri.startsWith(cacheIDPrefix);
+	}
+
+	public static void adaptChangeURIs(Resource changeResource) {
+		for (var change : changeResource.getContents()) {
+			if (change instanceof EChange)
+				adaptChangeURIs((EChange) change);
+		}
+	}
+
+	public static void adaptChangeURIs(EChange change) {
+		if (change.eResource() == null)
+			return;
+
+		var affectedID = getAffectedEObjectID(change);
+		if (affectedID != null) {
+			setAffectedEObjectID(change, adaptURI(affectedID, change.eResource()));
+		}
+		var oldID = getOldValueID(change);
+		if (oldID != null) {
+			setOldValueID(change, adaptURI(oldID, change.eResource()));
+		}
+		var newID = getNewValueID(change);
+		if (newID != null) {
+			setNewValueID(change, adaptURI(newID, change.eResource()));
+		}
+		var uri = getRootChangeURI(change);
+		if (uri != null) {
+			setRootChangeURI(change, change.eResource().getURI().toString());
+		}
+	}
+
+	private static String adaptURI(String uri, Resource res) {
+		if (isCacheURI(uri))
+			return uri;
+
+		var fragment = URI.createURI(uri).fragment();
+		return res.getURI().appendFragment(fragment).toString();
+	}
 
 	public static boolean eObjectsNonNullAndEqual(EObject obj1, EObject obj2) {
 		if (obj1 == null || obj2 == null)
@@ -120,6 +168,19 @@ public final class ChangeUtil {
 
 	public static boolean newAndOldValuesPresentAndEqual(EChange additiveAndSubractiveChange) {
 		return newAndOldValuesPresentAndEqual(additiveAndSubractiveChange, additiveAndSubractiveChange);
+	}
+
+	public static String getRootChangeURI(EChange change) {
+		if (change instanceof RootEChange) {
+			return ((RootEChange) change).getUri();
+		}
+		return null;
+	}
+
+	public static void setRootChangeURI(EChange change, String newURI) {
+		if (change instanceof RootEChange) {
+			((RootEChange) change).setUri(newURI);
+		}
 	}
 
 	public static EObject getAffectedEObject(EChange change) {
