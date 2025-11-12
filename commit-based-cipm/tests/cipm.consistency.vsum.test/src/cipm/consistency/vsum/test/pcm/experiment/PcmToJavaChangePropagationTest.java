@@ -306,10 +306,16 @@ public class PcmToJavaChangePropagationTest {
 							&& ChangeUtil.getNewValueID(currentChange).equals(cachedEObjectURI);
 
 			// Skip SEFF changes
-			if ((ChangeUtil.getOldValueID(currentChange) != null
-					&& ChangeUtil.getOldValueID(currentChange).contains("serviceEffectSpecifications"))
+			if ((ChangeUtil.getAffectedFeature(currentChange) != null
+					&& ChangeUtil.getAffectedFeature(currentChange).getName().contains("serviceEffectSpecifications"))
+					||
+
+					(ChangeUtil.getOldValueID(currentChange) != null
+							&& ChangeUtil.getOldValueID(currentChange).contains("serviceEffectSpecifications"))
+
 					|| (ChangeUtil.getNewValueID(currentChange) != null
 							&& ChangeUtil.getNewValueID(currentChange).contains("serviceEffectSpecifications"))
+
 					|| (ChangeUtil.getAffectedEObjectID(currentChange) != null && ChangeUtil
 							.getAffectedEObjectID(currentChange).contains("serviceEffectSpecifications"))) {
 				createChange = null;
