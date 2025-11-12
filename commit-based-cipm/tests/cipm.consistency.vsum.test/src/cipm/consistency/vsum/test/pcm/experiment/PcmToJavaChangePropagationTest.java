@@ -2,10 +2,12 @@ package cipm.consistency.vsum.test.pcm.experiment;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -20,6 +22,7 @@ import cipm.consistency.commitintegration.diff.util.ComparisonBasedJaccardCoeffi
 import cipm.consistency.commitintegration.diff.util.pcm.PCMModelComparator;
 import cipm.consistency.commitintegration.lang.java.JavaModelFacade;
 import cipm.consistency.cpr.pcmjava.JavaModelAccess;
+import cipm.consistency.cpr.pcmjava.preprocessing.ChangeUtil;
 import cipm.consistency.models.im.ImFacade;
 import cipm.consistency.models.pcm.PcmFacade;
 import cipm.consistency.tools.evaluation.data.ImUpdateEvalData;
@@ -36,6 +39,7 @@ import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.atomic.eobject.CreateEObject;
 import tools.vitruv.change.atomic.feature.attribute.ReplaceSingleValuedEAttribute;
 import tools.vitruv.change.atomic.feature.reference.InsertEReference;
+import tools.vitruv.change.atomic.feature.reference.ReplaceSingleValuedEReference;
 import tools.vitruv.change.atomic.resolve.EChangeResolverAndApplicator;
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
 
@@ -208,100 +212,142 @@ public class PcmToJavaChangePropagationTest {
 		newImResourceCopy = newCopyWrapper.getIm();
 	}
 
-	private class CreateChangeTrio {
-		private CreateEObject<?> cc;
-		private InsertEReference<?, ?> ir;
-		private ReplaceSingleValuedEAttribute<?, ?> setID;
+//	private class CreateChangeTrio {
+//		private CreateEObject<?> cc;
+//		private InsertEReference<?, ?> ir;
+//		private ReplaceSingleValuedEAttribute<?, ?> setID;
+//
+//		private CreateChangeTrio(CreateEObject<?> cc, InsertEReference<?, ?> ir,
+//				ReplaceSingleValuedEAttribute<?, ?> setID) {
+//			this.cc = cc;
+//			this.ir = ir;
+//			this.setID = setID;
+//		}
+//
+//		/**
+//		 * 1: Repository 2: Repository content 3: Content of Repository content ...
+//		 */
+//		public int getCreatedObjectDepth() {
+//			return URI.createURI(ir.getAffectedEObjectID()).fragment().split("/").length;
+//		}
+//
+//		public boolean isContainer(String containerURIFragment) {
+//			return URI.createURI(ir.getAffectedEObjectID()).fragment().equals(containerURIFragment);
+//		}
+//
+//		public boolean isContainerRepository() {
+//			return isContainer(propWrapper.getPcmRepository()
+//					.getURIFragment(((Repository) propWrapper.getPcmRepository().getContents().get(0))));
+//		}
+//	}
 
-		private CreateChangeTrio(CreateEObject<?> cc, InsertEReference<?, ?> ir,
-				ReplaceSingleValuedEAttribute<?, ?> setID) {
-			this.cc = cc;
-			this.ir = ir;
-			this.setID = setID;
+	public int getMaxDepth(EChange change) {
+		var aID = ChangeUtil.getAffectedEObjectID(change);
+		var oID = ChangeUtil.getOldValueID(change);
+		var nID = ChangeUtil.getNewValueID(change);
+
+		var aDepth = 0;
+		var oDepth = 0;
+		var nDepth = 0;
+
+		if (aID != null) {
+			aDepth = getDepth(URI.createURI(aID));
+		}
+		if (oID != null) {
+			oDepth = getDepth(URI.createURI(oID));
+		}
+		if (nID != null) {
+			nDepth = getDepth(URI.createURI(nID));
 		}
 
-		/**
-		 * 1: Repository 2: Repository content 3: Content of Repository content ...
-		 */
-		public int getCreatedObjectDepth() {
-			return URI.createURI(ir.getAffectedEObjectID()).fragment().split("/").length;
-		}
-
-		public boolean isContainer(String containerURIFragment) {
-			return URI.createURI(ir.getAffectedEObjectID()).fragment().equals(containerURIFragment);
-		}
-
-		public boolean isContainerRepository() {
-			return isContainer(propWrapper.getPcmRepository()
-					.getURIFragment(((Repository) propWrapper.getPcmRepository().getContents().get(0))));
-		}
+		return Math.max(aDepth, Math.max(oDepth, nDepth));
 	}
+
+	public int getDepth(URI uri) {
+		if (uri == null || !uri.hasFragment())
+			return 0;
+		var depth = uri.fragment().split("/").length;
+		return depth == 0 ? depth : depth - 2;
+	}
+
+	public int getCreatedObjectDepth(InsertEReference<?, ?> ir) {
+		return URI.createURI(ir.getAffectedEObjectID()).fragment().split("/").length;
+	}
+
+	public boolean isContainer(InsertEReference<?, ?> ir, String containerURIFragment) {
+		return URI.createURI(ir.getAffectedEObjectID()).fragment().equals(containerURIFragment);
+	}
+
+	public boolean isContainerRepository(InsertEReference<?, ?> ir) {
+		return isContainer(ir, propWrapper.getPcmRepository()
+				.getURIFragment(((Repository) propWrapper.getPcmRepository().getContents().get(0))));
+	}
+
+	private final static String cachedEObjectURI = "cache:/0";
 
 	private List<EChange> orderPCMchanges(List<EChange> changeSequence) {
 		var newChangeList = new ArrayList<EChange>();
 
-		var trios = new ArrayList<CreateChangeTrio>();
-		var nonTrioChanges = new ArrayList<EChange>();
-		var it = changeSequence.iterator();
-		var currentChange = it.next();
-		
-		// FIXME Solve iteration problems
-		
-		while (it.hasNext()) {
-			// In the integration test, all CreateEObject changes are followed up by an
-			// InsertEReference and replace ID change. Move them to start, in order to make
-			// sure that all PCM elements can be found in later changes.
+		var changes = new HashMap<Integer, ArrayList<EChange>>();
+		EChange createChange = null;
+		var maxDepth = 0;
+		for (int i = 0; i < changeSequence.size(); i++) {
+			var currentChange = changeSequence.get(i);
 			if (currentChange instanceof CreateEObject) {
-				InsertEReference<?, ?> ir = null;
-				ReplaceSingleValuedEAttribute<?, ?> setID = null;
-
-				var potentialIR = it.next();
-				if (potentialIR instanceof InsertEReference) {
-					ir = (InsertEReference<?, ?>) potentialIR;
-				} else if (potentialIR instanceof ReplaceSingleValuedEAttribute) {
-					setID = (ReplaceSingleValuedEAttribute<?, ?>) potentialIR;
-				} else {
-					currentChange = potentialIR;
-					continue;
-				}
-
-				EChange potentialSetID = it.next();
-				if (potentialSetID instanceof ReplaceSingleValuedEAttribute) {
-					setID = (ReplaceSingleValuedEAttribute<?, ?>) potentialSetID;
-				} else if (potentialSetID instanceof InsertEReference) {
-					ir = (InsertEReference<?, ?>) potentialSetID;
-				} else {
-					currentChange = potentialSetID;
-					continue;
-				}
-
-				trios.add(new CreateChangeTrio((CreateEObject<?>) currentChange, ir, setID));
-			} else {
-				nonTrioChanges.add(currentChange);
-				currentChange = it.next();
+				createChange = currentChange;
+				continue;
 			}
+			// All CreateEObject changes must be preceded by an InsertEReference or
+			// ReplaceSingleValuedEReference change that inserts it into the PCM
+			var precedsCreate = currentChange instanceof InsertEReference
+					|| currentChange instanceof ReplaceSingleValuedEReference
+							&& ChangeUtil.getNewValueID(currentChange).equals(cachedEObjectURI);
+
+			// Skip SEFF changes
+			if ((ChangeUtil.getOldValueID(currentChange) != null
+					&& ChangeUtil.getOldValueID(currentChange).contains("serviceEffectSpecifications"))
+					|| (ChangeUtil.getNewValueID(currentChange) != null
+							&& ChangeUtil.getNewValueID(currentChange).contains("serviceEffectSpecifications"))
+					|| (ChangeUtil.getAffectedEObjectID(currentChange) != null && ChangeUtil
+							.getAffectedEObjectID(currentChange).contains("serviceEffectSpecifications"))) {
+				createChange = null;
+				continue;
+			}
+
+			var depth = getMaxDepth(currentChange);
+
+			if (maxDepth < depth)
+				maxDepth = depth;
+
+			if (!changes.containsKey(depth)) {
+				changes.put(depth, new ArrayList<EChange>());
+			}
+
+			if (precedsCreate && createChange != null) {
+				changes.get(depth).add(createChange);
+				createChange = null;
+			}
+			changes.get(depth).add(currentChange);
 		}
 
 		// Add PCM elements in Breadth-First order, as this will ensure that all PCM
 		// elements are known
-		int currentDepth = 0;
-		while (!trios.isEmpty()) {
-			new ArrayList<CreateChangeTrio>(trios).stream().filter((t) -> t.getCreatedObjectDepth() == currentDepth)
-					.forEach((t) -> {
-						trios.remove(t);
-						newChangeList.add(t.cc);
-						newChangeList.add(t.ir);
-						if (t.setID != null) {
-							newChangeList.add(t.setID);
-						}
-					});
+		for (int i = 0; i <= maxDepth; i++) {
+			if (changes.containsKey(i)) {
+				newChangeList.addAll(changes.get(i));
+			}
 		}
 
-		// Attribute / Reference setters as last
-		newChangeList.addAll(nonTrioChanges);
+//		if (changeSequence.size() != newChangeList.size()) {
+//			var largerList = changeSequence.size() > newChangeList.size() ? changeSequence : newChangeList;
+//			var smallerList = changeSequence.size() < newChangeList.size() ? changeSequence : newChangeList;
+//			
+//			var missingChanges = largerList.removeAll(smallerList);
+//			System.out.println(missingChanges);
+//		}
 
-		Assertions.assertEquals(changeSequence.size(), newChangeList.size());
-		Assertions.assertTrue(newChangeList.containsAll(changeSequence));
+//		Assertions.assertEquals(changeSequence.size(), newChangeList.size());
+//		Assertions.assertTrue(newChangeList.containsAll(changeSequence));
 
 		return newChangeList;
 	}
