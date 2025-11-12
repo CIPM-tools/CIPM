@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -32,6 +33,9 @@ import mir.reactions.imInit.ImInitChangePropagationSpecification;
 import mir.reactions.pcmImUpdate.PcmImUpdateChangePropagationSpecification;
 import mir.reactions.pcmInit.PcmInitChangePropagationSpecification;
 import tools.vitruv.change.atomic.EChange;
+import tools.vitruv.change.atomic.eobject.CreateEObject;
+import tools.vitruv.change.atomic.feature.attribute.ReplaceSingleValuedEAttribute;
+import tools.vitruv.change.atomic.feature.reference.InsertEReference;
 import tools.vitruv.change.atomic.resolve.EChangeResolverAndApplicator;
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
 
@@ -204,6 +208,104 @@ public class PcmToJavaChangePropagationTest {
 		newImResourceCopy = newCopyWrapper.getIm();
 	}
 
+	private class CreateChangeTrio {
+		private CreateEObject<?> cc;
+		private InsertEReference<?, ?> ir;
+		private ReplaceSingleValuedEAttribute<?, ?> setID;
+
+		private CreateChangeTrio(CreateEObject<?> cc, InsertEReference<?, ?> ir,
+				ReplaceSingleValuedEAttribute<?, ?> setID) {
+			this.cc = cc;
+			this.ir = ir;
+			this.setID = setID;
+		}
+
+		/**
+		 * 1: Repository 2: Repository content 3: Content of Repository content ...
+		 */
+		public int getCreatedObjectDepth() {
+			return URI.createURI(ir.getAffectedEObjectID()).fragment().split("/").length;
+		}
+
+		public boolean isContainer(String containerURIFragment) {
+			return URI.createURI(ir.getAffectedEObjectID()).fragment().equals(containerURIFragment);
+		}
+
+		public boolean isContainerRepository() {
+			return isContainer(propWrapper.getPcmRepository()
+					.getURIFragment(((Repository) propWrapper.getPcmRepository().getContents().get(0))));
+		}
+	}
+
+	private List<EChange> orderPCMchanges(List<EChange> changeSequence) {
+		var newChangeList = new ArrayList<EChange>();
+
+		var trios = new ArrayList<CreateChangeTrio>();
+		var nonTrioChanges = new ArrayList<EChange>();
+		var it = changeSequence.iterator();
+		var currentChange = it.next();
+		
+		// FIXME Solve iteration problems
+		
+		while (it.hasNext()) {
+			// In the integration test, all CreateEObject changes are followed up by an
+			// InsertEReference and replace ID change. Move them to start, in order to make
+			// sure that all PCM elements can be found in later changes.
+			if (currentChange instanceof CreateEObject) {
+				InsertEReference<?, ?> ir = null;
+				ReplaceSingleValuedEAttribute<?, ?> setID = null;
+
+				var potentialIR = it.next();
+				if (potentialIR instanceof InsertEReference) {
+					ir = (InsertEReference<?, ?>) potentialIR;
+				} else if (potentialIR instanceof ReplaceSingleValuedEAttribute) {
+					setID = (ReplaceSingleValuedEAttribute<?, ?>) potentialIR;
+				} else {
+					currentChange = potentialIR;
+					continue;
+				}
+
+				EChange potentialSetID = it.next();
+				if (potentialSetID instanceof ReplaceSingleValuedEAttribute) {
+					setID = (ReplaceSingleValuedEAttribute<?, ?>) potentialSetID;
+				} else if (potentialSetID instanceof InsertEReference) {
+					ir = (InsertEReference<?, ?>) potentialSetID;
+				} else {
+					currentChange = potentialSetID;
+					continue;
+				}
+
+				trios.add(new CreateChangeTrio((CreateEObject<?>) currentChange, ir, setID));
+			} else {
+				nonTrioChanges.add(currentChange);
+				currentChange = it.next();
+			}
+		}
+
+		// Add PCM elements in Breadth-First order, as this will ensure that all PCM
+		// elements are known
+		int currentDepth = 0;
+		while (!trios.isEmpty()) {
+			new ArrayList<CreateChangeTrio>(trios).stream().filter((t) -> t.getCreatedObjectDepth() == currentDepth)
+					.forEach((t) -> {
+						trios.remove(t);
+						newChangeList.add(t.cc);
+						newChangeList.add(t.ir);
+						if (t.setID != null) {
+							newChangeList.add(t.setID);
+						}
+					});
+		}
+
+		// Attribute / Reference setters as last
+		newChangeList.addAll(nonTrioChanges);
+
+		Assertions.assertEquals(changeSequence.size(), newChangeList.size());
+		Assertions.assertTrue(newChangeList.containsAll(changeSequence));
+
+		return newChangeList;
+	}
+
 	public void pcmToJavaChangePropagationTestTemplate(PcmToJavaChangePropagationDirLayout dirLayout) {
 		this.setUp(dirLayout);
 
@@ -211,9 +313,7 @@ public class PcmToJavaChangePropagationTest {
 		for (var c : pcmChangeRes.getContents()) {
 			pcmChangeList.add((EChange) c);
 		}
-//		for (var c : pcmChangeRes.getContents().subList(0, 15)) {
-//			pcmChangeList.add((EChange) c);
-//		}
+		var orderedPCMChangeList = orderPCMchanges(pcmChangeList);
 
 		var newPcmRepoRes = pcmFacade.getResources().stream()
 				.filter((r) -> r.getURI().lastSegment()
@@ -221,7 +321,7 @@ public class PcmToJavaChangePropagationTest {
 				.findFirst().get();
 
 		// Propagate PCM changes
-		var pcmToJavaProp = this.propagateChangesToResource(newPcmRepoRes, pcmChangeList);
+		var pcmToJavaProp = this.propagateChangesToResource(newPcmRepoRes, orderedPCMChangeList);
 		LOGGER.info("Pcm to Java propagation over");
 //		assertResourcesNotModified();
 //		assertPropagationSuccessful(pcmToJavaProp, pcmChangeList);
