@@ -103,7 +103,13 @@ public class PcmJavaTypeUtil {
 	 *         Otherwise null
 	 */
 	private static ConcreteClassifier getConcreteClassifierTarget(Field javaField) {
-		var target = javaField.getTypeReference().getPureClassifierReference().getTarget();
+		var javaFieldTR = javaField.getTypeReference();
+		if (javaFieldTR == null)
+			return null;
+		var javaFieldPCR = javaFieldTR.getPureClassifierReference();
+		if (javaFieldPCR == null)
+			return null;
+		var target = javaFieldPCR.getTarget();
 		return target instanceof ConcreteClassifier ? (ConcreteClassifier) target : null;
 	}
 
