@@ -46,8 +46,8 @@ routine findOrCreateOrDecideJavaInterface(pcm::OperationInterface pcmIfc) {
 
 			PcmJavaCPRUtils.prepareJavaClassifier(cls)
 
-			PcmJavaCPRUtils.integrateJavaClassifierCorrespondent(correspondenceModel, pcmIfc,
-				cls, namespacesUI.namespaces)
+			PcmJavaCPRUtils.integrateJavaClassifierCorrespondent(correspondenceModel, pcmIfc, cls,
+				namespacesUI.namespaces)
 
 			addCorrespondenceBetween(pcmIfc, cls, "")
 
