@@ -22,15 +22,32 @@ public class PcmJavaTypeUtil {
 	 * @return The Java field in javaType, which matches the given inner type
 	 */
 	public static Field getJavaFieldForIn(DataType pcmInnerType, ConcreteClassifier javaType) {
-		return javaType.getFields().stream().filter((javaF) -> doTypesMatch(pcmInnerType, javaF)).findFirst()
-				.orElse(null);
+		return getJavaFieldForIn(pcmInnerType, javaType, true);
+	}
+
+	/**
+	 * @return The Java field in javaType, which matches the given inner type
+	 */
+	public static Field getJavaFieldForIn(DataType pcmInnerType, ConcreteClassifier javaType,
+			boolean compareInnerTypes) {
+		return javaType.getFields().stream().filter((javaF) -> doTypesMatch(pcmInnerType, javaF, compareInnerTypes))
+				.findFirst().orElse(null);
 	}
 
 	/**
 	 * @return The Java field, which matches the given inner declaration
 	 */
 	public static Field getJavaFieldForIn(InnerDeclaration pcmInnerDeclaration, ConcreteClassifier javaType) {
-		return javaType.getFields().stream().filter((javaF) -> doTypesMatch(pcmInnerDeclaration, javaF)).findFirst()
+		return getJavaFieldForIn(pcmInnerDeclaration, javaType, true);
+	}
+
+	/**
+	 * @return The Java field, which matches the given inner declaration
+	 */
+	public static Field getJavaFieldForIn(InnerDeclaration pcmInnerDeclaration, ConcreteClassifier javaType,
+			boolean compareInnerTypes) {
+		return javaType.getFields().stream()
+				.filter((javaF) -> doTypesMatch(pcmInnerDeclaration, javaF, compareInnerTypes)).findFirst()
 				.orElse(null);
 	}
 
@@ -54,12 +71,15 @@ public class PcmJavaTypeUtil {
 	 * 
 	 * @return Whether given types match
 	 */
-	public static boolean doTypesMatch(CollectionDataType pcmType, ConcreteClassifier javaType) {
+	public static boolean doTypesMatch(CollectionDataType pcmType, ConcreteClassifier javaType,
+			boolean compareInnerTypes) {
 		var pcmName = pcmType.getEntityName();
 		if (!pcmName.equals(javaType.getName()))
 			return false;
+		if (!compareInnerTypes)
+			return true;
 
-		var matchingField = getJavaFieldForIn(pcmType.getInnerType_CollectionDataType(), javaType);
+		var matchingField = getJavaFieldForIn(pcmType.getInnerType_CollectionDataType(), javaType, compareInnerTypes);
 		return pcmType.getInnerType_CollectionDataType() == null || matchingField != null;
 	}
 
@@ -74,28 +94,38 @@ public class PcmJavaTypeUtil {
 	 * 
 	 * @return Whether given types match
 	 */
-	public static boolean doTypesMatch(CompositeDataType pcmType, ConcreteClassifier javaType) {
+	public static boolean doTypesMatch(CompositeDataType pcmType, ConcreteClassifier javaType,
+			boolean compareInnerTypes) {
 		var pcmName = pcmType.getEntityName();
 		if (!pcmName.equals(javaType.getName()))
 			return false;
+		if (!compareInnerTypes)
+			return true;
 
 		return pcmType.getInnerDeclaration_CompositeDataType().stream()
-				.allMatch((pcmT) -> getJavaFieldForIn(pcmT, javaType) != null);
+				.allMatch((pcmT) -> getJavaFieldForIn(pcmT, javaType, compareInnerTypes) != null);
 	}
 
 	/**
 	 * @return Whether pcmType and javaField match, based on their names and types
 	 *         they use
 	 */
-	public static boolean doTypesMatch(InnerDeclaration pcmType, Field javaField) {
+	public static boolean doTypesMatch(InnerDeclaration pcmType, Field javaField, boolean compareInnerTypes) {
 		if (!pcmType.getEntityName().equals(javaField.getName()))
 			return false;
-		if (pcmType.getDatatype_InnerDeclaration() == null)
+
+		if (pcmType.getDatatype_InnerDeclaration() == javaField)
+			return true;
+		if (pcmType.getDatatype_InnerDeclaration() == null ^ javaField == null)
 			return false;
+
+		if (!compareInnerTypes)
+			return true;
 
 		var javaTarget = getConcreteClassifierTarget(javaField);
 		return javaTarget != null
-				&& doTypesMatch(pcmType.getDatatype_InnerDeclaration(), (ConcreteClassifier) javaTarget);
+				&& doTypesMatch(pcmType.getDatatype_InnerDeclaration(), (ConcreteClassifier) javaTarget,
+						pcmType.getDatatype_InnerDeclaration() != pcmType.getCompositeDataType_InnerDeclaration());
 	}
 
 	/**
@@ -120,12 +150,22 @@ public class PcmJavaTypeUtil {
 	 *                                  CollectionDataType
 	 */
 	public static boolean doTypesMatch(DataType pcmType, ConcreteClassifier javaType) {
+		return doTypesMatch(pcmType, javaType, true);
+	}
+
+	/**
+	 * @return Whether the given PCM DataType matches the given Java TypeReference
+	 * @throws IllegalArgumentException If the PCM DataType is not an instance of
+	 *                                  PrimitiveDataType, CompositeDataType or
+	 *                                  CollectionDataType
+	 */
+	public static boolean doTypesMatch(DataType pcmType, ConcreteClassifier javaType, boolean compareInnerTypes) {
 		if (pcmType instanceof PrimitiveDataType) {
 			return doTypesMatch((PrimitiveDataType) pcmType, javaType);
 		} else if (pcmType instanceof CompositeDataType) {
-			return doTypesMatch((CompositeDataType) pcmType, javaType);
+			return doTypesMatch((CompositeDataType) pcmType, javaType, compareInnerTypes);
 		} else if (pcmType instanceof CollectionDataType) {
-			return doTypesMatch((CollectionDataType) pcmType, javaType);
+			return doTypesMatch((CollectionDataType) pcmType, javaType, compareInnerTypes);
 		} else if (pcmType == null) {
 			throw new IllegalArgumentException("PCM DataType is null: " + pcmType);
 		} else {
@@ -138,8 +178,16 @@ public class PcmJavaTypeUtil {
 	 * Fields.
 	 */
 	public static boolean doTypesMatch(DataType pcmType, Field javaField) {
+		return doTypesMatch(pcmType, javaField, true);
+	}
+
+	/**
+	 * Variant of {@link #doTypesMatch(DataType, ConcreteClassifier)} for Java
+	 * Fields.
+	 */
+	public static boolean doTypesMatch(DataType pcmType, Field javaField, boolean compareInnerTypes) {
 		var javaInnerType = getConcreteClassifierTarget(javaField);
-		return javaInnerType != null && doTypesMatch(pcmType, (ConcreteClassifier) javaInnerType);
+		return javaInnerType != null && doTypesMatch(pcmType, (ConcreteClassifier) javaInnerType, compareInnerTypes);
 	}
 
 	/**
