@@ -29,7 +29,11 @@ public class JavaCorrespondentDecisionUserInteraction extends AbstractUserIntera
 
 		if (!this.isResolved()) {
 			var choice = UserInteractionFactory.instance.createDialogUserInteractor().getSingleSelectionDialogBuilder()
-					.message(String.format("Which Java element corresponds to %s?", triggeringPCMelement))
+					.message(String.format("Which Java element corresponds to %s (name: %s)?", triggeringPCMelement,
+							triggeringPCMelement instanceof org.palladiosimulator.pcm.core.entity.NamedElement
+									? ((org.palladiosimulator.pcm.core.entity.NamedElement) triggeringPCMelement)
+											.getEntityName()
+									: "NO Name"))
 					.choices(choices).startInteraction();
 			var otherSide = possibleJavaCorrespondents.get(choice);
 			javaCorrespondent = otherSide;
