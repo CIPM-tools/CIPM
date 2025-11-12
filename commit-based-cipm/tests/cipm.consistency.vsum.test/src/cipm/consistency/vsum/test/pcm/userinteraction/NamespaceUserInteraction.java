@@ -28,7 +28,13 @@ public class NamespaceUserInteraction extends AbstractUserInteraction {
 	@Override
 	public void performManualUserInteraction() {
 		var name = UserInteractionFactory.instance.createDialogUserInteractor().getTextInputDialogBuilder()
-				.message("Full namespace of the correspondent (without name)").startInteraction();
+				.message(String.format("Full namespace (without name) of the correspondent of %s (name: %s)",
+						triggeringPCMElement,
+						triggeringPCMElement instanceof org.palladiosimulator.pcm.core.entity.NamedElement
+								? ((org.palladiosimulator.pcm.core.entity.NamedElement) triggeringPCMElement)
+										.getEntityName()
+								: "NO Name"))
+				.startInteraction();
 
 		var namespaces = new ArrayList<Object>();
 		for (var ns : name.split("\\.")) {

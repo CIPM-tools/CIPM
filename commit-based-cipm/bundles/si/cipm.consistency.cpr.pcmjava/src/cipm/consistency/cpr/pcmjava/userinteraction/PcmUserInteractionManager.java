@@ -77,7 +77,7 @@ public final class PcmUserInteractionManager {
 		}
 	}
 
-	private static void computeAbsentFeatureValue(FeatureEntry entry) {
+	private static FeatureEntry computeAbsentFeatureValue(FeatureEntry entry) {
 		var it = new ArrayList<>(wrappers).iterator();
 
 		// Do not iterate over wrappers as performManualUserInteraction
@@ -89,8 +89,11 @@ public final class PcmUserInteractionManager {
 			} else {
 				currentW.performManualUserInteraction();
 				// Manual interaction should update entry
+				return desiredFeatureValues.getAssignedDesiredFeatureEntry(entry.getTriggeringPCMElement(),
+						entry.getAffectedJavaElementFeature()).orElseGet(() -> null);
 			}
 		}
+		return null;
 	}
 
 	public static Object getDesiredFeatureValue(EObject triggeringPCMElement, EObject affectedJavaElement,
@@ -102,7 +105,7 @@ public final class PcmUserInteractionManager {
 		}
 
 		if (!entry.hasAssignedValue() && computeIfAbsent) {
-			computeAbsentFeatureValue(entry);
+			entry = computeAbsentFeatureValue(entry);
 		}
 		return entry.hasAssignedValue() ? entry.getValue() : null;
 	}
@@ -149,12 +152,12 @@ public final class PcmUserInteractionManager {
 			desiredCorrespondences.addDesiredCorrespondenceEntry(corEntry);
 		}
 
-		computeAbsentCorrespondence(corEntry);
+		corEntry = computeAbsentCorrespondence(corEntry);
 
 		return corEntry.hasAnyCompleteCorrespondences() ? corEntry : null;
 	}
 
-	private static void computeAbsentCorrespondence(CorrespondenceEntry corEntry) {
+	private static CorrespondenceEntry computeAbsentCorrespondence(CorrespondenceEntry corEntry) {
 		var it = new ArrayList<>(wrappers).iterator();
 		// Do not iterate over wrappers as performManualUserInteraction
 		// may lead to removal of currentW after it finishes
@@ -165,10 +168,11 @@ public final class PcmUserInteractionManager {
 			} else {
 				currentW.performManualUserInteraction();
 				// Manual interaction is supposed to update the correspondences
-				corEntry = desiredCorrespondences.getCompleteDesiredCorrespondence(corEntry.getKnownElement(),
+				return desiredCorrespondences.getCompleteDesiredCorrespondence(corEntry.getKnownElement(),
 						corEntry.getCorrespondenceTag());
 			}
 		}
+		return null;
 	}
 
 	public static boolean hasDesiredCorrespondence(EObject knownSide, String correspondenceTag) {

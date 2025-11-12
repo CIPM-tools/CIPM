@@ -24,7 +24,7 @@ public class NameUserInteraction extends AbstractUserInteraction {
 	@Override
 	public void performManualUserInteraction() {
 		var name = UserInteractionFactory.instance.createDialogUserInteractor().getTextInputDialogBuilder()
-				.message("Name of the correspondent").startInteraction();
+				.message("Name of the correspondent" + triggeringPCMElement).startInteraction();
 
 		if (this.checkNameValue(name)) {
 			var entry = new FeatureEntry(this.triggeringPCMElement, toBeNamed, clsNameFeat, name);

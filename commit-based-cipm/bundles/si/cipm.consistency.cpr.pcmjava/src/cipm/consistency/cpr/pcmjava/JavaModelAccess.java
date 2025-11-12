@@ -69,6 +69,8 @@ public final class JavaModelAccess {
 	public static Set<ConcreteClassifier> findPotentialConcreteClassifiers(String name) {
 		var clsSet = new HashSet<ConcreteClassifier>();
 
+		// TODO Scan for Java elements coming from SyntheticClass
+		
 		getAllJavaModelElements().stream().filter((o) -> o instanceof ConcreteClassifier)
 				.map((cls) -> ((ConcreteClassifier) cls))
 				.filter((cls) -> cls.getName() != null && cls.getName().equals(name)).forEach(clsSet::add);

@@ -90,6 +90,8 @@ public class PcmJavaTypeUtil {
 	public static boolean doTypesMatch(InnerDeclaration pcmType, Field javaField) {
 		if (!pcmType.getEntityName().equals(javaField.getName()))
 			return false;
+		if (pcmType.getDatatype_InnerDeclaration() == null)
+			return false;
 
 		var javaTarget = getConcreteClassifierTarget(javaField);
 		return javaTarget != null
@@ -118,8 +120,10 @@ public class PcmJavaTypeUtil {
 			return doTypesMatch((CompositeDataType) pcmType, javaType);
 		} else if (pcmType instanceof CollectionDataType) {
 			return doTypesMatch((CollectionDataType) pcmType, javaType);
+		} else if (pcmType == null) {
+			throw new IllegalArgumentException("PCM DataType is null: " + pcmType);
 		} else {
-			throw new IllegalArgumentException("Unknown PCM DataType");
+			throw new IllegalArgumentException("Unknown PCM DataType: " + pcmType);
 		}
 	}
 
