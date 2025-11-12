@@ -293,6 +293,10 @@ public class PcmToJavaChangePropagationTest {
 		var changes = new HashMap<Integer, ArrayList<EChange>>();
 		EChange createChange = null;
 		var maxDepth = 0;
+
+		// Regex used to analyse / verify (remove #):
+		// </eobject:CreateEObject>(?!\r\n###(?:<reference:InsertEReference|<attribute:ReplaceSingleValuedEAttribute|<reference:ReplaceSingleValuedEReference))
+
 		for (int i = 0; i < changeSequence.size(); i++) {
 			var currentChange = changeSequence.get(i);
 			if (currentChange instanceof CreateEObject) {
@@ -374,6 +378,9 @@ public class PcmToJavaChangePropagationTest {
 						.equals(PcmToJavaChangePropagationDirLayoutConstants.getPcmrepositoryfilename()))
 				.findFirst().get();
 
+		// TODO Ignore DataTypes generated for TypeParameters (such as "T")
+		// Filter by name, if name length is 1, ignore
+
 		PcmUserInteractionManager
 				.addConflictResolutionStrategy(new NamespaceConflictResolutionStrategy(newJavaResourceCopy));
 
@@ -410,6 +417,8 @@ public class PcmToJavaChangePropagationTest {
 		model.setComponentDetectionStrategies(List.of(new UnnamedModuleComponentDetectionStrategy()));
 		model.initialize(dirLayout.getPropagatedDirLayout().getCodeDirPath());
 		var modelRes = model.getResource();
+		// TODO Remove all contents from Java code model, since PCM -> Java propagation
+		// is tested for integration case
 		JavaModelAccess.setJavaModel(modelRes);
 		return model;
 	}
