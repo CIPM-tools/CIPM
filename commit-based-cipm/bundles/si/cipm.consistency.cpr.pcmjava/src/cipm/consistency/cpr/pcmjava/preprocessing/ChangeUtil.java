@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -281,6 +282,12 @@ public final class ChangeUtil {
 		var newVal = getNewValue(change);
 		if (newVal instanceof EObject)
 			return (EObject) newVal;
+		return null;
+	}
+
+	public static EClass getCreatedEObjectType(EChange change) {
+		if (change instanceof CreateEObject)
+			return ((CreateEObject<?>) change).getAffectedEObjectType();
 		return null;
 	}
 
