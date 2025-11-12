@@ -55,18 +55,24 @@ public final class JavaModelAccess {
 	}
 
 	/**
-	 * Ignores synthetic elements ({@link jamopp.recovery.trivial.TrivialRecovery})
+	 * Ignores synthetic elements ({@link jamopp.recovery.trivial.TrivialRecovery}).
+	 * ConcreteClassifier have to be contained in a CompilationUnit to be eligible
+	 * here.
 	 * 
-	 * @return A set of Classifiers found in the Java code model, whose name
+	 * @return A set of ConcreteClassifier found in the Java code model, whose name
 	 *         (without namespaces) matches the given name.
 	 */
 	public static Set<ConcreteClassifier> findPotentialConcreteClassifiers(String name) {
 		var clsSet = new HashSet<ConcreteClassifier>();
-		getTopLevelJavaModelElements().stream().filter((o) -> o instanceof org.emftext.language.java.containers.Package)
-				.map((o) -> ((org.emftext.language.java.containers.Package) o)).map((pac) -> pac.getClassifiers())
-				.flatMap(List::stream).filter((cls) -> cls.getName() != null && cls.getName().equals(name))
-				.forEach(clsSet::add);
-
+		var synthethicCU = getSyntheticCompilationUnit();
+		javaModel.getAllContents().forEachRemaining((o) -> {
+			if (o instanceof ConcreteClassifier) {
+				var castedO = ((ConcreteClassifier) o);
+				if (castedO.getContainingCompilationUnit() != synthethicCU) {
+					clsSet.add(castedO);
+				}
+			}
+		});
 		return clsSet;
 	}
 
