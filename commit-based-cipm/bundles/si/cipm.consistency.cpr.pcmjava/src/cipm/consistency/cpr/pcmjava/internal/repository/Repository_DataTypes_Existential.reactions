@@ -256,8 +256,8 @@ routine findOrCreateOrDecideJavaClassifierForDataType(pcm::DataType pcmDataType)
 
 			PcmJavaCPRUtils.prepareJavaClassifier(cls)
 
-			PcmJavaCPRUtils.integrateJavaClassifierCorrespondent(correspondenceModel, pcmDataType,
-				JavaModelAccess.javaModel, cls, namespacesUI.namespaces)
+			PcmJavaCPRUtils.integrateJavaClassifierCorrespondent(correspondenceModel, pcmDataType, cls,
+				namespacesUI.namespaces)
 
 			addCorrespondenceBetween(pcmDataType, cls, "")
 		// TODO Adapt tag

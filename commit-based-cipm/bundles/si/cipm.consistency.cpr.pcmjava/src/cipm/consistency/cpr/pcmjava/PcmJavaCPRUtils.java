@@ -413,24 +413,8 @@ public final class PcmJavaCPRUtils {
 	 * support the namespace feature, it is instead derived from its containers.
 	 */
 	public static void integrateJavaClassifierCorrespondent(EditableCorrespondenceModelView<?> corView, EObject pcmElem,
-			Resource javaModelResource, ConcreteClassifier javaCls, List<String> namespaces) {
-		PcmJavaCPRUtils.addJavaClassifierIntoResource(javaModelResource, javaCls, namespaces);
-	}
-
-	/**
-	 * @return Whether the given obj is in the given resource r
-	 */
-	public static boolean isInResource(Resource r, EObject obj) {
-		EObject objInR = null;
-		var it = r.getAllContents();
-		while (it.hasNext() && objInR == null) {
-			var currentObj = it.next();
-			if (currentObj == obj) {
-				objInR = currentObj;
-				break;
-			}
-		}
-		return objInR != null;
+			ConcreteClassifier javaCls, List<String> namespaces) {
+		PcmJavaCPRUtils.addJavaClassifierIntoResource(javaCls, namespaces);
 	}
 
 	/**
@@ -440,13 +424,12 @@ public final class PcmJavaCPRUtils {
 	 * @return All JavaRoot instances that were created to add javaCls with given
 	 *         namespaces to r
 	 */
-	public static List<JavaRoot> addJavaClassifierIntoResource(Resource r, ConcreteClassifier javaCls,
-			List<String> javaClsNss) {
-		if (isInResource(r, javaCls)) {
+	public static List<JavaRoot> addJavaClassifierIntoResource(ConcreteClassifier javaCls, List<String> javaClsNss) {
+		if (JavaModelAccess.isInJavaModelResource(javaCls)) {
 			return null;
 		}
 
-		var topContents = r.getContents();
+		var topContents = JavaModelAccess.getTopLevelJavaModelElements();
 
 		var possibleContainers = topContents.stream().filter((c) -> c instanceof JavaRoot).map((c) -> (JavaRoot) c)
 				.collect(Collectors.toCollection(ArrayList::new));
@@ -472,7 +455,7 @@ public final class PcmJavaCPRUtils {
 		}
 
 		var containers = addJavaClassifierIntoJavaRoot(bottomMostExistingParentContainer, javaCls, javaClsNss);
-		r.getContents().addAll(containers);
+		JavaModelAccess.getJavaModel().getContents().addAll(containers);
 		return containers;
 	}
 

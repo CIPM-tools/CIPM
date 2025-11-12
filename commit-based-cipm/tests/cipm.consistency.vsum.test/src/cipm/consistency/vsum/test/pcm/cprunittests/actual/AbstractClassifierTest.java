@@ -23,8 +23,7 @@ public abstract class AbstractClassifierTest extends AbstractPcmJavaCprTest {
 			String javaIfcName, List<String> javaIfcNss) {
 		var ifc = ClassifiersFactory.eINSTANCE.createInterface();
 		ifc.setName(javaIfcName);
-		var jrs = PcmJavaCPRUtils.addJavaClassifierIntoResource(modelRes, ifc, javaIfcNss);
-		modelRes.getContents().addAll(jrs);
+		PcmJavaCPRUtils.addJavaClassifierIntoResource(ifc, javaIfcNss);
 		return ifc;
 	}
 
@@ -32,8 +31,7 @@ public abstract class AbstractClassifierTest extends AbstractPcmJavaCprTest {
 			String className, List<String> classNss) {
 		var cls = ClassifiersFactory.eINSTANCE.createClass();
 		cls.setName(className);
-		var jrs = PcmJavaCPRUtils.addJavaClassifierIntoResource(modelRes, cls, classNss);
-		modelRes.getContents().addAll(jrs);
+		PcmJavaCPRUtils.addJavaClassifierIntoResource(cls, classNss);
 		return cls;
 	}
 

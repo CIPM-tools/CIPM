@@ -2,18 +2,20 @@ package cipm.consistency.cpr.pcmjava;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
+
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.util.EcoreUtil;
+
 import org.emftext.language.java.classifiers.ConcreteClassifier;
+import org.emftext.language.java.containers.CompilationUnit;
+
+import com.google.common.base.Strings;
 
 /**
  * A utility class that grants access to all Java code model elements. <br>
@@ -31,49 +33,39 @@ public final class JavaModelAccess {
 	private JavaModelAccess() {
 	}
 
-	/**
-	 * @return All top-level (i.e. not contained in any parent EObject) EObjects
-	 *         from the Java code model, whose architecture is modeled in its PCM
-	 *         counterpart.
-	 */
-	public static Collection<EObject> getTopLevelJavaModelElements() {
-		return getTopLevelJavaModelElements(null);
+	private static EObject getSyntheticCompilationUnit() {
+		if (javaModel == null)
+			return null;
+		var cu = javaModel.getContents().stream().filter((o) -> o instanceof CompilationUnit)
+				.filter((o) -> Strings.isNullOrEmpty(((CompilationUnit) o).getName())).findFirst();
+		return cu.orElseGet(() -> null);
 	}
 
 	/**
-	 * @return All top-level (i.e. not contained in any parent EObject) EObjects
-	 *         from the Java code model satisfying the given filter, whose
-	 *         architecture is modeled in its PCM counterpart.
+	 * Ignores synthetic elements ({@link jamopp.recovery.trivial.TrivialRecovery})
 	 */
-	public static Collection<EObject> getTopLevelJavaModelElements(Predicate<EObject> filter) {
-		if (filter == null)
-			return new ArrayList<>(javaModel.getContents());
+	public static List<EObject> getTopLevelJavaModelElements() {
+		var topLevelContents = new ArrayList<>(javaModel.getContents());
+		topLevelContents.remove(getSyntheticCompilationUnit());
+		return topLevelContents;
+	}
 
-		return javaModel.getContents().stream().filter(filter).collect(Collectors.toCollection(ArrayList::new));
+	public static boolean isInJavaModelResource(EObject obj) {
+		return obj.eResource() != null && obj.eResource() == javaModel;
 	}
 
 	/**
-	 * @return All contents inside the Java code model:
-	 *         {@code javaModel.getAllContents()}
-	 */
-	public static Collection<EObject> getAllJavaModelElements() {
-		var contents = new ArrayList<EObject>();
-		javaModel.getAllContents().forEachRemaining(contents::add);
-		return contents;
-	}
-
-	/**
+	 * Ignores synthetic elements ({@link jamopp.recovery.trivial.TrivialRecovery})
+	 * 
 	 * @return A set of Classifiers found in the Java code model, whose name
 	 *         (without namespaces) matches the given name.
 	 */
 	public static Set<ConcreteClassifier> findPotentialConcreteClassifiers(String name) {
 		var clsSet = new HashSet<ConcreteClassifier>();
-
-		// TODO Scan for Java elements coming from SyntheticClass
-		
-		getAllJavaModelElements().stream().filter((o) -> o instanceof ConcreteClassifier)
-				.map((cls) -> ((ConcreteClassifier) cls))
-				.filter((cls) -> cls.getName() != null && cls.getName().equals(name)).forEach(clsSet::add);
+		getTopLevelJavaModelElements().stream().filter((o) -> o instanceof org.emftext.language.java.containers.Package)
+				.map((o) -> ((org.emftext.language.java.containers.Package) o)).map((pac) -> pac.getClassifiers())
+				.flatMap(List::stream).filter((cls) -> cls.getName() != null && cls.getName().equals(name))
+				.forEach(clsSet::add);
 
 		return clsSet;
 	}
