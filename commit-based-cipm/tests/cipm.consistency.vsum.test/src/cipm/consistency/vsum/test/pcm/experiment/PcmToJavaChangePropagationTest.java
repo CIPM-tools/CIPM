@@ -23,6 +23,8 @@ import cipm.consistency.commitintegration.diff.util.pcm.PCMModelComparator;
 import cipm.consistency.commitintegration.lang.java.JavaModelFacade;
 import cipm.consistency.cpr.pcmjava.JavaModelAccess;
 import cipm.consistency.cpr.pcmjava.preprocessing.ChangeUtil;
+import cipm.consistency.cpr.pcmjava.userinteraction.NamespaceConflictResolutionStrategy;
+import cipm.consistency.cpr.pcmjava.userinteraction.PcmUserInteractionManager;
 import cipm.consistency.models.im.ImFacade;
 import cipm.consistency.models.pcm.PcmFacade;
 import cipm.consistency.tools.evaluation.data.ImUpdateEvalData;
@@ -365,6 +367,9 @@ public class PcmToJavaChangePropagationTest {
 				.filter((r) -> r.getURI().lastSegment()
 						.equals(PcmToJavaChangePropagationDirLayoutConstants.getPcmrepositoryfilename()))
 				.findFirst().get();
+
+		PcmUserInteractionManager
+				.addConflictResolutionStrategy(new NamespaceConflictResolutionStrategy(newJavaResourceCopy));
 
 		// Propagate PCM changes
 		var pcmToJavaProp = this.propagateChangesToResource(newPcmRepoRes, orderedPCMChangeList);
