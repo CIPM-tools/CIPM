@@ -76,10 +76,6 @@ public class NamespaceUserInteraction extends AbstractUserInteraction {
 				: null;
 	}
 
-	public EObject getTriggeringElement() {
-		return this.triggeringPCMElement;
-	}
-
 	private boolean checkNameValue(Object namespaces) {
 		return namespaces instanceof List;
 	}
