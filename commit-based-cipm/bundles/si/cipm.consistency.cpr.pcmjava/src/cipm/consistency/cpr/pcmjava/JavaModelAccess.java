@@ -68,6 +68,8 @@ public final class JavaModelAccess {
 		javaModel.getAllContents().forEachRemaining((o) -> {
 			if (o instanceof ConcreteClassifier) {
 				var castedO = ((ConcreteClassifier) o);
+				if (!castedO.getName().equals(name))
+					return;
 				if (castedO.getContainingCompilationUnit() != synthethicCU) {
 					clsSet.add(castedO);
 				}
