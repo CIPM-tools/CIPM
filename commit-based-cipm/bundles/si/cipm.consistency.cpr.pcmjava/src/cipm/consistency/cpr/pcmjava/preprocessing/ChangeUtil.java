@@ -70,6 +70,21 @@ public final class ChangeUtil {
 		}
 	}
 
+	public static void replaceChangeIDs(EChange change, String idToReplace, String replacementID) {
+		var affectedID = getAffectedEObjectID(change);
+		if (affectedID != null && affectedID.equals(idToReplace)) {
+			setAffectedEObjectID(change, replacementID);
+		}
+		var oldID = getOldValueID(change);
+		if (oldID != null && oldID.equals(idToReplace)) {
+			setOldValueID(change, replacementID);
+		}
+		var newID = getNewValueID(change);
+		if (newID != null && newID.equals(idToReplace)) {
+			setNewValueID(change, replacementID);
+		}
+	}
+
 	private static String adaptURI(String uri, Resource res) {
 		if (isCacheURI(uri))
 			return uri;
