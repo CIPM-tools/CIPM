@@ -1,4 +1,4 @@
-package cipm.consistency.cpr.pcmjava.preprocessing;
+package cipm.consistency.cpr.pcmjava.preprocessing.old;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
