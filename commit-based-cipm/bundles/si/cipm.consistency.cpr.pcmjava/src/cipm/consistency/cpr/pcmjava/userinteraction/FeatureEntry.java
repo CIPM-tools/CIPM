@@ -70,20 +70,16 @@ public class FeatureEntry implements IPcmUserInteractionManagerEntry {
 		this.affectedJavaElementFeatureValue = unsetKey;
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private List getDefaultValueForMultiValued() {
-		return (List) affectedJavaElementFeature.getDefaultValue();
+		var defVal = (List) affectedJavaElementFeature.getDefaultValue();
+		return defVal == null ? new BasicEList() : new BasicEList(defVal);
 	}
 
 	@SuppressWarnings("rawtypes")
 	private List getCurrentMultiValue() {
 		if (!this.hasAssignedValue()) {
-			var defaultVal = this.getDefaultValueForMultiValued();
-			if (defaultVal != null) {
-				this.affectedJavaElementFeatureValue = defaultVal;
-			} else {
-				this.affectedJavaElementFeatureValue = new BasicEList();
-			}
+			this.affectedJavaElementFeatureValue = this.getDefaultValueForMultiValued();
 		}
 		return (List) this.affectedJavaElementFeatureValue;
 	}
