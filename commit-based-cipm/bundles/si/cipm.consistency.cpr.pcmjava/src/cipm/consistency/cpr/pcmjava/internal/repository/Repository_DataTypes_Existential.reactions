@@ -69,11 +69,7 @@ routine replaceCorrespondingFieldTypeForInnerDeclarationType(pcm::InnerDeclarati
 		val newJavaType = retrieve java::ConcreteClassifier corresponding to pcmInnerDeclType
 	}
 	update {
-		// TODO User interaction for whether the field should be replaced, as it is not always
-		// possible to determine automatically (ex: if the field is referenced somewhere)
-		var newTypeRef = TypesFactory.eINSTANCE.createClassifierReference()
-		newTypeRef.target = newJavaType
-		field.typeReference = newTypeRef
+		// TODO Add developer task to replace Java Field's type
 	}
 }
 
@@ -127,14 +123,14 @@ routine removeJavaClassifierCorrespondenceForDataType(pcm::CompositeDataType typ
 		val cls = retrieve java::ConcreteClassifier corresponding to type
 	}
 	update {
+
+		// TODO User interaction for optionally removing cls
+		//
+		// Check for dependencies and ask the user what to do:
+		// 1) Leave Java counterpart
+		// 2) Delete (user-defined) Java counterpart
 		type.innerDeclaration_CompositeDataType.forall[removeJavaFieldCorrespondencesForInnerDeclaration]
 		removeCorrespondenceBetween(type, cls)
-
-	// TODO User interaction for optionally removing cls
-	//
-	// Check for dependencies and ask the user what to do:
-	// 1) Leave Java counterpart
-	// 2) Delete (user-defined) Java counterpart
 	}
 }
 

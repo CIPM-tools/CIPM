@@ -30,7 +30,6 @@ routine renameClassifierCorrespondingToCompositeDataType(pcm::CompositeDataType 
 //			//
 //			// TODO Deal with the conflict and continue
 //		}
-
 		// TODO Check if simply setting the name of the concrete classifier is enough
 		cls.name = newName
 	}
@@ -39,7 +38,6 @@ routine renameClassifierCorrespondingToCompositeDataType(pcm::CompositeDataType 
 routine renameFieldCorrespondingToInnerDeclaration(pcm::InnerDeclaration innerDecl, String newName) {
 	match {
 		val field = retrieve java::Field corresponding to innerDecl
-		val fieldCls = retrieve java::ConcreteClassifier corresponding to innerDecl.compositeDataType_InnerDeclaration
 	}
 	update {
 //		if (fieldCls.fields.exists[it.name.equals(newName)]) {
@@ -48,7 +46,6 @@ routine renameFieldCorrespondingToInnerDeclaration(pcm::InnerDeclaration innerDe
 //			//
 //			// TODO Deal with the conflict and continue
 //		}
-
 		// TODO Check if simply setting the name of the field is enough
 		field.name = newName
 	}

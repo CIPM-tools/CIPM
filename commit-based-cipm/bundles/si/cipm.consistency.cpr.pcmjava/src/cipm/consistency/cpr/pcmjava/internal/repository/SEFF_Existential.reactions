@@ -8,21 +8,6 @@ reactions: seffExistential
 in reaction to changes in pcm
 execute actions in java
 
-// StartAction: Start of method body, no Java correspondent
-// StopAction: End of method body, no Java correspondent
-//
-// InternalAction: Cannot be propagated without visual code editing (no way to know Java statements). Maybe by printing out the statements and asking the user for re-ordering (?)
-// ExternalCallAction: Cannot be propagated without knowing how the external call takes place (the Java correspondent is a full statement, so it is unknown how the external method is reached, i.e. the reference chain leading to external method call))
-//
-// LoopAction: Present the user a selection of loop constructs and create a stub (?)
-// BranchAction: Has to be an if-block or switch-block
-// ProbabilisticBranchTransition: Either if-block-body or switch-case
-//
-// TEAMMATESCITest-5-ce4463a examined with regex:
-// xsi:type="seff:(?!(?:StartAction|StopAction|InternalAction|ExternalCallAction|LoopAction|BranchAction|ProbabilisticBranchTransition|ResourceDemandingSEFF))
-//
-// => Only the SEFF elements mentioned in regex appear in Teammates case
-//
 reaction SEFFAdded {
 	after element pcm::ServiceEffectSpecification inserted in pcm::BasicComponent[serviceEffectSpecifications__BasicComponent]
 	call {
