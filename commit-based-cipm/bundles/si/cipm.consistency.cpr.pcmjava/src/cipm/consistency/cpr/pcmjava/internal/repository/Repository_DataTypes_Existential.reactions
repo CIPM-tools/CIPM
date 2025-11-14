@@ -122,54 +122,6 @@ routine createOrLocateCorrespondingFieldForInnerDeclaration(pcm::InnerDeclaratio
 	}
 }
 
-routine createOrLocateOrReplaceCorrespondingField(pcm::DataType outerType, EObject innerTypeEReference, pcm::DataType oldInnerType, pcm::DataType newInnerType) {
-	match {
-		val outerCls = retrieve java::ConcreteClassifier corresponding to outerType
-		val outerClsInnerField = retrieve optional java::Field corresponding to innerTypeEReference
-		val oldInnerCls = retrieve java::ConcreteClassifier corresponding to oldInnerType
-		val newInnerCls = retrieve java::ConcreteClassifier corresponding to newInnerType
-	}
-	update {
-		// TODO User interaction for whether the field should be replaced, as it is not always
-		// possible to determine automatically (ex: if the field is referenced somewhere)
-		var newTypeRef = TypesFactory.eINSTANCE.createClassifierReference()
-		newTypeRef.target = newInnerCls
-		if (outerClsInnerField.present) {
-			// Corresponding Java field is present => Set its type reference
-			outerClsInnerField.get.typeReference = newTypeRef
-			return
-		}
-
-		// No Java field corresponding to innerType exists
-		// Maybe there exists a Java field without correspondence
-		var preexistingField = PcmJavaTypeUtil.getJavaFieldForIn(oldInnerType, outerCls)
-		if (preexistingField !== null) {
-			// Pre-existing matching field is found => Set its type reference
-			preexistingField.typeReference = newTypeRef
-			return
-		}
-
-		// The Java field has to be created inside outerCls,
-		// if the inner type is to have a correspondence
-		//
-		// TODO User interaction for the name of the created Field
-		// allow for the option of creating no field, as it is not always
-		// possible to handle it so easily (ex: with element nodes)
-		//
-		// FIXME Add conflict resolution strategy through user preferences,
-		// so that field's name is "innerTypeField" as default
-		var field = MembersFactory.eINSTANCE.createField()
-		field.name = "innerTypeField"
-		field.typeReference = newTypeRef
-
-		outerCls.members += field
-
-		// TODO Consider adding a special tag "CREATED_BY_CHANGE_PROP"
-		// to signal that it should be removed, if the PCM DataType is removed
-		addCorrespondenceBetween(field, innerTypeEReference)
-	}
-}
-
 routine removeJavaClassifierCorrespondenceForDataType(pcm::CompositeDataType type) {
 	match {
 		val cls = retrieve java::ConcreteClassifier corresponding to type
