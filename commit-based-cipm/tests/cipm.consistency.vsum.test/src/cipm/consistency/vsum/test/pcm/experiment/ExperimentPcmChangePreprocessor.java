@@ -59,7 +59,7 @@ public class ExperimentPcmChangePreprocessor {
 	}
 
 	private final static String cachedEObjectURI = "cache:/0";
-	
+
 	public List<EChange> orderPCMchanges(List<EChange> changeSequence) {
 		var newChangeList = new ArrayList<EChange>();
 
@@ -79,22 +79,14 @@ public class ExperimentPcmChangePreprocessor {
 			// All CreateEObject changes must be preceded by an InsertEReference or
 			// ReplaceSingleValuedEReference change that inserts it into the PCM
 			var precedsCreate = currentChange instanceof InsertEReference
-					|| (currentChange instanceof ReplaceSingleValuedEReference && ChangeUtil.getNewValueID(currentChange) != null
+					|| (currentChange instanceof ReplaceSingleValuedEReference
+							&& ChangeUtil.getNewValueID(currentChange) != null
 							&& ChangeUtil.getNewValueID(currentChange).equals(cachedEObjectURI));
 
+			// TODO Exclude generic type parameters as DataTypes
+
 			// Skip SEFF changes
-			if ((ChangeUtil.getAffectedFeature(currentChange) != null
-					&& ChangeUtil.getAffectedFeature(currentChange).getName().contains("serviceEffectSpecifications"))
-					||
-
-					(ChangeUtil.getOldValueID(currentChange) != null
-							&& ChangeUtil.getOldValueID(currentChange).contains("serviceEffectSpecifications"))
-
-					|| (ChangeUtil.getNewValueID(currentChange) != null
-							&& ChangeUtil.getNewValueID(currentChange).contains("serviceEffectSpecifications"))
-
-					|| (ChangeUtil.getAffectedEObjectID(currentChange) != null && ChangeUtil
-							.getAffectedEObjectID(currentChange).contains("serviceEffectSpecifications"))) {
+			if (shouldSkipChange(currentChange)) {
 				createChange = null;
 				continue;
 			}
@@ -135,5 +127,23 @@ public class ExperimentPcmChangePreprocessor {
 //		Assertions.assertTrue(newChangeList.containsAll(changeSequence));
 
 		return newChangeList;
+	}
+
+	public boolean shouldSkipChange(EChange change) {
+		return (ChangeUtil.getAffectedFeature(change) != null
+				&& ChangeUtil.getAffectedFeature(change).getName().contains("serviceEffectSpecifications")) ||
+
+				isSEFFactionChange(change);
+	}
+
+	private boolean isSEFFactionChange(EChange change) {
+		return (ChangeUtil.getOldValueID(change) != null
+				&& ChangeUtil.getOldValueID(change).contains("serviceEffectSpecifications"))
+
+		|| (ChangeUtil.getNewValueID(change) != null
+				&& ChangeUtil.getNewValueID(change).contains("serviceEffectSpecifications"))
+
+		|| (ChangeUtil.getAffectedEObjectID(change) != null
+				&& ChangeUtil.getAffectedEObjectID(change).contains("serviceEffectSpecifications"));
 	}
 }
