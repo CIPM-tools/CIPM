@@ -76,6 +76,8 @@ public class NamespaceConflictResolutionStrategy extends ConflictResolutionStrat
 				PcmUserInteractionManager.setDesiredFeatureValue(this,
 						new FeatureEntry(castedUI.getTriggeringPCMelements().get(0), javaObj,
 								CommonsPackage.Literals.NAMESPACE_AWARE_ELEMENT__NAMESPACES, nss));
+			} else {
+				castedUI.setSuggestions(List.copyOf(possibleNamespaces));
 			}
 		}
 	}

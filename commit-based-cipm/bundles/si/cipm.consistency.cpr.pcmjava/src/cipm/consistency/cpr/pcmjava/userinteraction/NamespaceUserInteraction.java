@@ -15,6 +15,8 @@ public class NamespaceUserInteraction extends AbstractUserInteraction {
 
 	private final static EStructuralFeature clsNamespacesFeat = CommonsPackage.Literals.NAMESPACE_AWARE_ELEMENT__NAMESPACES;
 
+	private List<String> nsSuggestions;
+
 	private EObject toBeAssignedNamespace;
 	private EObject triggeringPCMElement;
 
@@ -25,22 +27,40 @@ public class NamespaceUserInteraction extends AbstractUserInteraction {
 
 	@Override
 	public void performManualUserInteraction() {
-		var name = UserInteractionFactory.instance.createDialogUserInteractor().getTextInputDialogBuilder()
-				.message(String.format("Full namespace (without name) of the correspondent of %s (name: %s)",
-						triggeringPCMElement,
-						triggeringPCMElement instanceof org.palladiosimulator.pcm.core.entity.NamedElement
-								? ((org.palladiosimulator.pcm.core.entity.NamedElement) triggeringPCMElement)
-										.getEntityName()
-								: "NO Name"))
-				.startInteraction();
-
-		var namespaces = new ArrayList<Object>();
-		for (var ns : name.split(namespaceSeparator)) {
-			namespaces.add(ns);
-		}
+		Object uiResult = nsSuggestions == null || nsSuggestions.isEmpty()
+				? UserInteractionFactory.instance
+						.createDialogUserInteractor().getTextInputDialogBuilder()
+						.message(String.format(
+								"Full namespace (without name) of the correspondent of %s (name: %s)",
+								triggeringPCMElement,
+								triggeringPCMElement instanceof org.palladiosimulator.pcm.core.entity.NamedElement
+										? ((org.palladiosimulator.pcm.core.entity.NamedElement) triggeringPCMElement)
+												.getEntityName()
+										: "NO Name"))
+						.startInteraction()
+				: UserInteractionFactory.instance.createDialogUserInteractor().getSingleSelectionDialogBuilder()
+						.message(String.format("Full namespace (without name) of the correspondent of %s (name: %s)",
+								triggeringPCMElement,
+								triggeringPCMElement instanceof org.palladiosimulator.pcm.core.entity.NamedElement
+										? ((org.palladiosimulator.pcm.core.entity.NamedElement) triggeringPCMElement)
+												.getEntityName()
+										: "NO Name"))
+						.choices(nsSuggestions).startInteraction();
 
 		var entry = new FeatureEntry(this.triggeringPCMElement, toBeAssignedNamespace, clsNamespacesFeat);
-		entry.addValues(namespaces);
+
+		var name = uiResult instanceof String ? (String) uiResult : nsSuggestions.get((Integer) uiResult);
+		
+		if (name != null && !name.isBlank()) {
+			var namespaces = new ArrayList<String>();
+			for (var ns : name.split(namespaceSeparator)) {
+				namespaces.add(ns);
+			}
+
+			entry.addValues(namespaces);
+		} else {
+			entry.unset();
+		}
 		this.reportDesiredFeatureValue(entry);
 	}
 
@@ -78,6 +98,10 @@ public class NamespaceUserInteraction extends AbstractUserInteraction {
 
 	private boolean checkNameValue(Object namespaces) {
 		return namespaces instanceof List;
+	}
+
+	public void setSuggestions(List<String> nsSuggestions) {
+		this.nsSuggestions = nsSuggestions;
 	}
 
 	@Override
