@@ -167,7 +167,7 @@ public class PcmJavaTypeUtil {
 		} else if (pcmType instanceof CollectionDataType) {
 			return doTypesMatch((CollectionDataType) pcmType, javaType, compareInnerTypes);
 		} else if (pcmType == null) {
-			throw new IllegalArgumentException("PCM DataType is null: " + pcmType);
+			return javaType == null;
 		} else {
 			throw new IllegalArgumentException("Unknown PCM DataType: " + pcmType);
 		}
