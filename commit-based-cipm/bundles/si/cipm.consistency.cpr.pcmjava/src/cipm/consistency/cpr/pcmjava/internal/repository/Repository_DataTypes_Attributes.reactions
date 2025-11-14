@@ -5,13 +5,6 @@ reactions: repositoryDataTypesAttributes
 in reaction to changes in pcm
 execute actions in java
 
-reaction ChangedCollectionDataTypeName {
-	after attribute replaced at pcm::CollectionDataType[entityName]
-	call {
-		renameClassifierCorrespondingToCollectionDataType(affectedEObject, newValue)
-	}
-}
-
 reaction ChangedCompositeDataTypeName {
 	after attribute replaced at pcm::CompositeDataType[entityName]
 	call {
@@ -23,23 +16,6 @@ reaction ChangedInnerDeclarationName {
 	after attribute replaced at pcm::InnerDeclaration[entityName]
 	call {
 		renameFieldCorrespondingToInnerDeclaration(affectedEObject, newValue)
-	}
-}
-
-routine renameClassifierCorrespondingToCollectionDataType(pcm::CollectionDataType e, String newName) {
-	match {
-		val cls = retrieve java::ConcreteClassifier corresponding to e
-	}
-	update {
-//		if (cls.package.classifiers.exists[it.name.equals(newName)]) {
-//			// FIXME Conflict => There is a Classifier under the same package
-//			// with "newName", which violates Java language rules
-//			//
-//			// TODO Deal with the conflict and continue
-//		}
-
-		// TODO Check if simply setting the name of the concrete classifier is enough
-		cls.name = newName
 	}
 }
 

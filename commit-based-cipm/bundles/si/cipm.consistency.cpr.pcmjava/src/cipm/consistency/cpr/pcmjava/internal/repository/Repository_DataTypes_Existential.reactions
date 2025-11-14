@@ -2,9 +2,6 @@ import cipm.consistency.cpr.pcmjava.JavaModelAccess
 import org.emftext.language.java.members.MembersFactory
 import org.emftext.language.java.types.TypesFactory
 import cipm.consistency.cpr.pcmjava.PcmJavaTypeUtil
-import org.palladiosimulator.pcm.repository.CollectionDataType
-import org.palladiosimulator.pcm.repository.RepositoryPackage
-import org.palladiosimulator.pcm.repository.CompositeDataType
 import cipm.consistency.cpr.pcmjava.PcmJavaCPRUtils
 import org.emftext.language.java.classifiers.ClassifiersFactory
 import cipm.consistency.cpr.pcmjava.userinteraction.JavaCorrespondentDecisionUserInteraction
@@ -21,25 +18,23 @@ reactions: repositoryDataTypesExistential
 in reaction to changes in pcm
 execute actions in java
 
-reaction AddedDataType {
-	after element pcm::DataType inserted in pcm::Repository[dataTypes__Repository]
+// Only account for CompositeDataTypes' creation and deletion. PrimitiveDataTypes are strictly for primitives in Java sense,
+// which cannot be added by the user. CollectionDataTypes are only used for concretely types Array and List occurrences,
+// so their creation/deletion is also not eligible for propagation to Java.
+//
+// All inner DataTypes and InnerDeclarations are, however, still relevant.
+//
+reaction AddedCompositeDataType {
+	after element pcm::CompositeDataType inserted in pcm::Repository[dataTypes__Repository]
 	call {
 		findOrCreateOrDecideJavaClassifierForDataType(newValue)
 	}
 }
 
-reaction RemovedDataType {
-	after element pcm::DataType removed from pcm::Repository[dataTypes__Repository]
+reaction RemovedCompositeDataType {
+	after element pcm::CompositeDataType removed from pcm::Repository[dataTypes__Repository]
 	call {
 		removeJavaClassifierCorrespondenceForDataType(oldValue)
-	}
-}
-
-reaction ReplacedInnerType {
-	after element pcm::DataType replaced at pcm::CollectionDataType[innerType_CollectionDataType]
-	call {
-		// "create" scenario has to be considered here as well, since the feature could be null at the start
-		createOrLocateOrReplaceCorrespondingField(affectedEObject, affectedFeature, oldValue, newValue)
 	}
 }
 
@@ -175,17 +170,12 @@ routine createOrLocateOrReplaceCorrespondingField(pcm::DataType outerType, EObje
 	}
 }
 
-routine removeJavaClassifierCorrespondenceForDataType(pcm::DataType type) {
+routine removeJavaClassifierCorrespondenceForDataType(pcm::CompositeDataType type) {
 	match {
 		val cls = retrieve java::ConcreteClassifier corresponding to type
 	}
 	update {
-		if (type instanceof CollectionDataType)
-			removeJavaFieldCorrespondenceForCollectionDataType(type)
-
-		if (type instanceof CompositeDataType)
-			type.innerDeclaration_CompositeDataType.forall[removeJavaFieldCorrespondencesForInnerDeclaration]
-
+		type.innerDeclaration_CompositeDataType.forall[removeJavaFieldCorrespondencesForInnerDeclaration]
 		removeCorrespondenceBetween(type, cls)
 
 	// TODO User interaction for optionally removing cls
@@ -193,22 +183,6 @@ routine removeJavaClassifierCorrespondenceForDataType(pcm::DataType type) {
 	// Check for dependencies and ask the user what to do:
 	// 1) Leave Java counterpart
 	// 2) Delete (user-defined) Java counterpart
-	}
-}
-
-routine removeJavaFieldCorrespondenceForCollectionDataType(pcm::CollectionDataType type) {
-	match {
-		val field = retrieve java::Field corresponding to type.eClass.getEStructuralFeature(
-			RepositoryPackage.COLLECTION_DATA_TYPE__INNER_TYPE_COLLECTION_DATA_TYPE)
-	}
-	update {
-		// TODO User interaction for optionally removing field
-		//
-		// Check for dependencies and ask the user what to do:
-		// 1) Leave Java counterpart
-		// 2) Delete (user-defined) Java counterpart
-		removeCorrespondenceBetween(field, type.eClass.getEStructuralFeature(
-			RepositoryPackage.COLLECTION_DATA_TYPE__INNER_TYPE_COLLECTION_DATA_TYPE))
 	}
 }
 
@@ -226,7 +200,7 @@ routine removeJavaFieldCorrespondencesForInnerDeclaration(pcm::InnerDeclaration 
 	}
 }
 
-routine findOrCreateOrDecideJavaClassifierForDataType(pcm::DataType pcmDataType) {
+routine findOrCreateOrDecideJavaClassifierForDataType(pcm::CompositeDataType pcmDataType) {
 	// Concept:
 	// 1) Check if a corresponding classifier exists. Add correspondence if it does
 	// 2) Add correspondences between DataType and all references to it (so that they can be adapted accordingly)
