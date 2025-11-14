@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EcorePackage;
@@ -33,6 +34,7 @@ import cipm.consistency.models.pcm.PcmFacade;
 import cipm.consistency.tools.evaluation.data.ImUpdateEvalData;
 import cipm.consistency.vsum.Propagation;
 import cipm.consistency.vsum.test.IMUpdateEvaluator;
+import cipm.consistency.vsum.test.appspace.LoggingSetup;
 import cipm.consistency.vsum.test.pcm.PcmVsumFacade;
 import cipm.consistency.vsum.test.pcm.PcmVsumFacadeImpl;
 import cipm.consistency.vsum.test.pcm.cprunittests.UnnamedModuleComponentDetectionStrategy;
@@ -263,6 +265,8 @@ public class PcmToJavaChangePropagationTest {
 	
 	@Test
 	public void testPcmPropagation() {
+		LoggingSetup.setMinLogLevel(Level.DEBUG);
+		
 		dirLayouts.add(new JavaToPcmPropagationDirLayout(Paths.get("target", "TEAMMATESCITest-1-6484257")));
 		dirLayouts.add(new JavaToPcmPropagationDirLayout(Paths.get("target", "TEAMMATESCITest-2-48b67ba")));
 		dirLayouts.add(new JavaToPcmPropagationDirLayout(Paths.get("target", "TEAMMATESCITest-3-83f518e")));
