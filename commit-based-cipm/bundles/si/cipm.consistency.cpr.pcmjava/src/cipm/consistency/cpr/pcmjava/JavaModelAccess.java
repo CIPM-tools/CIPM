@@ -143,4 +143,11 @@ public final class JavaModelAccess {
 	public static Resource getJavaModel() {
 		return javaModel;
 	}
+
+	public static void reloadJavaModel() {
+		if (javaModel != null) {
+			unloadJavaModel();
+			loadJavaModel(javaModel.getURI());
+		}
+	}
 }

@@ -1,6 +1,6 @@
 package cipm.consistency.vsum.test.pcm.experiment;
 
-public final class PcmToJavaChangePropagationDirLayoutConstants {
+public final class ExperimentDirLayoutConstants {
 	private static final String vsumDirName = "vsum";
 
 	private static final String changesSaveDirName = "changes";
