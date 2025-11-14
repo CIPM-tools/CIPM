@@ -107,7 +107,7 @@ public final class PcmUserInteractionManager {
 		if (!entry.hasAssignedValue() && computeIfAbsent) {
 			entry = computeAbsentFeatureValue(entry);
 		}
-		return entry.hasAssignedValue() ? entry.getValue() : null;
+		return entry != null && entry.hasAssignedValue() ? entry.getValue() : null;
 	}
 
 	public static Object getDesiredFeatureValue(EObject triggeringPCMElement, EStructuralFeature feat,
