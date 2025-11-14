@@ -5,7 +5,6 @@ import java.nio.file.Path;
 import cipm.consistency.commitintegration.CommitIntegrationDirLayout;
 
 public class JavaToPcmPropagationDirLayout extends CommitIntegrationDirLayout {
-	private Path rootPath;
 	private Path changesSavePath;
 	private Path javaChangesSaveFilePath;
 	private Path pcmChangesSaveFilePath;
@@ -24,8 +23,7 @@ public class JavaToPcmPropagationDirLayout extends CommitIntegrationDirLayout {
 	public void initialize(Path rootDirPath) {
 		super.initialize(rootDirPath);
 
-		this.rootPath = rootDirPath;
-		this.changesSavePath = this.rootPath
+		this.changesSavePath = this.rootDirPath
 				.resolve(PcmToJavaChangePropagationDirLayoutConstants.getChangessavedirname());
 		this.javaChangesSaveFilePath = this.changesSavePath
 				.resolve(PcmToJavaChangePropagationDirLayoutConstants.getJavachangessavefilename());
@@ -33,10 +31,6 @@ public class JavaToPcmPropagationDirLayout extends CommitIntegrationDirLayout {
 				.resolve(PcmToJavaChangePropagationDirLayoutConstants.getPcmchangessavefilename());
 		this.imChangesSaveFilePath = this.changesSavePath
 				.resolve(PcmToJavaChangePropagationDirLayoutConstants.getImchangessavefilename());
-	}
-
-	public Path getRootPath() {
-		return rootPath;
 	}
 
 	public Path getChangesSavePath() {

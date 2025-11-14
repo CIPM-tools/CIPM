@@ -1,5 +1,7 @@
 package cipm.consistency.vsum.test.pcm.experiment;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -13,6 +15,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.palladiosimulator.pcm.repository.Repository;
 
 import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationModel;
@@ -53,31 +56,11 @@ public class PcmToJavaChangePropagationTest {
 	private ImFacade imFacade;
 	private JavaModelFacade javaFacade;
 
-	private PcmToJavaChangePropagationDirLayout dirLayout;
-
-	private JavaToPcmPropagationWrapper oldWrapper;
-	private JavaToPcmPropagationWrapper newWrapper;
-
-	private JavaToPcmPropagationWrapper oldCopyWrapper;
-	private JavaToPcmPropagationWrapper newCopyWrapper;
-
-	private JavaToPcmPropagationWrapper propWrapper;
-
-	private ResourceSet resSet;
-
-	private Resource oldJavaResourceCopy;
-	private Resource oldPcmRepoResourceCopy;
-	private Resource oldImResourceCopy;
-
-	private Resource newJavaResourceCopy;
-	private Resource newPcmRepoResourceCopy;
-	private Resource newImResourceCopy;
+	private ExperimentResourceWrapper resWrapper;
 
 	private JaccardCoefficientResult jcOfJavaInJavaToPcmProp;
 	private JaccardCoefficientResult jcOfPcmInJavaToPcmProp;
 	private ImUpdateEvalData fScoreOfImInJavaToPcmProp;
-
-	private Resource pcmChangeRes;
 
 	public PcmFacade getPcmFacade() {
 		return this.pcmFacade;
@@ -103,9 +86,8 @@ public class PcmToJavaChangePropagationTest {
 	}
 
 	public void setUp(PcmToJavaChangePropagationDirLayout dirLayout) {
-		this.dirLayout = dirLayout;
-
-		this.copyTestResources();
+		this.resWrapper = new ExperimentResourceWrapper(new ResourceSetImpl(), dirLayout);
+		this.resWrapper.initialise();
 
 		imFacade = this.setupImFacade();
 		pcmFacade = this.setupPcmFacade();
@@ -115,54 +97,27 @@ public class PcmToJavaChangePropagationTest {
 		computeEvaluationResultsForJavaToPcmPropagation();
 	}
 
+	private PcmToJavaChangePropagationDirLayout getDirLayout() {
+		return this.resWrapper.getExperimentLayout();
+	}
+
 	public void tearDown() {
-		// Closes all underlying models too
-//		vsumFacade.close();
-//		vsumFacade = null;
-//
-//		dirLayout = null;
-//
-//		oldWrapper.close();
-//		newWrapper.close();
-//		oldCopyWrapper.close();
-//		newCopyWrapper.close();
-//		propWrapper.close();
-//
-//		oldWrapper = null;
-//		newWrapper = null;
-//		oldCopyWrapper = null;
-//		newCopyWrapper = null;
-//		propWrapper = null;
-//
-//		jcOfJavaInJavaToPcmProp = null;
-//		jcOfPcmInJavaToPcmProp = null;
-//		fScoreOfImInJavaToPcmProp = null;
-//
-//		JavaModelAccess.removeJavaModel();
+		// TODO Close all resources and models
 	}
 
 	protected PcmFacade setupPcmFacade() {
 		var pcmFacade = new PcmFacade();
-		pcmFacade.initialize(dirLayout.getPropagatedDirLayout().getPcmDirPath());
-
-		// FIXME Remove once initial change propagation is successful
-		// Must ensure that correct PCM starting models are used for propagation
-		pcmFacade.getResources().stream().forEach((r) -> EcoreUtil.removeAll(r.getContents().get(0).eContents()));
-		pcmFacade.saveToDisk();
-		propWrapper.adaptURIsInPCMChangeResource(pcmFacade.getResources().stream()
-				.filter((r) -> r.getURI().lastSegment()
-						.equals(PcmToJavaChangePropagationDirLayoutConstants.getPcmrepositoryfilename()))
-				.findFirst().get());
-		pcmChangeRes = propWrapper.getPcmChanges();
-
+		pcmFacade.initialize(getDirLayout().getPropagatedDirLayout().getPcmDirPath());
 		return pcmFacade;
 	}
 
 	private void computeEvaluationResultsForJavaToPcmPropagation() {
-		jcOfJavaInJavaToPcmProp = computeJCForJava(newJavaResourceCopy, oldJavaResourceCopy);
-		jcOfPcmInJavaToPcmProp = computeJCForPcm(newPcmRepoResourceCopy, oldPcmRepoResourceCopy);
-		fScoreOfImInJavaToPcmProp = computeFScoreForIm((Repository) newPcmRepoResourceCopy.getContents().get(0),
-				(InstrumentationModel) newImResourceCopy.getContents().get(0));
+		jcOfJavaInJavaToPcmProp = computeJCForJava(resWrapper.getTargetJavaModel(), resWrapper.getInitialJavaModel());
+		jcOfPcmInJavaToPcmProp = computeJCForPcm(resWrapper.getTargetPcmRepository(),
+				resWrapper.getInitialPcmRepository());
+		fScoreOfImInJavaToPcmProp = computeFScoreForIm(
+				(Repository) resWrapper.getTargetPcmRepository().getContents().get(0),
+				(InstrumentationModel) resWrapper.getTargetIm().getContents().get(0));
 	}
 
 	/**
@@ -176,202 +131,28 @@ public class PcmToJavaChangePropagationTest {
 	 * @return The VSUM facade for the PCM that will be used in this test.
 	 */
 	protected PcmVsumFacade setupVsumFacade() {
-		return new PcmVsumFacadeImpl(dirLayout.getPropagatedDirLayout().getRootPath(),
+		return new PcmVsumFacadeImpl(getDirLayout().getPropagatedDirLayout().getRootDirPath(),
 				List.of(pcmFacade, imFacade, javaFacade), this.getCPRs());
 	}
 
-	/**
-	 * Copies all relevant Resource files from existing Teammates tests that
-	 * propagate Java code changes to PCM.
-	 * <p>
-	 * Old model Resources are copied twice, since one copy will be used for
-	 * evaluation purposes and will not be modified, while the other copy will be
-	 * modified via propagation. Because it is not possible to directly set the
-	 * Resource of ModelFacade instances, copy the Resource instances to their
-	 * designated paths and let the ModelFacades load them.
-	 */
-	private void copyTestResources() {
-		this.resSet = new ResourceSetImpl();
-
-		oldWrapper = new JavaToPcmPropagationWrapper(this.resSet);
-		oldWrapper.initialise(this.dirLayout.getOldJavaToPcmPropagationDirLayout());
-		newWrapper = new JavaToPcmPropagationWrapper(this.resSet);
-		newWrapper.initialise(this.dirLayout.getNewJavaToPcmPropagationDirLayout());
-
-		oldCopyWrapper = oldWrapper.copyTo(this.dirLayout.getCopiedOldJavaToPcmPropagationDirLayout().getRootPath());
-		newCopyWrapper = newWrapper.copyTo(this.dirLayout.getCopiedNewJavaToPcmPropagationDirLayout().getRootPath());
-
-		// All Resource instances that will be used for propagation are to be found
-		// under this layout
-		propWrapper = oldWrapper.copyTo(this.dirLayout.getPropagatedDirLayout().getRootPath());
-
-		oldJavaResourceCopy = oldCopyWrapper.getJavaModel();
-		oldPcmRepoResourceCopy = oldCopyWrapper.getPcmRepository();
-		oldImResourceCopy = oldCopyWrapper.getIm();
-
-		newJavaResourceCopy = newCopyWrapper.getJavaModel();
-		newPcmRepoResourceCopy = newCopyWrapper.getPcmRepository();
-		newImResourceCopy = newCopyWrapper.getIm();
-	}
-
-//	private class CreateChangeTrio {
-//		private CreateEObject<?> cc;
-//		private InsertEReference<?, ?> ir;
-//		private ReplaceSingleValuedEAttribute<?, ?> setID;
-//
-//		private CreateChangeTrio(CreateEObject<?> cc, InsertEReference<?, ?> ir,
-//				ReplaceSingleValuedEAttribute<?, ?> setID) {
-//			this.cc = cc;
-//			this.ir = ir;
-//			this.setID = setID;
-//		}
-//
-//		/**
-//		 * 1: Repository 2: Repository content 3: Content of Repository content ...
-//		 */
-//		public int getCreatedObjectDepth() {
-//			return URI.createURI(ir.getAffectedEObjectID()).fragment().split("/").length;
-//		}
-//
-//		public boolean isContainer(String containerURIFragment) {
-//			return URI.createURI(ir.getAffectedEObjectID()).fragment().equals(containerURIFragment);
-//		}
-//
-//		public boolean isContainerRepository() {
-//			return isContainer(propWrapper.getPcmRepository()
-//					.getURIFragment(((Repository) propWrapper.getPcmRepository().getContents().get(0))));
-//		}
-//	}
-
-	public int getMaxDepth(EChange change) {
-		var aID = ChangeUtil.getAffectedEObjectID(change);
-		var oID = ChangeUtil.getOldValueID(change);
-		var nID = ChangeUtil.getNewValueID(change);
-
-		var aDepth = 0;
-		var oDepth = 0;
-		var nDepth = 0;
-
-		if (aID != null) {
-			aDepth = getDepth(URI.createURI(aID));
+	private List<EChange> preprocessPCMchanges() {
+		var pcmChangeRes = resWrapper.getPropagatedPcmChanges();
+		var pcmChangeList = new ArrayList<EChange>();
+		for (var c : pcmChangeRes.getContents()) {
+			pcmChangeList.add((EChange) c);
 		}
-		if (oID != null) {
-			oDepth = getDepth(URI.createURI(oID));
+		var orderedPCMChangeList = new ExperimentPcmChangePreprocessor().orderPCMchanges(pcmChangeList);
+		for (var o : pcmChangeList) {
+			pcmChangeRes.getContents().remove(o);
 		}
-		if (nID != null) {
-			nDepth = getDepth(URI.createURI(nID));
-		}
-
-		return Math.max(aDepth, Math.max(oDepth, nDepth));
-	}
-
-	public int getDepth(URI uri) {
-		if (uri == null || !uri.hasFragment())
-			return 0;
-		var depth = uri.fragment().split("/").length;
-		return depth == 0 ? depth : depth - 2;
-	}
-
-	public int getCreatedObjectDepth(InsertEReference<?, ?> ir) {
-		return URI.createURI(ir.getAffectedEObjectID()).fragment().split("/").length;
-	}
-
-	public boolean isContainer(InsertEReference<?, ?> ir, String containerURIFragment) {
-		return URI.createURI(ir.getAffectedEObjectID()).fragment().equals(containerURIFragment);
-	}
-
-	public boolean isContainerRepository(InsertEReference<?, ?> ir) {
-		return isContainer(ir, propWrapper.getPcmRepository()
-				.getURIFragment(((Repository) propWrapper.getPcmRepository().getContents().get(0))));
-	}
-
-	private final static String cachedEObjectURI = "cache:/0";
-
-	private List<EChange> orderPCMchanges(List<EChange> changeSequence) {
-		var newChangeList = new ArrayList<EChange>();
-
-		var changes = new HashMap<Integer, ArrayList<EChange>>();
-		EChange createChange = null;
-		var maxDepth = 0;
-
-		// Regex used to analyse / verify (remove #):
-		// </eobject:CreateEObject>(?!\r\n###(?:<reference:InsertEReference|<attribute:ReplaceSingleValuedEAttribute|<reference:ReplaceSingleValuedEReference))
-
-		for (int i = 0; i < changeSequence.size(); i++) {
-			var currentChange = changeSequence.get(i);
-			if (currentChange instanceof CreateEObject) {
-				createChange = currentChange;
-				continue;
-			}
-			// All CreateEObject changes must be preceded by an InsertEReference or
-			// ReplaceSingleValuedEReference change that inserts it into the PCM
-			var precedsCreate = currentChange instanceof InsertEReference
-					|| currentChange instanceof ReplaceSingleValuedEReference
-							&& ChangeUtil.getNewValueID(currentChange).equals(cachedEObjectURI);
-
-			// Skip SEFF changes
-			if ((ChangeUtil.getAffectedFeature(currentChange) != null
-					&& ChangeUtil.getAffectedFeature(currentChange).getName().contains("serviceEffectSpecifications"))
-					||
-
-					(ChangeUtil.getOldValueID(currentChange) != null
-							&& ChangeUtil.getOldValueID(currentChange).contains("serviceEffectSpecifications"))
-
-					|| (ChangeUtil.getNewValueID(currentChange) != null
-							&& ChangeUtil.getNewValueID(currentChange).contains("serviceEffectSpecifications"))
-
-					|| (ChangeUtil.getAffectedEObjectID(currentChange) != null && ChangeUtil
-							.getAffectedEObjectID(currentChange).contains("serviceEffectSpecifications"))) {
-				createChange = null;
-				continue;
-			}
-
-			var depth = getMaxDepth(currentChange);
-
-			if (maxDepth < depth)
-				maxDepth = depth;
-
-			if (!changes.containsKey(depth)) {
-				changes.put(depth, new ArrayList<EChange>());
-			}
-
-			if (precedsCreate && createChange != null) {
-				changes.get(depth).add(createChange);
-				createChange = null;
-			}
-			changes.get(depth).add(currentChange);
-		}
-
-		// Add PCM elements in Breadth-First order, as this will ensure that all PCM
-		// elements are known
-		for (int i = 0; i <= maxDepth; i++) {
-			if (changes.containsKey(i)) {
-				newChangeList.addAll(changes.get(i));
-			}
-		}
-
-//		if (changeSequence.size() != newChangeList.size()) {
-//			var largerList = changeSequence.size() > newChangeList.size() ? changeSequence : newChangeList;
-//			var smallerList = changeSequence.size() < newChangeList.size() ? changeSequence : newChangeList;
-//			
-//			var missingChanges = largerList.removeAll(smallerList);
-//			System.out.println(missingChanges);
-//		}
-
-//		Assertions.assertEquals(changeSequence.size(), newChangeList.size());
-//		Assertions.assertTrue(newChangeList.containsAll(changeSequence));
-
-		return newChangeList;
+		pcmChangeRes.getContents().addAll(orderedPCMChangeList);
+		return orderedPCMChangeList;
 	}
 
 	public void pcmToJavaChangePropagationTestTemplate(PcmToJavaChangePropagationDirLayout dirLayout) {
 		this.setUp(dirLayout);
 
-		var pcmChangeList = new ArrayList<EChange>();
-		for (var c : pcmChangeRes.getContents()) {
-			pcmChangeList.add((EChange) c);
-		}
-		var orderedPCMChangeList = orderPCMchanges(pcmChangeList);
+		var pcmChangeList = preprocessPCMchanges();
 
 		var newPcmRepoRes = pcmFacade.getResources().stream()
 				.filter((r) -> r.getURI().lastSegment()
@@ -381,19 +162,30 @@ public class PcmToJavaChangePropagationTest {
 		// TODO Ignore DataTypes generated for TypeParameters (such as "T")
 		// Filter by name, if name length is 1, ignore
 
-		PcmUserInteractionManager
-				.addConflictResolutionStrategy(new NamespaceConflictResolutionStrategy(newJavaResourceCopy));
+		PcmUserInteractionManager.addConflictResolutionStrategy(
+				new NamespaceConflictResolutionStrategy(resWrapper.getTargetJavaModel()));
 
 		// Propagate PCM changes
-		var pcmToJavaProp = this.propagateChangesToResource(newPcmRepoRes, orderedPCMChangeList);
+		var pcmToJavaProp = this.propagateChangesToResource(newPcmRepoRes, pcmChangeList);
 		LOGGER.info("Pcm to Java propagation over");
 //		assertResourcesNotModified();
 //		assertPropagationSuccessful(pcmToJavaProp, pcmChangeList);
 
+		LOGGER.info("Reloading models");
+		getJavaFacade().reload();
+		JavaModelAccess.setJavaModel(getJavaFacade().getResource());
+		getPcmFacade().reload();
+		newPcmRepoRes = pcmFacade.getResources().stream()
+				.filter((r) -> r.getURI().lastSegment()
+						.equals(PcmToJavaChangePropagationDirLayoutConstants.getPcmrepositoryfilename()))
+				.findFirst().get();
+		getImFacade().reload();
+
 		LOGGER.info("Computing JC for Java");
-		var jcOfJavaInPcmToJavaProp = computeJCForJava(JavaModelAccess.getJavaModel(), oldJavaResourceCopy);
+		var jcOfJavaInPcmToJavaProp = computeJCForJava(JavaModelAccess.getJavaModel(),
+				resWrapper.getInitialJavaModel());
 		LOGGER.info("Computing JC for Pcm");
-		var jcOfPcmInPcmToJavaProp = computeJCForPcm(newPcmRepoRes, oldPcmRepoResourceCopy);
+		var jcOfPcmInPcmToJavaProp = computeJCForPcm(newPcmRepoRes, resWrapper.getInitialPcmRepository());
 		LOGGER.info("Computing F1-Score for Im");
 		var fScoreOfImInPcmToJavaProp = computeFScoreForIm((Repository) newPcmRepoRes.getContents().get(0),
 				this.getImFacade().getModel());
@@ -409,13 +201,13 @@ public class PcmToJavaChangePropagationTest {
 	private void computeAndSaveExperimentResult(Object... objs) {
 		var result = new ExperimentResult(objs);
 		result.interpretResults();
-		result.save(dirLayout.getExperimentResultSavePath());
+		result.save(getDirLayout().getExperimentResultSavePath());
 	}
 
 	protected JavaModelFacade setupJavaFacade() {
 		var model = new JavaModelFacade();
 		model.setComponentDetectionStrategies(List.of(new UnnamedModuleComponentDetectionStrategy()));
-		model.initialize(dirLayout.getPropagatedDirLayout().getCodeDirPath());
+		model.initialize(getDirLayout().getPropagatedDirLayout().getCodeDirPath());
 		var modelRes = model.getResource();
 		// TODO Remove all contents from Java code model, since PCM -> Java propagation
 		// is tested for integration case
@@ -425,32 +217,19 @@ public class PcmToJavaChangePropagationTest {
 
 	protected ImFacade setupImFacade() {
 		var imFacade = new ImFacade();
-		imFacade.initialize(dirLayout.getPropagatedDirLayout().getImDirPath());
+		imFacade.initialize(getDirLayout().getPropagatedDirLayout().getImDirPath());
 		return imFacade;
 	}
-
-	private void assertPropagationSuccessful(Propagation pcmToJavaProp, List<EChange> propagatedPcmChanges) {
-		var pcmChanges = pcmToJavaProp.getChanges().get(0).getOriginalChange().getEChanges();
-		Assertions.assertEquals(propagatedPcmChanges.size(), pcmChanges.size());
-		for (int i = 0; i < propagatedPcmChanges.size(); i++) {
-			// Make sure to unresolve changes to content order related issues
-			Assertions.assertTrue(EcoreUtil.equals(EChangeResolverAndApplicator.unresolve(pcmChanges.get(i)),
-					EChangeResolverAndApplicator.unresolve(propagatedPcmChanges.get(i))));
-		}
-	}
-
-	private void assertResourceNotModified(Resource oldResource) {
-		// TODO Implement
-	}
-
-	private void assertResourcesNotModified() {
-		assertResourceNotModified(oldJavaResourceCopy);
-		assertResourceNotModified(oldPcmRepoResourceCopy);
-		assertResourceNotModified(oldImResourceCopy);
-		assertResourceNotModified(newJavaResourceCopy);
-		assertResourceNotModified(newPcmRepoResourceCopy);
-		assertResourceNotModified(newImResourceCopy);
-	}
+//
+//	private void assertPropagationSuccessful(Propagation pcmToJavaProp, List<EChange> propagatedPcmChanges) {
+//		var pcmChanges = pcmToJavaProp.getChanges().get(0).getOriginalChange().getEChanges();
+//		Assertions.assertEquals(propagatedPcmChanges.size(), pcmChanges.size());
+//		for (int i = 0; i < propagatedPcmChanges.size(); i++) {
+//			// Make sure to unresolve changes to content order related issues
+//			Assertions.assertTrue(EcoreUtil.equals(EChangeResolverAndApplicator.unresolve(pcmChanges.get(i)),
+//					EChangeResolverAndApplicator.unresolve(propagatedPcmChanges.get(i))));
+//		}
+//	}
 
 	private JaccardCoefficientResult computeJCForJava(Resource newJavaModel, Resource oldJavaModel) {
 		return ComparisonBasedJaccardCoefficientCalculator.calculateJaccardCoefficient(
@@ -476,5 +255,23 @@ public class PcmToJavaChangePropagationTest {
 		changeSpecs.add(new AllPcmChangePropagationSpecification());
 		changeSpecs.add(new PcmImUpdateChangePropagationSpecification());
 		return changeSpecs;
+	}
+
+	private static final String experimentRootDirNamePrefix = "Teammates-Experiment-";
+
+	private static final List<JavaToPcmPropagationDirLayout> dirLayouts = new ArrayList<>();
+	
+	@Test
+	public void testPcmPropagation() {
+		dirLayouts.add(new JavaToPcmPropagationDirLayout(Paths.get("target", "TEAMMATESCITest-1-6484257")));
+		dirLayouts.add(new JavaToPcmPropagationDirLayout(Paths.get("target", "TEAMMATESCITest-2-48b67ba")));
+		dirLayouts.add(new JavaToPcmPropagationDirLayout(Paths.get("target", "TEAMMATESCITest-3-83f518e")));
+		dirLayouts.add(new JavaToPcmPropagationDirLayout(Paths.get("target", "TEAMMATESCITest-4-f33d0bc")));
+		dirLayouts.add(new JavaToPcmPropagationDirLayout(Paths.get("target", "TEAMMATESCITest-5-ce4463a")));
+
+		var pcmToJavaPropTest = new PcmToJavaChangePropagationTest();
+
+		pcmToJavaPropTest.pcmToJavaChangePropagationTestTemplate(new PcmToJavaChangePropagationDirLayout(null,
+				dirLayouts.get(0), Path.of("target", experimentRootDirNamePrefix + 1).toAbsolutePath()));
 	}
 }

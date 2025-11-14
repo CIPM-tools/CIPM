@@ -1,0 +1,348 @@
+package cipm.consistency.vsum.test.pcm.experiment;
+
+import java.nio.file.Path;
+
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+
+import cipm.consistency.cpr.pcmjava.preprocessing.ChangeUtil;
+
+public class ExperimentResourceWrapper {
+	private ResourceSet resSet;
+
+	// Initial models in original vsum test
+	private Resource initialJavaModel;
+	private Resource initialPcmRepository;
+	private Resource initialPcmSystem;
+	private Resource initialPcmAllocation;
+	private Resource initialPcmResEnv;
+	private Resource initialPcmUsage;
+	private Resource initialIm;
+	private Resource initialCorrespondences;
+
+	// Post Java -> PCM propagation models in original vsum test
+	private Resource targetJavaModel;
+	private Resource targetPcmRepository;
+	private Resource targetPcmSystem;
+	private Resource targetPcmAllocation;
+	private Resource targetPcmResEnv;
+	private Resource targetPcmUsage;
+	private Resource targetIm;
+	private Resource targetCorrespondences;
+
+	// Changes propagated in original vsum test (Java -> PCM propagation)
+	private Resource originalJavaChanges;
+	private Resource originalPcmChanges;
+	private Resource originalImChanges;
+
+	// Models propagated during experiment (PCM -> Java propagation)
+	private Resource propagatedJavaModel;
+	private Resource propagatedPcmRepository;
+	private Resource propagatedPcmSystem;
+	private Resource propagatedPcmAllocation;
+	private Resource propagatedPcmResEnv;
+	private Resource propagatedPcmUsage;
+	private Resource propagatedIm;
+	private Resource propagatedCorrespondences;
+
+	// Changes propagated during experiment (PCM -> Java propagation)
+	private Resource propagatedJavaChanges;
+	private Resource propagatedPcmChanges;
+	private Resource propagatedImChanges;
+
+	private JavaToPcmPropagationDirLayout initialLayout;
+	private JavaToPcmPropagationDirLayout targetLayout;
+	private PcmToJavaChangePropagationDirLayout experimentLayout;
+
+	public ExperimentResourceWrapper(ResourceSet resSet, PcmToJavaChangePropagationDirLayout experimentLayout) {
+		this.resSet = resSet;
+		this.experimentLayout = experimentLayout;
+		this.initialLayout = experimentLayout.getOldJavaToPcmPropagationDirLayout();
+		this.targetLayout = experimentLayout.getNewJavaToPcmPropagationDirLayout();
+	}
+
+	public void initialise() {
+		loadTargetModels();
+		loadInitialModels();
+		loadOriginalChanges();
+		initialiseExperimentTestResources();
+		adaptURIsInChanges();
+	}
+
+	private void loadTargetModels() {
+		targetJavaModel = ResourceOperationsUtil.loadResource(resSet, targetLayout.getJavaModelSavePath());
+		targetPcmRepository = ResourceOperationsUtil.loadResource(resSet, targetLayout.getPcmRepositoryPath());
+		targetPcmSystem = ResourceOperationsUtil.loadResource(resSet, targetLayout.getPcmSystemPath());
+		targetPcmAllocation = ResourceOperationsUtil.loadResource(resSet, targetLayout.getPcmAllocationPath());
+		targetPcmResEnv = ResourceOperationsUtil.loadResource(resSet, targetLayout.getPcmResourceEnvironmentPath());
+		targetPcmUsage = ResourceOperationsUtil.loadResource(resSet, targetLayout.getPcmUsagePath());
+		targetIm = ResourceOperationsUtil.loadResource(resSet, targetLayout.getIMSavePath());
+		targetCorrespondences = ResourceOperationsUtil.loadResource(resSet, targetLayout.getVSUMCorrespondencesPath());
+	}
+
+	private void loadOriginalChanges() {
+		originalJavaChanges = ResourceOperationsUtil.loadResource(resSet, targetLayout.getJavaChangesSaveFilePath());
+		originalPcmChanges = ResourceOperationsUtil.loadResource(resSet, targetLayout.getPcmChangesSaveFilePath());
+		originalImChanges = ResourceOperationsUtil.loadResource(resSet, targetLayout.getImChangesSaveFilePath());
+	}
+
+	private void loadInitialModels() {
+		if (initialLayout != null) {
+			initialJavaModel = ResourceOperationsUtil.loadResource(resSet, initialLayout.getJavaModelSavePath());
+			initialPcmRepository = ResourceOperationsUtil.loadResource(resSet, initialLayout.getPcmRepositoryPath());
+			initialPcmSystem = ResourceOperationsUtil.loadResource(resSet, initialLayout.getPcmSystemPath());
+			initialPcmAllocation = ResourceOperationsUtil.loadResource(resSet, initialLayout.getPcmAllocationPath());
+			initialPcmResEnv = ResourceOperationsUtil.loadResource(resSet,
+					initialLayout.getPcmResourceEnvironmentPath());
+			initialPcmUsage = ResourceOperationsUtil.loadResource(resSet, initialLayout.getPcmUsagePath());
+			initialIm = ResourceOperationsUtil.loadResource(resSet, initialLayout.getIMSavePath());
+			initialCorrespondences = ResourceOperationsUtil.loadResource(resSet,
+					initialLayout.getVSUMCorrespondencesPath());
+		} else {
+			initialJavaModel = ResourceOperationsUtil.createEmptyResource(resSet, targetLayout.getJavaModelSavePath());
+
+			initialPcmRepository = ResourceOperationsUtil.copyAndSaveResource(resSet, targetPcmRepository,
+					experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getPcmRepositoryPath());
+			EcoreUtil.removeAll(initialPcmRepository.getContents().get(0).eContents());
+
+			initialPcmSystem = ResourceOperationsUtil.copyAndSaveResource(resSet, targetPcmSystem,
+					experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getPcmSystemPath());
+			EcoreUtil.removeAll(initialPcmSystem.getContents().get(0).eContents());
+
+			initialPcmAllocation = ResourceOperationsUtil.copyAndSaveResource(resSet, targetPcmAllocation,
+					experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getPcmAllocationPath());
+			EcoreUtil.removeAll(initialPcmAllocation.getContents().get(0).eContents());
+
+			initialPcmResEnv = ResourceOperationsUtil.copyAndSaveResource(resSet, targetPcmResEnv,
+					experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getPcmResourceEnvironmentPath());
+			EcoreUtil.removeAll(initialPcmResEnv.getContents().get(0).eContents());
+
+			initialPcmUsage = ResourceOperationsUtil.copyAndSaveResource(resSet, targetPcmUsage,
+					experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getPcmUsagePath());
+			EcoreUtil.removeAll(initialPcmUsage.getContents().get(0).eContents());
+
+			initialIm = ResourceOperationsUtil.copyAndSaveResource(resSet, targetIm,
+					experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getIMSavePath());
+			EcoreUtil.removeAll(initialIm.getContents().get(0).eContents());
+
+			initialCorrespondences = ResourceOperationsUtil.copyAndSaveResource(resSet, targetCorrespondences,
+					experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getVSUMCorrespondencesPath());
+			EcoreUtil.removeAll(initialCorrespondences.getContents().get(0).eContents());
+		}
+	}
+
+	private void initialiseExperimentTestResources() {
+		initialJavaModel = ResourceOperationsUtil.copyAndSaveResource(resSet, initialJavaModel,
+				experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getJavaModelSavePath());
+		initialPcmRepository = ResourceOperationsUtil.copyAndSaveResource(resSet, initialPcmRepository,
+				experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getPcmRepositoryPath());
+		initialPcmSystem = ResourceOperationsUtil.copyAndSaveResource(resSet, initialPcmSystem,
+				experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getPcmSystemPath());
+		initialPcmAllocation = ResourceOperationsUtil.copyAndSaveResource(resSet, initialPcmAllocation,
+				experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getPcmAllocationPath());
+		initialPcmResEnv = ResourceOperationsUtil.copyAndSaveResource(resSet, initialPcmResEnv,
+				experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getPcmResourceEnvironmentPath());
+		initialPcmUsage = ResourceOperationsUtil.copyAndSaveResource(resSet, initialPcmUsage,
+				experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getPcmUsagePath());
+		initialIm = ResourceOperationsUtil.copyAndSaveResource(resSet, initialIm,
+				experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getIMSavePath());
+		initialCorrespondences = ResourceOperationsUtil.copyAndSaveResource(resSet, initialCorrespondences,
+				experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getVSUMCorrespondencesPath());
+
+		targetJavaModel = ResourceOperationsUtil.copyAndSaveResource(resSet, targetJavaModel,
+				experimentLayout.getCopiedNewJavaToPcmPropagationDirLayout().getJavaModelSavePath());
+		targetPcmRepository = ResourceOperationsUtil.copyAndSaveResource(resSet, targetPcmRepository,
+				experimentLayout.getCopiedNewJavaToPcmPropagationDirLayout().getPcmRepositoryPath());
+		targetPcmSystem = ResourceOperationsUtil.copyAndSaveResource(resSet, targetPcmSystem,
+				experimentLayout.getCopiedNewJavaToPcmPropagationDirLayout().getPcmSystemPath());
+		targetPcmAllocation = ResourceOperationsUtil.copyAndSaveResource(resSet, targetPcmAllocation,
+				experimentLayout.getCopiedNewJavaToPcmPropagationDirLayout().getPcmAllocationPath());
+		targetPcmResEnv = ResourceOperationsUtil.copyAndSaveResource(resSet, targetPcmResEnv,
+				experimentLayout.getCopiedNewJavaToPcmPropagationDirLayout().getPcmResourceEnvironmentPath());
+		targetPcmUsage = ResourceOperationsUtil.copyAndSaveResource(resSet, targetPcmUsage,
+				experimentLayout.getCopiedNewJavaToPcmPropagationDirLayout().getPcmUsagePath());
+		targetIm = ResourceOperationsUtil.copyAndSaveResource(resSet, targetIm,
+				experimentLayout.getCopiedNewJavaToPcmPropagationDirLayout().getIMSavePath());
+		targetCorrespondences = ResourceOperationsUtil.copyAndSaveResource(resSet, targetCorrespondences,
+				experimentLayout.getCopiedNewJavaToPcmPropagationDirLayout().getVSUMCorrespondencesPath());
+
+		originalJavaChanges = ResourceOperationsUtil.copyAndSaveResource(resSet, originalJavaChanges,
+				experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getJavaChangesSaveFilePath());
+		originalPcmChanges = ResourceOperationsUtil.copyAndSaveResource(resSet, originalPcmChanges,
+				experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getPcmChangesSaveFilePath());
+		originalImChanges = ResourceOperationsUtil.copyAndSaveResource(resSet, originalImChanges,
+				experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getImChangesSaveFilePath());
+
+		propagatedJavaModel = ResourceOperationsUtil.copyAndSaveResource(resSet, initialJavaModel,
+				experimentLayout.getPropagatedDirLayout().getJavaModelSavePath());
+		propagatedPcmRepository = ResourceOperationsUtil.copyAndSaveResource(resSet, initialPcmRepository,
+				experimentLayout.getPropagatedDirLayout().getPcmRepositoryPath());
+		propagatedPcmSystem = ResourceOperationsUtil.copyAndSaveResource(resSet, initialPcmSystem,
+				experimentLayout.getPropagatedDirLayout().getPcmSystemPath());
+		propagatedPcmAllocation = ResourceOperationsUtil.copyAndSaveResource(resSet, initialPcmAllocation,
+				experimentLayout.getPropagatedDirLayout().getPcmAllocationPath());
+		propagatedPcmResEnv = ResourceOperationsUtil.copyAndSaveResource(resSet, initialPcmResEnv,
+				experimentLayout.getPropagatedDirLayout().getPcmResourceEnvironmentPath());
+		propagatedPcmUsage = ResourceOperationsUtil.copyAndSaveResource(resSet, initialPcmUsage,
+				experimentLayout.getPropagatedDirLayout().getPcmUsagePath());
+		propagatedIm = ResourceOperationsUtil.copyAndSaveResource(resSet, initialIm,
+				experimentLayout.getPropagatedDirLayout().getIMSavePath());
+		propagatedCorrespondences = ResourceOperationsUtil.copyAndSaveResource(resSet, initialCorrespondences,
+				experimentLayout.getPropagatedDirLayout().getVSUMCorrespondencesPath());
+
+		propagatedJavaChanges = ResourceOperationsUtil.copyAndSaveResource(resSet, originalJavaChanges,
+				experimentLayout.getPropagatedDirLayout().getJavaChangesSaveFilePath());
+		propagatedPcmChanges = ResourceOperationsUtil.copyAndSaveResource(resSet, originalPcmChanges,
+				experimentLayout.getPropagatedDirLayout().getPcmChangesSaveFilePath());
+		propagatedImChanges = ResourceOperationsUtil.copyAndSaveResource(resSet, originalImChanges,
+				experimentLayout.getPropagatedDirLayout().getImChangesSaveFilePath());
+	}
+
+	private void adaptURIsInChanges() {
+		ChangeUtil.adaptChangeURIs(propagatedJavaChanges, propagatedJavaModel);
+		ResourceOperationsUtil.saveResource(propagatedJavaChanges);
+		ChangeUtil.adaptChangeURIs(propagatedPcmChanges, propagatedPcmRepository);
+		ResourceOperationsUtil.saveResource(propagatedPcmChanges);
+		ChangeUtil.adaptChangeURIs(propagatedImChanges, propagatedIm);
+		ResourceOperationsUtil.saveResource(propagatedImChanges);
+
+	}
+
+	public PcmToJavaChangePropagationDirLayout getExperimentLayout() {
+		return experimentLayout;
+	}
+
+	public ResourceSet getResSet() {
+		return resSet;
+	}
+
+	public Resource getInitialJavaModel() {
+		return initialJavaModel;
+	}
+
+	public Resource getInitialPcmRepository() {
+		return initialPcmRepository;
+	}
+
+	public Resource getInitialPcmSystem() {
+		return initialPcmSystem;
+	}
+
+	public Resource getInitialPcmAllocation() {
+		return initialPcmAllocation;
+	}
+
+	public Resource getInitialPcmResEnv() {
+		return initialPcmResEnv;
+	}
+
+	public Resource getInitialPcmUsage() {
+		return initialPcmUsage;
+	}
+
+	public Resource getInitialIm() {
+		return initialIm;
+	}
+
+	public Resource getInitialCorrespondences() {
+		return initialCorrespondences;
+	}
+
+	public Resource getTargetJavaModel() {
+		return targetJavaModel;
+	}
+
+	public Resource getTargetPcmRepository() {
+		return targetPcmRepository;
+	}
+
+	public Resource getTargetPcmSystem() {
+		return targetPcmSystem;
+	}
+
+	public Resource getTargetPcmAllocation() {
+		return targetPcmAllocation;
+	}
+
+	public Resource getTargetPcmResEnv() {
+		return targetPcmResEnv;
+	}
+
+	public Resource getTargetPcmUsage() {
+		return targetPcmUsage;
+	}
+
+	public Resource getTargetIm() {
+		return targetIm;
+	}
+
+	public Resource getTargetCorrespondences() {
+		return targetCorrespondences;
+	}
+
+	public Resource getOriginalJavaChanges() {
+		return originalJavaChanges;
+	}
+
+	public Resource getOriginalPcmChanges() {
+		return originalPcmChanges;
+	}
+
+	public Resource getOriginalImChanges() {
+		return originalImChanges;
+	}
+
+	public Resource getPropagatedJavaModel() {
+		return propagatedJavaModel;
+	}
+
+	public Resource getPropagatedPcmRepository() {
+		return propagatedPcmRepository;
+	}
+
+	public Resource getPropagatedPcmSystem() {
+		return propagatedPcmSystem;
+	}
+
+	public Resource getPropagatedPcmAllocation() {
+		return propagatedPcmAllocation;
+	}
+
+	public Resource getPropagatedPcmResEnv() {
+		return propagatedPcmResEnv;
+	}
+
+	public Resource getPropagatedPcmUsage() {
+		return propagatedPcmUsage;
+	}
+
+	public Resource getPropagatedIm() {
+		return propagatedIm;
+	}
+
+	public Resource getPropagatedCorrespondences() {
+		return propagatedCorrespondences;
+	}
+
+	public Resource getPropagatedJavaChanges() {
+		return propagatedJavaChanges;
+	}
+
+	public Resource getPropagatedPcmChanges() {
+		return propagatedPcmChanges;
+	}
+
+	public Resource getPropagatedImChanges() {
+		return propagatedImChanges;
+	}
+
+	public JavaToPcmPropagationDirLayout getPreviousPropagationLayout() {
+		return initialLayout;
+	}
+
+	public JavaToPcmPropagationDirLayout getOriginalLayout() {
+		return targetLayout;
+	}
+
+}
