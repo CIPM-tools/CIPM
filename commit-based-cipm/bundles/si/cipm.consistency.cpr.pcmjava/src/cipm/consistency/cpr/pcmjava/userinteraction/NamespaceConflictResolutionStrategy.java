@@ -26,6 +26,8 @@ public class NamespaceConflictResolutionStrategy extends ConflictResolutionStrat
 		this.javaModelRes.getAllContents().forEachRemaining(javaElems::add);
 	}
 
+	// TODO Intercept manual user interactions for generic types
+	
 	@Override
 	protected void applyStrategy(AbstractUserInteraction userInteraction) {
 		var castedUI = (NamespaceUserInteraction) userInteraction;

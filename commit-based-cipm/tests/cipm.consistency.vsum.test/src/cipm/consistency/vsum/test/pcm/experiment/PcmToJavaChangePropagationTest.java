@@ -4,17 +4,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.palladiosimulator.pcm.repository.Repository;
@@ -26,7 +21,6 @@ import cipm.consistency.commitintegration.diff.util.ComparisonBasedJaccardCoeffi
 import cipm.consistency.commitintegration.diff.util.pcm.PCMModelComparator;
 import cipm.consistency.commitintegration.lang.java.JavaModelFacade;
 import cipm.consistency.cpr.pcmjava.JavaModelAccess;
-import cipm.consistency.cpr.pcmjava.preprocessing.ChangeUtil;
 import cipm.consistency.cpr.pcmjava.userinteraction.NamespaceConflictResolutionStrategy;
 import cipm.consistency.cpr.pcmjava.userinteraction.PcmUserInteractionManager;
 import cipm.consistency.models.im.ImFacade;
@@ -43,11 +37,6 @@ import mir.reactions.imInit.ImInitChangePropagationSpecification;
 import mir.reactions.pcmImUpdate.PcmImUpdateChangePropagationSpecification;
 import mir.reactions.pcmInit.PcmInitChangePropagationSpecification;
 import tools.vitruv.change.atomic.EChange;
-import tools.vitruv.change.atomic.eobject.CreateEObject;
-import tools.vitruv.change.atomic.feature.attribute.ReplaceSingleValuedEAttribute;
-import tools.vitruv.change.atomic.feature.reference.InsertEReference;
-import tools.vitruv.change.atomic.feature.reference.ReplaceSingleValuedEReference;
-import tools.vitruv.change.atomic.resolve.EChangeResolverAndApplicator;
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
 
 public class PcmToJavaChangePropagationTest {
@@ -211,8 +200,6 @@ public class PcmToJavaChangePropagationTest {
 		model.setComponentDetectionStrategies(List.of(new UnnamedModuleComponentDetectionStrategy()));
 		model.initialize(getDirLayout().getPropagatedDirLayout().getCodeDirPath());
 		var modelRes = model.getResource();
-		// TODO Remove all contents from Java code model, since PCM -> Java propagation
-		// is tested for integration case
 		JavaModelAccess.setJavaModel(modelRes);
 		return model;
 	}
@@ -222,16 +209,6 @@ public class PcmToJavaChangePropagationTest {
 		imFacade.initialize(getDirLayout().getPropagatedDirLayout().getImDirPath());
 		return imFacade;
 	}
-//
-//	private void assertPropagationSuccessful(Propagation pcmToJavaProp, List<EChange> propagatedPcmChanges) {
-//		var pcmChanges = pcmToJavaProp.getChanges().get(0).getOriginalChange().getEChanges();
-//		Assertions.assertEquals(propagatedPcmChanges.size(), pcmChanges.size());
-//		for (int i = 0; i < propagatedPcmChanges.size(); i++) {
-//			// Make sure to unresolve changes to content order related issues
-//			Assertions.assertTrue(EcoreUtil.equals(EChangeResolverAndApplicator.unresolve(pcmChanges.get(i)),
-//					EChangeResolverAndApplicator.unresolve(propagatedPcmChanges.get(i))));
-//		}
-//	}
 
 	private JaccardCoefficientResult computeJCForJava(Resource newJavaModel, Resource oldJavaModel) {
 		return ComparisonBasedJaccardCoefficientCalculator.calculateJaccardCoefficient(
@@ -262,11 +239,11 @@ public class PcmToJavaChangePropagationTest {
 	private static final String experimentRootDirNamePrefix = "Teammates-Experiment-";
 
 	private static final List<JavaToPcmPropagationDirLayout> dirLayouts = new ArrayList<>();
-	
+
 	@Test
 	public void testPcmPropagation() {
 		LoggingSetup.setMinLogLevel(Level.DEBUG);
-		
+
 		dirLayouts.add(new JavaToPcmPropagationDirLayout(Paths.get("target", "TEAMMATESCITest-1-6484257")));
 		dirLayouts.add(new JavaToPcmPropagationDirLayout(Paths.get("target", "TEAMMATESCITest-2-48b67ba")));
 		dirLayouts.add(new JavaToPcmPropagationDirLayout(Paths.get("target", "TEAMMATESCITest-3-83f518e")));

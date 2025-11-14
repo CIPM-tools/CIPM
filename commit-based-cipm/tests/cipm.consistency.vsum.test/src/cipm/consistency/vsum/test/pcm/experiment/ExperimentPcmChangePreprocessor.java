@@ -83,8 +83,6 @@ public class ExperimentPcmChangePreprocessor {
 							&& ChangeUtil.getNewValueID(currentChange) != null
 							&& ChangeUtil.getNewValueID(currentChange).equals(cachedEObjectURI));
 
-			// TODO Exclude generic type parameters as DataTypes
-
 			// Skip SEFF changes
 			if (shouldSkipChange(currentChange)) {
 				createChange = null;
