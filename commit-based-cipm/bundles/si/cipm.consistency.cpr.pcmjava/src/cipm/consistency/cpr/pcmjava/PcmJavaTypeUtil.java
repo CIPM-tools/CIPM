@@ -195,7 +195,7 @@ public class PcmJavaTypeUtil {
 	 * TypeReferences.
 	 */
 	public static boolean doTypesMatch(DataType pcmType, TypeReference javaType) {
-		return doTypesMatch(pcmType, javaType.getPureClassifierReference());
+		return doTypesMatch(pcmType, (ConcreteClassifier) javaType.getPureClassifierReference().getTarget());
 	}
 
 	public static String getDataTypeName(DataType dt) {
