@@ -1,126 +1,207 @@
 package cipm.consistency.vsum.test.pcm.experiment;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.junit.jupiter.api.Assertions;
+
+import cipm.consistency.cpr.pcmjava.preprocessing.ChangeUtil;
+import tools.vitruv.change.correspondence.Correspondences;
 
 public class JavaToPcmPropagationWrapper implements AutoCloseable {
-	private JavaToPcmPropagationDirLayout layout;
 	private ResourceSet resSet;
 
-	private Resource initialJavaModel;
-	private Resource initialPCMRepository;
-	private Resource initialIM;
-	private Resource initialCorrespondences;
+	private Resource javaModel;
 
-	private Resource propagatedJavaModel;
+	private Resource pcmRepository;
+	private Resource pcmSystem;
+	private Resource pcmAllocation;
+	private Resource pcmResEnv;
+	private Resource pcmUsage;
 
-	private Resource propagatedPcmRepository;
-	private Resource propagatedPcmSystem;
-	private Resource propagatedPcmAllocation;
-	private Resource propagatedPcmResEnv;
-	private Resource propagatedPcmUsage;
-
-	private Resource propagatedIm;
-
-	private Resource propagatedCorrespondences;
+	private Resource im;
 
 	private Resource javaChanges;
 	private Resource pcmChanges;
 	private Resource imChanges;
 
-	public JavaToPcmPropagationWrapper(ResourceSet resSet, JavaToPcmPropagationDirLayout layout) {
+	private Resource correspondences;
+
+	public JavaToPcmPropagationWrapper(ResourceSet resSet) {
 		this.resSet = resSet;
-		this.layout = layout;
 	}
 
-	public void initialise() {
-		initialJavaModel = ExperimentResourceUtil.loadResource(resSet, layout.getInitialJavaModelPath());
-		propagatedJavaModel = ExperimentResourceUtil.loadResource(resSet, layout.getPropagatedJavaModelSavePath());
+	public void initialise(JavaToPcmPropagationDirLayout layout) {
+		javaModel = loadResource(resSet, pathToURI(layout.getJavaModelSavePath()));
 
-		initialPCMRepository = ExperimentResourceUtil.loadResource(resSet, layout.getInitialRepositoryPath());
-		propagatedPcmRepository = ExperimentResourceUtil.loadResource(resSet, layout.getPropagatedPcmRepositoryPath());
+		pcmRepository = loadResource(resSet, pathToURI(layout.getPcmRepositoryPath()));
+		pcmSystem = loadResource(resSet, pathToURI(layout.getPcmSystemPath()));
+		pcmAllocation = loadResource(resSet, pathToURI(layout.getPcmAllocationPath()));
+		pcmResEnv = loadResource(resSet, pathToURI(layout.getPcmResourceEnvironmentPath()));
+		pcmUsage = loadResource(resSet, pathToURI(layout.getPcmUsagePath()));
 
-		propagatedPcmSystem = ExperimentResourceUtil.loadResource(resSet, layout.getPropagatedPcmSystemPath());
-		propagatedPcmAllocation = ExperimentResourceUtil.loadResource(resSet, layout.getPropagatedPcmAllocationPath());
-		propagatedPcmResEnv = ExperimentResourceUtil.loadResource(resSet,
-				layout.getPropagatedPcmResourceEnvironmentPath());
-		propagatedPcmUsage = ExperimentResourceUtil.loadResource(resSet, layout.getPropagatedPcmUsagePath());
+		im = loadResource(resSet, pathToURI(layout.getIMSavePath()));
 
-		initialIM = ExperimentResourceUtil.loadResource(resSet, layout.getInitialIMPath());
-		propagatedIm = ExperimentResourceUtil.loadResource(resSet, layout.getPropagatedIMSavePath());
+		javaChanges = loadResource(resSet, pathToURI(layout.getJavaChangesSaveFilePath()));
+		pcmChanges = loadResource(resSet, pathToURI(layout.getPcmChangesSaveFilePath()));
+		imChanges = loadResource(resSet, pathToURI(layout.getImChangesSaveFilePath()));
 
-		javaChanges = ExperimentResourceUtil.loadResource(resSet, layout.getJavaChangesSaveFilePath());
-		pcmChanges = ExperimentResourceUtil.loadResource(resSet, layout.getPcmChangesSaveFilePath());
-		imChanges = ExperimentResourceUtil.loadResource(resSet, layout.getImChangesSaveFilePath());
-
-		initialCorrespondences = ExperimentResourceUtil.loadResource(resSet, layout.getInitialCorrespondencesPath());
-		propagatedCorrespondences = ExperimentResourceUtil.loadResource(resSet,
-				layout.getPropagatedCorrespondencesPath());
+		correspondences = loadResource(resSet, pathToURI(layout.getVSUMCorrespondencesPath()));
 	}
 
-	public void copyInitialModelsTo(JavaToPcmPropagationWrapper wrapperToCopyTo, ResourceSet resSetToCopyTo) {
-		wrapperToCopyTo.initialJavaModel = ExperimentResourceUtil.copyAndSaveResource(resSetToCopyTo, initialJavaModel,
-				wrapperToCopyTo.layout.getInitialJavaModelPath());
-		wrapperToCopyTo.initialPCMRepository = ExperimentResourceUtil.copyAndSaveResource(resSetToCopyTo,
-				initialPCMRepository, wrapperToCopyTo.layout.getInitialRepositoryPath());
-		wrapperToCopyTo.initialIM = ExperimentResourceUtil.copyAndSaveResource(resSetToCopyTo, initialIM,
-				wrapperToCopyTo.layout.getInitialIMPath());
-		wrapperToCopyTo.initialCorrespondences = ExperimentResourceUtil.copyAndSaveResource(resSetToCopyTo,
-				initialCorrespondences, wrapperToCopyTo.layout.getInitialCorrespondencesPath());
+	public JavaToPcmPropagationWrapper copyTo(ResourceSet resSetToCopyTo, Path copyPath) {
+		var newLayout = new JavaToPcmPropagationDirLayout(copyPath);
+		var newWrapper = new JavaToPcmPropagationWrapper(resSetToCopyTo);
+
+		newWrapper.javaModel = copyAndSaveResource(resSetToCopyTo, javaModel,
+				pathToURI(newLayout.getJavaModelSavePath()));
+
+		newWrapper.pcmRepository = copyAndSaveResource(resSetToCopyTo, pcmRepository,
+				pathToURI(newLayout.getPcmRepositoryPath()));
+		newWrapper.pcmSystem = copyAndSaveResource(resSetToCopyTo, pcmSystem, pathToURI(newLayout.getPcmSystemPath()));
+		newWrapper.pcmAllocation = copyAndSaveResource(resSetToCopyTo, pcmAllocation,
+				pathToURI(newLayout.getPcmAllocationPath()));
+		newWrapper.pcmResEnv = copyAndSaveResource(resSetToCopyTo, pcmResEnv,
+				pathToURI(newLayout.getPcmResourceEnvironmentPath()));
+		newWrapper.pcmUsage = copyAndSaveResource(resSetToCopyTo, pcmUsage, pathToURI(newLayout.getPcmUsagePath()));
+
+		newWrapper.im = copyAndSaveResource(resSetToCopyTo, im, pathToURI(newLayout.getIMSavePath()));
+
+		newWrapper.javaChanges = copyAndSaveResource(resSetToCopyTo, javaChanges,
+				pathToURI(newLayout.getJavaChangesSaveFilePath()));
+		newWrapper.pcmChanges = copyAndSaveResource(resSetToCopyTo, pcmChanges,
+				pathToURI(newLayout.getPcmChangesSaveFilePath()));
+		newWrapper.imChanges = copyAndSaveResource(resSetToCopyTo, imChanges,
+				pathToURI(newLayout.getImChangesSaveFilePath()));
+
+		newWrapper.correspondences = copyAndSaveResource(resSetToCopyTo, correspondences,
+				pathToURI(newLayout.getVSUMCorrespondencesPath()));
+
+		return newWrapper;
 	}
 
-	public void copyPropagatedModelsTo(JavaToPcmPropagationWrapper wrapperToCopyTo, ResourceSet resSetToCopyTo) {
-		wrapperToCopyTo.propagatedJavaModel = ExperimentResourceUtil.copyAndSaveResource(resSetToCopyTo,
-				propagatedJavaModel, wrapperToCopyTo.layout.getPropagatedJavaModelSavePath());
-
-		wrapperToCopyTo.propagatedPcmRepository = ExperimentResourceUtil.copyAndSaveResource(resSetToCopyTo,
-				propagatedPcmRepository, wrapperToCopyTo.layout.getPropagatedPcmRepositoryPath());
-		wrapperToCopyTo.propagatedPcmSystem = ExperimentResourceUtil.copyAndSaveResource(resSetToCopyTo,
-				propagatedPcmSystem, wrapperToCopyTo.layout.getPropagatedPcmSystemPath());
-		wrapperToCopyTo.propagatedPcmAllocation = ExperimentResourceUtil.copyAndSaveResource(resSetToCopyTo,
-				propagatedPcmAllocation, wrapperToCopyTo.layout.getPropagatedPcmAllocationPath());
-		wrapperToCopyTo.propagatedPcmResEnv = ExperimentResourceUtil.copyAndSaveResource(resSetToCopyTo,
-				propagatedPcmResEnv, wrapperToCopyTo.layout.getPropagatedPcmResourceEnvironmentPath());
-		wrapperToCopyTo.propagatedPcmUsage = ExperimentResourceUtil.copyAndSaveResource(resSetToCopyTo,
-				propagatedPcmUsage, wrapperToCopyTo.layout.getPropagatedPcmUsagePath());
-
-		wrapperToCopyTo.propagatedIm = ExperimentResourceUtil.copyAndSaveResource(resSetToCopyTo, propagatedIm,
-				wrapperToCopyTo.layout.getPropagatedIMSavePath());
-		wrapperToCopyTo.propagatedCorrespondences = ExperimentResourceUtil.copyAndSaveResource(resSetToCopyTo,
-				propagatedCorrespondences, wrapperToCopyTo.layout.getPropagatedCorrespondencesPath());
+	public JavaToPcmPropagationWrapper copyTo(Path copyPath) {
+		return copyTo(new ResourceSetImpl(), copyPath);
 	}
 
-	public void copyChangesTo(JavaToPcmPropagationWrapper wrapperToCopyTo, ResourceSet resSetToCopyTo) {
-		wrapperToCopyTo.javaChanges = ExperimentResourceUtil.copyAndSaveResource(resSetToCopyTo, javaChanges,
-				wrapperToCopyTo.layout.getJavaChangesSaveFilePath());
-		wrapperToCopyTo.pcmChanges = ExperimentResourceUtil.copyAndSaveResource(resSetToCopyTo, pcmChanges,
-				wrapperToCopyTo.layout.getPcmChangesSaveFilePath());
-		wrapperToCopyTo.imChanges = ExperimentResourceUtil.copyAndSaveResource(resSetToCopyTo, imChanges,
-				wrapperToCopyTo.layout.getImChangesSaveFilePath());
+	/**
+	 * Creates, loads and returns a Resource instance for the given URI.
+	 */
+	protected Resource loadResource(URI uri) {
+		return this.loadResource(new ResourceSetImpl(), uri);
+	}
+
+	/**
+	 * Creates, loads and returns a Resource instance for the given URI.
+	 */
+	protected Resource loadResource(ResourceSet resSet, URI uri) {
+		return this.loadResource(resSet.createResource(uri));
+	}
+
+	/**
+	 * Creates, loads and returns a new Resource instance for the same URI. Can be
+	 * used to create a separate Resource instance for the given resource.
+	 */
+	protected Resource loadNewResourceInstance(Resource resource) {
+		return this.loadResource(resource.getURI());
+	}
+
+	/**
+	 * Loads and returns the given resource. Does not create a new resource
+	 * instance.
+	 */
+	protected Resource loadResource(Resource resource) {
+		createDirs(Path.of(resource.getURI().path()).toAbsolutePath());
+
+		try {
+			resource.load(null);
+		} catch (IOException e) {
+			e.printStackTrace();
+			Assertions.fail(e);
+		}
+		return resource;
+	}
+
+	private void adaptURIsInChanges() {
+		ChangeUtil.adaptChangeURIs(javaChanges, javaModel);
+		ChangeUtil.adaptChangeURIs(pcmChanges, pcmRepository);
+		ChangeUtil.adaptChangeURIs(imChanges, im);
+	}
+
+	public void adaptURIsInPCMChangeResource(Resource targetPCMRepository) {
+		ChangeUtil.adaptChangeURIs(pcmChanges, targetPCMRepository);
+	}
+
+	private void adaptURIsInCorrespondences() {
+		for (var cor : ((Correspondences) correspondences.getContents().get(0)).getCorrespondences()) {
+			cor.getTag();
+		}
+	}
+
+	private void createDirs(Path path) {
+		var f = path.toFile();
+
+		if (f.isDirectory()) {
+			f.mkdirs();
+		} else {
+			f.getParentFile().mkdirs();
+		}
+	}
+
+	private void removeResource(Resource res) {
+		res.unload();
+		res.getContents().clear();
+		if (res.getResourceSet() != null) {
+			res.getResourceSet().getResources().remove(res);
+		}
+	}
+
+	private URI pathToURI(Path path) {
+		return URI.createFileURI(path.toAbsolutePath().toString());
+	}
+
+	private Resource copyAndSaveResource(ResourceSet resSet, Resource resToCopy, URI copyLocationURI) {
+		var res = resSet.createResource(copyLocationURI);
+		res.getContents().addAll(EcoreUtil.copyAll(resToCopy.getContents()));
+		saveResource(res);
+		return res;
+	}
+
+	private void saveResource(Resource res) {
+		try {
+			res.save(null);
+		} catch (IOException e) {
+			e.printStackTrace();
+			Assertions.fail(e);
+		}
 	}
 
 	@Override
 	public void close() {
-		ExperimentResourceUtil.removeResource(initialJavaModel);
-		ExperimentResourceUtil.removeResource(initialPCMRepository);
-		ExperimentResourceUtil.removeResource(initialIM);
-		ExperimentResourceUtil.removeResource(initialCorrespondences);
+		removeResource(javaModel);
 
-		ExperimentResourceUtil.removeResource(propagatedJavaModel);
+		removeResource(pcmRepository);
+		removeResource(pcmSystem);
+		removeResource(pcmAllocation);
+		removeResource(pcmResEnv);
+		removeResource(pcmUsage);
 
-		ExperimentResourceUtil.removeResource(propagatedPcmRepository);
-		ExperimentResourceUtil.removeResource(propagatedPcmSystem);
-		ExperimentResourceUtil.removeResource(propagatedPcmAllocation);
-		ExperimentResourceUtil.removeResource(propagatedPcmResEnv);
-		ExperimentResourceUtil.removeResource(propagatedPcmUsage);
+		removeResource(im);
 
-		ExperimentResourceUtil.removeResource(propagatedIm);
+		removeResource(javaChanges);
+		removeResource(pcmChanges);
+		removeResource(imChanges);
 
-		ExperimentResourceUtil.removeResource(javaChanges);
-		ExperimentResourceUtil.removeResource(pcmChanges);
-		ExperimentResourceUtil.removeResource(imChanges);
-
-		ExperimentResourceUtil.removeResource(propagatedCorrespondences);
+		removeResource(correspondences);
 
 	}
 
@@ -128,56 +209,32 @@ public class JavaToPcmPropagationWrapper implements AutoCloseable {
 		return resSet;
 	}
 
-	public JavaToPcmPropagationDirLayout getLayout() {
-		return layout;
+	public Resource getJavaModel() {
+		return javaModel;
 	}
 
-	public Resource getInitialJavaModel() {
-		return initialJavaModel;
+	public Resource getPcmRepository() {
+		return pcmRepository;
 	}
 
-	public Resource getInitialPCMRepository() {
-		return initialPCMRepository;
+	public Resource getPcmSystem() {
+		return pcmSystem;
 	}
 
-	public Resource getInitialIM() {
-		return initialIM;
+	public Resource getPcmAllocation() {
+		return pcmAllocation;
 	}
 
-	public Resource getInitialCorrespondences() {
-		return initialCorrespondences;
+	public Resource getPcmResEnv() {
+		return pcmResEnv;
 	}
 
-	public Resource getPropagatedJavaModel() {
-		return propagatedJavaModel;
+	public Resource getPcmUsage() {
+		return pcmUsage;
 	}
 
-	public Resource getPropagatedPcmRepository() {
-		return propagatedPcmRepository;
-	}
-
-	public Resource getPropagatedPcmSystem() {
-		return propagatedPcmSystem;
-	}
-
-	public Resource getPropagatedPcmAllocation() {
-		return propagatedPcmAllocation;
-	}
-
-	public Resource getPropagatedPcmResEnv() {
-		return propagatedPcmResEnv;
-	}
-
-	public Resource getPropagatedPcmUsage() {
-		return propagatedPcmUsage;
-	}
-
-	public Resource getPropagatedIm() {
-		return propagatedIm;
-	}
-
-	public Resource getPropagatedCorrespondences() {
-		return propagatedCorrespondences;
+	public Resource getIm() {
+		return im;
 	}
 
 	public Resource getJavaChanges() {
@@ -190,6 +247,10 @@ public class JavaToPcmPropagationWrapper implements AutoCloseable {
 
 	public Resource getImChanges() {
 		return imChanges;
+	}
+
+	public Resource getCorrespondences() {
+		return correspondences;
 	}
 
 }

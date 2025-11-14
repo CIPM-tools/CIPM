@@ -11,24 +11,12 @@ public class JavaToPcmPropagationDirLayout extends CommitIntegrationDirLayout {
 	private Path pcmChangesSaveFilePath;
 	private Path imChangesSaveFilePath;
 
-	private Path initialJavaModelPath;
-	private Path initialRepositoryPath;
-	private Path initialIMPath;
-	private Path initialCorrespondencesPath;
-
-	public JavaToPcmPropagationDirLayout(Path rootDirPath) {
-		this(rootDirPath, null, null, null, null);
+	public JavaToPcmPropagationDirLayout(CommitIntegrationDirLayout dirLayout) {
+		this(dirLayout.getRootDirPath());
 	}
 
-	public JavaToPcmPropagationDirLayout(Path rootDirPath, Path initialJavaModelPath, Path initialRepositoryPath,
-			Path initialIMPath, Path initialCorrespondencesPath) {
+	public JavaToPcmPropagationDirLayout(Path rootDirPath) {
 		super();
-
-		this.initialJavaModelPath = initialJavaModelPath;
-		this.initialRepositoryPath = initialRepositoryPath;
-		this.initialIMPath = initialIMPath;
-		this.initialCorrespondencesPath = initialCorrespondencesPath;
-
 		this.initialize(rootDirPath);
 	}
 
@@ -37,13 +25,14 @@ public class JavaToPcmPropagationDirLayout extends CommitIntegrationDirLayout {
 		super.initialize(rootDirPath);
 
 		this.rootPath = rootDirPath;
-		this.changesSavePath = this.rootPath.resolve(ExperimentDirLayoutConstants.getChangessavedirname());
+		this.changesSavePath = this.rootPath
+				.resolve(PcmToJavaChangePropagationDirLayoutConstants.getChangessavedirname());
 		this.javaChangesSaveFilePath = this.changesSavePath
-				.resolve(ExperimentDirLayoutConstants.getJavachangessavefilename());
+				.resolve(PcmToJavaChangePropagationDirLayoutConstants.getJavachangessavefilename());
 		this.pcmChangesSaveFilePath = this.changesSavePath
-				.resolve(ExperimentDirLayoutConstants.getPcmchangessavefilename());
+				.resolve(PcmToJavaChangePropagationDirLayoutConstants.getPcmchangessavefilename());
 		this.imChangesSaveFilePath = this.changesSavePath
-				.resolve(ExperimentDirLayoutConstants.getImchangessavefilename());
+				.resolve(PcmToJavaChangePropagationDirLayoutConstants.getImchangessavefilename());
 	}
 
 	public Path getRootPath() {
@@ -66,52 +55,37 @@ public class JavaToPcmPropagationDirLayout extends CommitIntegrationDirLayout {
 		return imChangesSaveFilePath;
 	}
 
-	public Path getInitialJavaModelPath() {
-		return initialJavaModelPath;
+	public Path getJavaModelSavePath() {
+		return this.getCodeDirPath().resolve(PcmToJavaChangePropagationDirLayoutConstants.getJavafilename());
 	}
 
-	public Path getInitialRepositoryPath() {
-		return initialRepositoryPath;
+	public Path getIMSavePath() {
+		return this.getImDirPath().resolve(PcmToJavaChangePropagationDirLayoutConstants.getImfilename());
 	}
 
-	public Path getInitialIMPath() {
-		return initialIMPath;
+	public Path getPcmRepositoryPath() {
+		return this.getPcmDirPath().resolve(PcmToJavaChangePropagationDirLayoutConstants.getPcmrepositoryfilename());
 	}
 
-	public Path getInitialCorrespondencesPath() {
-		return initialCorrespondencesPath;
+	public Path getPcmSystemPath() {
+		return this.getPcmDirPath().resolve(PcmToJavaChangePropagationDirLayoutConstants.getPcmsystemfilename());
 	}
 
-	public Path getPropagatedJavaModelSavePath() {
-		return this.getCodeDirPath().resolve(ExperimentDirLayoutConstants.getJavafilename());
+	public Path getPcmAllocationPath() {
+		return this.getPcmDirPath().resolve(PcmToJavaChangePropagationDirLayoutConstants.getPcmallocationfilename());
 	}
 
-	public Path getPropagatedIMSavePath() {
-		return this.getImDirPath().resolve(ExperimentDirLayoutConstants.getImfilename());
+	public Path getPcmResourceEnvironmentPath() {
+		return this.getPcmDirPath()
+				.resolve(PcmToJavaChangePropagationDirLayoutConstants.getPcmresourceenvironmentfilename());
 	}
 
-	public Path getPropagatedPcmRepositoryPath() {
-		return this.getPcmDirPath().resolve(ExperimentDirLayoutConstants.getPcmrepositoryfilename());
+	public Path getPcmUsagePath() {
+		return this.getPcmDirPath().resolve(PcmToJavaChangePropagationDirLayoutConstants.getPcmusagemodelfilename());
 	}
 
-	public Path getPropagatedPcmSystemPath() {
-		return this.getPcmDirPath().resolve(ExperimentDirLayoutConstants.getPcmsystemfilename());
-	}
-
-	public Path getPropagatedPcmAllocationPath() {
-		return this.getPcmDirPath().resolve(ExperimentDirLayoutConstants.getPcmallocationfilename());
-	}
-
-	public Path getPropagatedPcmResourceEnvironmentPath() {
-		return this.getPcmDirPath().resolve(ExperimentDirLayoutConstants.getPcmresourceenvironmentfilename());
-	}
-
-	public Path getPropagatedPcmUsagePath() {
-		return this.getPcmDirPath().resolve(ExperimentDirLayoutConstants.getPcmusagemodelfilename());
-	}
-
-	public Path getPropagatedCorrespondencesPath() {
-		return this.getVsumDirPath().resolve(ExperimentDirLayoutConstants.getVsumdirname())
-				.resolve(ExperimentDirLayoutConstants.getVsumcorrespondencemodelname());
+	public Path getVSUMCorrespondencesPath() {
+		return this.getVsumDirPath().resolve(PcmToJavaChangePropagationDirLayoutConstants.getVsumdirname())
+				.resolve(PcmToJavaChangePropagationDirLayoutConstants.getVsumcorrespondencemodelname());
 	}
 }
