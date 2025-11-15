@@ -1,7 +1,6 @@
 import cipm.consistency.cpr.pcmjava.JavaModelAccess
 import cipm.consistency.cpr.pcmjava.PcmJavaCPRUtils
 import org.emftext.language.java.types.TypesFactory
-import cipm.consistency.cpr.pcmjava.PCMElementUtil
 import org.emftext.language.java.parameters.ParametersFactory
 import org.emftext.language.java.members.MembersFactory
 import org.emftext.language.java.classifiers.ClassifiersFactory
@@ -10,7 +9,6 @@ import cipm.consistency.cpr.pcmjava.userinteraction.NamespaceUserInteraction
 import cipm.consistency.cpr.pcmjava.userinteraction.JavaCorrespondentDecisionUserInteraction
 import java.util.ArrayList
 import org.eclipse.emf.ecore.EObject
-import org.emftext.language.java.classifiers.ConcreteClassifier
 
 import "http://www.emftext.org/java" as java
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
@@ -92,46 +90,57 @@ reaction AddedOperationSignature {
 	}
 }
 
+reaction AddedReturnTypeToOperationSignature {
+	after element inserted in pcm::OperationSignature[returnType__OperationSignature]
+	call {
+		findOrCreateJavaInterfaceMethod(affectedEObject)
+	}
+}
+
+routine addReturnTypeToJavaMethod(pcm::OperationSignature pcmSig, pcm::DataType pcmReturnType) {
+	match {
+		val javaReturnType = retrieve java::ConcreteClassifier corresponding to pcmReturnType
+		val javaMet = retrieve java::Method corresponding to pcmSig
+	}
+	update {
+		val returnTref = TypesFactory.eINSTANCE.createClassifierReference
+		returnTref.target = javaReturnType
+		javaMet.typeReference = returnTref
+	}
+}
+
 routine findOrCreateJavaInterfaceMethod(pcm::OperationSignature pcmSig) {
 	match {
-		val javaReturnType = retrieve java::ConcreteClassifier corresponding to pcmSig.returnType__OperationSignature
 		val javaIfc = retrieve java::Interface corresponding to pcmSig.interface__OperationSignature
 	}
 	update {
-		val potentialMatchingMethods = javaIfc.methods.findFirst [
-			PCMElementUtil.doMethodSignaturesMatch(pcmSig, it, false)
-		]
+		val potentialMatchingMethods = javaIfc.methods.filter [
+			it.name.equals(pcmSig.entityName)
+		].toList
 
-		if (potentialMatchingMethods !== null) {
+		if (potentialMatchingMethods.size > 1) {
+			var corUI = new JavaCorrespondentDecisionUserInteraction(pcmSig, potentialMatchingMethods, "")
+			PcmUserInteractionManager.addUserInteraction(corUI)
+			corUI.resolveAll
+
+			val matchingJavaMethod = corUI.javaCorrespondent
+			if (matchingJavaMethod !== null) {
+				// Matching Java method found, add correspondences and return
+				PcmJavaCPRUtils.
+					addCorrespondencesForPcmOperationSignatureAndJavaInterfaceMethod(correspondenceModel, pcmSig,
+						matchingJavaMethod as org.emftext.language.java.members.Method)
+				return
+			}
+		} else if (potentialMatchingMethods.size == 1) {
 			PcmJavaCPRUtils.
 				addCorrespondencesForPcmOperationSignatureAndJavaInterfaceMethod(correspondenceModel, pcmSig,
-					potentialMatchingMethods)
-		} else {
-			val javaInterfaceMethod = MembersFactory.eINSTANCE.createInterfaceMethod
-			javaInterfaceMethod.name = pcmSig.entityName
-
-			val returnTref = TypesFactory.eINSTANCE.createClassifierReference
-			returnTref.target = javaReturnType
-			javaInterfaceMethod.typeReference = returnTref
-
-			for (p : pcmSig.parameters__OperationSignature) {
-				val pType = p.dataType__Parameter
-				val javaType = getCorrespondingElement(pType, ConcreteClassifier, null, "", true)
-
-				val paramRef = TypesFactory.eINSTANCE.createClassifierReference
-				paramRef.target = javaType
-
-				val javaParam = ParametersFactory.eINSTANCE.createOrdinaryParameter
-				javaParam.name = p.parameterName
-				javaParam.typeReference = paramRef
-
-				javaInterfaceMethod.parameters += javaParam
-			}
-
-			javaIfc.members += javaInterfaceMethod
-
-			PcmJavaCPRUtils.generateJavaInterfaceMethodStubsInImplementors(javaIfc)
+					potentialMatchingMethods.get(0))
+			return
 		}
+
+		val javaInterfaceMethod = MembersFactory.eINSTANCE.createInterfaceMethod
+		javaInterfaceMethod.name = pcmSig.entityName
+		javaIfc.members += javaInterfaceMethod
 	}
 }
 
@@ -157,13 +166,41 @@ routine removeJavaInterfaceMethod(pcm::OperationSignature pcmSig) {
 reaction AddedParameterToOperationSignature {
 	after element pcm::Parameter inserted in pcm::OperationSignature[parameters__OperationSignature]
 	call {
-		// TODO Add developer task to add parameter to Java method
+		addParameterToJavaInterfaceMethod(affectedEObject, newValue)
+	}
+}
+
+routine addParameterToJavaInterfaceMethod(pcm::OperationSignature pcmSig, pcm::Parameter pcmParam) {
+	match {
+		val javaMet = retrieve java::Method corresponding to pcmSig
+		val javaParamCls = retrieve java::ConcreteClassifier corresponding to pcmParam.dataType__Parameter
+	}
+	update {
+		// TODO Check if adding a new parameter to Java method breaks code (most likely)
+		val javaParamTypeRef = TypesFactory.eINSTANCE.createClassifierReference
+		javaParamTypeRef.target = javaParamCls
+		val javaParam = ParametersFactory.eINSTANCE.createOrdinaryParameter
+		javaParam.name = pcmParam.parameterName
+		javaParam.typeReference = javaParamTypeRef
+
+		PcmJavaCPRUtils.addCorrespondenceToJavaCorrespondent(correspondenceModel, pcmParam, javaParam)
 	}
 }
 
 reaction RemovedParameterFromOperationSignature {
 	after element pcm::Parameter removed from pcm::OperationSignature[parameters__OperationSignature]
 	call {
-		// TODO Add developer task to remove parameter from Java method
+		removeParameterFromJavaInterfaceMethod(affectedEObject, oldValue)
+	}
+}
+
+routine removeParameterFromJavaInterfaceMethod(pcm::OperationSignature pcmSig, pcm::Parameter pcmParam) {
+	match {
+		val javaMet = retrieve java::Method corresponding to pcmSig
+		val javaParam = retrieve java::Parameter corresponding to pcmParam
+	}
+	update {
+		// TODO Check if removing a parameter from Java method breaks code (most likely)
+		javaMet.parameters -= javaParam
 	}
 }

@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
 import org.palladiosimulator.pcm.repository.Repository;
+import org.palladiosimulator.pcm.seff.ServiceEffectSpecification;
 
 import cipm.consistency.cpr.pcmjava.preprocessing.ChangeUtil;
 import tools.vitruv.change.atomic.EChange;
@@ -109,39 +108,50 @@ public class ExperimentPcmChangePreprocessor {
 		// elements are known
 		for (int i = 0; i <= maxDepth; i++) {
 			if (changes.containsKey(i)) {
-				newChangeList.addAll(changes.get(i));
+				newChangeList.addAll(orderOperationSignaturesBeforeSEFFCreation(changes.get(i)));
 			}
 		}
-
-//		if (changeSequence.size() != newChangeList.size()) {
-//			var largerList = changeSequence.size() > newChangeList.size() ? changeSequence : newChangeList;
-//			var smallerList = changeSequence.size() < newChangeList.size() ? changeSequence : newChangeList;
-//			
-//			var missingChanges = largerList.removeAll(smallerList);
-//			System.out.println(missingChanges);
-//		}
-
-//		Assertions.assertEquals(changeSequence.size(), newChangeList.size());
-//		Assertions.assertTrue(newChangeList.containsAll(changeSequence));
 
 		return newChangeList;
 	}
 
-	public boolean shouldSkipChange(EChange change) {
-		return (ChangeUtil.getAffectedFeature(change) != null
-				&& ChangeUtil.getAffectedFeature(change).getName().contains("serviceEffectSpecifications")) ||
+	private static final String seffActionEObjectFragmentPart = "serviceEffectSpecifications";
 
-				isSEFFactionChange(change);
+	private List<EChange> orderOperationSignaturesBeforeSEFFCreation(List<EChange> changes) {
+		var newChangeList = new ArrayList<EChange>();
+
+		var seffChanges = new ArrayList<EChange>();
+		for (var c : changes) {
+			if (isSetSEFFDescribedServiceChange(c) || isSEFFactionChange(c)
+					|| (c instanceof CreateEObject && ServiceEffectSpecification.class
+							.isAssignableFrom(ChangeUtil.getCreatedEObjectType(c).getInstanceClass()))) {
+				seffChanges.add(c);
+			} else {
+				newChangeList.add(c);
+			}
+		}
+
+		newChangeList.addAll(seffChanges);
+		return newChangeList;
+	}
+
+	private boolean shouldSkipChange(EChange change) {
+		return isSEFFactionChange(change);
+	}
+
+	private boolean isSetSEFFDescribedServiceChange(EChange change) {
+		return (ChangeUtil.getAffectedFeature(change) != null
+				&& ChangeUtil.getAffectedFeature(change).getName().contains(seffActionEObjectFragmentPart));
 	}
 
 	private boolean isSEFFactionChange(EChange change) {
 		return (ChangeUtil.getOldValueID(change) != null
-				&& ChangeUtil.getOldValueID(change).contains("serviceEffectSpecifications"))
+				&& ChangeUtil.getOldValueID(change).contains(seffActionEObjectFragmentPart))
 
-		|| (ChangeUtil.getNewValueID(change) != null
-				&& ChangeUtil.getNewValueID(change).contains("serviceEffectSpecifications"))
+				|| (ChangeUtil.getNewValueID(change) != null
+						&& ChangeUtil.getNewValueID(change).contains(seffActionEObjectFragmentPart))
 
-		|| (ChangeUtil.getAffectedEObjectID(change) != null
-				&& ChangeUtil.getAffectedEObjectID(change).contains("serviceEffectSpecifications"));
+				|| (ChangeUtil.getAffectedEObjectID(change) != null
+						&& ChangeUtil.getAffectedEObjectID(change).contains(seffActionEObjectFragmentPart));
 	}
 }

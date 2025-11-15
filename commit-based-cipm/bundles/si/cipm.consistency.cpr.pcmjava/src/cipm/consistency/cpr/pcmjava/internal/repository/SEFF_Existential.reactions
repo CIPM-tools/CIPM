@@ -1,4 +1,3 @@
-import org.palladiosimulator.pcm.repository.OperationSignature
 import com.google.common.collect.Lists
 
 import "http://www.emftext.org/java" as java
@@ -9,77 +8,82 @@ in reaction to changes in pcm
 execute actions in java
 
 reaction SEFFAdded {
-	after element pcm::ServiceEffectSpecification inserted in pcm::BasicComponent[serviceEffectSpecifications__BasicComponent]
+	after element pcm::OperationSignature inserted in pcm::ServiceEffectSpecification[describedService__SEFF]
 	call {
-		addCorrespondenceBetweenComponentAndSEFFJavaClass(newValue)
+		addCorrespondenceBetweenComponentAndSEFFJavaClass(affectedEObject, newValue)
 	}
 }
 
 reaction SEFFRemoved {
-	after element pcm::ServiceEffectSpecification removed from pcm::BasicComponent[serviceEffectSpecifications__BasicComponent]
+	after element pcm::OperationSignature removed from pcm::ServiceEffectSpecification[describedService__SEFF]
 	call {
-		removeCorrespondenceBetweenComponentAndSEFFJavaClass(oldValue)
+		removeCorrespondenceBetweenComponentAndSEFFJavaClass(affectedEObject, oldValue)
 	}
 }
 
-routine addCorrespondenceBetweenComponentAndSEFFJavaClass(pcm::ServiceEffectSpecification seff) {
+routine addCorrespondenceBetweenComponentAndSEFFJavaClass(pcm::ServiceEffectSpecification seff, pcm::OperationSignature pcmSig) {
 	match {
-		val javaMet = retrieve java::Method corresponding to (seff.describedService__SEFF as OperationSignature).
-			interface__OperationSignature
+		val javaMet = retrieve java::Method corresponding to pcmSig.interface__OperationSignature
 	}
 	update {
-		var javaCls = javaMet.containingConcreteClassifier
-		addCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, javaCls)
+		if (seff.basicComponent_ServiceEffectSpecification !== null) {
+			var javaCls = javaMet.containingConcreteClassifier
+			addCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, javaCls)
 
-		// If there are inner classes, they too should correspond to the same component
-		for (innerCls : javaCls.allInnerClassifiers) {
-			addCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, innerCls)
-		}
+			// If there are inner classes, they too should correspond to the same component
+			for (innerCls : javaCls.allInnerClassifiers) {
+				addCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, innerCls)
+			}
 
-		var allClss = Lists.newArrayList
-		allClss.add(javaCls)
-		allClss.addAll(javaCls.allInnerClassifiers)
+			var allClss = Lists.newArrayList
+			allClss.add(javaCls)
+			allClss.addAll(javaCls.allInnerClassifiers)
 
-		if (javaCls.containingConcreteClassifier !== null &&
-			allClss.containsAll(javaCls.containingConcreteClassifier.allInnerClassifiers)) {
-			addCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification,
-				javaCls.containingConcreteClassifier)
-		}
+			if (javaCls.containingConcreteClassifier !== null &&
+				allClss.containsAll(javaCls.containingConcreteClassifier.allInnerClassifiers)) {
+				addCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification,
+					javaCls.containingConcreteClassifier)
+			}
 
-		if (allClss.containsAll(javaCls.containingCompilationUnit.classifiers)) {
-			addCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, javaCls.containingCompilationUnit)
-		}
+			if (allClss.containsAll(javaCls.containingCompilationUnit.classifiers)) {
+				addCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification,
+					javaCls.containingCompilationUnit)
+			}
 
-		if (allClss.containsAll(javaCls.package.classifiers)) {
-			addCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, javaCls.package)
-		}
+			if (allClss.containsAll(javaCls.package.classifiers)) {
+				addCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, javaCls.package)
+			}
 
-		if (javaCls.package.module !== null && allClss.containsAll(javaCls.package.module.classifiersInSamePackage)) {
-			addCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, javaCls.package.module)
+			if (javaCls.package.module !== null &&
+				allClss.containsAll(javaCls.package.module.classifiersInSamePackage)) {
+				addCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, javaCls.package.module)
+			}
 		}
 	}
 }
 
-routine removeCorrespondenceBetweenComponentAndSEFFJavaClass(pcm::ServiceEffectSpecification seff) {
+routine removeCorrespondenceBetweenComponentAndSEFFJavaClass(pcm::ServiceEffectSpecification seff, pcm::OperationSignature pcmSig) {
 	match {
-		val javaMet = retrieve java::Method corresponding to (seff.describedService__SEFF as OperationSignature).
-			interface__OperationSignature
+		val javaMet = retrieve java::Method corresponding to pcmSig.interface__OperationSignature
 	}
 	update {
-		var javaCls = javaMet.containingConcreteClassifier
-		removeCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, javaCls)
+		if (seff.basicComponent_ServiceEffectSpecification !== null) {
+			var javaCls = javaMet.containingConcreteClassifier
+			removeCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, javaCls)
 
-		for (innerCls : javaCls.allInnerClassifiers) {
-			removeCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, innerCls)
-		}
+			for (innerCls : javaCls.allInnerClassifiers) {
+				removeCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, innerCls)
+			}
 
-		if (javaCls.containingConcreteClassifier !== null) {
+			if (javaCls.containingConcreteClassifier !== null) {
+				removeCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification,
+					javaCls.containingConcreteClassifier)
+			}
+
 			removeCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification,
-				javaCls.containingConcreteClassifier)
+				javaCls.containingCompilationUnit)
+			removeCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, javaCls.package)
+			removeCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, javaCls.package.module)
 		}
-
-		removeCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, javaCls.containingCompilationUnit)
-		removeCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, javaCls.package)
-		removeCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, javaCls.package.module)
 	}
 }

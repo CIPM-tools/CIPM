@@ -10,13 +10,15 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import tools.vitruv.change.interaction.UserInteractionFactory;
 
 public class JavaCorrespondentDecisionUserInteraction extends AbstractUserInteraction {
+	private static final String noneChoiceText = "None of the above";
+
 	private final String correspondenceTagToUse;
 	private final EObject triggeringPCMelement;
 	private EObject javaCorrespondent;
-	private final List<EObject> possibleJavaCorrespondents;
+	private final List<? extends EObject> possibleJavaCorrespondents;
 
 	public JavaCorrespondentDecisionUserInteraction(EObject triggeringPCMelement,
-			List<EObject> possibleJavaCorrespondents, String correspondenceTagToUse) {
+			List<? extends EObject> possibleJavaCorrespondents, String correspondenceTagToUse) {
 		this.triggeringPCMelement = triggeringPCMelement;
 		this.possibleJavaCorrespondents = possibleJavaCorrespondents;
 		this.correspondenceTagToUse = correspondenceTagToUse;
@@ -25,7 +27,8 @@ public class JavaCorrespondentDecisionUserInteraction extends AbstractUserIntera
 	@Override
 	public void performManualUserInteraction() {
 		final var choices = possibleJavaCorrespondents.stream().map((javaCor) -> javaCor.toString())
-				.collect(Collectors.toUnmodifiableList());
+				.collect(Collectors.toList());
+		choices.add(noneChoiceText);
 
 		if (!this.isResolved()) {
 			var choice = UserInteractionFactory.instance.createDialogUserInteractor().getSingleSelectionDialogBuilder()
@@ -35,11 +38,14 @@ public class JavaCorrespondentDecisionUserInteraction extends AbstractUserIntera
 											.getEntityName()
 									: "NO Name"))
 					.choices(choices).startInteraction();
-			var otherSide = possibleJavaCorrespondents.get(choice);
-			javaCorrespondent = otherSide;
+			javaCorrespondent = choice < possibleJavaCorrespondents.size() ? possibleJavaCorrespondents.get(choice)
+					: null;
 
-			this.reportDesiredCorrespondence(
-					new CorrespondenceEntry(triggeringPCMelement, otherSide, correspondenceTagToUse));
+			var entry = javaCorrespondent != null
+					? new CorrespondenceEntry(triggeringPCMelement, javaCorrespondent, correspondenceTagToUse)
+					: new CorrespondenceEntry(triggeringPCMelement, correspondenceTagToUse);
+
+			this.reportDesiredCorrespondence(entry);
 		}
 	}
 

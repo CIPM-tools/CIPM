@@ -23,7 +23,6 @@ import org.emftext.language.java.containers.Origin;
 import org.emftext.language.java.expressions.Expression;
 import org.emftext.language.java.literals.Literal;
 import org.emftext.language.java.literals.LiteralsFactory;
-import org.emftext.language.java.members.ExceptionThrower;
 import org.emftext.language.java.members.InterfaceMethod;
 import org.emftext.language.java.members.Method;
 import org.emftext.language.java.modifiers.Abstract;
@@ -43,9 +42,6 @@ import org.palladiosimulator.pcm.repository.OperationSignature;
 import com.google.common.base.Preconditions;
 
 public final class PcmJavaCPRUtils {
-	// TODO Ignore PCM exceptions from change propagation, CIPM does not support
-	// them
-
 	private static final String abstractModifierName = Abstract.class.getSimpleName();
 	private static final String defaultModifierName = Default.class.getSimpleName();
 
@@ -228,21 +224,6 @@ public final class PcmJavaCPRUtils {
 				|| rt2.getAllSuperClassifiers().stream().anyMatch((sc) -> EcoreUtil.equals(rt1, sc));
 	}
 
-	public static boolean areJavaExceptionsEqual(ExceptionThrower et1, ExceptionThrower et2) {
-		var excs1 = et1.getExceptions();
-		var excs2 = et2.getExceptions();
-
-		if (excs1.size() != excs2.size())
-			return false;
-
-		for (int i = 0; i < excs1.size(); i++) {
-			if (!EcoreUtil.equals(excs1.get(i), excs2.get(i)))
-				return false;
-		}
-
-		return true;
-	}
-
 	public static boolean areJavaModifiersEqual(AnnotableAndModifiable aam1, AnnotableAndModifiable aam2) {
 		var mods1 = aam1.getModifiers();
 		var mods2 = aam2.getModifiers();
@@ -289,9 +270,6 @@ public final class PcmJavaCPRUtils {
 	 */
 	public static void addCorrespondencesForPcmOperationSignatureAndJavaInterfaceMethod(
 			EditableCorrespondenceModelView<?> corView, OperationSignature pcmSig, Method javaMet) {
-		Preconditions.checkArgument(javaMet.eContainer() instanceof Interface,
-				"Given Java method is not an interface method");
-
 		// Add correspondences between method signatures (as a whole)
 		addCorrespondenceToJavaCorrespondent(corView, pcmSig, javaMet);
 
@@ -299,24 +277,11 @@ public final class PcmJavaCPRUtils {
 		// Note: PCM parameters are NOT first class entities
 		var pcmParams = pcmSig.getParameters__OperationSignature();
 		var javaParams = javaMet.getParameters();
-		for (int i = 0; i < pcmParams.size(); i++) {
-			addCorrespondenceToJavaCorrespondent(corView, pcmParams.get(i), javaParams.get(i));
-		}
-
-		// Add correspondences between PCM exception types and Java References to
-		// exception Classifiers (if existent)
-		//
-		// Note: PCM exception types are NOT first class entities
-		//
-		// Since exception types could be excluded while looking for matching PCM and
-		// Java Method signatures, it is important to re-check whether they match
-		pcmSig.getExceptions__Signature().forEach((pcmExc) -> {
-			var javaExc = javaMet.getExceptions().stream().filter((javaExcRef) -> javaExcRef
-					.getPureClassifierReference().getTarget().getName().equals(pcmExc.getExceptionName())).findFirst();
-			if (javaExc.isPresent()) {
-				addCorrespondenceToJavaCorrespondent(corView, pcmExc, javaExc.get());
+		if (PCMElementUtil.doMethodParametersMatch(pcmParams, javaParams)) {
+			for (int i = 0; i < pcmParams.size(); i++) {
+				addCorrespondenceToJavaCorrespondent(corView, pcmParams.get(i), javaParams.get(i));
 			}
-		});
+		}
 	}
 
 	/**

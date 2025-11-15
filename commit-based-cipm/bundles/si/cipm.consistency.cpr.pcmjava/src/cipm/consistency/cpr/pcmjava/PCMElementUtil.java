@@ -88,15 +88,11 @@ public final class PCMElementUtil {
 		return classifiers;
 	}
 
-	// TODO Ignore PCM exceptions from change propagation, CIPM does not support
-	// them
-
 	/**
-	 * @param checkExceptions Whether exceptions should match as well
 	 * @return Whether the given PCM method signature matches with the signature of
 	 *         the given Java method
 	 */
-	public static boolean doMethodSignaturesMatch(OperationSignature pcmSig, Method javaMet, boolean checkExceptions) {
+	public static boolean doMethodSignaturesMatch(OperationSignature pcmSig, Method javaMet) {
 		// Check names
 		if (!pcmSig.getEntityName().equals(javaMet.getName())) {
 			return false;
@@ -104,13 +100,6 @@ public final class PCMElementUtil {
 
 		// Check return types
 		if (!PcmJavaTypeUtil.doTypesMatch(pcmSig.getReturnType__OperationSignature(), javaMet.getTypeReference())) {
-			return false;
-		}
-
-		// Check exception types (if desired)
-		if (checkExceptions && !pcmSig.getExceptions__Signature().stream()
-				.allMatch((pcmExc) -> javaMet.getExceptions().stream().anyMatch((javaExc) -> javaExc
-						.getClassifierAtNamespaces().getName().equals(pcmExc.getExceptionName())))) {
 			return false;
 		}
 
@@ -141,22 +130,18 @@ public final class PCMElementUtil {
 				&& PcmJavaTypeUtil.doTypesMatch(pcmParam.getDataType__Parameter(), javaParam.getTypeReference());
 	}
 
-	// TODO Ignore PCM exceptions from change propagation, CIPM does not support
-	// them
-
 	/**
-	 * @param checkExceptions Whether exceptions should match as well
 	 * @return A mapping of PCM OperationSignatures to their (signature-wise)
 	 *         corresponding Java Methods
 	 * @see {@link #doMethodSignaturesMatch(OperationSignature, Method, boolean)}
 	 */
 	public static Map<OperationSignature, Method> getPCMMethodsWithJavaCorrespondences(
-			Iterable<OperationSignature> pcmSigs, Iterable<Method> javaMets, boolean checkExceptions) {
+			Iterable<OperationSignature> pcmSigs, Iterable<Method> javaMets) {
 		var matches = new HashMap<OperationSignature, Method>();
 
 		for (var pcmSig : pcmSigs) {
 			for (var javaMet : javaMets) {
-				if (doMethodSignaturesMatch(pcmSig, javaMet, checkExceptions)) {
+				if (doMethodSignaturesMatch(pcmSig, javaMet)) {
 					matches.put(pcmSig, javaMet);
 					break;
 				}
@@ -166,18 +151,14 @@ public final class PCMElementUtil {
 		return matches;
 	}
 
-	// TODO Ignore PCM exceptions from change propagation, CIPM does not support
-	// them
-
 	/**
-	 * @param checkExceptions Whether exceptions should match as well
 	 * @return A set of PCM OperationSignatures, which do not have a corresponding
 	 *         Java Method in javaMets
 	 * @see {@link #doMethodSignaturesMatch(OperationSignature, Method, boolean)}
 	 */
 	public static Set<OperationSignature> getPCMMethodsWithoutJavaCorrespondences(Iterable<OperationSignature> pcmSigs,
-			Iterable<Method> javaMets, boolean checkExceptions) {
-		var matches = getPCMMethodsWithJavaCorrespondences(pcmSigs, javaMets, checkExceptions);
+			Iterable<Method> javaMets) {
+		var matches = getPCMMethodsWithJavaCorrespondences(pcmSigs, javaMets);
 
 		var nonMatches = new HashSet<OperationSignature>();
 		pcmSigs.forEach((sig) -> {

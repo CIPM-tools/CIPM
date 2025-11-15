@@ -11,6 +11,7 @@ import org.emftext.language.java.commons.CommonsPackage;
 import tools.vitruv.change.interaction.UserInteractionFactory;
 
 public class NamespaceUserInteraction extends AbstractUserInteraction {
+	private static final String noneChoiceText = "None of the above";
 	private final static String namespaceSeparator = "\\.";
 
 	private final static EStructuralFeature clsNamespacesFeat = CommonsPackage.Literals.NAMESPACE_AWARE_ELEMENT__NAMESPACES;
@@ -27,29 +28,43 @@ public class NamespaceUserInteraction extends AbstractUserInteraction {
 
 	@Override
 	public void performManualUserInteraction() {
-		Object uiResult = nsSuggestions == null || nsSuggestions.isEmpty()
-				? UserInteractionFactory.instance
-						.createDialogUserInteractor().getTextInputDialogBuilder()
-						.message(String.format(
-								"Full namespace (without name) of the correspondent of %s (name: %s)",
-								triggeringPCMElement,
-								triggeringPCMElement instanceof org.palladiosimulator.pcm.core.entity.NamedElement
-										? ((org.palladiosimulator.pcm.core.entity.NamedElement) triggeringPCMElement)
-												.getEntityName()
-										: "NO Name"))
-						.startInteraction()
-				: UserInteractionFactory.instance.createDialogUserInteractor().getSingleSelectionDialogBuilder()
-						.message(String.format("Full namespace (without name) of the correspondent of %s (name: %s)",
-								triggeringPCMElement,
-								triggeringPCMElement instanceof org.palladiosimulator.pcm.core.entity.NamedElement
-										? ((org.palladiosimulator.pcm.core.entity.NamedElement) triggeringPCMElement)
-												.getEntityName()
-										: "NO Name"))
-						.choices(nsSuggestions).startInteraction();
+		Object uiResult = null;
+		if (nsSuggestions == null || nsSuggestions.isEmpty()) {
+			uiResult = UserInteractionFactory.instance
+					.createDialogUserInteractor().getTextInputDialogBuilder()
+					.message(String.format(
+							"Full namespace (without name) of the correspondent of %s (name: %s)",
+							triggeringPCMElement,
+							triggeringPCMElement instanceof org.palladiosimulator.pcm.core.entity.NamedElement
+									? ((org.palladiosimulator.pcm.core.entity.NamedElement) triggeringPCMElement)
+											.getEntityName()
+									: "NO Name"))
+					.startInteraction();
+		} else {
+			var choices = new ArrayList<String>();
+			choices.addAll(nsSuggestions);
+			choices.add(noneChoiceText);
+			
+			uiResult = UserInteractionFactory.instance.createDialogUserInteractor().getSingleSelectionDialogBuilder()
+			.message(String.format("Full namespace (without name) of the correspondent of %s (name: %s)",
+					triggeringPCMElement,
+					triggeringPCMElement instanceof org.palladiosimulator.pcm.core.entity.NamedElement
+					? ((org.palladiosimulator.pcm.core.entity.NamedElement) triggeringPCMElement)
+							.getEntityName()
+							: "NO Name"))
+			.choices(choices).startInteraction();
+		}
 
 		var entry = new FeatureEntry(this.triggeringPCMElement, toBeAssignedNamespace, clsNamespacesFeat);
 
-		var name = uiResult instanceof String ? (String) uiResult : nsSuggestions.get((Integer) uiResult);
+		var name = uiResult instanceof String ? (String) uiResult : null;
+		if (uiResult != null && uiResult instanceof Integer && nsSuggestions.size() > (Integer) uiResult) {
+			name = nsSuggestions.get((Integer) uiResult);
+		} else if (name == null && nsSuggestions != null && !nsSuggestions.isEmpty()) {
+			nsSuggestions = null;
+			performManualUserInteraction();
+			return;
+		}
 		
 		if (name != null && !name.isBlank()) {
 			var namespaces = new ArrayList<String>();
