@@ -166,7 +166,9 @@ public final class PcmUserInteractionManager {
 			if (!currentW.hasDesiredCorrespondence(corEntry.getKnownElement(), corEntry.getCorrespondenceTag())) {
 				continue;
 			} else {
+				PcmCprLogger.getInstance().manualUserInteractionTriggered(currentW);
 				currentW.performManualUserInteraction();
+				PcmCprLogger.getInstance().manualUserInteractionPerformed(currentW);
 				// Manual interaction is supposed to update the correspondences
 				return desiredCorrespondences.getCompleteDesiredCorrespondence(corEntry.getKnownElement(),
 						corEntry.getCorrespondenceTag());

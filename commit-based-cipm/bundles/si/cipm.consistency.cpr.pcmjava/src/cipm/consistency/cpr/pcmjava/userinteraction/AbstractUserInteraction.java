@@ -7,7 +7,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
 import cipm.consistency.cpr.pcmjava.logger.PcmCprLogger;
-import tools.vitruv.change.interaction.builder.InteractionBuilder;
 
 public abstract class AbstractUserInteraction implements CanModifyEntries {
 	public abstract List<EObject> getTriggeringPCMelements();
@@ -45,7 +44,6 @@ public abstract class AbstractUserInteraction implements CanModifyEntries {
 	}
 
 	protected void reportDesiredFeatureValue(FeatureEntry featEntry) {
-		PcmCprLogger.getInstance().userInteractionReportingFeature(this, featEntry);
 		PcmUserInteractionManager.setDesiredFeatureValue(this, featEntry);
 		PcmCprLogger.getInstance().userInteractionReportedFeature(this, featEntry);
 	}
@@ -70,13 +68,11 @@ public abstract class AbstractUserInteraction implements CanModifyEntries {
 	}
 
 	protected void reportDesiredCorrespondence(CorrespondenceEntry corEntry) {
-		PcmCprLogger.getInstance().userInteractionReportingCorrespondence(this, corEntry);
 		PcmUserInteractionManager.setDesiredCorrespondence(this, corEntry);
 		PcmCprLogger.getInstance().userInteractionReportedCorrespondence(this, corEntry);
 	}
 
 	protected void finaliseUserInteraction() {
-		PcmCprLogger.getInstance().userInteractionFinalising(this);
 		PcmUserInteractionManager.removeUserInteraction(this);
 		PcmCprLogger.getInstance().userInteractionFinalised(this);
 	}
@@ -115,13 +111,6 @@ public abstract class AbstractUserInteraction implements CanModifyEntries {
 		var result = PcmUserInteractionManager.getDesiredCorrespondence(knownSide, correspondenceTag, true);
 		PcmCprLogger.getInstance().userInteractionGotCorrespondenceFor(this, result, knownSide,
 				correspondenceTag, true);
-		return result;
-	}
-
-	public <T> T triggerManualUserInteraction(InteractionBuilder<T, ?> vitruvUserInteraction) {
-		PcmCprLogger.getInstance().manualUserInteractionHappening(this, vitruvUserInteraction);
-		var result = vitruvUserInteraction.startInteraction();
-		PcmCprLogger.getInstance().manualUserInteractionHappened(this, result, vitruvUserInteraction);
 		return result;
 	}
 }

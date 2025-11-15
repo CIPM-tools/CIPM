@@ -75,9 +75,8 @@ public class NamespaceConflictResolutionStrategy extends ConflictResolutionStrat
 				LOGGER.info(String.format("Reporting namespace \"%s\" for %s (name: %s)", nss, castedNE,
 						Strings.nullToEmpty(castedNE.getName())));
 
-				PcmUserInteractionManager.setDesiredFeatureValue(this,
-						new FeatureEntry(castedUI.getTriggeringPCMelements().get(0), javaObj,
-								CommonsPackage.Literals.NAMESPACE_AWARE_ELEMENT__NAMESPACES, nss));
+				reportDesiredFeatureValue(userInteraction, new FeatureEntry(castedUI.getTriggeringPCMelements().get(0), javaObj,
+						CommonsPackage.Literals.NAMESPACE_AWARE_ELEMENT__NAMESPACES, nss));
 			} else {
 				castedUI.setSuggestions(List.copyOf(possibleNamespaces));
 			}

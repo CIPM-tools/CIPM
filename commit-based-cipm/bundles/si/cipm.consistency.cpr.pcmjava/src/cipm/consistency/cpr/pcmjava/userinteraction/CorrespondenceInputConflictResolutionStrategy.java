@@ -36,7 +36,7 @@ public class CorrespondenceInputConflictResolutionStrategy extends ConflictResol
 				}
 			}
 
-			PcmUserInteractionManager.setDesiredCorrespondence(null, entry);
+			reportDesiredCorrespondence(userInteraction, entry);
 		}
 	}
 

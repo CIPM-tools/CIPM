@@ -12,11 +12,20 @@ public abstract class ConflictResolutionStrategy implements CanModifyEntries {
 	public boolean applyIfPossible(AbstractUserInteraction userInteraction) {
 		var applicable = checkInternalApplicationConditions(userInteraction);
 		if (applicable) {
-			PcmCprLogger.getInstance().conflictResolutionStrategyApplyingFor(this, userInteraction);
 			applyStrategy(userInteraction);
 			PcmCprLogger.getInstance().conflictResolutionStrategyAppliedFor(this, userInteraction);
 		}
 		return applicable;
+	}
+
+	protected void reportDesiredFeatureValue(AbstractUserInteraction userInteraction, FeatureEntry featEntry) {
+		PcmUserInteractionManager.setDesiredFeatureValue(this, featEntry);
+		PcmCprLogger.getInstance().conflictResolutionStrategyReportedFeature(userInteraction, this, featEntry);
+	}
+
+	protected void reportDesiredCorrespondence(AbstractUserInteraction userInteraction, CorrespondenceEntry corEntry) {
+		PcmUserInteractionManager.setDesiredCorrespondence(this, corEntry);
+		PcmCprLogger.getInstance().conflictResolutionStrategyReportedCorrespondence(userInteraction, this, corEntry);
 	}
 
 	protected abstract void applyStrategy(AbstractUserInteraction userInteraction);

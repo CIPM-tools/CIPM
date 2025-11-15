@@ -22,6 +22,7 @@ import cipm.consistency.commitintegration.diff.util.ComparisonBasedJaccardCoeffi
 import cipm.consistency.commitintegration.diff.util.pcm.PCMModelComparator;
 import cipm.consistency.commitintegration.lang.java.JavaModelFacade;
 import cipm.consistency.cpr.pcmjava.JavaModelAccess;
+import cipm.consistency.cpr.pcmjava.logger.PcmCprLogger;
 import cipm.consistency.cpr.pcmjava.userinteraction.NamespaceConflictResolutionStrategy;
 import cipm.consistency.cpr.pcmjava.userinteraction.PcmUserInteractionManager;
 import cipm.consistency.models.im.ImFacade;
@@ -103,6 +104,7 @@ public class PcmToJavaChangePropagationTest {
 	public void tearDown() {
 		// TODO Close all resources and models
 		result = null;
+		PcmCprLogger.getInstance().clearEntries();
 	}
 
 	protected PcmFacade setupPcmFacade() {
@@ -184,6 +186,8 @@ public class PcmToJavaChangePropagationTest {
 				computeFScoreForIm((Repository) resWrapper.getPropagatedPcmRepository().getContents().get(0),
 						(InstrumentationModel) resWrapper.getPropagatedIm().getContents().get(0)));
 
+		LOGGER.info("Serialising user interaction manager entries");
+		PcmCprLogger.getInstance().prepareForSerialisation();
 		LOGGER.info("Saving experiment result");
 		result.save(getDirLayout().getExperimentResultSavePath());
 		LOGGER.info("Saved experiment result");

@@ -38,7 +38,7 @@ public class FeatureInputConflictResolutionStrategy extends ConflictResolutionSt
 				entry.setMultipleValues((List<?>) featVal);
 			}
 
-			PcmUserInteractionManager.setDesiredFeatureValue(null, entry);
+			reportDesiredFeatureValue(userInteraction, entry);
 		}
 	}
 
