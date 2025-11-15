@@ -105,4 +105,9 @@ public class ResourceOperationsUtil {
 			Assertions.fail(e);
 		}
 	}
+
+	public static void reload(Resource res) {
+		res.unload();
+		loadResource(res);
+	}
 }

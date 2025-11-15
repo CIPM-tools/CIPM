@@ -1,7 +1,5 @@
 package cipm.consistency.vsum.test.pcm.experiment;
 
-import java.nio.file.Path;
-
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -207,6 +205,17 @@ public class ExperimentResourceWrapper {
 		ChangeUtil.adaptChangeURIs(propagatedImChanges, propagatedIm);
 		ResourceOperationsUtil.saveResource(propagatedImChanges);
 
+	}
+
+	public void reloadPropagatedResources() {
+		ResourceOperationsUtil.reload(propagatedJavaModel);
+		ResourceOperationsUtil.reload(propagatedPcmRepository);
+		ResourceOperationsUtil.reload(propagatedPcmSystem);
+		ResourceOperationsUtil.reload(propagatedPcmAllocation);
+		ResourceOperationsUtil.reload(propagatedPcmResEnv);
+		ResourceOperationsUtil.reload(propagatedPcmUsage);
+		ResourceOperationsUtil.reload(propagatedIm);
+		ResourceOperationsUtil.reload(propagatedCorrespondences);
 	}
 
 	public PcmToJavaChangePropagationDirLayout getExperimentLayout() {

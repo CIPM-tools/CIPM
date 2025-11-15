@@ -10,6 +10,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.palladiosimulator.pcm.repository.Repository;
@@ -25,6 +26,8 @@ import cipm.consistency.cpr.pcmjava.userinteraction.NamespaceConflictResolutionS
 import cipm.consistency.cpr.pcmjava.userinteraction.PcmUserInteractionManager;
 import cipm.consistency.models.im.ImFacade;
 import cipm.consistency.models.pcm.PcmFacade;
+import cipm.consistency.tools.evaluation.data.EvaluationDataContainer;
+import cipm.consistency.tools.evaluation.data.EvaluationDataContainerReaderWriter;
 import cipm.consistency.tools.evaluation.data.ImUpdateEvalData;
 import cipm.consistency.vsum.Propagation;
 import cipm.consistency.vsum.test.IMUpdateEvaluator;
@@ -49,9 +52,7 @@ public class PcmToJavaChangePropagationTest {
 
 	private ExperimentResourceWrapper resWrapper;
 
-	private JaccardCoefficientResult jcOfJavaInJavaToPcmProp;
-	private JaccardCoefficientResult jcOfPcmInJavaToPcmProp;
-	private ImUpdateEvalData fScoreOfImInJavaToPcmProp;
+	private ExperimentResult result;
 
 	public PcmFacade getPcmFacade() {
 		return this.pcmFacade;
@@ -76,7 +77,13 @@ public class PcmToJavaChangePropagationTest {
 		return this.javaFacade;
 	}
 
-	public void setUp(PcmToJavaChangePropagationDirLayout dirLayout) {
+	public void initialiseResources(PcmToJavaChangePropagationDirLayout dirLayout) {
+		result = new ExperimentResult();
+		if (dirLayout.getOldJavaToPcmPropagationDirLayout() != null) {
+			result.setVsumTestPath(dirLayout.getOldJavaToPcmPropagationDirLayout().getRootDirPath());
+		} else {
+			result.setVsumTestPath(dirLayout.getNewJavaToPcmPropagationDirLayout().getRootDirPath());
+		}
 		this.resWrapper = new ExperimentResourceWrapper(new ResourceSetImpl(), dirLayout);
 		this.resWrapper.initialise();
 
@@ -92,8 +99,10 @@ public class PcmToJavaChangePropagationTest {
 		return this.resWrapper.getExperimentLayout();
 	}
 
+	@AfterEach
 	public void tearDown() {
 		// TODO Close all resources and models
+		result = null;
 	}
 
 	protected PcmFacade setupPcmFacade() {
@@ -103,12 +112,13 @@ public class PcmToJavaChangePropagationTest {
 	}
 
 	private void computeEvaluationResultsForJavaToPcmPropagation() {
-		jcOfJavaInJavaToPcmProp = computeJCForJava(resWrapper.getTargetJavaModel(), resWrapper.getInitialJavaModel());
-		jcOfPcmInJavaToPcmProp = computeJCForPcm(resWrapper.getTargetPcmRepository(),
-				resWrapper.getInitialPcmRepository());
-		fScoreOfImInJavaToPcmProp = computeFScoreForIm(
-				(Repository) resWrapper.getTargetPcmRepository().getContents().get(0),
-				(InstrumentationModel) resWrapper.getTargetIm().getContents().get(0));
+		result.setJaccardCoefficientForJavaModelInJavaToPcmPropagation(
+				computeJCForJava(resWrapper.getTargetJavaModel(), resWrapper.getInitialJavaModel()));
+		result.setJaccardCoefficientForPcmRepositoryInJavaToPcmPropagation(
+				computeJCForPcm(resWrapper.getTargetPcmRepository(), resWrapper.getInitialPcmRepository()));
+		result.setfOneScoreForImInJavaToPcmPropagation(
+				computeFScoreForIm((Repository) resWrapper.getTargetPcmRepository().getContents().get(0),
+						(InstrumentationModel) resWrapper.getTargetIm().getContents().get(0)));
 	}
 
 	/**
@@ -141,7 +151,7 @@ public class PcmToJavaChangePropagationTest {
 	}
 
 	public void pcmToJavaChangePropagationTestTemplate(PcmToJavaChangePropagationDirLayout dirLayout) {
-		this.setUp(dirLayout);
+		this.initialiseResources(dirLayout);
 
 		var pcmChangeList = preprocessPCMchanges();
 
@@ -159,40 +169,38 @@ public class PcmToJavaChangePropagationTest {
 		// Propagate PCM changes
 		var pcmToJavaProp = this.propagateChangesToResource(newPcmRepoRes, pcmChangeList);
 		LOGGER.info("Pcm to Java propagation over");
-//		assertResourcesNotModified();
-//		assertPropagationSuccessful(pcmToJavaProp, pcmChangeList);
 
-		LOGGER.info("Reloading models");
-		getJavaFacade().reload();
-		JavaModelAccess.setJavaModel(getJavaFacade().getResource());
-		getPcmFacade().reload();
-		newPcmRepoRes = pcmFacade.getResources().stream()
-				.filter((r) -> r.getURI().lastSegment()
-						.equals(PcmToJavaChangePropagationDirLayoutConstants.getPcmrepositoryfilename()))
-				.findFirst().get();
-		getImFacade().reload();
+		LOGGER.info("Reloading propagated models for evaluation");
+		resWrapper.reloadPropagatedResources();
 
-		LOGGER.info("Computing JC for Java");
-		var jcOfJavaInPcmToJavaProp = computeJCForJava(JavaModelAccess.getJavaModel(),
-				resWrapper.getInitialJavaModel());
-		LOGGER.info("Computing JC for Pcm");
-		var jcOfPcmInPcmToJavaProp = computeJCForPcm(newPcmRepoRes, resWrapper.getInitialPcmRepository());
-		LOGGER.info("Computing F1-Score for Im");
-		var fScoreOfImInPcmToJavaProp = computeFScoreForIm((Repository) newPcmRepoRes.getContents().get(0),
-				this.getImFacade().getModel());
+		LOGGER.info("Computing JC for Java model (Pcm -> Java propagation)");
+		result.setJaccardCoefficientForJavaModelInPcmToJavaPropagation(
+				computeJCForJava(resWrapper.getPropagatedJavaModel(), resWrapper.getInitialJavaModel()));
+		LOGGER.info("Computing JC for Pcm repository (Pcm -> Java propagation)");
+		result.setJaccardCoefficientForPcmRepositoryInPcmToJavaPropagation(
+				computeJCForPcm(resWrapper.getPropagatedPcmRepository(), resWrapper.getInitialPcmRepository()));
+		LOGGER.info("Computing F1-Score for Im (Pcm -> Java propagation)");
+		result.setfOneScoreForImInPcmToJavaPropagation(
+				computeFScoreForIm((Repository) resWrapper.getPropagatedPcmRepository().getContents().get(0),
+						(InstrumentationModel) resWrapper.getPropagatedIm().getContents().get(0)));
 
-		LOGGER.info("Computing and saving experiment result");
-		computeAndSaveExperimentResult(jcOfJavaInPcmToJavaProp, jcOfPcmInPcmToJavaProp, fScoreOfImInPcmToJavaProp,
-				jcOfJavaInJavaToPcmProp, jcOfPcmInJavaToPcmProp, fScoreOfImInJavaToPcmProp);
+		LOGGER.info("Saving experiment result");
+		result.save(getDirLayout().getExperimentResultSavePath());
+		LOGGER.info("Saved experiment result");
+
+		LOGGER.info("Evaluating Pcm -> Java propagation");
+		var evaluator = new PcmToJavaPropagationEvaluator(pcmToJavaProp, resWrapper);
+		var result = evaluator.evaluate();
+		var evaluationDataContainer = EvaluationDataContainer.get();
+		evaluationDataContainer.setSuccessful(result);
+		var evaluationFileName = "pcmToJavaPropagationEvaluationData.json";
+		var evaluationPath = resWrapper.getExperimentLayout().getPropagatedDirLayout().getRootDirPath()
+				.resolve(evaluationFileName);
+		LOGGER.info("Saving Pcm -> Java propagation evaluation");
+		EvaluationDataContainerReaderWriter.write(evaluationDataContainer, evaluationPath);
 
 		LOGGER.info("Tearing down");
 		this.tearDown();
-	}
-
-	private void computeAndSaveExperimentResult(Object... objs) {
-		var result = new ExperimentResult(objs);
-		result.interpretResults();
-		result.save(getDirLayout().getExperimentResultSavePath());
 	}
 
 	protected JavaModelFacade setupJavaFacade() {
