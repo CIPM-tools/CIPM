@@ -168,6 +168,8 @@ public class PcmToJavaChangePropagationTest {
 		PcmUserInteractionManager.addConflictResolutionStrategy(
 				new NamespaceConflictResolutionStrategy(resWrapper.getTargetJavaModel()));
 
+		// FIXME PCM -> IM CPRs are triggered but created IM elements are not saved (?)
+		
 		// Propagate PCM changes
 		var pcmToJavaProp = this.propagateChangesToResource(newPcmRepoRes, pcmChangeList);
 		LOGGER.info("Pcm to Java propagation over");
