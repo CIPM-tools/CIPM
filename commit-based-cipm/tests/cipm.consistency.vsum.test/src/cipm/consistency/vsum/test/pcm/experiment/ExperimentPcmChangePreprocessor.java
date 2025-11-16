@@ -115,16 +115,16 @@ public class ExperimentPcmChangePreprocessor {
 		return newChangeList;
 	}
 
-	private static final String seffActionEObjectFragmentPart = "serviceEffectSpecifications";
+	private static final String seffActionEObjectFragmentPart = "steps_Behaviour";
+	private static final String seffInsertionEObjectFragmentPart = "serviceEffectSpecifications";
 
 	private List<EChange> orderOperationSignaturesBeforeSEFFCreation(List<EChange> changes) {
 		var newChangeList = new ArrayList<EChange>();
 
 		var seffChanges = new ArrayList<EChange>();
 		for (var c : changes) {
-			if (isSetSEFFDescribedServiceChange(c) || isSEFFactionChange(c)
-					|| (c instanceof CreateEObject && ServiceEffectSpecification.class
-							.isAssignableFrom(ChangeUtil.getCreatedEObjectType(c).getInstanceClass()))) {
+			if (isSetSEFFDescribedServiceChange(c) || (c instanceof CreateEObject && ServiceEffectSpecification.class
+					.isAssignableFrom(ChangeUtil.getCreatedEObjectType(c).getInstanceClass()))) {
 				seffChanges.add(c);
 			} else {
 				newChangeList.add(c);
@@ -141,7 +141,7 @@ public class ExperimentPcmChangePreprocessor {
 
 	private boolean isSetSEFFDescribedServiceChange(EChange change) {
 		return (ChangeUtil.getAffectedFeature(change) != null
-				&& ChangeUtil.getAffectedFeature(change).getName().contains(seffActionEObjectFragmentPart));
+				&& ChangeUtil.getAffectedFeature(change).getName().contains(seffInsertionEObjectFragmentPart));
 	}
 
 	private boolean isSEFFactionChange(EChange change) {
