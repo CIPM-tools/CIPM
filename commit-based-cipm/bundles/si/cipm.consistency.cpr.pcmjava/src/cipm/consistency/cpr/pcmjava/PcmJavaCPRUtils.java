@@ -528,10 +528,6 @@ public final class PcmJavaCPRUtils {
 		if (parentPackage != null) {
 			longestNsPrefix = getLongestCommonNamespacePrefix(parentPackage.getNamespaces(), javaClsNss);
 			if (longestNsPrefix.size() == javaClsNss.size()) {
-				// Parent package is the direct container of javaCls, insert it there, create
-				// a compilation unit if necessary and return
-				parentPackage.getClassifiers().add(javaCls);
-
 				if (javaCls.getContainingCompilationUnit() == null) {
 					return List.of(createCompilationUnitForJavaClassifier(javaCls, javaClsNss));
 				} else {
@@ -554,9 +550,6 @@ public final class PcmJavaCPRUtils {
 
 		if (!createdPacs.isEmpty()) {
 			createdContainers.addAll(createdPacs);
-			var pacOfCls = createdPacs.get(createdPacs.size() - 1);
-			pacOfCls.getClassifiers().add(javaCls);
-			javaCls.setPackage(pacOfCls);
 		}
 
 		// Create the necessary CompilationUnit
