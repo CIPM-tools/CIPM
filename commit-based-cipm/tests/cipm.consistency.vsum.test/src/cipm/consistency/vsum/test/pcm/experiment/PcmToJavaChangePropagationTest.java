@@ -168,8 +168,6 @@ public class PcmToJavaChangePropagationTest {
 		PcmUserInteractionManager.addConflictResolutionStrategy(
 				new NamespaceConflictResolutionStrategy(resWrapper.getTargetJavaModel()));
 
-		// FIXME PCM -> IM CPRs are triggered but created IM elements are not saved (?)
-		
 		// Propagate PCM changes
 		var pcmToJavaProp = this.propagateChangesToResource(newPcmRepoRes, changeList);
 		LOGGER.info("Pcm to Java propagation over");
@@ -179,10 +177,10 @@ public class PcmToJavaChangePropagationTest {
 
 		LOGGER.info("Computing JC for Java model (Pcm -> Java propagation)");
 		result.setJaccardCoefficientForJavaModelInPcmToJavaPropagation(
-				computeJCForJava(resWrapper.getPropagatedJavaModel(), resWrapper.getInitialJavaModel()));
+				computeJCForJava(resWrapper.getPropagatedJavaModel(), resWrapper.getTargetJavaModel()));
 		LOGGER.info("Computing JC for Pcm repository (Pcm -> Java propagation)");
 		result.setJaccardCoefficientForPcmRepositoryInPcmToJavaPropagation(
-				computeJCForPcm(resWrapper.getPropagatedPcmRepository(), resWrapper.getInitialPcmRepository()));
+				computeJCForPcm(resWrapper.getPropagatedPcmRepository(), resWrapper.getTargetPcmRepository()));
 		LOGGER.info("Computing F1-Score for Im (Pcm -> Java propagation)");
 		result.setfOneScoreForImInPcmToJavaPropagation(
 				computeFScoreForIm((Repository) resWrapper.getPropagatedPcmRepository().getContents().get(0),
