@@ -1,13 +1,18 @@
 package cipm.consistency.vsum.test.pcm.experiment;
 
+import java.util.List;
+
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.palladiosimulator.pcm.repository.Repository;
+import org.palladiosimulator.pcm.repository.RepositoryPackage;
 
 import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationModel;
+import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationModelPackage;
 import cipm.consistency.cpr.pcmjava.preprocessing.ChangeUtil;
 import tools.vitruv.change.correspondence.Correspondences;
+import tools.vitruv.dsls.reactions.runtime.correspondence.CorrespondenceFactory;
 
 public class ExperimentResourceWrapper {
 	private ResourceSet resSet;
@@ -68,6 +73,7 @@ public class ExperimentResourceWrapper {
 		loadInitialModels();
 		loadOriginalChanges();
 		initialiseExperimentTestResources();
+		adaptURIsInCorrespondences();
 		adaptURIsInChanges();
 	}
 
@@ -132,17 +138,35 @@ public class ExperimentResourceWrapper {
 			initialCorrespondences = ResourceOperationsUtil.copyAndSaveResource(resSet, targetCorrespondences,
 					experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getVSUMCorrespondencesPath());
 			var initCors = (Correspondences) initialCorrespondences.getContents().get(0);
-			/*
-			 * Leave the correspondences for PCM Repository and IM InstrumentationModel (the
-			 * first 2 correspondences), which are the only root elements as their
-			 * respective model. Since changes that capture them being added as root
-			 * elements are not recorded in tests, PCM and IM initialisation CPRs will not
-			 * trigger to add the correspondences they need (see
-			 * PcmInitChangePropagationSpecification and
-			 * ImInitChangePropagationSpecification)
-			 */
-			EcoreUtil.removeAll(initCors.eContents().subList(2, initCors.eContents().size()));
+			EcoreUtil.removeAll(initCors.eContents());
+
+			addAndSaveInitialCorrespondences();
 		}
+	}
+
+	private void addAndSaveInitialCorrespondences() {
+		var initPcmRepo = (Repository) initialPcmRepository.getContents().get(0);
+		var initInsMod = (InstrumentationModel) initialIm.getContents().get(0);
+		var initCors = (Correspondences) initialCorrespondences.getContents().get(0);
+		/*
+		 * Re-add correspondences for PCM Repository and IM InstrumentationModel, which
+		 * are the only root elements for their respective model. Since changes that
+		 * capture them being added as root elements are not recorded in tests, PCM and
+		 * IM initialisation CPRs will not trigger to add the correspondences they need
+		 * (see PcmInitChangePropagationSpecification and
+		 * ImInitChangePropagationSpecification)
+		 */
+		var repoCor = CorrespondenceFactory.eINSTANCE.createReactionsCorrespondence();
+		repoCor.getLeftEObjects().add(initPcmRepo);
+		repoCor.getRightEObjects().add(RepositoryPackage.Literals.REPOSITORY);
+		repoCor.setTag("");
+		initCors.getCorrespondences().add(repoCor);
+		var imCor = CorrespondenceFactory.eINSTANCE.createReactionsCorrespondence();
+		imCor.getLeftEObjects().add(initInsMod);
+		imCor.getRightEObjects().add(InstrumentationModelPackage.Literals.INSTRUMENTATION_MODEL);
+		imCor.setTag("");
+		initCors.getCorrespondences().add(imCor);
+		ResourceOperationsUtil.saveResource(initialCorrespondences);
 	}
 
 	private void initialiseExperimentTestResources() {
@@ -220,6 +244,38 @@ public class ExperimentResourceWrapper {
 		ChangeUtil.adaptChangeURIs(propagatedImChanges, propagatedIm);
 		ResourceOperationsUtil.saveResource(propagatedImChanges);
 
+	}
+
+	private void adaptURIsInCorrespondences() {
+		var propRess = List.of(propagatedJavaModel, propagatedPcmRepository, propagatedIm);
+
+		var cors = (Correspondences) propagatedCorrespondences.getContents().get(0);
+		cors.getCorrespondences().forEach((c) -> {
+			// Replace all EObjects in correspondences with their correspondents from
+			// the propagatedX Resources. This fixes their URIs.
+			for (var originalList : List.of(c.getLeftEObjects(), c.getRightEObjects())) {
+				var iterationList = List.copyOf(originalList);
+				for (int i = 0; i < iterationList.size(); i++) {
+					final var idx = i;
+					var original = iterationList.get(idx);
+
+					// Since there may be correspondences to Ecore Literals too,
+					// only replace EObjects, if they actually have a replacement
+					// in propagatedX Resources
+					if (original.eResource() == null || !original.eResource().getURI().isFile())
+						continue;
+
+					var replacement = propRess.stream()
+							.map((r) -> r.getEObject(original.eResource().getURIFragment(original)))
+							.filter((r) -> r != null).findFirst().get();
+
+					originalList.add(i, replacement);
+					originalList.remove(original);
+				}
+			}
+		});
+
+		ResourceOperationsUtil.saveResource(propagatedCorrespondences);
 	}
 
 	public void reloadPropagatedResources() {
