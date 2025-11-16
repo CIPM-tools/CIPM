@@ -112,6 +112,16 @@ public class PcmCprLogger {
 		entries.add(entry);
 	}
 
+	public void conflictResolutionStrategyInterceptedUserInteraction(
+			ConflictResolutionStrategy conflictResolutionStrategy, AbstractUserInteraction userInteraction) {
+		var entry = new PcmCprEntry();
+		entry.setUserInteraction(userInteraction);
+		entry.setUserInteractionState(
+				PcmUserInteractionState.USER_INTERACTION_INTERCEPTED_BY_CONFLICT_RESOLUTION_STRATEGY);
+		entry.setConflictResolutionStrategy(conflictResolutionStrategy);
+		entries.add(entry);
+	}
+
 	public void conflictResolutionStrategyAppliedFor(ConflictResolutionStrategy conflictResolutionStrategy,
 			AbstractUserInteraction userInteraction) {
 		var entry = new PcmCprEntry();
@@ -135,8 +145,8 @@ public class PcmCprLogger {
 		entries.add(entry);
 	}
 
-	public void conflictResolutionStrategyReportedCorrespondence(AbstractUserInteraction abstractUserInteraction, ConflictResolutionStrategy strat,
-			CorrespondenceEntry corEntry) {
+	public void conflictResolutionStrategyReportedCorrespondence(AbstractUserInteraction abstractUserInteraction,
+			ConflictResolutionStrategy strat, CorrespondenceEntry corEntry) {
 		var entry = new PcmCprEntry();
 		entry.setUserInteraction(abstractUserInteraction);
 		entry.setConflictResolutionStrategy(strat);
@@ -145,8 +155,8 @@ public class PcmCprLogger {
 		entries.add(entry);
 	}
 
-	public void conflictResolutionStrategyReportedFeature(AbstractUserInteraction abstractUserInteraction, ConflictResolutionStrategy strat,
-			FeatureEntry featEntry) {
+	public void conflictResolutionStrategyReportedFeature(AbstractUserInteraction abstractUserInteraction,
+			ConflictResolutionStrategy strat, FeatureEntry featEntry) {
 		var entry = new PcmCprEntry();
 		entry.setUserInteraction(abstractUserInteraction);
 		entry.setConflictResolutionStrategy(strat);
@@ -178,7 +188,7 @@ public class PcmCprLogger {
 		for (int i = 0; i < entries.size(); i++) {
 			var e = entries.get(i);
 			var entryName = e.getClass().getSimpleName() + "-" + i;
-			
+
 			serialisedEntries.put(entryName, e.toString());
 		}
 	}
