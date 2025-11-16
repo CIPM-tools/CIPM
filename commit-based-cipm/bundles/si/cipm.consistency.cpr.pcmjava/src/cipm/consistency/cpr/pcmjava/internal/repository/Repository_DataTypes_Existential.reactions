@@ -161,14 +161,21 @@ routine findOrCreateOrDecideJavaClassifierForDataType(pcm::CompositeDataType pcm
 		// corresponding classifiers have to have the same name.
 		//
 		// However, there could still be multiple matches since differences in namespaces are possible.
-		// In such cases, user has to be asked for conflict resolution
+		// In such cases, user has to be asked
+		//
+		// Not able to narrow down the potential Java correspondents based on concrete type (Class/Interface/Enum),
+		// because OperationSignature return types cannot be PCM Interfaces, only PCM DataTypes
 		var matchingClassifiers = JavaModelAccess.findPotentialConcreteClassifiers(
 			PcmJavaTypeUtil.getDataTypeName(pcmDataType)).filter [
 			PcmJavaTypeUtil.doTypesMatch(pcmDataType, it)
 		].toList
 
-		// TODO Implement Java Classifier creation code and decision code
 		if (matchingClassifiers.isEmpty) {
+
+			// TODO User interaction to choose the type of the Java ConcreteClassifier:
+			//
+			// PCM DataTypes are used for return types too, therefore Java Interfaces / Enums
+			// may also require a corresponding DataType
 			var cls = ClassifiersFactory.eINSTANCE.createClass
 			cls.name = (pcmDataType as NamedElement).entityName
 
@@ -182,10 +189,8 @@ routine findOrCreateOrDecideJavaClassifierForDataType(pcm::CompositeDataType pcm
 				namespacesUI.namespaces)
 
 			addCorrespondenceBetween(pcmDataType, cls, "")
-		// TODO Adapt tag
 		} else if (matchingClassifiers.size == 1) {
 			addCorrespondenceBetween(pcmDataType, matchingClassifiers.get(0), "")
-		// TODO Adapt tag
 		} else {
 			var clsList = new ArrayList<EObject>(matchingClassifiers)
 			val ui = new JavaCorrespondentDecisionUserInteraction(pcmDataType, clsList, "")
@@ -193,7 +198,6 @@ routine findOrCreateOrDecideJavaClassifierForDataType(pcm::CompositeDataType pcm
 			ui.resolveAll
 
 			addCorrespondenceBetween(pcmDataType, ui.javaCorrespondent, "")
-		// TODO Adapt tag
 		}
 	}
 }
