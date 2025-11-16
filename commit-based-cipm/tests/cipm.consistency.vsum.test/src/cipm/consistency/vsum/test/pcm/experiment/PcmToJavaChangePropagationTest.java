@@ -134,7 +134,7 @@ public class PcmToJavaChangePropagationTest {
 	 * @return The VSUM facade for the PCM that will be used in this test.
 	 */
 	protected PcmVsumFacade setupVsumFacade() {
-		return new PcmVsumFacadeImpl(getDirLayout().getPropagatedDirLayout().getRootDirPath(),
+		return new PcmVsumFacadeImpl(getDirLayout().getPropagatedDirLayout().getVsumDirPath(),
 				List.of(pcmFacade, imFacade, javaFacade), this.getCPRs());
 	}
 
@@ -155,7 +155,7 @@ public class PcmToJavaChangePropagationTest {
 	public void pcmToJavaChangePropagationTestTemplate(PcmToJavaChangePropagationDirLayout dirLayout) {
 		this.initialiseResources(dirLayout);
 
-		var pcmChangeList = preprocessPCMchanges();
+		var changeList = preprocessPCMchanges();
 
 		var newPcmRepoRes = pcmFacade.getResources().stream()
 				.filter((r) -> r.getURI().lastSegment()
@@ -171,7 +171,7 @@ public class PcmToJavaChangePropagationTest {
 		// FIXME PCM -> IM CPRs are triggered but created IM elements are not saved (?)
 		
 		// Propagate PCM changes
-		var pcmToJavaProp = this.propagateChangesToResource(newPcmRepoRes, pcmChangeList);
+		var pcmToJavaProp = this.propagateChangesToResource(newPcmRepoRes, changeList);
 		LOGGER.info("Pcm to Java propagation over");
 
 		LOGGER.info("Reloading propagated models for evaluation");

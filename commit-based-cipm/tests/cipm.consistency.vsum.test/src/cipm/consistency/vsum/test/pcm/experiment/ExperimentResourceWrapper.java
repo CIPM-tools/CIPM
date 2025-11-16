@@ -3,8 +3,11 @@ package cipm.consistency.vsum.test.pcm.experiment;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.palladiosimulator.pcm.repository.Repository;
 
+import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationModel;
 import cipm.consistency.cpr.pcmjava.preprocessing.ChangeUtil;
+import tools.vitruv.change.correspondence.Correspondences;
 
 public class ExperimentResourceWrapper {
 	private ResourceSet resSet;
@@ -102,7 +105,8 @@ public class ExperimentResourceWrapper {
 
 			initialPcmRepository = ResourceOperationsUtil.copyAndSaveResource(resSet, targetPcmRepository,
 					experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getPcmRepositoryPath());
-			EcoreUtil.removeAll(initialPcmRepository.getContents().get(0).eContents());
+			var initPcmRepo = (Repository) initialPcmRepository.getContents().get(0);
+			EcoreUtil.removeAll(initPcmRepo.eContents());
 
 			initialPcmSystem = ResourceOperationsUtil.copyAndSaveResource(resSet, targetPcmSystem,
 					experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getPcmSystemPath());
@@ -122,11 +126,22 @@ public class ExperimentResourceWrapper {
 
 			initialIm = ResourceOperationsUtil.copyAndSaveResource(resSet, targetIm,
 					experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getIMSavePath());
-			EcoreUtil.removeAll(initialIm.getContents().get(0).eContents());
+			var initInsMod = (InstrumentationModel) initialIm.getContents().get(0);
+			EcoreUtil.removeAll(initInsMod.eContents());
 
 			initialCorrespondences = ResourceOperationsUtil.copyAndSaveResource(resSet, targetCorrespondences,
 					experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getVSUMCorrespondencesPath());
-			EcoreUtil.removeAll(initialCorrespondences.getContents().get(0).eContents());
+			var initCors = (Correspondences) initialCorrespondences.getContents().get(0);
+			/*
+			 * Leave the correspondences for PCM Repository and IM InstrumentationModel (the
+			 * first 2 correspondences), which are the only root elements as their
+			 * respective model. Since changes that capture them being added as root
+			 * elements are not recorded in tests, PCM and IM initialisation CPRs will not
+			 * trigger to add the correspondences they need (see
+			 * PcmInitChangePropagationSpecification and
+			 * ImInitChangePropagationSpecification)
+			 */
+			EcoreUtil.removeAll(initCors.eContents().subList(2, initCors.eContents().size()));
 		}
 	}
 
