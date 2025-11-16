@@ -1,5 +1,6 @@
 package cipm.consistency.vsum.test.pcm.experiment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.resource.Resource;
@@ -140,7 +141,10 @@ public class ExperimentResourceWrapper {
 			initialIm = ResourceOperationsUtil.copyAndSaveResource(resSet, targetIm,
 					experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getIMSavePath());
 			var initInsMod = (InstrumentationModel) initialIm.getContents().get(0);
-			EcoreUtil.removeAll(initInsMod.eContents());
+			// TODO May need fixing once IM Resource related issues are fixed
+			// Currently EcoreUtil.removeAll(...) is not able to remove InstrumentationModel
+			// contents, hence the workaround below
+			new ArrayList<>(initInsMod.getPoints()).forEach((p) -> initInsMod.getPoints().remove(p));
 			ResourceOperationsUtil.saveResource(initialIm);
 
 			initialCorrespondences = ResourceOperationsUtil.copyAndSaveResource(resSet, targetCorrespondences,
