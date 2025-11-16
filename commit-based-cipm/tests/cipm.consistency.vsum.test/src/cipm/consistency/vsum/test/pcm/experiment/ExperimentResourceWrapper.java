@@ -107,38 +107,47 @@ public class ExperimentResourceWrapper {
 			initialCorrespondences = ResourceOperationsUtil.loadResource(resSet,
 					initialLayout.getVSUMCorrespondencesPath());
 		} else {
-			initialJavaModel = ResourceOperationsUtil.createEmptyResource(resSet, targetLayout.getJavaModelSavePath());
+			initialJavaModel = ResourceOperationsUtil.createEmptyResource(resSet,
+					experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getJavaModelSavePath());
+			ResourceOperationsUtil.saveResource(initialJavaModel);
 
 			initialPcmRepository = ResourceOperationsUtil.copyAndSaveResource(resSet, targetPcmRepository,
 					experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getPcmRepositoryPath());
 			var initPcmRepo = (Repository) initialPcmRepository.getContents().get(0);
 			EcoreUtil.removeAll(initPcmRepo.eContents());
+			ResourceOperationsUtil.saveResource(initialPcmRepository);
 
 			initialPcmSystem = ResourceOperationsUtil.copyAndSaveResource(resSet, targetPcmSystem,
 					experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getPcmSystemPath());
 			EcoreUtil.removeAll(initialPcmSystem.getContents().get(0).eContents());
+			ResourceOperationsUtil.saveResource(initialPcmSystem);
 
 			initialPcmAllocation = ResourceOperationsUtil.copyAndSaveResource(resSet, targetPcmAllocation,
 					experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getPcmAllocationPath());
 			EcoreUtil.removeAll(initialPcmAllocation.getContents().get(0).eContents());
+			ResourceOperationsUtil.saveResource(initialPcmAllocation);
 
 			initialPcmResEnv = ResourceOperationsUtil.copyAndSaveResource(resSet, targetPcmResEnv,
 					experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getPcmResourceEnvironmentPath());
 			EcoreUtil.removeAll(initialPcmResEnv.getContents().get(0).eContents());
+			ResourceOperationsUtil.saveResource(initialPcmResEnv);
 
 			initialPcmUsage = ResourceOperationsUtil.copyAndSaveResource(resSet, targetPcmUsage,
 					experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getPcmUsagePath());
 			EcoreUtil.removeAll(initialPcmUsage.getContents().get(0).eContents());
+			ResourceOperationsUtil.saveResource(initialPcmUsage);
 
 			initialIm = ResourceOperationsUtil.copyAndSaveResource(resSet, targetIm,
 					experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getIMSavePath());
 			var initInsMod = (InstrumentationModel) initialIm.getContents().get(0);
 			EcoreUtil.removeAll(initInsMod.eContents());
+			ResourceOperationsUtil.saveResource(initialIm);
 
 			initialCorrespondences = ResourceOperationsUtil.copyAndSaveResource(resSet, targetCorrespondences,
 					experimentLayout.getCopiedOldJavaToPcmPropagationDirLayout().getVSUMCorrespondencesPath());
 			var initCors = (Correspondences) initialCorrespondences.getContents().get(0);
 			EcoreUtil.removeAll(initCors.eContents());
+			ResourceOperationsUtil.saveResource(initialCorrespondences);
 
 			addAndSaveInitialCorrespondences();
 		}

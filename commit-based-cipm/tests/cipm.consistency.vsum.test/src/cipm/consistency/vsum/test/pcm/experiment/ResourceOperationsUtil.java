@@ -1,13 +1,14 @@
 package cipm.consistency.vsum.test.pcm.experiment;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.junit.jupiter.api.Assertions;
 
 public class ResourceOperationsUtil {
@@ -91,9 +92,17 @@ public class ResourceOperationsUtil {
 	}
 
 	public static Resource copyAndSaveResource(ResourceSet resSet, Resource resToCopy, URI copyLocationURI) {
-		var res = resSet.createResource(copyLocationURI);
-		res.getContents().addAll(EcoreUtil.copyAll(resToCopy.getContents()));
-		saveResource(res);
+		var res = resToCopy;
+		if (!resToCopy.getURI().equals(copyLocationURI)) {
+			try {
+				FileUtils.copyFile(new File(resToCopy.getURI().toFileString()),
+						new File(copyLocationURI.toFileString()));
+				res = loadResource(resSet, copyLocationURI);
+			} catch (IOException e) {
+				e.printStackTrace();
+				Assertions.fail(e);
+			}
+		}
 		return res;
 	}
 
