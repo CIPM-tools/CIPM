@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -113,11 +114,35 @@ public class PcmToJavaChangePropagationTest {
 		return pcmFacade;
 	}
 
+	/**
+	 * Finds the model that was parsed from source files or was copied from the
+	 * previous propagation. Assumes that the parsed models will have the naming
+	 * scheme: "X-NUMBER-Y", where NUMBER is the propagation number in the vsum
+	 * test, X and Y are arbitrary Strings.
+	 * 
+	 * @param modelDirPath The path to the directory, under which models directly
+	 *                     reside (ex: If model is "testFolder/model.modelext",
+	 *                     modelDirPath is "testFolder")
+	 * @return Returns the parsed model in the modelDirPath. Meant for parsed Java
+	 *         code models and PCM repositories in Teammates vsum tests.
+	 */
+	private Resource getParsedModelCounterpart(Path modelDirPath) {
+		var codePath = resWrapper.getExperimentLayout().getNewJavaToPcmPropagationDirLayout().getCodeDirPath();
+		var parsedFilesList = List.of(codePath.toFile().listFiles()).stream()
+				.filter((f) -> f.getName().split("-").length == 3).collect(Collectors.toList());
+		var parsedModelFile = parsedFilesList.stream()
+				.filter((f) -> Integer.valueOf(f.getName().split("-")[1]).intValue() == parsedFilesList.size())
+				.findFirst().get();
+		return ResourceOperationsUtil.loadResource(parsedModelFile.toPath().toAbsolutePath());
+	}
+
 	private void computeEvaluationResultsForJavaToPcmPropagation() {
 		result.setJaccardCoefficientForJavaModelInJavaToPcmPropagation(
-				computeJCForJava(resWrapper.getTargetJavaModel(), resWrapper.getInitialJavaModel()));
+				computeJCForJava(resWrapper.getTargetJavaModel(), getParsedModelCounterpart(
+						resWrapper.getExperimentLayout().getNewJavaToPcmPropagationDirLayout().getCodeDirPath())));
 		result.setJaccardCoefficientForPcmRepositoryInJavaToPcmPropagation(
-				computeJCForPcm(resWrapper.getTargetPcmRepository(), resWrapper.getInitialPcmRepository()));
+				computeJCForPcm(resWrapper.getTargetPcmRepository(), getParsedModelCounterpart(
+						resWrapper.getExperimentLayout().getNewJavaToPcmPropagationDirLayout().getPcmDirPath())));
 		result.setfOneScoreForImInJavaToPcmPropagation(
 				computeFScoreForIm((Repository) resWrapper.getTargetPcmRepository().getContents().get(0),
 						(InstrumentationModel) resWrapper.getTargetIm().getContents().get(0)));

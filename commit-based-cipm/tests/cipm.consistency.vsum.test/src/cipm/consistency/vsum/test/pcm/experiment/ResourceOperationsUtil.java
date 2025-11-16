@@ -20,6 +20,10 @@ public class ResourceOperationsUtil {
 		return resSet.createResource(uri);
 	}
 
+	public static Resource loadResource(Path path) {
+		return loadResource(pathToURI(path));
+	}
+
 	/**
 	 * Creates, loads and returns a Resource instance for the given URI.
 	 */
