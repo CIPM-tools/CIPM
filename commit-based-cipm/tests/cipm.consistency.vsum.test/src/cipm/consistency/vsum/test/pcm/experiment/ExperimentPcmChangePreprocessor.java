@@ -82,7 +82,12 @@ public class ExperimentPcmChangePreprocessor {
 							&& ChangeUtil.getNewValueID(currentChange) != null
 							&& ChangeUtil.getNewValueID(currentChange).equals(cachedEObjectURI));
 
-			// Skip SEFF changes
+			/*
+			 * FIXME Skip SEFF action changes for now, since accounting for them requires
+			 * non-trivial EObject ID dependency tracking. Otherwise their creation /
+			 * insertion order may get mixed up, which is a detriment to change resolution
+			 * during propagation
+			 */
 			if (shouldSkipChange(currentChange)) {
 				createChange = null;
 				continue;
