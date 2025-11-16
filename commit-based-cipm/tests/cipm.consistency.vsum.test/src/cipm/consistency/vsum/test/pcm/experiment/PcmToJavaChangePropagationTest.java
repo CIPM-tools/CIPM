@@ -187,8 +187,24 @@ public class PcmToJavaChangePropagationTest {
 						.equals(PcmToJavaChangePropagationDirLayoutConstants.getPcmrepositoryfilename()))
 				.findFirst().get();
 
-		// TODO Ignore DataTypes generated for TypeParameters (such as "T")
-		// Filter by name, if name length is 1, ignore
+		// TODO Intercept user interactions for DataTypes generated for TypeParameters
+		// (such as "T"). Filter by name length (since it is unlikely for actual Java
+		// classes' names to consist of 1 character only)
+
+		// TODO For all DataTypes that have no correspondents at all, match them with
+		// the corresponding synthetic element (via CRS because synthetic elements do
+		// not exist during PCM -> Java propagation)
+
+		// TODO For remaining manual user interactions, automate them by implementing
+		// CRSs specifically for the propagation
+
+		// TODO Derive automatability metric and save it
+
+		// TODO Check if manually "fixing" the cache URIs in later Java -> PCM
+		// propagations enables PCM -> Java propagation.
+
+		// TODO Measure run-time of propagation and pre-processing (without user
+		// interactions)
 
 		PcmUserInteractionManager.addConflictResolutionStrategy(
 				new NamespaceConflictResolutionStrategy(resWrapper.getTargetJavaModel()));
