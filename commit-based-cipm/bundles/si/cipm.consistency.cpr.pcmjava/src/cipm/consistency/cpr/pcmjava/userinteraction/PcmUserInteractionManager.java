@@ -25,8 +25,11 @@ public final class PcmUserInteractionManager {
 
 	public static void addUserInteraction(AbstractUserInteraction userInteraction) {
 		incrementAddedInstanceCountAndSetID(userInteraction);
-		if (!userInteraction.isResolved()) {
-			resolutionStrats.forEach((s) -> s.applyIfPossible(userInteraction));
+
+		// Only apply ConflictResolutionStrategies, if userInteraction is not resolved
+		var stratIt = resolutionStrats.iterator();
+		while (!userInteraction.isResolved() && stratIt.hasNext()) {
+			stratIt.next().applyIfPossible(userInteraction);
 		}
 
 		// Add user interaction, if it needs a feature value that is currently not
