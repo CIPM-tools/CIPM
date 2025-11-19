@@ -24,6 +24,7 @@ import cipm.consistency.commitintegration.diff.util.pcm.PCMModelComparator;
 import cipm.consistency.commitintegration.lang.java.JavaModelFacade;
 import cipm.consistency.cpr.pcmjava.JavaModelAccess;
 import cipm.consistency.cpr.pcmjava.logger.PcmCprLogger;
+import cipm.consistency.cpr.pcmjava.userinteraction.CompositeDataTypeCorrespondenceConflictResolutionStrategy;
 import cipm.consistency.cpr.pcmjava.userinteraction.NamespaceConflictResolutionStrategy;
 import cipm.consistency.cpr.pcmjava.userinteraction.PcmUserInteractionManager;
 import cipm.consistency.models.im.ImFacade;
@@ -205,6 +206,10 @@ public class PcmToJavaChangePropagationTest {
 
 		// TODO Measure run-time of propagation and pre-processing (without user
 		// interactions)
+
+		PcmUserInteractionManager
+				.addConflictResolutionStrategy(new CompositeDataTypeCorrespondenceConflictResolutionStrategy(changeList,
+						resWrapper.getTargetJavaModel()));
 
 		PcmUserInteractionManager.addConflictResolutionStrategy(
 				new NamespaceConflictResolutionStrategy(resWrapper.getTargetJavaModel()));
