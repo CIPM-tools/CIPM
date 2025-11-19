@@ -23,10 +23,12 @@ public class ExperimentResult {
 	private Map<String, Number> fOneScoreForImInJavaToPcmPropagation;
 
 	private Map<String, Number> jaccardCoefficientForJavaModelInPcmToJavaPropagation;
+	private Map<String, Number> jaccardCoefficientForStatementlessJavaModelInPcmToJavaPropagation;
 	private Map<String, Number> jaccardCoefficientForPcmRepositoryInPcmToJavaPropagation;
 	private Map<String, Number> fOneScoreForImInPcmToJavaPropagation;
 
 	private PcmCprLogger pcmLogger = PcmCprLogger.getInstance();
+
 
 	public void setVsumTestPath(Path vsumTestPath) {
 		this.vsumTestPath = vsumTestPath.toString();
@@ -80,6 +82,12 @@ public class ExperimentResult {
 			JaccardCoefficientResult jaccardCoefficientForJavaModelInPcmToJavaPropagation) {
 		this.jaccardCoefficientForJavaModelInPcmToJavaPropagation = getDataFromJCResult(
 				jaccardCoefficientForJavaModelInPcmToJavaPropagation);
+	}
+
+	public void setJaccardCoefficientForStatementlessJavaModelInPcmToJavaPropagation(
+			JaccardCoefficientResult jaccardCoefficientForStatementlessJavaModelInPcmToJavaPropagation) {
+		this.jaccardCoefficientForStatementlessJavaModelInPcmToJavaPropagation = getDataFromJCResult(
+				jaccardCoefficientForStatementlessJavaModelInPcmToJavaPropagation);
 	}
 
 	public void setJaccardCoefficientForPcmRepositoryInPcmToJavaPropagation(

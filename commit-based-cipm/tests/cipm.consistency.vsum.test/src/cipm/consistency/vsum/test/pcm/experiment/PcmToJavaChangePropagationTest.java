@@ -9,8 +9,12 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emftext.language.java.classifiers.ConcreteClassifier;
+import org.emftext.language.java.statements.Statement;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -178,6 +182,22 @@ public class PcmToJavaChangePropagationTest {
 		return orderedPCMChangeList;
 	}
 
+	private void setJCForStatementlessJavaModels() {
+		LOGGER.info("Computing JC for statement-less Java model (Pcm -> Java propagation)");
+		var res = ResourceOperationsUtil.loadNewResourceInstance(resWrapper.getTargetJavaModel());
+		var statements = new ArrayList<EObject>();
+		res.getAllContents().forEachRemaining((st) -> {
+			if (st instanceof Statement && !(st instanceof ConcreteClassifier))
+				statements.add(st);
+		});
+		EcoreUtil.removeAll(statements);
+
+		result.setJaccardCoefficientForStatementlessJavaModelInPcmToJavaPropagation(
+				computeJCForJava(resWrapper.getPropagatedJavaModel(), res));
+		res.unload();
+		res.getResourceSet().getResources().remove(res);
+	}
+
 	public void pcmToJavaChangePropagationTestTemplate(PcmToJavaChangePropagationDirLayout dirLayout) {
 		this.initialiseResources(dirLayout);
 
@@ -188,10 +208,6 @@ public class PcmToJavaChangePropagationTest {
 						.equals(PcmToJavaChangePropagationDirLayoutConstants.getPcmrepositoryfilename()))
 				.findFirst().get();
 
-		// TODO Intercept user interactions for DataTypes generated for TypeParameters
-		// (such as "T"). Filter by name length (since it is unlikely for actual Java
-		// classes' names to consist of 1 character only)
-
 		// TODO For all DataTypes that have no correspondents at all, match them with
 		// the corresponding synthetic element (via CRS because synthetic elements do
 		// not exist during PCM -> Java propagation)
@@ -200,9 +216,6 @@ public class PcmToJavaChangePropagationTest {
 		// CRSs specifically for the propagation
 
 		// TODO Derive automatability metric and save it
-
-		// TODO Check if manually "fixing" the cache URIs in later Java -> PCM
-		// propagations enables PCM -> Java propagation.
 
 		// TODO Measure run-time of propagation and pre-processing (without user
 		// interactions)
@@ -223,6 +236,9 @@ public class PcmToJavaChangePropagationTest {
 		LOGGER.info("Computing JC for Java model (Pcm -> Java propagation)");
 		result.setJaccardCoefficientForJavaModelInPcmToJavaPropagation(
 				computeJCForJava(resWrapper.getPropagatedJavaModel(), resWrapper.getTargetJavaModel()));
+
+		setJCForStatementlessJavaModels();
+
 		LOGGER.info("Computing JC for Pcm repository (Pcm -> Java propagation)");
 		result.setJaccardCoefficientForPcmRepositoryInPcmToJavaPropagation(
 				computeJCForPcm(resWrapper.getPropagatedPcmRepository(), resWrapper.getTargetPcmRepository()));
