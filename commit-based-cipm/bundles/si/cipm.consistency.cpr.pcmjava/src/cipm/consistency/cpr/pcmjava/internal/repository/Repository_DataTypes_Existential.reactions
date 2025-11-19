@@ -180,15 +180,18 @@ routine findOrCreateOrDecideJavaClassifierForDataType(pcm::CompositeDataType pcm
 			cls.name = (pcmDataType as NamedElement).entityName
 
 			var namespacesUI = new NamespaceUserInteraction(pcmDataType, cls)
+			namespacesUI.allowNoNamespace = true
 			PcmUserInteractionManager.addUserInteraction(namespacesUI)
 			namespacesUI.resolveAll
 
-			PcmJavaCPRUtils.prepareJavaClassifier(cls)
+			if (namespacesUI.namespaces !== null) {
+				PcmJavaCPRUtils.prepareJavaClassifier(cls)
 
-			PcmJavaCPRUtils.integrateJavaClassifierCorrespondent(correspondenceModel, pcmDataType, cls,
-				namespacesUI.namespaces)
-
-			addCorrespondenceBetween(pcmDataType, cls, "")
+				PcmJavaCPRUtils.integrateJavaClassifierCorrespondent(correspondenceModel, pcmDataType, cls,
+					namespacesUI.namespaces)
+	
+				addCorrespondenceBetween(pcmDataType, cls, "")
+			}
 		} else if (matchingClassifiers.size == 1) {
 			addCorrespondenceBetween(pcmDataType, matchingClassifiers.get(0), "")
 		} else {

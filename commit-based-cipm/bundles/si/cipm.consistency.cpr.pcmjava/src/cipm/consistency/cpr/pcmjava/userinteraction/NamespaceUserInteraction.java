@@ -16,6 +16,9 @@ public class NamespaceUserInteraction extends AbstractUserInteraction {
 
 	private final static EStructuralFeature clsNamespacesFeat = CommonsPackage.Literals.NAMESPACE_AWARE_ELEMENT__NAMESPACES;
 
+	private boolean allowNoNamespace = false;
+	private boolean shouldUseNoNamespaces = false;
+
 	private List<String> nsSuggestions;
 
 	private EObject toBeAssignedNamespace;
@@ -30,10 +33,8 @@ public class NamespaceUserInteraction extends AbstractUserInteraction {
 	public void performManualUserInteraction() {
 		Object uiResult = null;
 		if (nsSuggestions == null || nsSuggestions.isEmpty()) {
-			uiResult = UserInteractionFactory.instance
-					.createDialogUserInteractor().getTextInputDialogBuilder()
-					.message(String.format(
-							"Full namespace (without name) of the correspondent of %s (name: %s)",
+			uiResult = UserInteractionFactory.instance.createDialogUserInteractor().getTextInputDialogBuilder()
+					.message(String.format("Full namespace (without name) of the correspondent of %s (name: %s)",
 							triggeringPCMElement,
 							triggeringPCMElement instanceof org.palladiosimulator.pcm.core.entity.NamedElement
 									? ((org.palladiosimulator.pcm.core.entity.NamedElement) triggeringPCMElement)
@@ -44,15 +45,15 @@ public class NamespaceUserInteraction extends AbstractUserInteraction {
 			var choices = new ArrayList<String>();
 			choices.addAll(nsSuggestions);
 			choices.add(noneChoiceText);
-			
+
 			uiResult = UserInteractionFactory.instance.createDialogUserInteractor().getSingleSelectionDialogBuilder()
-			.message(String.format("Full namespace (without name) of the correspondent of %s (name: %s)",
-					triggeringPCMElement,
-					triggeringPCMElement instanceof org.palladiosimulator.pcm.core.entity.NamedElement
-					? ((org.palladiosimulator.pcm.core.entity.NamedElement) triggeringPCMElement)
-							.getEntityName()
-							: "NO Name"))
-			.choices(choices).startInteraction();
+					.message(String.format("Full namespace (without name) of the correspondent of %s (name: %s)",
+							triggeringPCMElement,
+							triggeringPCMElement instanceof org.palladiosimulator.pcm.core.entity.NamedElement
+									? ((org.palladiosimulator.pcm.core.entity.NamedElement) triggeringPCMElement)
+											.getEntityName()
+									: "NO Name"))
+					.choices(choices).startInteraction();
 		}
 
 		var entry = new FeatureEntry(this.triggeringPCMElement, toBeAssignedNamespace, clsNamespacesFeat);
@@ -60,12 +61,12 @@ public class NamespaceUserInteraction extends AbstractUserInteraction {
 		var name = uiResult instanceof String ? (String) uiResult : null;
 		if (uiResult != null && uiResult instanceof Integer && nsSuggestions.size() > (Integer) uiResult) {
 			name = nsSuggestions.get((Integer) uiResult);
-		} else if (name == null && nsSuggestions != null && !nsSuggestions.isEmpty()) {
+		} else if (name == null && nsSuggestions != null && !nsSuggestions.isEmpty() && !allowNoNamespace) {
 			nsSuggestions = null;
 			performManualUserInteraction();
 			return;
 		}
-		
+
 		if (name != null && !name.isBlank()) {
 			var namespaces = new ArrayList<String>();
 			for (var ns : name.split(namespaceSeparator)) {
@@ -77,6 +78,18 @@ public class NamespaceUserInteraction extends AbstractUserInteraction {
 			entry.unset();
 		}
 		this.reportDesiredFeatureValue(entry);
+	}
+
+	public void useNoNamespace() {
+		this.shouldUseNoNamespaces = true;
+	}
+
+	public void setAllowNoNamespace(boolean allowNoNamespace) {
+		this.allowNoNamespace = allowNoNamespace;
+	}
+
+	public boolean allowsNoNamespaces() {
+		return this.allowNoNamespace;
 	}
 
 	@Override
@@ -121,12 +134,15 @@ public class NamespaceUserInteraction extends AbstractUserInteraction {
 
 	@Override
 	public boolean isResolved() {
-		return isDesiredFeatureValuePresent(triggeringPCMElement, clsNamespacesFeat);
+		return (this.allowNoNamespace && this.shouldUseNoNamespaces)
+				|| isDesiredFeatureValuePresent(triggeringPCMElement, clsNamespacesFeat);
 	}
 
 	@Override
 	public void resolveAll() {
-		resolveForFeature(triggeringPCMElement, clsNamespacesFeat);
+		if (!this.allowNoNamespace || !this.shouldUseNoNamespaces) {
+			resolveForFeature(triggeringPCMElement, clsNamespacesFeat);
+		}
 	}
 
 	@Override
