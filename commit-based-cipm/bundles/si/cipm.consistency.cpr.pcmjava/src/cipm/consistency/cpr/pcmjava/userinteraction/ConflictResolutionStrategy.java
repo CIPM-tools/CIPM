@@ -9,6 +9,27 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import cipm.consistency.cpr.pcmjava.logger.PcmCprLogger;
 
 public abstract class ConflictResolutionStrategy implements CanModifyEntries {
+	private String id;
+
+	@Override
+	public String getID() {
+		return id;
+	}
+
+	@Override
+	public void setID(String id, boolean forceSet) {
+		if (forceSet || this.id == null) {
+			this.id = id;
+		}
+	}
+
+	@Override
+	public String toString() {
+		if (getID() != null)
+			return getID();
+		return super.toString();
+	}
+
 	public boolean applyIfPossible(AbstractUserInteraction userInteraction) {
 		var applicable = checkInternalApplicationConditions(userInteraction);
 		if (applicable) {

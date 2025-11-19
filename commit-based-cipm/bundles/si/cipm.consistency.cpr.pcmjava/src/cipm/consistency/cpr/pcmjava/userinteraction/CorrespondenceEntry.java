@@ -13,6 +13,8 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import com.google.common.base.Preconditions;
 
 public class CorrespondenceEntry implements IPcmUserInteractionManagerEntry {
+	private static final PcmUserInteractionManagerEntrySerialiser serialiser = new PcmUserInteractionManagerEntrySerialiser();
+
 	private final EObject knownElement;
 	private final Set<EObject> correspondents;
 	private String correspondenceTag;
@@ -36,6 +38,11 @@ public class CorrespondenceEntry implements IPcmUserInteractionManagerEntry {
 		this.knownElement = knownElement;
 
 		this.correspondenceTag = correspondenceTag;
+	}
+
+	@Override
+	public String toString() {
+		return serialiser.serialiseCorrespondenceEntry(this);
 	}
 
 	public String getCorrespondenceTag() {

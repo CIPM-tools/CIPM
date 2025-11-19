@@ -1,7 +1,9 @@
 package cipm.consistency.cpr.pcmjava.userinteraction;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
@@ -10,6 +12,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import cipm.consistency.cpr.pcmjava.logger.PcmCprLogger;
 
 public final class PcmUserInteractionManager {
+	private static final Map<Class<? extends CanModifyEntries>, Integer> addedInstanceCount = new HashMap<>();
 	private static final List<AbstractUserInteraction> wrappers = new ArrayList<AbstractUserInteraction>();
 
 	private static final List<ConflictResolutionStrategy> resolutionStrats = new ArrayList<ConflictResolutionStrategy>();
@@ -21,14 +24,13 @@ public final class PcmUserInteractionManager {
 	private static final CorrespondenceEntryContainer desiredCorrespondences = new CorrespondenceEntryContainer();
 
 	public static void addUserInteraction(AbstractUserInteraction userInteraction) {
-		if (userInteraction.getDesiredFeatures().stream().anyMatch(
-				(df) -> !hasDesiredFeatureValue(df.getTriggeringPCMElement(), df.getAffectedJavaElementFeature()))
-				|| userInteraction.getDesiredCorrespondences().stream()
-						.anyMatch((dc) -> !hasDesiredCorrespondence(dc.getKnownElement(), dc.getCorrespondenceTag()))) {
+		incrementAddedInstanceCountAndSetID(userInteraction);
+		if (!userInteraction.isResolved()) {
 			resolutionStrats.forEach((s) -> s.applyIfPossible(userInteraction));
 		}
 
-		// Split this part from conflict resolution, since they have to be applied first
+		// Add user interaction, if it needs a feature value that is currently not
+		// present
 		if (userInteraction.getDesiredFeatures().stream().anyMatch(
 				(df) -> !hasDesiredFeatureValue(df.getTriggeringPCMElement(), df.getAffectedJavaElementFeature()))) {
 			addUserInteractionStrategy(userInteraction);
@@ -45,8 +47,8 @@ public final class PcmUserInteractionManager {
 			});
 		}
 
-		// TODO Account for 1-to-many and many-to-many correspondences
-		// Split this part from conflict resolution, since they have to be applied first
+		// Add user interaction, if it needs a correspondence entry that is currently
+		// not present
 		if (userInteraction.getDesiredCorrespondences().stream()
 				.anyMatch((dc) -> !hasDesiredCorrespondence(dc.getKnownElement(), dc.getCorrespondenceTag()))) {
 			addUserInteractionStrategy(userInteraction);
@@ -198,9 +200,23 @@ public final class PcmUserInteractionManager {
 
 	public static void addConflictResolutionStrategy(ConflictResolutionStrategy strat) {
 		if (!resolutionStrats.contains(strat)) {
+			incrementAddedInstanceCountAndSetID(strat);
 			resolutionStrats.add(strat);
 			PcmCprLogger.getInstance().conflictResolutionStrategyRegistered(strat);
 		}
+	}
+
+	private static void incrementAddedInstanceCountAndSetID(CanModifyEntries cme) {
+		if (cme == null)
+			return;
+		var cls = cme.getClass();
+
+		if (!addedInstanceCount.containsKey(cls)) {
+			addedInstanceCount.put(cls, 0);
+		}
+		var newCount = addedInstanceCount.get(cls) + 1;
+		addedInstanceCount.put(cls, newCount);
+		cme.setID(cls.getSimpleName() + "-" + newCount, false);
 	}
 
 	public static void reset() {
@@ -209,6 +225,7 @@ public final class PcmUserInteractionManager {
 		List.copyOf(resolutionStrats).forEach((s) -> removeConflictResolutionStrategy(s));
 		resolutionStrats.clear();
 		desiredCorrespondences.clear();
+		addedInstanceCount.clear();
 	}
 
 	public static Set<CorrespondenceEntry> getAllCompleteCorrespondences() {

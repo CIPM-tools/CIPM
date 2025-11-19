@@ -9,6 +9,27 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import cipm.consistency.cpr.pcmjava.logger.PcmCprLogger;
 
 public abstract class AbstractUserInteraction implements CanModifyEntries {
+	private String id;
+
+	@Override
+	public String getID() {
+		return id;
+	}
+
+	@Override
+	public void setID(String id, boolean forceSet) {
+		if (forceSet || this.id == null) {
+			this.id = id;
+		}
+	}
+
+	@Override
+	public String toString() {
+		if (getID() != null)
+			return getID();
+		return super.toString();
+	}
+
 	public abstract List<EObject> getTriggeringPCMelements();
 
 	public abstract List<EObject> getAffectedPCMElements();
@@ -54,12 +75,12 @@ public abstract class AbstractUserInteraction implements CanModifyEntries {
 
 	protected Object retrieveDesiredFeatureValueIfPresent(EObject triggeringPCMElement, EObject affectedJavaElement,
 			EStructuralFeature feat) {
-		PcmCprLogger.getInstance().userInteractionAskedForFeature(this, triggeringPCMElement,
-				affectedJavaElement, feat, false);
+		PcmCprLogger.getInstance().userInteractionAskedForFeature(this, triggeringPCMElement, affectedJavaElement, feat,
+				false);
 		var result = PcmUserInteractionManager.getDesiredFeatureValue(triggeringPCMElement, affectedJavaElement, feat,
 				false);
-		PcmCprLogger.getInstance().userInteractionGotFeatureFor(this, result, triggeringPCMElement,
-				affectedJavaElement, feat, false);
+		PcmCprLogger.getInstance().userInteractionGotFeatureFor(this, result, triggeringPCMElement, affectedJavaElement,
+				feat, false);
 		return result;
 	}
 
@@ -78,11 +99,10 @@ public abstract class AbstractUserInteraction implements CanModifyEntries {
 	}
 
 	protected CorrespondenceEntry retrieveDesiredCorrespondenceIfPresent(EObject knownSide, String correspondenceTag) {
-		PcmCprLogger.getInstance().userInteractionAskedForCorrespondence(this, knownSide, correspondenceTag,
-				false);
+		PcmCprLogger.getInstance().userInteractionAskedForCorrespondence(this, knownSide, correspondenceTag, false);
 		var result = PcmUserInteractionManager.getDesiredCorrespondence(knownSide, correspondenceTag, false);
-		PcmCprLogger.getInstance().userInteractionGotCorrespondenceFor(this, result, knownSide,
-				correspondenceTag, true);
+		PcmCprLogger.getInstance().userInteractionGotCorrespondenceFor(this, result, knownSide, correspondenceTag,
+				true);
 		return result;
 	}
 
@@ -96,21 +116,20 @@ public abstract class AbstractUserInteraction implements CanModifyEntries {
 
 	public Object resolveForFeature(EObject triggeringPCMElement, EObject affectedJavaElement,
 			EStructuralFeature feat) {
-		PcmCprLogger.getInstance().userInteractionAskedForFeature(this, triggeringPCMElement,
-				affectedJavaElement, feat, true);
+		PcmCprLogger.getInstance().userInteractionAskedForFeature(this, triggeringPCMElement, affectedJavaElement, feat,
+				true);
 		var result = PcmUserInteractionManager.getDesiredFeatureValue(triggeringPCMElement, affectedJavaElement, feat,
 				true);
-		PcmCprLogger.getInstance().userInteractionGotFeatureFor(this, result, triggeringPCMElement,
-				affectedJavaElement, feat, true);
+		PcmCprLogger.getInstance().userInteractionGotFeatureFor(this, result, triggeringPCMElement, affectedJavaElement,
+				feat, true);
 		return result;
 	}
 
 	public CorrespondenceEntry resolveForCorrespondence(EObject knownSide, String correspondenceTag) {
-		PcmCprLogger.getInstance().userInteractionAskedForCorrespondence(this, knownSide, correspondenceTag,
-				true);
+		PcmCprLogger.getInstance().userInteractionAskedForCorrespondence(this, knownSide, correspondenceTag, true);
 		var result = PcmUserInteractionManager.getDesiredCorrespondence(knownSide, correspondenceTag, true);
-		PcmCprLogger.getInstance().userInteractionGotCorrespondenceFor(this, result, knownSide,
-				correspondenceTag, true);
+		PcmCprLogger.getInstance().userInteractionGotCorrespondenceFor(this, result, knownSide, correspondenceTag,
+				true);
 		return result;
 	}
 }

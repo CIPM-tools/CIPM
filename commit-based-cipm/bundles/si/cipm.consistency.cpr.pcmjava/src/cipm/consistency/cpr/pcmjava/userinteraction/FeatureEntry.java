@@ -16,6 +16,8 @@ public class FeatureEntry implements IPcmUserInteractionManagerEntry {
 	 */
 	private static final Object unsetKey = new Object();
 
+	private static final PcmUserInteractionManagerEntrySerialiser serialiser = new PcmUserInteractionManagerEntrySerialiser();
+	
 	private final EObject triggeringPCMElement;
 	private final EObject affectedJavaElement;
 	private final EStructuralFeature affectedJavaElementFeature;
@@ -39,6 +41,15 @@ public class FeatureEntry implements IPcmUserInteractionManagerEntry {
 		} else {
 			this.affectedJavaElementFeatureValue = affectedJavaElementFeatureValue;
 		}
+	}
+
+	public EObject getAffectedJavaElement() {
+		return this.affectedJavaElement;
+	}
+
+	@Override
+	public String toString() {
+		return serialiser.serialiseFeatureEntry(this);
 	}
 
 	public boolean hasAssignedValue() {
@@ -189,6 +200,10 @@ public class FeatureEntry implements IPcmUserInteractionManagerEntry {
 		return this.affectedJavaElementFeatureValue;
 	}
 
+	public boolean isUnset() {
+		return this.affectedJavaElementFeatureValue == unsetKey;
+	}
+	
 	@Override
 	public boolean equals(Object triggeringPCMElement) {
 		if (!(triggeringPCMElement instanceof FeatureEntry)) {
