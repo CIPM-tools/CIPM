@@ -15,7 +15,18 @@ import cipm.consistency.cpr.pcmjava.userinteraction.FeatureEntry;
 
 public class PcmCprLogger {
 	private static PcmCprLogger instance;
+	/**
+	 * Contains log entries about triggered user interactions and used conflict
+	 * resolution strategies
+	 */
 	private static final List<PcmCprEntry> entries = new ArrayList<>();
+	/**
+	 * Tracks status information for individual user interactions, used for deriving
+	 * automaticity statistics.
+	 * 
+	 * @see {@link PcmUserInteractionStatistics}
+	 */
+	private static final Map<AbstractUserInteraction, PcmUserInteractionState> stateMap = new LinkedHashMap<>();
 
 	private final Map<String, String> serialisedEntries = new LinkedHashMap<>();
 
@@ -39,6 +50,7 @@ public class PcmCprLogger {
 	public void manualUserInteractionPerformed(AbstractUserInteraction abstractUserInteraction) {
 		var entry = new PcmCprEntry();
 		entry.setUserInteraction(abstractUserInteraction);
+		setStatus(abstractUserInteraction, PcmUserInteractionState.MANUAL_INTERVENTION_OVER);
 		entry.setUserInteractionState(PcmUserInteractionState.MANUAL_INTERVENTION_OVER);
 		entries.add(entry);
 	}
@@ -90,6 +102,7 @@ public class PcmCprLogger {
 	public void userInteractionFinalised(AbstractUserInteraction abstractUserInteraction) {
 		var entry = new PcmCprEntry();
 		entry.setUserInteraction(abstractUserInteraction);
+		setStatus(abstractUserInteraction, PcmUserInteractionState.USER_INTERACTION_FINALISED);
 		entry.setUserInteractionState(PcmUserInteractionState.USER_INTERACTION_FINALISED);
 		entries.add(entry);
 	}
@@ -112,13 +125,28 @@ public class PcmCprLogger {
 		entries.add(entry);
 	}
 
+	public void conflictResolutionStrategyPartiallyInterceptedUserInteraction(
+			ConflictResolutionStrategy conflictResolutionStrategy, AbstractUserInteraction userInteraction) {
+		var entry = new PcmCprEntry();
+		entry.setUserInteraction(userInteraction);
+		setStatus(userInteraction,
+				PcmUserInteractionState.USER_INTERACTION_PARTIALLY_INTERCEPTED_BY_CONFLICT_RESOLUTION_STRATEGY);
+		entry.setUserInteractionState(
+				PcmUserInteractionState.USER_INTERACTION_PARTIALLY_INTERCEPTED_BY_CONFLICT_RESOLUTION_STRATEGY);
+		entry.setConflictResolutionStrategy(conflictResolutionStrategy);
+		entries.add(entry);
+	}
+
 	public void conflictResolutionStrategyInterceptedUserInteraction(
 			ConflictResolutionStrategy conflictResolutionStrategy, AbstractUserInteraction userInteraction) {
 		var entry = new PcmCprEntry();
 		entry.setUserInteraction(userInteraction);
+		setStatus(userInteraction,
+				PcmUserInteractionState.USER_INTERACTION_INTERCEPTED_BY_CONFLICT_RESOLUTION_STRATEGY);
 		entry.setUserInteractionState(
 				PcmUserInteractionState.USER_INTERACTION_INTERCEPTED_BY_CONFLICT_RESOLUTION_STRATEGY);
 		entry.setConflictResolutionStrategy(conflictResolutionStrategy);
+		PcmUserInteractionStatistics.getInstance().addFullyAutomaticUserInteraction(userInteraction);
 		entries.add(entry);
 	}
 
@@ -168,6 +196,7 @@ public class PcmCprLogger {
 	public void userInteractionRegistered(AbstractUserInteraction userInteraction) {
 		var entry = new PcmCprEntry();
 		entry.setUserInteraction(userInteraction);
+		setStatus(userInteraction, PcmUserInteractionState.USER_INTERACTION_REGISTERED);
 		entry.setUserInteractionState(PcmUserInteractionState.USER_INTERACTION_REGISTERED);
 		entries.add(entry);
 	}
@@ -175,12 +204,31 @@ public class PcmCprLogger {
 	public void userInteractionRemoved(AbstractUserInteraction userInteraction) {
 		var entry = new PcmCprEntry();
 		entry.setUserInteraction(userInteraction);
+		setStatus(userInteraction, PcmUserInteractionState.USER_INTERACTION_REMOVED);
 		entry.setUserInteractionState(PcmUserInteractionState.USER_INTERACTION_REMOVED);
 		entries.add(entry);
 	}
 
+	private void setStatus(AbstractUserInteraction userInteraction, PcmUserInteractionState status) {
+		var prevStatus = stateMap.getOrDefault(userInteraction, null);
+
+		if (status == PcmUserInteractionState.MANUAL_INTERVENTION_OVER) {
+			if (prevStatus == PcmUserInteractionState.USER_INTERACTION_INTERCEPTED_BY_CONFLICT_RESOLUTION_STRATEGY) {
+				PcmUserInteractionStatistics.getInstance().addFullyAutomaticUserInteraction(userInteraction);
+			} else if (prevStatus == PcmUserInteractionState.USER_INTERACTION_PARTIALLY_INTERCEPTED_BY_CONFLICT_RESOLUTION_STRATEGY) {
+				PcmUserInteractionStatistics.getInstance()
+						.semiAutomaticPartiallyInterceptedUserInteractionTriggered(userInteraction);
+			} else {
+				PcmUserInteractionStatistics.getInstance().semiAutomaticUserInteractionTriggered(userInteraction);
+			}
+		}
+
+		stateMap.put(userInteraction, status);
+	}
+
 	public void clearEntries() {
 		entries.clear();
+		stateMap.clear();
 		serialisedEntries.clear();
 	}
 

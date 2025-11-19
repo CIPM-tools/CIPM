@@ -13,6 +13,7 @@ import com.google.gson.GsonBuilder;
 
 import cipm.consistency.commitintegration.diff.util.ComparisonBasedJaccardCoefficientCalculator.JaccardCoefficientResult;
 import cipm.consistency.cpr.pcmjava.logger.PcmCprLogger;
+import cipm.consistency.cpr.pcmjava.logger.PcmUserInteractionStatistics;
 import cipm.consistency.tools.evaluation.data.ImUpdateEvalData;
 
 public class ExperimentResult {
@@ -24,11 +25,14 @@ public class ExperimentResult {
 
 	private Map<String, Number> jaccardCoefficientForJavaModelInPcmToJavaPropagation;
 	private Map<String, Number> jaccardCoefficientForStatementlessJavaModelInPcmToJavaPropagation;
+
 	private Map<String, Number> jaccardCoefficientForPcmRepositoryInPcmToJavaPropagation;
+	private Map<String, Number> jaccardCoefficientForSEFFlessPcmRepositoryInPcmToJavaPropagation;
+
 	private Map<String, Number> fOneScoreForImInPcmToJavaPropagation;
 
+	private PcmUserInteractionStatistics pcmStats = PcmUserInteractionStatistics.getInstance();
 	private PcmCprLogger pcmLogger = PcmCprLogger.getInstance();
-
 
 	public void setVsumTestPath(Path vsumTestPath) {
 		this.vsumTestPath = vsumTestPath.toString();
@@ -88,6 +92,12 @@ public class ExperimentResult {
 			JaccardCoefficientResult jaccardCoefficientForStatementlessJavaModelInPcmToJavaPropagation) {
 		this.jaccardCoefficientForStatementlessJavaModelInPcmToJavaPropagation = getDataFromJCResult(
 				jaccardCoefficientForStatementlessJavaModelInPcmToJavaPropagation);
+	}
+
+	public void setJaccardCoefficientForSEFFlessPcmRepositoryInPcmToJavaPropagation(
+			JaccardCoefficientResult jaccardCoefficientForSEFFlessPCMInPcmToJavaPropagation) {
+		this.jaccardCoefficientForSEFFlessPcmRepositoryInPcmToJavaPropagation = getDataFromJCResult(
+				jaccardCoefficientForSEFFlessPCMInPcmToJavaPropagation);
 	}
 
 	public void setJaccardCoefficientForPcmRepositoryInPcmToJavaPropagation(

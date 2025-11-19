@@ -1,5 +1,6 @@
 package cipm.consistency.cpr.pcmjava.userinteraction;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -9,6 +10,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import cipm.consistency.cpr.pcmjava.logger.PcmCprLogger;
 
 public abstract class AbstractUserInteraction implements CanModifyEntries {
+	private final List<ConflictResolutionStrategy> appliedCRSs = new ArrayList<>();
 	private String id;
 
 	@Override
@@ -28,6 +30,14 @@ public abstract class AbstractUserInteraction implements CanModifyEntries {
 		if (getID() != null)
 			return getID();
 		return super.toString();
+	}
+
+	public void conflictResolutionStrategyApplied(ConflictResolutionStrategy crs) {
+		this.appliedCRSs.add(crs);
+	}
+
+	public List<ConflictResolutionStrategy> getAppliedConflictResolutionStrategies() {
+		return List.copyOf(appliedCRSs);
 	}
 
 	public abstract List<EObject> getTriggeringPCMelements();

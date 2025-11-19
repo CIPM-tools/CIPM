@@ -35,10 +35,14 @@ public abstract class ConflictResolutionStrategy implements CanModifyEntries {
 		if (applicable) {
 			var uiWasResolved = userInteraction.isResolved();
 			applyStrategy(userInteraction);
+			userInteraction.conflictResolutionStrategyApplied(this);
 			PcmCprLogger.getInstance().conflictResolutionStrategyAppliedFor(this, userInteraction);
 			var uiIsResolved = userInteraction.isResolved();
 			if (!uiWasResolved && uiIsResolved) {
 				PcmCprLogger.getInstance().conflictResolutionStrategyInterceptedUserInteraction(this, userInteraction);
+			} else if (!uiWasResolved && !uiIsResolved) {
+				PcmCprLogger.getInstance().conflictResolutionStrategyPartiallyInterceptedUserInteraction(this,
+						userInteraction);
 			}
 		}
 		return applicable;
