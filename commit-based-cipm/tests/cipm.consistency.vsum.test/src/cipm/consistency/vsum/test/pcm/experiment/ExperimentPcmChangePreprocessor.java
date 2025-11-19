@@ -11,7 +11,6 @@ import org.palladiosimulator.pcm.seff.ServiceEffectSpecification;
 import cipm.consistency.cpr.pcmjava.preprocessing.ChangeUtil;
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.atomic.eobject.CreateEObject;
-import tools.vitruv.change.atomic.eobject.DeleteEObject;
 import tools.vitruv.change.atomic.feature.reference.InsertEReference;
 import tools.vitruv.change.atomic.feature.reference.ReplaceSingleValuedEReference;
 
@@ -58,22 +57,16 @@ public class ExperimentPcmChangePreprocessor {
 		return isContainer(ir, repo.eResource().getURIFragment(repo));
 	}
 
-	private final static String cachedEObjectURIPrefix = "cache:/";
-	private final static String cachedEObjectURIRegex = "cache:/\\d+";
-	private final static String cachedEObjectURI = cachedEObjectURIPrefix + "0";
+	private final static String cachedEObjectURI = "cache:/0";
 
 	public List<EChange> orderPCMchanges(List<EChange> changeSequence) {
 		var newChangeList = new ArrayList<EChange>();
 
-		changeSequence.forEach((c) -> ChangeUtil.replaceInAllIDs(c, cachedEObjectURIRegex, cachedEObjectURI));
-		newChangeList.addAll(changeSequence);
-
-		var changes = new ArrayList<ArrayList<EChange>>();
+		var changes = new HashMap<Integer, ArrayList<EChange>>();
 		EChange createChange = null;
-		EChange prevChange = null;
+		var maxDepth = 0;
 
-		var deleteChangePairs = new ArrayList<EChange>();
-
+		// Regex used to analyse / verify (remove #):
 		// </eobject:CreateEObject>(?!\r\n###(?:<reference:InsertEReference|<attribute:ReplaceSingleValuedEAttribute|<reference:ReplaceSingleValuedEReference))
 
 		for (int i = 0; i < changeSequence.size(); i++) {
@@ -82,32 +75,12 @@ public class ExperimentPcmChangePreprocessor {
 				createChange = currentChange;
 				continue;
 			}
-			// All CreateEObject changes must be followed by an InsertEReference or
+			// All CreateEObject changes must be preceded by an InsertEReference or
 			// ReplaceSingleValuedEReference change that inserts it into the PCM
-			//
-			// Regex used to analyse / verify (remove #):
-			// </eobject:CreateEObject>(?!\r\n###(?:<reference:InsertEReference|<attribute:ReplaceSingleValuedEAttribute|<reference:ReplaceSingleValuedEReference))
-			var followsCreateChange = currentChange instanceof InsertEReference
+			var precedsCreate = currentChange instanceof InsertEReference
 					|| (currentChange instanceof ReplaceSingleValuedEReference
 							&& ChangeUtil.getNewValueID(currentChange) != null
 							&& ChangeUtil.getNewValueID(currentChange).equals(cachedEObjectURI));
-
-			var depth = getMaxDepth(currentChange);
-
-			// All DeleteEObject changes must be preceded by a RemoveEReference or
-			// ReplaceSingleValuedEReference change that removes it from the PCM
-			//
-			// Regex used to analyse / verify:
-			// (?<!RemoveEReference|ReplaceSingleValuedEReference)>\s*<eobject:DeleteEObject
-			//
-			// Note: ReplaceSingleValuedEReference must have "newID = null" and "oldID =
-			// cache:/0"
-			if (currentChange instanceof DeleteEObject && prevChange != null && !shouldSkipChange(currentChange)) {
-				changes.get(getMaxDepth(prevChange)).remove(prevChange);
-				deleteChangePairs.add(prevChange);
-				deleteChangePairs.add(currentChange);
-				continue;
-			}
 
 			/*
 			 * FIXME Skip SEFF action changes for now, since accounting for them requires
@@ -120,26 +93,29 @@ public class ExperimentPcmChangePreprocessor {
 				continue;
 			}
 
-			while (changes.size() <= depth) {
-				changes.add(new ArrayList<EChange>());
+			var depth = getMaxDepth(currentChange);
+
+			if (maxDepth < depth)
+				maxDepth = depth;
+
+			if (!changes.containsKey(depth)) {
+				changes.put(depth, new ArrayList<EChange>());
 			}
 
-			if (followsCreateChange && createChange != null) {
+			if (precedsCreate && createChange != null) {
 				changes.get(depth).add(createChange);
 				createChange = null;
 			}
 			changes.get(depth).add(currentChange);
-
-			prevChange = currentChange;
 		}
 
 		// Add PCM elements in Breadth-First order, as this will ensure that all PCM
 		// elements are known
-		for (var depthList : changes) {
-			newChangeList.addAll(orderOperationSignaturesBeforeSEFFCreation(depthList));
+		for (int i = 0; i <= maxDepth; i++) {
+			if (changes.containsKey(i)) {
+				newChangeList.addAll(orderOperationSignaturesBeforeSEFFCreation(changes.get(i)));
+			}
 		}
-
-		newChangeList.addAll(deleteChangePairs);
 
 		return newChangeList;
 	}
