@@ -19,6 +19,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.palladiosimulator.pcm.repository.Repository;
+import org.palladiosimulator.pcm.seff.AbstractAction;
+import org.palladiosimulator.pcm.seff.AbstractLoopAction;
+import org.palladiosimulator.pcm.seff.BranchAction;
 
 import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationModel;
 import cipm.consistency.commitintegration.diff.util.ComparisonBasedJaccardCoefficientCalculator;
@@ -28,6 +31,7 @@ import cipm.consistency.commitintegration.diff.util.pcm.PCMModelComparator;
 import cipm.consistency.commitintegration.lang.java.JavaModelFacade;
 import cipm.consistency.cpr.pcmjava.JavaModelAccess;
 import cipm.consistency.cpr.pcmjava.logger.PcmCprLogger;
+import cipm.consistency.cpr.pcmjava.logger.PcmUserInteractionStatistics;
 import cipm.consistency.cpr.pcmjava.userinteraction.GenericParameterConflictResolutionStrategy;
 import cipm.consistency.cpr.pcmjava.userinteraction.NamespaceConflictResolutionStrategy;
 import cipm.consistency.cpr.pcmjava.userinteraction.PcmUserInteractionManager;
@@ -184,6 +188,13 @@ public class PcmToJavaChangePropagationTest {
 
 	private void setJCForStatementlessJavaModels() {
 		LOGGER.info("Computing JC for statement-less Java model (Pcm -> Java propagation)");
+
+		// TODO Leave out ARCHIVE and BINDING compilation units too, since PCM
+		// propagation does not generate them
+
+		// TODO Explicitly remove all statements from propagated Java Model too
+		// to ensure that it does not have them neither
+
 		var res = ResourceOperationsUtil.loadNewResourceInstance(resWrapper.getTargetJavaModel());
 		var statements = new ArrayList<EObject>();
 		res.getAllContents().forEachRemaining((st) -> {
@@ -194,6 +205,26 @@ public class PcmToJavaChangePropagationTest {
 
 		result.setJaccardCoefficientForStatementlessJavaModelInPcmToJavaPropagation(
 				computeJCForJava(resWrapper.getPropagatedJavaModel(), res));
+		res.unload();
+		res.getResourceSet().getResources().remove(res);
+	}
+
+	private void setJCForSEFFlessPCMs() {
+		LOGGER.info("Computing JC for SEFF-less PCM (Pcm -> Java propagation)");
+
+		// TODO Explicitly remove all SEFF actions below from propagated PCM Repository
+		// too to ensure that it does not have them neither
+
+		var res = ResourceOperationsUtil.loadNewResourceInstance(resWrapper.getTargetPcmRepository());
+		var statements = new ArrayList<EObject>();
+		res.getAllContents().forEachRemaining((st) -> {
+			if (st instanceof AbstractLoopAction || st instanceof BranchAction)
+				statements.add(st);
+		});
+		EcoreUtil.removeAll(statements);
+
+		result.setJaccardCoefficientForSEFFlessPcmRepositoryInPcmToJavaPropagation(
+				computeJCForPcm(resWrapper.getPropagatedPcmRepository(), res));
 		res.unload();
 		res.getResourceSet().getResources().remove(res);
 	}
@@ -220,11 +251,13 @@ public class PcmToJavaChangePropagationTest {
 		// TODO Measure run-time of propagation and pre-processing (without user
 		// interactions)
 
-		PcmUserInteractionManager
-				.addConflictResolutionStrategy(new GenericParameterConflictResolutionStrategy((s) -> s.length() < 2));
+		var genericCRS = new GenericParameterConflictResolutionStrategy((s) -> s.length() < 2);
+		PcmUserInteractionManager.addConflictResolutionStrategy(genericCRS);
+		PcmUserInteractionStatistics.getInstance().addTestIndependentConflictResolutionStrategy(genericCRS);
 
-		PcmUserInteractionManager.addConflictResolutionStrategy(
-				new NamespaceConflictResolutionStrategy(resWrapper.getTargetJavaModel()));
+		var namespaceCRS = new NamespaceConflictResolutionStrategy(resWrapper.getTargetJavaModel());
+		PcmUserInteractionManager.addConflictResolutionStrategy(namespaceCRS);
+		PcmUserInteractionStatistics.getInstance().addTestSpecificConflictResolutionStrategy(namespaceCRS);
 
 		// Propagate PCM changes
 		var pcmToJavaProp = this.propagateChangesToResource(newPcmRepoRes, changeList);
@@ -242,6 +275,9 @@ public class PcmToJavaChangePropagationTest {
 		LOGGER.info("Computing JC for Pcm repository (Pcm -> Java propagation)");
 		result.setJaccardCoefficientForPcmRepositoryInPcmToJavaPropagation(
 				computeJCForPcm(resWrapper.getPropagatedPcmRepository(), resWrapper.getTargetPcmRepository()));
+
+		setJCForSEFFlessPCMs();
+
 		LOGGER.info("Computing F1-Score for Im (Pcm -> Java propagation)");
 		result.setfOneScoreForImInPcmToJavaPropagation(
 				computeFScoreForIm((Repository) resWrapper.getPropagatedPcmRepository().getContents().get(0),
@@ -255,9 +291,9 @@ public class PcmToJavaChangePropagationTest {
 
 		LOGGER.info("Evaluating Pcm -> Java propagation");
 		var evaluator = new PcmToJavaPropagationEvaluator(pcmToJavaProp, resWrapper);
-		var result = evaluator.evaluate();
+		var evaluatorResult = evaluator.evaluate();
 		var evaluationDataContainer = EvaluationDataContainer.get();
-		evaluationDataContainer.setSuccessful(result);
+		evaluationDataContainer.setSuccessful(evaluatorResult);
 		var evaluationFileName = "pcmToJavaPropagationEvaluationData.json";
 		var evaluationPath = resWrapper.getExperimentLayout().getPropagatedDirLayout().getRootDirPath()
 				.resolve(evaluationFileName);
