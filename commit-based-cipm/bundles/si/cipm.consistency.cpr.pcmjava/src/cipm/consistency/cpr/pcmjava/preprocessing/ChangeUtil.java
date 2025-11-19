@@ -31,12 +31,22 @@ import tools.vitruv.change.atomic.root.RootEChange;
 
 public final class ChangeUtil {
 	private static final String cacheIDPrefix = "cache:/";
-	/*
-	 * FIXME Unless 2 EObjects are created with features that make them unique,
-	 * there is no precise way to determine their equality. Dependencies across
-	 * changes have to be analysed to determine what concrete instances are used.
-	 */
 
+	public static void replaceInAllIDs(EChange change, String regexInOldID, String replacement) {
+		var affectedID = getAffectedEObjectID(change);
+		if (affectedID != null) {
+			setAffectedEObjectID(change, affectedID.replaceAll(regexInOldID, replacement));
+		}
+		var oldID = getOldValueID(change);
+		if (oldID != null) {
+			setOldValueID(change, oldID.replaceAll(regexInOldID, replacement));
+		}
+		var newID = getNewValueID(change);
+		if (newID != null) {
+			setNewValueID(change, newID.replaceAll(regexInOldID, replacement));
+		}
+	}
+	
 	public static boolean isCacheURI(URI uri) {
 		return isCacheURI(uri.toString());
 	}
