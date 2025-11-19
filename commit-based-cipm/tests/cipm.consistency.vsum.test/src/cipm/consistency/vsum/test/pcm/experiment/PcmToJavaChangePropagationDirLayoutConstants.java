@@ -15,7 +15,7 @@ public final class PcmToJavaChangePropagationDirLayoutConstants {
 	private static final String pcmResourceEnvironmentFileName = "ResourceEnvironment.resourceenvironment";
 
 	private static final String imFileName = "imm.imm";
-	private static final String javaFileName = "Java.javaxmi";
+	private static final String javaFileName = "vsum.code.xmi";
 
 	private static final String copiedRootDirName = "copied";
 	private static final String propagatedRootDirName = "propagated";
