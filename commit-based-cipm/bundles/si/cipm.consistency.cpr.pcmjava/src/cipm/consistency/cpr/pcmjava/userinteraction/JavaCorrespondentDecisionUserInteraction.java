@@ -104,10 +104,6 @@ public class JavaCorrespondentDecisionUserInteraction extends AbstractUserIntera
 		return javaCorrespondent;
 	}
 
-	public void removePossibleJavaCorrespondent(EObject obj) {
-		this.possibleJavaCorrespondents.remove(obj);
-	}
-
 	@Override
 	public List<EObject> getTriggeringPCMelements() {
 		return List.of(triggeringPCMelement);

@@ -295,12 +295,6 @@ public final class ChangeUtil {
 		return null;
 	}
 
-	public static EClass getDeletedEObjectType(EChange change) {
-		if (change instanceof DeleteEObject)
-			return ((DeleteEObject<?>) change).getAffectedEObjectType();
-		return null;
-	}
-	
 	public static EClass getCreatedEObjectType(EChange change) {
 		if (change instanceof CreateEObject)
 			return ((CreateEObject<?>) change).getAffectedEObjectType();
