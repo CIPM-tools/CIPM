@@ -1,0 +1,70 @@
+package cipm.consistency.cpr.pcmjava.userinteraction;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emftext.language.java.commons.CommonsPackage;
+import org.emftext.language.java.containers.CompilationUnit;
+
+import cipm.consistency.cpr.pcmjava.JavaModelAccess;
+
+public class SyntheticElementConflictResolutionStrategy extends ConflictResolutionStrategy {
+	private Resource targetJavaModel;
+	private CompilationUnit syntheticCU;
+
+	private List<String> syntheticElementNss;
+
+	public SyntheticElementConflictResolutionStrategy(Resource targetJavaModel, List<String> syntheticElementNss) {
+		this.targetJavaModel = targetJavaModel;
+		this.syntheticCU = JavaModelAccess.getSyntheticCompilationUnit(this.targetJavaModel);
+		this.syntheticElementNss = syntheticElementNss;
+	}
+
+	private boolean isSyntheticElement(EObject obj) {
+		var it = syntheticCU.eAllContents();
+		while (it.hasNext()) {
+			var currentCUElement = it.next();
+			if (EcoreUtil.equals(currentCUElement, obj)
+//					|| (obj instanceof org.emftext.language.java.commons.NamedElement
+//					&& currentCUElement instanceof org.emftext.language.java.commons.NamedElement
+//					&& ((org.emftext.language.java.commons.NamedElement) currentCUElement).getName()
+//							.equals(((org.emftext.language.java.commons.NamedElement) obj).getName()))
+			) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	@Override
+	protected void applyStrategy(AbstractUserInteraction userInteraction) {
+		if (userInteraction instanceof NamespaceUserInteraction) {
+			var ui = (NamespaceUserInteraction) userInteraction;
+			reportDesiredFeatureValue(userInteraction,
+					new FeatureEntry(ui.getTriggeringPCMelements().get(0), ui.getAffectedJavaElements().get(0),
+							CommonsPackage.Literals.NAMESPACE_AWARE_ELEMENT__NAMESPACES, syntheticElementNss));
+		} else if (userInteraction instanceof JavaCorrespondentDecisionUserInteraction) {
+			var ui = (JavaCorrespondentDecisionUserInteraction) userInteraction;
+			var nonSyntheticOptions = new ArrayList<>(ui.getAffectedJavaElements());
+			nonSyntheticOptions.removeIf(this::isSyntheticElement);
+			if (nonSyntheticOptions.size() == 1) {
+				reportDesiredCorrespondence(userInteraction,
+						new CorrespondenceEntry(ui.getTriggeringPCMelements().get(0), nonSyntheticOptions.get(0), ""));
+			} else if (nonSyntheticOptions.isEmpty()) {
+				// If all options are synthetic, pick a random correspondent since the
+				// correspondence will not change anything
+				reportDesiredCorrespondence(userInteraction, new CorrespondenceEntry(
+						ui.getTriggeringPCMelements().get(0), ui.getAffectedJavaElements().get(0), ""));
+			}
+		}
+	}
+
+	@Override
+	protected boolean checkInternalApplicationConditions(AbstractUserInteraction userInteraction) {
+		return userInteraction.getAffectedJavaElements().stream().anyMatch((je) -> this.isSyntheticElement(je));
+	}
+}

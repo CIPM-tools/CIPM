@@ -35,6 +35,7 @@ import cipm.consistency.cpr.pcmjava.logger.PcmUserInteractionStatistics;
 import cipm.consistency.cpr.pcmjava.userinteraction.GenericParameterConflictResolutionStrategy;
 import cipm.consistency.cpr.pcmjava.userinteraction.NamespaceConflictResolutionStrategy;
 import cipm.consistency.cpr.pcmjava.userinteraction.PcmUserInteractionManager;
+import cipm.consistency.cpr.pcmjava.userinteraction.SyntheticElementConflictResolutionStrategy;
 import cipm.consistency.models.im.ImFacade;
 import cipm.consistency.models.pcm.PcmFacade;
 import cipm.consistency.tools.evaluation.data.EvaluationDataContainer;
@@ -258,6 +259,11 @@ public class PcmToJavaChangePropagationTest {
 		var namespaceCRS = new NamespaceConflictResolutionStrategy(resWrapper.getTargetJavaModel());
 		PcmUserInteractionManager.addConflictResolutionStrategy(namespaceCRS);
 		PcmUserInteractionStatistics.getInstance().addTestSpecificConflictResolutionStrategy(namespaceCRS);
+
+		var syntheticCRS = new SyntheticElementConflictResolutionStrategy(resWrapper.getTargetJavaModel(),
+				List.of("synthetic"));
+		PcmUserInteractionManager.addConflictResolutionStrategy(syntheticCRS);
+		PcmUserInteractionStatistics.getInstance().addTestSpecificConflictResolutionStrategy(syntheticCRS);
 
 		// Propagate PCM changes
 		var pcmToJavaProp = this.propagateChangesToResource(newPcmRepoRes, changeList);
