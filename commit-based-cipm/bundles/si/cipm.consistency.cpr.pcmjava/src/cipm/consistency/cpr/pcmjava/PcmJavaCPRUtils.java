@@ -549,6 +549,10 @@ public final class PcmJavaCPRUtils {
 		}
 
 		if (!createdPacs.isEmpty()) {
+			var pacOfCls = createdPacs.get(createdPacs.size() - 1);
+			// Package of javaCls should be set to its package, but Package.classifiers
+			// should not contain javaCls (per current convention in Java -> PCM CPRs)
+			javaCls.setPackage(pacOfCls);
 			createdContainers.addAll(createdPacs);
 		}
 
