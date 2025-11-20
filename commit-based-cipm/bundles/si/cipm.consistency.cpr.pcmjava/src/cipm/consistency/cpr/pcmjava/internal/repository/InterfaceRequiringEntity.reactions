@@ -30,9 +30,11 @@ routine addRequiredRoleToRequiringEntity(pcm::InterfaceRequiringEntity entity, p
 		// Filter out the javaCorrespondents that are either in the same package as requiredJavaIfc
 		// or those that already import it
 		var potentialImportingClss = javaCorrespondents.filter [
-			!it.package.classifiersInSamePackage.contains(requiredJavaIfc) &&
-				!it.containingCompilationUnit.imports.exists[it.classifier == requiredJavaIfc]
-		]
+			(it.package === null || !it.package.classifiersInSamePackage.contains(requiredJavaIfc)) &&
+				(it.containingCompilationUnit === null || !it.containingCompilationUnit.imports.exists [
+					it.classifier == requiredJavaIfc
+				])
+		].toList
 
 		// TODO Replace importingClss with selection via user interaction
 		// Ignore if there is only 1 possible candidate
@@ -43,6 +45,7 @@ routine addRequiredRoleToRequiringEntity(pcm::InterfaceRequiringEntity entity, p
 		for (importingCls : importingClss) {
 			var imp = ImportsFactory.eINSTANCE.createClassifierImport
 			imp.classifier = requiredJavaIfc
+			imp.namespaces += requiredJavaIfc.containingCompilationUnit.namespaces
 			importingCls.containingCompilationUnit.imports.add(imp)
 		}
 

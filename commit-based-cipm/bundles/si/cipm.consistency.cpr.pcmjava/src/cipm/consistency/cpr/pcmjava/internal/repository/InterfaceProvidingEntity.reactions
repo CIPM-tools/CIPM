@@ -36,31 +36,33 @@ routine addProvidingRoleToProvidingEntity(pcm::InterfaceProvidingEntity entity, 
 		// Filter out the chosenProvidingClss that are either in the same package as providedJavaIfc
 		// or those that already import it
 		var importingClss = chosenProvidingClss.filter [
-			!it.package.classifiersInSamePackage.contains(providedJavaIfc) &&
-				!it.containingCompilationUnit.imports.exists[it.classifier == providedJavaIfc]
-		]
+			(it.package === null || !it.package.classifiersInSamePackage.contains(providedJavaIfc)) &&
+				(it.containingCompilationUnit === null || !it.containingCompilationUnit.imports.exists [
+					it.classifier == providedJavaIfc
+				])
+		].toList
 
 		// importingClss should each have an import to requiredJavaIfc,
 		// since they use that interface
 		for (importingCls : importingClss) {
 			var imp = ImportsFactory.eINSTANCE.createClassifierImport
 			imp.classifier = providedJavaIfc
+			imp.namespaces += providedJavaIfc.containingCompilationUnit.namespaces
 			importingCls.containingCompilationUnit.imports.add(imp)
 		}
 
-		// Each importingClss should implement providedJavaIfc
-		val nonImplementingClss = importingClss.filter[!it.superTypeReferences.exists[it.target == providedJavaIfc]].
-			toList
-
-		for (cls : nonImplementingClss) {
-			val tRef = PcmJavaCPRUtils.implementJavaInterfaceInJavaClassifier(cls as Implementor, providedJavaIfc)
-			PcmJavaCPRUtils.generateJavaInterfaceMethodStubsInJavaClassifier(cls as Implementor, providedJavaIfc)
-
-			if (tRef !== null) {
-				addCorrespondenceBetween(tRef, role)
-			}
-		}
-
+	// TODO Each importingClss should implement providedJavaIfc
+//		val nonImplementingClss = importingClss.filter[!it.superTypeReferences.exists[it.target == providedJavaIfc]].
+//			toList
+//
+//		for (cls : nonImplementingClss) {
+//			val tRef = PcmJavaCPRUtils.implementJavaInterfaceInJavaClassifier(cls as Implementor, providedJavaIfc)
+//			PcmJavaCPRUtils.generateJavaInterfaceMethodStubsInJavaClassifier(cls as Implementor, providedJavaIfc)
+//
+//			if (tRef !== null) {
+//				addCorrespondenceBetween(tRef, role)
+//			}
+//		}
 	// TODO Developer task to properly implement the interface in code
 	}
 }

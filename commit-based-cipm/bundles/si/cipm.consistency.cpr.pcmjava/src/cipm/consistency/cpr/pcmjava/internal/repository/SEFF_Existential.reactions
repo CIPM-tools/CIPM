@@ -47,18 +47,21 @@ routine addCorrespondenceBetweenComponentAndSEFFJavaClass(pcm::ServiceEffectSpec
 					javaCls.containingConcreteClassifier)
 			}
 
-			if (allClss.containsAll(javaCls.containingCompilationUnit.classifiers)) {
+			if (javaCls.containingCompilationUnit !== null &&
+				allClss.containsAll(javaCls.containingCompilationUnit.classifiers)) {
 				addCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification,
 					javaCls.containingCompilationUnit)
 			}
 
-			if (allClss.containsAll(javaCls.package.classifiers)) {
-				addCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, javaCls.package)
-			}
+			if (javaCls.package !== null) {
+				if (allClss.containsAll(javaCls.package.classifiers)) {
+					addCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, javaCls.package)
+				}
 
-			if (javaCls.package.module !== null &&
-				allClss.containsAll(javaCls.package.module.classifiersInSamePackage)) {
-				addCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, javaCls.package.module)
+				if (javaCls.package.module !== null &&
+					allClss.containsAll(javaCls.package.module.classifiersInSamePackage)) {
+					addCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, javaCls.package.module)
+				}
 			}
 		}
 	}
@@ -82,10 +85,16 @@ routine removeCorrespondenceBetweenComponentAndSEFFJavaClass(pcm::ServiceEffectS
 					javaCls.containingConcreteClassifier)
 			}
 
-			removeCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification,
-				javaCls.containingCompilationUnit)
-			removeCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, javaCls.package)
-			removeCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, javaCls.package.module)
+			if (javaCls.containingCompilationUnit !== null) {
+				removeCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification,
+					javaCls.containingCompilationUnit)
+			}
+			if (javaCls.package !== null) {
+				removeCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, javaCls.package)
+				if (javaCls.package.module !== null) {
+					removeCorrespondenceBetween(seff.basicComponent_ServiceEffectSpecification, javaCls.package.module)
+				}
+			}
 		}
 	}
 }
