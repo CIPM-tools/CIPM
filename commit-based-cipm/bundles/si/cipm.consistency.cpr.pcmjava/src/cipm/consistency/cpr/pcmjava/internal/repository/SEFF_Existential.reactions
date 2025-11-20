@@ -8,22 +8,24 @@ in reaction to changes in pcm
 execute actions in java
 
 reaction SEFFAdded {
-	after element pcm::OperationSignature inserted in pcm::ServiceEffectSpecification[describedService__SEFF]
+	after element pcm::OperationSignature replaced at pcm::ServiceEffectSpecification[describedService__SEFF]
 	call {
-		addCorrespondenceBetweenComponentAndSEFFJavaClass(affectedEObject, newValue)
+		adjustCorrespondenceBetweenComponentAndSEFFJavaClass(affectedEObject, oldValue, newValue)
 	}
 }
 
-reaction SEFFRemoved {
-	after element pcm::OperationSignature removed from pcm::ServiceEffectSpecification[describedService__SEFF]
-	call {
-		removeCorrespondenceBetweenComponentAndSEFFJavaClass(affectedEObject, oldValue)
+routine adjustCorrespondenceBetweenComponentAndSEFFJavaClass(pcm::ServiceEffectSpecification seff, pcm::OperationSignature oldPcmSig, pcm::OperationSignature newPcmSig) {
+	update {
+		if (oldPcmSig !== null) {
+			removeCorrespondenceBetweenComponentAndSEFFJavaClass(seff, oldPcmSig)
+		}
+		addCorrespondenceBetweenComponentAndSEFFJavaClass(seff, newPcmSig)
 	}
 }
 
 routine addCorrespondenceBetweenComponentAndSEFFJavaClass(pcm::ServiceEffectSpecification seff, pcm::OperationSignature pcmSig) {
 	match {
-		val javaMet = retrieve java::Method corresponding to pcmSig.interface__OperationSignature
+		val javaMet = retrieve java::Method corresponding to pcmSig
 	}
 	update {
 		if (seff.basicComponent_ServiceEffectSpecification !== null) {
@@ -64,7 +66,7 @@ routine addCorrespondenceBetweenComponentAndSEFFJavaClass(pcm::ServiceEffectSpec
 
 routine removeCorrespondenceBetweenComponentAndSEFFJavaClass(pcm::ServiceEffectSpecification seff, pcm::OperationSignature pcmSig) {
 	match {
-		val javaMet = retrieve java::Method corresponding to pcmSig.interface__OperationSignature
+		val javaMet = retrieve java::Method corresponding to pcmSig
 	}
 	update {
 		if (seff.basicComponent_ServiceEffectSpecification !== null) {
