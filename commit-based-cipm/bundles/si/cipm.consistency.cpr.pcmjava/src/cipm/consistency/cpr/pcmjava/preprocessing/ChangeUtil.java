@@ -32,6 +32,22 @@ import tools.vitruv.change.atomic.root.RootEChange;
 public final class ChangeUtil {
 	private static final String cacheIDPrefix = "cache:/";
 
+	public static boolean createsEObjectOfType(EChange change, EClass eCls) {
+		return change instanceof CreateEObject
+				&& eCls.getInstanceClass().isAssignableFrom(getCreatedEObjectType(change).getInstanceClass());
+	}
+
+	public static boolean involvesFeature(EChange change, EStructuralFeature feat) {
+		var featName = feat.getName();
+		return feat.equals(getAffectedFeature(change)) ||
+
+				(getOldValueID(change) != null && getOldValueID(change).contains(featName))
+
+				|| (getNewValueID(change) != null && getNewValueID(change).contains(featName))
+
+				|| (getAffectedEObjectID(change) != null && getAffectedEObjectID(change).contains(featName));
+	}
+
 	public static void replaceInAllIDs(EChange change, String regexInOldID, String replacement) {
 		var affectedID = getAffectedEObjectID(change);
 		if (affectedID != null) {
@@ -46,7 +62,7 @@ public final class ChangeUtil {
 			setNewValueID(change, newID.replaceAll(regexInOldID, replacement));
 		}
 	}
-	
+
 	public static boolean isCacheURI(URI uri) {
 		return isCacheURI(uri.toString());
 	}
