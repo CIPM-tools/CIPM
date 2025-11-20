@@ -33,12 +33,17 @@ public final class JavaModelAccess {
 	private JavaModelAccess() {
 	}
 
-	private static EObject getSyntheticCompilationUnit() {
-		if (javaModel == null)
+	public static CompilationUnit getSyntheticCompilationUnit(Resource res) {
+		if (res == null)
 			return null;
-		var cu = javaModel.getContents().stream().filter((o) -> o instanceof CompilationUnit)
-				.filter((o) -> Strings.isNullOrEmpty(((CompilationUnit) o).getName())).findFirst();
+		var cu = res.getContents().stream().filter((o) -> o instanceof CompilationUnit)
+				.filter((o) -> Strings.isNullOrEmpty(((CompilationUnit) o).getName())).map((o) -> (CompilationUnit) o)
+				.findFirst();
 		return cu.orElseGet(() -> null);
+	}
+
+	public static CompilationUnit getSyntheticCompilationUnit() {
+		return getSyntheticCompilationUnit(javaModel);
 	}
 
 	/**
