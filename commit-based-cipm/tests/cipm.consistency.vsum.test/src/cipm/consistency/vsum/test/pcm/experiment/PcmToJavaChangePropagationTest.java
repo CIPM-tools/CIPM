@@ -326,7 +326,7 @@ public class PcmToJavaChangePropagationTest {
 
 	private JaccardCoefficientResult computeJCForPcm(Resource newPcmRepo, Resource oldPcmRepo) {
 		return ComparisonBasedJaccardCoefficientCalculator
-				.calculateJaccardCoefficient(PCMModelComparator.compareRepositoryModels(newPcmRepo, oldPcmRepo));
+				.calculateJaccardCoefficient(PCMModelComparator.compareRepositoryModelsIDBased(newPcmRepo, oldPcmRepo));
 	}
 
 	private ImUpdateEvalData computeFScoreForIm(Repository repo, InstrumentationModel im) {
