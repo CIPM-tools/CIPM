@@ -19,7 +19,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.palladiosimulator.pcm.repository.Repository;
-import org.palladiosimulator.pcm.seff.AbstractAction;
 import org.palladiosimulator.pcm.seff.AbstractLoopAction;
 import org.palladiosimulator.pcm.seff.BranchAction;
 
@@ -40,12 +39,11 @@ import cipm.consistency.cpr.pcmjava.userinteraction.PcmUserInteractionManager;
 import cipm.consistency.cpr.pcmjava.userinteraction.SyntheticElementConflictResolutionStrategy;
 import cipm.consistency.models.im.ImFacade;
 import cipm.consistency.models.pcm.PcmFacade;
-import cipm.consistency.tools.evaluation.data.EvaluationDataContainer;
-import cipm.consistency.tools.evaluation.data.EvaluationDataContainerReaderWriter;
 import cipm.consistency.tools.evaluation.data.ImUpdateEvalData;
 import cipm.consistency.vsum.Propagation;
 import cipm.consistency.vsum.test.IMUpdateEvaluator;
 import cipm.consistency.vsum.test.appspace.LoggingSetup;
+import cipm.consistency.vsum.test.pcm.ChangeSaver;
 import cipm.consistency.vsum.test.pcm.PcmVsumFacade;
 import cipm.consistency.vsum.test.pcm.PcmVsumFacadeImpl;
 import cipm.consistency.vsum.test.pcm.cprunittests.UnnamedModuleComponentDetectionStrategy;
@@ -262,6 +260,21 @@ public class PcmToJavaChangePropagationTest {
 				.addTestSpecificConflictResolutionStrategy(bruteForceAutomationCRS);
 	}
 
+	private void savePropagatedChanges(Propagation prop) {
+		var cs = new ChangeSaver(resWrapper.getExperimentLayout().getPropagatedDirLayout());
+		cs.saveUnresolvedChanges(prop);
+		var propagatedPcmChanges = ResourceOperationsUtil
+				.loadResource(resWrapper.getExperimentLayout().getPropagatedDirLayout().getPcmChangesSaveFilePath());
+		var propagatedJavaChanges = ResourceOperationsUtil
+				.loadResource(resWrapper.getExperimentLayout().getPropagatedDirLayout().getJavaChangesSaveFilePath());
+		var propagatedIMChanges = ResourceOperationsUtil
+				.loadResource(resWrapper.getExperimentLayout().getPropagatedDirLayout().getImChangesSaveFilePath());
+
+		result.setPropagatedPcmChangeCount(propagatedPcmChanges.getContents().size());
+		result.setPropagatedJavaChangeCount(propagatedJavaChanges.getContents().size());
+		result.setPropagatedImChangeCount(propagatedIMChanges.getContents().size());
+	}
+
 	public void pcmToJavaChangePropagationTestTemplate(PcmToJavaChangePropagationDirLayout dirLayout) {
 		this.initialiseResources(dirLayout);
 
@@ -279,9 +292,14 @@ public class PcmToJavaChangePropagationTest {
 		var pcmToJavaProp = this.propagateChangesToResource(newPcmRepoRes, changeList);
 		PcmUserInteractionTimeStatistics.getInstance().endPropagationTimeMeasurement();
 		PcmUserInteractionTimeStatistics.getInstance().finaliseTimeMeasurement();
-		var ad = PcmUserInteractionAutomaticityStatistics.getInstance().computeAutomaticityDegree();
-		LOGGER.info("Automaticity degree: " + ad);
+		PcmUserInteractionAutomaticityStatistics.getInstance().computeAutomaticityDegree();
+
 		LOGGER.info("Pcm to Java propagation over");
+
+		LOGGER.info("Saving propagated changes");
+
+		savePropagatedChanges(pcmToJavaProp);
+		// Propagated change Resources must be reloaded anew, if they are to be used
 
 		LOGGER.info("Reloading propagated models for evaluation");
 		resWrapper.reloadPropagatedResources();
@@ -308,17 +326,6 @@ public class PcmToJavaChangePropagationTest {
 		LOGGER.info("Saving experiment result");
 		result.save(getDirLayout().getExperimentResultSavePath());
 		LOGGER.info("Saved experiment result");
-
-		LOGGER.info("Evaluating Pcm -> Java propagation");
-		var evaluator = new PcmToJavaPropagationEvaluator(pcmToJavaProp, resWrapper);
-		var evaluatorResult = evaluator.evaluate();
-		var evaluationDataContainer = EvaluationDataContainer.get();
-		evaluationDataContainer.setSuccessful(evaluatorResult);
-		var evaluationFileName = "pcmToJavaPropagationEvaluationData.json";
-		var evaluationPath = resWrapper.getExperimentLayout().getPropagatedDirLayout().getRootDirPath()
-				.resolve(evaluationFileName);
-		LOGGER.info("Saving Pcm -> Java propagation evaluation");
-		EvaluationDataContainerReaderWriter.write(evaluationDataContainer, evaluationPath);
 
 		LOGGER.info("Tearing down");
 		this.tearDown();

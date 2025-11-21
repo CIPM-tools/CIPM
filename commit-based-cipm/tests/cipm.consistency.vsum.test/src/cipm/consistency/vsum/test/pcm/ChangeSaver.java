@@ -72,7 +72,7 @@ public class ChangeSaver {
 		saveUnresolvedChanges(imChanges, dirLayout.getImChangesSaveFilePath());
 	}
 
-	public void saveUnresolvedChanges(Collection<EChange> changes, Path savePath) {
+	private void saveUnresolvedChanges(Collection<EChange> changes, Path savePath) {
 		// Unresolve the changes before saving, since they would otherwise need the
 		// model resources to work
 
@@ -81,6 +81,9 @@ public class ChangeSaver {
 		changes.stream().forEach((c) -> changesRes.getContents().add(EChangeResolverAndApplicator.unresolve(c)));
 
 		try {
+			if (savePath.toFile().exists())
+				savePath.toFile().delete();
+
 			changesRes.save(null);
 		} catch (IOException e) {
 			e.printStackTrace();

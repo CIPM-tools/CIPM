@@ -43,6 +43,10 @@ public class ExperimentResult {
 	private PcmCprLogger pcmLogger = PcmCprLogger.getInstance();
 	private PcmUserInteractionTimeStatistics pcmTimeMeasurements = PcmUserInteractionTimeStatistics.getInstance();
 
+	private int propagatedPcmChangeCount = 0;
+	private int propagatedJavaChangeCount = 0;
+	private int propagatedImChangeCount = 0;
+
 	public void setVsumTestPath(Path vsumTestPath) {
 		this.vsumTestPath = vsumTestPath.toString();
 	}
@@ -73,6 +77,18 @@ public class ExperimentResult {
 		result.put("Intersection cardinality", jcr.getIntersectionCardinality());
 		result.put("Union cardinality", jcr.getUnionCardinality());
 		return result;
+	}
+
+	public void setPropagatedPcmChangeCount(int propagatedPcmChangeCount) {
+		this.propagatedPcmChangeCount = propagatedPcmChangeCount;
+	}
+
+	public void setPropagatedJavaChangeCount(int propagatedJavaChangeCount) {
+		this.propagatedJavaChangeCount = propagatedJavaChangeCount;
+	}
+
+	public void setPropagatedImChangeCount(int propagatedImChangeCount) {
+		this.propagatedImChangeCount = propagatedImChangeCount;
 	}
 
 	public void setJaccardCoefficientForJavaModelInJavaToPcmPropagation(
