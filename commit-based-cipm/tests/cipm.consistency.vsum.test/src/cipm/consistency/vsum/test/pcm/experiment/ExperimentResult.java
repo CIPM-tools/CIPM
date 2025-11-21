@@ -43,6 +43,10 @@ public class ExperimentResult {
 	private PcmCprLogger pcmLogger = PcmCprLogger.getInstance();
 	private PcmUserInteractionTimeStatistics pcmTimeMeasurements = PcmUserInteractionTimeStatistics.getInstance();
 
+	private int originalPcmChangeCount = 0;
+	private int originalJavaChangeCount = 0;
+	private int originalImChangeCount = 0;
+	
 	private int propagatedPcmChangeCount = 0;
 	private int propagatedJavaChangeCount = 0;
 	private int propagatedImChangeCount = 0;
@@ -89,6 +93,18 @@ public class ExperimentResult {
 
 	public void setPropagatedImChangeCount(int propagatedImChangeCount) {
 		this.propagatedImChangeCount = propagatedImChangeCount;
+	}
+
+	public void setOriginalPcmChangeCount(int originalPcmChangeCount) {
+		this.originalPcmChangeCount = originalPcmChangeCount;
+	}
+
+	public void setOriginalJavaChangeCount(int originalJavaChangeCount) {
+		this.originalJavaChangeCount = originalJavaChangeCount;
+	}
+
+	public void setOriginalImChangeCount(int originalImChangeCount) {
+		this.originalImChangeCount = originalImChangeCount;
 	}
 
 	public void setJaccardCoefficientForJavaModelInJavaToPcmPropagation(

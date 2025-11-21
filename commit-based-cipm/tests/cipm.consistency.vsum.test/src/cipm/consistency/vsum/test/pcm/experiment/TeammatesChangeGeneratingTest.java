@@ -17,7 +17,7 @@ public class TeammatesChangeGeneratingTest extends TEAMMATESCITestController {
 	@Override
 	protected void saveChanges(Propagation prop, Path rootDirPath) {
 		var layout = new JavaToPcmPropagationDirLayout(rootDirPath);
-		new ChangeSaver(layout).saveUnresolvedChanges(prop);
+		ChangeSaver.saveUnresolvedChanges(prop, layout);
 		System.out.println("Changes are saved for: " + prop.getCommitId());
 	}
 }

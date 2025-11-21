@@ -17,14 +17,9 @@ import cipm.consistency.vsum.test.pcm.experiment.JavaToPcmPropagationDirLayout;
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.atomic.resolve.EChangeResolverAndApplicator;
 
-public class ChangeSaver {
-	private final JavaToPcmPropagationDirLayout dirLayout;
-
-	public ChangeSaver(JavaToPcmPropagationDirLayout dirLayout) {
-		this.dirLayout = dirLayout;
-	}
-
-	public void saveUnresolvedChanges(Propagation prop) {
+public final class ChangeSaver {
+	public static void saveUnresolvedChanges(Propagation prop, Path javaChangesSavePath, Path pcmChangesSavePath,
+			Path imChangesSavePath) {
 		// Use LinkedHashSet to ensure that a change is present exactly once and that
 		// all changes retain their insertion order
 
@@ -67,12 +62,17 @@ public class ChangeSaver {
 			});
 		}
 
-		saveUnresolvedChanges(javaChanges, dirLayout.getJavaChangesSaveFilePath());
-		saveUnresolvedChanges(pcmChanges, dirLayout.getPcmChangesSaveFilePath());
-		saveUnresolvedChanges(imChanges, dirLayout.getImChangesSaveFilePath());
+		saveUnresolvedChanges(javaChanges, javaChangesSavePath);
+		saveUnresolvedChanges(pcmChanges, pcmChangesSavePath);
+		saveUnresolvedChanges(imChanges, imChangesSavePath);
 	}
 
-	private void saveUnresolvedChanges(Collection<EChange> changes, Path savePath) {
+	public static void saveUnresolvedChanges(Propagation prop, JavaToPcmPropagationDirLayout dirLayout) {
+		saveUnresolvedChanges(prop, dirLayout.getJavaChangesSaveFilePath(), dirLayout.getPcmChangesSaveFilePath(),
+				dirLayout.getImChangesSaveFilePath());
+	}
+
+	private static void saveUnresolvedChanges(Collection<EChange> changes, Path savePath) {
 		// Unresolve the changes before saving, since they would otherwise need the
 		// model resources to work
 
@@ -81,8 +81,11 @@ public class ChangeSaver {
 		changes.stream().forEach((c) -> changesRes.getContents().add(EChangeResolverAndApplicator.unresolve(c)));
 
 		try {
-			if (savePath.toFile().exists())
+			if (savePath.toFile().exists()) {
 				savePath.toFile().delete();
+			} else {
+				savePath.getParent().toFile().mkdirs();
+			}
 
 			changesRes.save(null);
 		} catch (IOException e) {

@@ -99,6 +99,10 @@ public class PcmToJavaChangePropagationTest {
 		this.resWrapper = new ExperimentResourceWrapper(new ResourceSetImpl(), dirLayout);
 		this.resWrapper.initialise();
 
+		result.setOriginalJavaChangeCount(resWrapper.getOriginalJavaChanges().getContents().size());
+		result.setOriginalPcmChangeCount(resWrapper.getOriginalPcmChanges().getContents().size());
+		result.setOriginalImChangeCount(resWrapper.getOriginalImChanges().getContents().size());
+
 		imFacade = this.setupImFacade();
 		pcmFacade = this.setupPcmFacade();
 		javaFacade = this.setupJavaFacade();
@@ -261,18 +265,52 @@ public class PcmToJavaChangePropagationTest {
 	}
 
 	private void savePropagatedChanges(Propagation prop) {
-		var cs = new ChangeSaver(resWrapper.getExperimentLayout().getPropagatedDirLayout());
-		cs.saveUnresolvedChanges(prop);
-		var propagatedPcmChanges = ResourceOperationsUtil
-				.loadResource(resWrapper.getExperimentLayout().getPropagatedDirLayout().getPcmChangesSaveFilePath());
-		var propagatedJavaChanges = ResourceOperationsUtil
-				.loadResource(resWrapper.getExperimentLayout().getPropagatedDirLayout().getJavaChangesSaveFilePath());
-		var propagatedIMChanges = ResourceOperationsUtil
-				.loadResource(resWrapper.getExperimentLayout().getPropagatedDirLayout().getImChangesSaveFilePath());
+		var propLayout = resWrapper.getExperimentLayout().getPropagatedDirLayout();
+		var propagatedChangesPath = propLayout.getRootDirPath()
+				.resolve(PcmToJavaChangePropagationDirLayoutConstants.getPropagatedchangesdir());
+		var propJavaChangesPath = propagatedChangesPath
+				.resolve(PcmToJavaChangePropagationDirLayoutConstants.getJavachangessavefilename());
+		var propPcmChangesPath = propagatedChangesPath
+				.resolve(PcmToJavaChangePropagationDirLayoutConstants.getPcmchangessavefilename());
+		var propImChangesPath = propagatedChangesPath
+				.resolve(PcmToJavaChangePropagationDirLayoutConstants.getImchangessavefilename());
 
-		result.setPropagatedPcmChangeCount(propagatedPcmChanges.getContents().size());
+		ChangeSaver.saveUnresolvedChanges(prop, propJavaChangesPath, propPcmChangesPath, propImChangesPath);
+
+		var propagatedJavaChanges = ResourceOperationsUtil.loadResource(propJavaChangesPath);
+		var propagatedPcmChanges = ResourceOperationsUtil.loadResource(propPcmChangesPath);
+		var propagatedIMChanges = ResourceOperationsUtil.loadResource(propImChangesPath);
+
 		result.setPropagatedJavaChangeCount(propagatedJavaChanges.getContents().size());
+		result.setPropagatedPcmChangeCount(propagatedPcmChanges.getContents().size());
 		result.setPropagatedImChangeCount(propagatedIMChanges.getContents().size());
+	}
+
+	private void logPropagationTime() {
+		LOGGER.info("Pcm to Java propagation over in "
+				+ PcmUserInteractionTimeStatistics.getInstance().getPropagationTimeWithUserInteractionsInMillis()
+				+ " millis with user interactions, and "
+				+ PcmUserInteractionTimeStatistics.getInstance().getPropagationTimeWithoutUserInteractionsInMillis()
+				+ " millis without user interactions (difference in millis: "
+				+ (PcmUserInteractionTimeStatistics.getInstance().getPropagationTimeWithUserInteractionsInMillis()
+						- PcmUserInteractionTimeStatistics.getInstance()
+								.getPropagationTimeWithoutUserInteractionsInMillis()) + ")");
+	}
+
+	private void logAutomaticityDegree() {
+		LOGGER.info(PcmUserInteractionAutomaticityStatistics.getInstance().getNumberOfTriggeredUserInteractions()
+				+ " user interactions triggered");
+		LOGGER.info(PcmUserInteractionAutomaticityStatistics.getInstance()
+				.getNumberOfTriggeredFullyAutomaticUserInteractions() + " would realistically be fully automatic");
+		LOGGER.info(PcmUserInteractionAutomaticityStatistics.getInstance()
+				.getNumberOfTriggeredSemiAutomaticPartiallyInterceptedUserInteractions()
+				+ " would realistically be semi-automatic partially intercepted");
+		LOGGER.info(PcmUserInteractionAutomaticityStatistics.getInstance()
+				.getNumberOfTriggeredSemiAutomaticNonInterceptedUserInteractions()
+				+ " would realistically be semi-automatic non-intercepted");
+
+		LOGGER.info("Automaticity degree: "
+				+ PcmUserInteractionAutomaticityStatistics.getInstance().getAutomaticityDegree());
 	}
 
 	public void pcmToJavaChangePropagationTestTemplate(PcmToJavaChangePropagationDirLayout dirLayout) {
@@ -292,9 +330,11 @@ public class PcmToJavaChangePropagationTest {
 		var pcmToJavaProp = this.propagateChangesToResource(newPcmRepoRes, changeList);
 		PcmUserInteractionTimeStatistics.getInstance().endPropagationTimeMeasurement();
 		PcmUserInteractionTimeStatistics.getInstance().finaliseTimeMeasurement();
+
 		PcmUserInteractionAutomaticityStatistics.getInstance().computeAutomaticityDegree();
 
-		LOGGER.info("Pcm to Java propagation over");
+		logPropagationTime();
+		logAutomaticityDegree();
 
 		LOGGER.info("Saving propagated changes");
 

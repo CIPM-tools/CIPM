@@ -17,7 +17,8 @@ public class PcmUserInteractionTimeStatistics {
 	private LocalDateTime timeMeasurementStartTime;
 	private LocalDateTime timeMeasurementEndTime;
 
-	private long propagationTimeInMillis = 0;
+	private long propagationTimeWithoutUserInteractionsInMillis = 0;
+	private long propagationTimeWithUserInteractionsInMillis = 0;
 
 	private PcmUserInteractionTimeStatistics() {
 	}
@@ -49,7 +50,8 @@ public class PcmUserInteractionTimeStatistics {
 	private void addMostRecentTimeEntryToPropagationTime() {
 		var entry = completeMostRecentTimeEntry();
 		if (entry != null) {
-			propagationTimeInMillis += timeUnit.between(entry.getElement1(), entry.getElement2());
+			propagationTimeWithoutUserInteractionsInMillis += timeUnit.between(entry.getElement1(),
+					entry.getElement2());
 		}
 	}
 
@@ -65,13 +67,23 @@ public class PcmUserInteractionTimeStatistics {
 		if (!timeEntries.isEmpty()) {
 			timeMeasurementStartTime = timeEntries.get(0).getElement1();
 			timeMeasurementEndTime = completeMostRecentTimeEntry().getElement2();
+			propagationTimeWithUserInteractionsInMillis = timeUnit.between(timeMeasurementStartTime,
+					timeMeasurementEndTime);
 		}
+	}
+
+	public long getPropagationTimeWithoutUserInteractionsInMillis() {
+		return propagationTimeWithoutUserInteractionsInMillis;
+	}
+
+	public long getPropagationTimeWithUserInteractionsInMillis() {
+		return propagationTimeWithUserInteractionsInMillis;
 	}
 
 	public void reset() {
 		timeEntries.clear();
 		timeMeasurementStartTime = null;
 		timeMeasurementEndTime = null;
-		propagationTimeInMillis = 0;
+		propagationTimeWithoutUserInteractionsInMillis = 0;
 	}
 }

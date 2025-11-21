@@ -177,4 +177,8 @@ public class PcmUserInteractionAutomaticityStatistics {
 				/ ((double) numberOfTriggeredUserInteractions);
 		return automaticityDegree;
 	}
+
+	public double getAutomaticityDegree() {
+		return automaticityDegree;
+	}
 }
