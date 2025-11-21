@@ -6,8 +6,8 @@ import java.util.List;
 import cipm.consistency.cpr.pcmjava.userinteraction.AbstractUserInteraction;
 import cipm.consistency.cpr.pcmjava.userinteraction.ConflictResolutionStrategy;
 
-public class PcmUserInteractionStatistics {
-	private static PcmUserInteractionStatistics instance;
+public class PcmUserInteractionAutomaticityStatistics {
+	private static PcmUserInteractionAutomaticityStatistics instance;
 
 	/**
 	 * All ConflictResolutionStrategies that are used in the experiment, yet do not
@@ -28,7 +28,6 @@ public class PcmUserInteractionStatistics {
 	 * the total number of triggered user interactions.
 	 */
 	private final List<String> triggeredUserInteractionIDs = new ArrayList<>();
-	private int numberOfTriggeredUserInteractions = 0;
 
 	/**
 	 * Manual user interactions that are triggered during the experiment, which are
@@ -36,7 +35,6 @@ public class PcmUserInteractionStatistics {
 	 * interactions would be performed manually under realistic settings.
 	 */
 	private final List<String> triggeredRealisticallySemiAutomaticUserInteractionIDs = new ArrayList<>();
-	private int numberOfTriggeredRealisticallySemiAutomaticNonInterceptedUserInteractions = 0;
 
 	/**
 	 * Manual user interactions that are triggered during the experiment and
@@ -46,7 +44,6 @@ public class PcmUserInteractionStatistics {
 	 * settings.
 	 */
 	private final List<String> triggeredRealisticallySemiAutomaticPartiallyInterceptedUserInteractionIDs = new ArrayList<>();
-	private int numberOfTriggeredRealisticallySemiAutomaticPartiallyInterceptedUserInteractions = 0;
 
 	/**
 	 * Manual user interactions that are triggered during the experiment and
@@ -55,14 +52,36 @@ public class PcmUserInteractionStatistics {
 	 * interactions that would actually be intercepted under realistic settings.
 	 */
 	private final List<String> triggeredRealisticallyFullyAutomaticUserInteractionIDs = new ArrayList<>();
-	private int numberOfTriggeredRealisticallyFullyAutomaticUserInteractions = 0;
 
-	private PcmUserInteractionStatistics() {
+	/**
+	 * Refer to the corresponding ID lists above for more information
+	 */
+	private int numberOfTriggeredUserInteractions = 0;
+	/**
+	 * Refer to the corresponding ID lists above for more information
+	 */
+	private int numberOfTriggeredRealisticallyFullyAutomaticUserInteractions = 0;
+	/**
+	 * Refer to the corresponding ID lists above for more information
+	 */
+	private int numberOfTriggeredRealisticallySemiAutomaticPartiallyInterceptedUserInteractions = 0;
+	/**
+	 * Refer to the corresponding ID lists above for more information
+	 */
+	private int numberOfTriggeredRealisticallySemiAutomaticNonInterceptedUserInteractions = 0;
+
+	/**
+	 * Proportion of realistically fully automatic user interaction count to total
+	 * user interaction count
+	 */
+	private double automaticityDegree = 0;
+
+	private PcmUserInteractionAutomaticityStatistics() {
 	}
 
-	public static PcmUserInteractionStatistics getInstance() {
+	public static PcmUserInteractionAutomaticityStatistics getInstance() {
 		if (instance == null)
-			instance = new PcmUserInteractionStatistics();
+			instance = new PcmUserInteractionAutomaticityStatistics();
 		return instance;
 	}
 
@@ -151,5 +170,11 @@ public class PcmUserInteractionStatistics {
 
 	public void addTestSpecificConflictResolutionStrategy(ConflictResolutionStrategy crs) {
 		this.testSpecificConflictResolutionStrategyIDs.add(crs.getID());
+	}
+
+	public double computeAutomaticityDegree() {
+		automaticityDegree = (double) ((double) numberOfTriggeredRealisticallyFullyAutomaticUserInteractions)
+				/ ((double) numberOfTriggeredUserInteractions);
+		return automaticityDegree;
 	}
 }

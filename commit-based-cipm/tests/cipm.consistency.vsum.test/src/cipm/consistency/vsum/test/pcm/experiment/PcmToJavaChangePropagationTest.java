@@ -31,7 +31,8 @@ import cipm.consistency.commitintegration.diff.util.pcm.PCMModelComparator;
 import cipm.consistency.commitintegration.lang.java.JavaModelFacade;
 import cipm.consistency.cpr.pcmjava.JavaModelAccess;
 import cipm.consistency.cpr.pcmjava.logger.PcmCprLogger;
-import cipm.consistency.cpr.pcmjava.logger.PcmUserInteractionStatistics;
+import cipm.consistency.cpr.pcmjava.logger.PcmUserInteractionAutomaticityStatistics;
+import cipm.consistency.cpr.pcmjava.logger.PcmUserInteractionTimeStatistics;
 import cipm.consistency.cpr.pcmjava.userinteraction.GenericParameterConflictResolutionStrategy;
 import cipm.consistency.cpr.pcmjava.userinteraction.NamespaceConflictResolutionStrategy;
 import cipm.consistency.cpr.pcmjava.userinteraction.PcmUserInteractionManager;
@@ -240,33 +241,29 @@ public class PcmToJavaChangePropagationTest {
 						.equals(PcmToJavaChangePropagationDirLayoutConstants.getPcmrepositoryfilename()))
 				.findFirst().get();
 
-		// TODO For all DataTypes that have no correspondents at all, match them with
-		// the corresponding synthetic element (via CRS because synthetic elements do
-		// not exist during PCM -> Java propagation)
-
 		// TODO For remaining manual user interactions, automate them by implementing
 		// CRSs specifically for the propagation
 
-		// TODO Derive automatability metric and save it
-
-		// TODO Measure run-time of propagation and pre-processing (without user
-		// interactions)
-
 		var genericCRS = new GenericParameterConflictResolutionStrategy((s) -> s.length() < 2);
 		PcmUserInteractionManager.addConflictResolutionStrategy(genericCRS);
-		PcmUserInteractionStatistics.getInstance().addTestIndependentConflictResolutionStrategy(genericCRS);
+		PcmUserInteractionAutomaticityStatistics.getInstance().addTestIndependentConflictResolutionStrategy(genericCRS);
 
 		var namespaceCRS = new NamespaceConflictResolutionStrategy(resWrapper.getTargetJavaModel());
 		PcmUserInteractionManager.addConflictResolutionStrategy(namespaceCRS);
-		PcmUserInteractionStatistics.getInstance().addTestSpecificConflictResolutionStrategy(namespaceCRS);
+		PcmUserInteractionAutomaticityStatistics.getInstance().addTestSpecificConflictResolutionStrategy(namespaceCRS);
 
 		var syntheticCRS = new SyntheticElementConflictResolutionStrategy(resWrapper.getTargetJavaModel(),
 				List.of("synthetic"));
 		PcmUserInteractionManager.addConflictResolutionStrategy(syntheticCRS);
-		PcmUserInteractionStatistics.getInstance().addTestSpecificConflictResolutionStrategy(syntheticCRS);
+		PcmUserInteractionAutomaticityStatistics.getInstance().addTestSpecificConflictResolutionStrategy(syntheticCRS);
 
 		// Propagate PCM changes
+		PcmUserInteractionTimeStatistics.getInstance().startPropagationTimeMeasurement();
 		var pcmToJavaProp = this.propagateChangesToResource(newPcmRepoRes, changeList);
+		PcmUserInteractionTimeStatistics.getInstance().endPropagationTimeMeasurement();
+		PcmUserInteractionTimeStatistics.getInstance().finaliseTimeMeasurement();
+		var ad = PcmUserInteractionAutomaticityStatistics.getInstance().computeAutomaticityDegree();
+		LOGGER.info("Automaticity degree: " + ad);
 		LOGGER.info("Pcm to Java propagation over");
 
 		LOGGER.info("Reloading propagated models for evaluation");

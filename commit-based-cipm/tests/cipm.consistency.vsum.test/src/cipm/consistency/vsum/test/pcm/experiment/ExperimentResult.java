@@ -3,17 +3,25 @@ package cipm.consistency.vsum.test.pcm.experiment;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 import cipm.consistency.commitintegration.diff.util.ComparisonBasedJaccardCoefficientCalculator.JaccardCoefficientResult;
 import cipm.consistency.cpr.pcmjava.logger.PcmCprLogger;
-import cipm.consistency.cpr.pcmjava.logger.PcmUserInteractionStatistics;
+import cipm.consistency.cpr.pcmjava.logger.PcmUserInteractionAutomaticityStatistics;
+import cipm.consistency.cpr.pcmjava.logger.PcmUserInteractionTimeStatistics;
 import cipm.consistency.tools.evaluation.data.ImUpdateEvalData;
 
 public class ExperimentResult {
@@ -31,8 +39,9 @@ public class ExperimentResult {
 
 	private Map<String, Number> fOneScoreForImInPcmToJavaPropagation;
 
-	private PcmUserInteractionStatistics pcmStats = PcmUserInteractionStatistics.getInstance();
+	private PcmUserInteractionAutomaticityStatistics pcmStats = PcmUserInteractionAutomaticityStatistics.getInstance();
 	private PcmCprLogger pcmLogger = PcmCprLogger.getInstance();
+	private PcmUserInteractionTimeStatistics pcmTimeMeasurements = PcmUserInteractionTimeStatistics.getInstance();
 
 	public void setVsumTestPath(Path vsumTestPath) {
 		this.vsumTestPath = vsumTestPath.toString();
@@ -147,11 +156,21 @@ public class ExperimentResult {
 	 * @param file   the file in which the data is written.
 	 */
 	public void write(ExperimentResult result, Path file) {
-		Gson gson = new GsonBuilder().serializeSpecialFloatingPointValues().setPrettyPrinting().create();
+		Gson gson = new GsonBuilder().serializeSpecialFloatingPointValues().setPrettyPrinting()
+				.registerTypeHierarchyAdapter(LocalDateTime.class, this.getDateAdapter()).create();
 		try (BufferedWriter writer = Files.newBufferedWriter(file)) {
 			gson.toJson(result, ExperimentResult.class, gson.newJsonWriter(writer));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private JsonSerializer<LocalDateTime> getDateAdapter() {
+		return new JsonSerializer<LocalDateTime>() {
+			@Override
+			public JsonElement serialize(LocalDateTime src, Type typeOfSrc, JsonSerializationContext context) {
+				return new JsonPrimitive(DateTimeFormatter.ISO_DATE_TIME.format(src));
+			}
+		};
 	}
 }

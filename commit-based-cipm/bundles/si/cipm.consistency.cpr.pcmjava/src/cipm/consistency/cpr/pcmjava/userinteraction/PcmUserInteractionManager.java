@@ -92,7 +92,9 @@ public final class PcmUserInteractionManager {
 			if (!currentW.hasDesiredFeature(entry.getTriggeringPCMElement(), entry.getAffectedJavaElementFeature())) {
 				continue;
 			} else {
+				PcmCprLogger.getInstance().manualUserInteractionTriggered(currentW);
 				currentW.performManualUserInteraction();
+				PcmCprLogger.getInstance().manualUserInteractionPerformed(currentW);
 				// Manual interaction should update entry
 				return desiredFeatureValues.getAssignedDesiredFeatureEntry(entry.getTriggeringPCMElement(),
 						entry.getAffectedJavaElementFeature()).orElseGet(() -> null);

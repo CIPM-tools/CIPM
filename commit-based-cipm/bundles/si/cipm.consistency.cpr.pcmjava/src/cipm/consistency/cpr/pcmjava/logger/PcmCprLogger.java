@@ -24,7 +24,7 @@ public class PcmCprLogger {
 	 * Tracks status information for individual user interactions, used for deriving
 	 * automaticity statistics.
 	 * 
-	 * @see {@link PcmUserInteractionStatistics}
+	 * @see {@link PcmUserInteractionAutomaticityStatistics}
 	 */
 	private static final Map<AbstractUserInteraction, PcmUserInteractionState> stateMap = new LinkedHashMap<>();
 
@@ -41,6 +41,7 @@ public class PcmCprLogger {
 	}
 
 	public void manualUserInteractionTriggered(AbstractUserInteraction abstractUserInteraction) {
+		PcmUserInteractionTimeStatistics.getInstance().endPropagationTimeMeasurement();
 		var entry = new PcmCprEntry();
 		entry.setUserInteraction(abstractUserInteraction);
 		entry.setUserInteractionState(PcmUserInteractionState.MANUAL_INTERVENTION_TRIGGERED);
@@ -53,6 +54,7 @@ public class PcmCprLogger {
 		setStatus(abstractUserInteraction, PcmUserInteractionState.MANUAL_INTERVENTION_OVER);
 		entry.setUserInteractionState(PcmUserInteractionState.MANUAL_INTERVENTION_OVER);
 		entries.add(entry);
+		PcmUserInteractionTimeStatistics.getInstance().startPropagationTimeMeasurement();
 	}
 
 	public void userInteractionAskedForCorrespondence(AbstractUserInteraction abstractUserInteraction,
@@ -146,7 +148,7 @@ public class PcmCprLogger {
 		entry.setUserInteractionState(
 				PcmUserInteractionState.USER_INTERACTION_INTERCEPTED_BY_CONFLICT_RESOLUTION_STRATEGY);
 		entry.setConflictResolutionStrategy(conflictResolutionStrategy);
-		PcmUserInteractionStatistics.getInstance().addFullyAutomaticUserInteraction(userInteraction);
+		PcmUserInteractionAutomaticityStatistics.getInstance().addFullyAutomaticUserInteraction(userInteraction);
 		entries.add(entry);
 	}
 
@@ -214,12 +216,12 @@ public class PcmCprLogger {
 
 		if (status == PcmUserInteractionState.MANUAL_INTERVENTION_OVER) {
 			if (prevStatus == PcmUserInteractionState.USER_INTERACTION_INTERCEPTED_BY_CONFLICT_RESOLUTION_STRATEGY) {
-				PcmUserInteractionStatistics.getInstance().addFullyAutomaticUserInteraction(userInteraction);
+				PcmUserInteractionAutomaticityStatistics.getInstance().addFullyAutomaticUserInteraction(userInteraction);
 			} else if (prevStatus == PcmUserInteractionState.USER_INTERACTION_PARTIALLY_INTERCEPTED_BY_CONFLICT_RESOLUTION_STRATEGY) {
-				PcmUserInteractionStatistics.getInstance()
+				PcmUserInteractionAutomaticityStatistics.getInstance()
 						.semiAutomaticPartiallyInterceptedUserInteractionTriggered(userInteraction);
 			} else {
-				PcmUserInteractionStatistics.getInstance().semiAutomaticUserInteractionTriggered(userInteraction);
+				PcmUserInteractionAutomaticityStatistics.getInstance().semiAutomaticUserInteractionTriggered(userInteraction);
 			}
 		}
 
