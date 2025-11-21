@@ -33,6 +33,7 @@ import cipm.consistency.cpr.pcmjava.JavaModelAccess;
 import cipm.consistency.cpr.pcmjava.logger.PcmCprLogger;
 import cipm.consistency.cpr.pcmjava.logger.PcmUserInteractionAutomaticityStatistics;
 import cipm.consistency.cpr.pcmjava.logger.PcmUserInteractionTimeStatistics;
+import cipm.consistency.cpr.pcmjava.userinteraction.AutomatingConflictResolutionStrategy;
 import cipm.consistency.cpr.pcmjava.userinteraction.GenericParameterConflictResolutionStrategy;
 import cipm.consistency.cpr.pcmjava.userinteraction.NamespaceConflictResolutionStrategy;
 import cipm.consistency.cpr.pcmjava.userinteraction.PcmUserInteractionManager;
@@ -231,6 +232,36 @@ public class PcmToJavaChangePropagationTest {
 		res.getResourceSet().getResources().remove(res);
 	}
 
+	private void addCRSs() {
+		// Order of adding CRSs matters here
+
+		// Realistic CRS that prevents creation of Java ConcreteClassifiers for generic
+		// parameters
+		var genericCRS = new GenericParameterConflictResolutionStrategy((s) -> s.length() < 2);
+		PcmUserInteractionManager.addConflictResolutionStrategy(genericCRS);
+		PcmUserInteractionAutomaticityStatistics.getInstance().addTestIndependentConflictResolutionStrategy(genericCRS);
+
+		// Oracle CRS that looks up namespaces from target Java code model, in order to
+		// automate experiment with valid input
+		var namespaceCRS = new NamespaceConflictResolutionStrategy(resWrapper.getTargetJavaModel());
+		PcmUserInteractionManager.addConflictResolutionStrategy(namespaceCRS);
+		PcmUserInteractionAutomaticityStatistics.getInstance().addTestSpecificConflictResolutionStrategy(namespaceCRS);
+
+		// Oracle CRS that addresses Java code model elements that are synthetic in
+		// target model during the propagation
+		var syntheticCRS = new SyntheticElementConflictResolutionStrategy(resWrapper.getTargetJavaModel(),
+				List.of("synthetic"));
+		PcmUserInteractionManager.addConflictResolutionStrategy(syntheticCRS);
+		PcmUserInteractionAutomaticityStatistics.getInstance().addTestSpecificConflictResolutionStrategy(syntheticCRS);
+
+		// Oracle CRS that automates all other non-addressed user interactions, in order
+		// to fully automate the experiment
+		var bruteForceAutomationCRS = new AutomatingConflictResolutionStrategy(List.of("automated"));
+		PcmUserInteractionManager.addConflictResolutionStrategy(bruteForceAutomationCRS);
+		PcmUserInteractionAutomaticityStatistics.getInstance()
+				.addTestSpecificConflictResolutionStrategy(bruteForceAutomationCRS);
+	}
+
 	public void pcmToJavaChangePropagationTestTemplate(PcmToJavaChangePropagationDirLayout dirLayout) {
 		this.initialiseResources(dirLayout);
 
@@ -241,21 +272,7 @@ public class PcmToJavaChangePropagationTest {
 						.equals(PcmToJavaChangePropagationDirLayoutConstants.getPcmrepositoryfilename()))
 				.findFirst().get();
 
-		// TODO For remaining manual user interactions, automate them by implementing
-		// CRSs specifically for the propagation
-
-		var genericCRS = new GenericParameterConflictResolutionStrategy((s) -> s.length() < 2);
-		PcmUserInteractionManager.addConflictResolutionStrategy(genericCRS);
-		PcmUserInteractionAutomaticityStatistics.getInstance().addTestIndependentConflictResolutionStrategy(genericCRS);
-
-		var namespaceCRS = new NamespaceConflictResolutionStrategy(resWrapper.getTargetJavaModel());
-		PcmUserInteractionManager.addConflictResolutionStrategy(namespaceCRS);
-		PcmUserInteractionAutomaticityStatistics.getInstance().addTestSpecificConflictResolutionStrategy(namespaceCRS);
-
-		var syntheticCRS = new SyntheticElementConflictResolutionStrategy(resWrapper.getTargetJavaModel(),
-				List.of("synthetic"));
-		PcmUserInteractionManager.addConflictResolutionStrategy(syntheticCRS);
-		PcmUserInteractionAutomaticityStatistics.getInstance().addTestSpecificConflictResolutionStrategy(syntheticCRS);
+		addCRSs();
 
 		// Propagate PCM changes
 		PcmUserInteractionTimeStatistics.getInstance().startPropagationTimeMeasurement();
