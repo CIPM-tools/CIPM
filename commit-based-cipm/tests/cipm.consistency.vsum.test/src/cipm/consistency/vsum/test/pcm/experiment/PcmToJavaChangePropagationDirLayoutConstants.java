@@ -21,6 +21,7 @@ public final class PcmToJavaChangePropagationDirLayoutConstants {
 	private static final String propagatedRootDirName = "propagated";
 	
 	private static final String propagatedChangesDir = "propagatedChanges";
+	private static final String experimentResultAdaptedModelsDir = "adaptedModels";
 
 	private static final String copiedOldRootDirName = "old";
 	private static final String copiedNewRootDirName = "new";
@@ -29,6 +30,10 @@ public final class PcmToJavaChangePropagationDirLayoutConstants {
 	private static final String experimentResultsFileName = "experimentResults.json";
 
 	private static final String vsumCorrespondenceModelName = "correspondences.correspondence";
+
+	public static String getExperimentresultadaptedmodelsdir() {
+		return experimentResultAdaptedModelsDir;
+	}
 
 	public static String getPropagatedchangesdir() {
 		return propagatedChangesDir;

@@ -32,10 +32,10 @@ public class ExperimentResult {
 	private Map<String, Number> fOneScoreForImInJavaToPcmPropagation;
 
 	private Map<String, Number> jaccardCoefficientForJavaModelInPcmToJavaPropagation;
-	private Map<String, Number> jaccardCoefficientForStatementlessJavaModelInPcmToJavaPropagation;
+	private Map<String, Number> jaccardCoefficientForAdaptedJavaModelInPcmToJavaPropagation;
 
 	private Map<String, Number> jaccardCoefficientForPcmRepositoryInPcmToJavaPropagation;
-	private Map<String, Number> jaccardCoefficientForSEFFlessPcmRepositoryInPcmToJavaPropagation;
+	private Map<String, Number> jaccardCoefficientForAdaptedPcmRepositoryInPcmToJavaPropagation;
 
 	private Map<String, Number> fOneScoreForImInPcmToJavaPropagation;
 
@@ -46,7 +46,7 @@ public class ExperimentResult {
 	private int originalPcmChangeCount = 0;
 	private int originalJavaChangeCount = 0;
 	private int originalImChangeCount = 0;
-	
+
 	private int propagatedPcmChangeCount = 0;
 	private int propagatedJavaChangeCount = 0;
 	private int propagatedImChangeCount = 0;
@@ -129,16 +129,16 @@ public class ExperimentResult {
 				jaccardCoefficientForJavaModelInPcmToJavaPropagation);
 	}
 
-	public void setJaccardCoefficientForStatementlessJavaModelInPcmToJavaPropagation(
-			JaccardCoefficientResult jaccardCoefficientForStatementlessJavaModelInPcmToJavaPropagation) {
-		this.jaccardCoefficientForStatementlessJavaModelInPcmToJavaPropagation = getDataFromJCResult(
-				jaccardCoefficientForStatementlessJavaModelInPcmToJavaPropagation);
+	public void setJaccardCoefficientForAdaptedJavaModelInPcmToJavaPropagation(
+			JaccardCoefficientResult jaccardCoefficientForAdaptedJavaModelInPcmToJavaPropagation) {
+		this.jaccardCoefficientForAdaptedJavaModelInPcmToJavaPropagation = getDataFromJCResult(
+				jaccardCoefficientForAdaptedJavaModelInPcmToJavaPropagation);
 	}
 
-	public void setJaccardCoefficientForSEFFlessPcmRepositoryInPcmToJavaPropagation(
-			JaccardCoefficientResult jaccardCoefficientForSEFFlessPCMInPcmToJavaPropagation) {
-		this.jaccardCoefficientForSEFFlessPcmRepositoryInPcmToJavaPropagation = getDataFromJCResult(
-				jaccardCoefficientForSEFFlessPCMInPcmToJavaPropagation);
+	public void setJaccardCoefficientForAdaptedPcmRepositoryInPcmToJavaPropagation(
+			JaccardCoefficientResult jaccardCoefficientForAdaptedPCMInPcmToJavaPropagation) {
+		this.jaccardCoefficientForAdaptedPcmRepositoryInPcmToJavaPropagation = getDataFromJCResult(
+				jaccardCoefficientForAdaptedPCMInPcmToJavaPropagation);
 	}
 
 	public void setJaccardCoefficientForPcmRepositoryInPcmToJavaPropagation(
