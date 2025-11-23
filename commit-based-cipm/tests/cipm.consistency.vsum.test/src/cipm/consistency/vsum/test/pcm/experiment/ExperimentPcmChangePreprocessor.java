@@ -92,10 +92,10 @@ public class ExperimentPcmChangePreprocessor {
 			 * insertion order may get mixed up, which is a detriment to change resolution
 			 * during propagation
 			 */
-			if (shouldSkipChange(currentChange)) {
-				createChange = null;
-				continue;
-			}
+//			if (shouldSkipChange(currentChange)) {
+//				createChange = null;
+//				continue;
+//			}
 
 			var depth = getMaxDepth(currentChange);
 
@@ -117,7 +117,8 @@ public class ExperimentPcmChangePreprocessor {
 		// elements are known
 		for (int i = 0; i <= maxDepth; i++) {
 			if (changes.containsKey(i)) {
-				newChangeList.addAll(orderOperationSignaturesBeforeSEFFCreation(changes.get(i)));
+//				newChangeList.addAll(orderOperationSignaturesBeforeSEFFCreation(changes.get(i)));
+				newChangeList.addAll(changes.get(i));
 			}
 		}
 

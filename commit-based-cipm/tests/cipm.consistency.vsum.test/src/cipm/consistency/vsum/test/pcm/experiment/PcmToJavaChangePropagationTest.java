@@ -188,12 +188,18 @@ public class PcmToJavaChangePropagationTest {
 				List.of(pcmFacade, imFacade, javaFacade), this.getCPRs());
 	}
 
-	private List<EChange> preprocessPCMchanges() {
-		var pcmChangeRes = resWrapper.getPropagatedPcmChanges();
+	private List<EChange> getPcmChanges(Resource res) {
+		var pcmChangeRes = res;
 		var pcmChangeList = new ArrayList<EChange>();
 		for (var c : pcmChangeRes.getContents()) {
 			pcmChangeList.add((EChange) c);
 		}
+		return pcmChangeList;
+	}
+
+	private List<EChange> preprocessPCMchanges() {
+		var pcmChangeRes = resWrapper.getPropagatedPcmChanges();
+		var pcmChangeList = getPcmChanges(pcmChangeRes);
 		var orderedPCMChangeList = new ExperimentPcmChangePreprocessor().orderPCMchanges(pcmChangeList);
 		for (var o : pcmChangeList) {
 			pcmChangeRes.getContents().remove(o);
@@ -395,6 +401,7 @@ public class PcmToJavaChangePropagationTest {
 	public void pcmToJavaChangePropagationTestTemplate(PcmToJavaChangePropagationDirLayout dirLayout) {
 		this.initialiseResources(dirLayout);
 
+//		var changeList = getPcmChanges(resWrapper.getPropagatedPcmChanges());
 		var changeList = preprocessPCMchanges();
 
 		var newPcmRepoRes = pcmFacade.getResources().stream()
@@ -427,13 +434,13 @@ public class PcmToJavaChangePropagationTest {
 		result.setJaccardCoefficientForJavaModelInPcmToJavaPropagation(
 				computeJCForJava(resWrapper.getPropagatedJavaModel(), resWrapper.getTargetJavaModel()));
 
-		setJCForAdaptedJavaModels();
+//		setJCForAdaptedJavaModels();
 
 		LOGGER.info("Computing JC for Pcm repository (Pcm -> Java propagation)");
 		result.setJaccardCoefficientForPcmRepositoryInPcmToJavaPropagation(
 				computeJCForPcm(resWrapper.getPropagatedPcmRepository(), resWrapper.getTargetPcmRepository()));
 
-		setJCForAdaptedPCMs();
+//		setJCForAdaptedPCMs();
 
 		LOGGER.info("Computing F1-Score for Im (Pcm -> Java propagation)");
 		result.setfOneScoreForImInPcmToJavaPropagation(
