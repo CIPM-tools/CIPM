@@ -1,6 +1,5 @@
 import org.emftext.language.java.imports.ImportsFactory
-import cipm.consistency.cpr.pcmjava.PcmJavaCPRUtils
-import org.emftext.language.java.classifiers.Implementor
+import org.apache.log4j.Logger
 
 import "http://www.emftext.org/java" as java
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
@@ -12,16 +11,20 @@ execute actions in java
 reaction AddedProvidedRole {
 	after element pcm::OperationProvidedRole inserted in pcm::InterfaceProvidingEntity[providedRoles_InterfaceProvidingEntity]
 	call {
+		Logger.getLogger("cipm.consistency.cpr.pcmjava").info(_getCurrentCaller.class.simpleName)
 		addProvidingRoleToProvidingEntity(affectedEObject, newValue)
 	}
 }
 
-reaction RemovedProvidedRole {
-	after element pcm::OperationProvidedRole removed from pcm::InterfaceProvidingEntity[providedRoles_InterfaceProvidingEntity]
-	call {
-		removeProvidingRoleFromProvidingEntity(oldValue)
-	}
-}
+// Disabled since unused in Teammates integration test
+//
+//reaction RemovedProvidedRole {
+//	after element pcm::OperationProvidedRole removed from pcm::InterfaceProvidingEntity[providedRoles_InterfaceProvidingEntity]
+//	call {
+//		Logger.getLogger("cipm.consistency.cpr.pcmjava").info(_getCurrentCaller.class.simpleName)
+//		removeProvidingRoleFromProvidingEntity(oldValue)
+//	}
+//}
 
 routine addProvidingRoleToProvidingEntity(pcm::InterfaceProvidingEntity entity, pcm::OperationProvidedRole role) {
 	match {
@@ -67,20 +70,22 @@ routine addProvidingRoleToProvidingEntity(pcm::InterfaceProvidingEntity entity, 
 	}
 }
 
-routine removeProvidingRoleFromProvidingEntity(pcm::OperationProvidedRole role) {
-	match {
-		val providedJavaPositions = retrieve many java::TypeReference corresponding to role
-		val providedJavaIfc = retrieve java::Interface corresponding to role.providedInterface__OperationProvidedRole
-	}
-	update {
-		// Remove the "implements providedJavaIfc" part only
-		// Keep the import that is potentially associated with it, since
-		// it may still be desirable to have it, even after the interface is no longer implemented
-		providedJavaPositions.forEach[it.eContainer.eContents.remove(it)]
-
-	// Do not remove the potentially generated method stubs, as it may still be
-	// desirable to have them as Java class members, even after the interface is no longer implemented
-	//
-	// TODO Developer task to de-integrate the interface in code
-	}
-}
+// Disabled since unused in Teammates integration test
+//
+//routine removeProvidingRoleFromProvidingEntity(pcm::OperationProvidedRole role) {
+//	match {
+//		val providedJavaPositions = retrieve many java::TypeReference corresponding to role
+//		val providedJavaIfc = retrieve java::Interface corresponding to role.providedInterface__OperationProvidedRole
+//	}
+//	update {
+//		// Remove the "implements providedJavaIfc" part only
+//		// Keep the import that is potentially associated with it, since
+//		// it may still be desirable to have it, even after the interface is no longer implemented
+//		providedJavaPositions.forEach[it.eContainer.eContents.remove(it)]
+//
+//	// Do not remove the potentially generated method stubs, as it may still be
+//	// desirable to have them as Java class members, even after the interface is no longer implemented
+//	//
+//	// TODO Developer task to de-integrate the interface in code
+//	}
+//}

@@ -1,4 +1,5 @@
 import org.emftext.language.java.imports.ImportsFactory
+import org.apache.log4j.Logger
 
 import "http://www.emftext.org/java" as java
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
@@ -10,16 +11,20 @@ execute actions in java
 reaction AddedRequiredRole {
 	after element pcm::OperationRequiredRole inserted in pcm::InterfaceRequiringEntity[requiredRoles_InterfaceRequiringEntity]
 	call {
+		Logger.getLogger("cipm.consistency.cpr.pcmjava").info(_getCurrentCaller.class.simpleName)
 		addRequiredRoleToRequiringEntity(affectedEObject, newValue)
 	}
 }
 
-reaction RemovedRequiredRole {
-	after element pcm::OperationRequiredRole removed from pcm::InterfaceRequiringEntity[requiredRoles_InterfaceRequiringEntity]
-	call {
-		removeRequiredRoleFromRequiringEntity(oldValue)
-	}
-}
+// Disabled since unused in Teammates integration test
+//
+//reaction RemovedRequiredRole {
+//	after element pcm::OperationRequiredRole removed from pcm::InterfaceRequiringEntity[requiredRoles_InterfaceRequiringEntity]
+//	call {
+//		Logger.getLogger("cipm.consistency.cpr.pcmjava").info(_getCurrentCaller.class.simpleName)
+//		removeRequiredRoleFromRequiringEntity(oldValue)
+//	}
+//}
 
 routine addRequiredRoleToRequiringEntity(pcm::InterfaceRequiringEntity entity, pcm::OperationRequiredRole role) {
 	match {
@@ -53,19 +58,21 @@ routine addRequiredRoleToRequiringEntity(pcm::InterfaceRequiringEntity entity, p
 	}
 }
 
-routine removeRequiredRoleFromRequiringEntity(pcm::OperationRequiredRole role) {
-	match {
-		val requiringJavaPositions = retrieve many java::TypeReference corresponding to role
-		val requiredJavaIfc = retrieve java::Interface corresponding to role.requiredInterface__OperationRequiredRole
-	}
-	update {
-		requiringJavaPositions.map[it.containingCompilationUnit.imports].forEach [
-			it.removeIf [
-				it.classifier == requiredJavaIfc
-			]
-		]
-
-	// TODO Developer task to de-integrate the interface in code
-	// FIXME Will most likely break compilability
-	}
-}
+// Disabled since unused in Teammates integration test
+//
+//routine removeRequiredRoleFromRequiringEntity(pcm::OperationRequiredRole role) {
+//	match {
+//		val requiringJavaPositions = retrieve many java::TypeReference corresponding to role
+//		val requiredJavaIfc = retrieve java::Interface corresponding to role.requiredInterface__OperationRequiredRole
+//	}
+//	update {
+//		requiringJavaPositions.map[it.containingCompilationUnit.imports].forEach [
+//			it.removeIf [
+//				it.classifier == requiredJavaIfc
+//			]
+//		]
+//
+//	// TODO Developer task to de-integrate the interface in code
+//	// FIXME Will most likely break compilability
+//	}
+//}

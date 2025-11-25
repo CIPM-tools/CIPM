@@ -11,6 +11,7 @@ import org.eclipse.emf.ecore.EObject
 import java.util.ArrayList
 import org.palladiosimulator.pcm.core.entity.NamedElement
 import org.emftext.language.java.modifiers.ModifiersFactory
+import org.apache.log4j.Logger
 
 import "http://www.emftext.org/java" as java
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
@@ -28,65 +29,77 @@ execute actions in java
 reaction AddedCompositeDataType {
 	after element pcm::CompositeDataType inserted in pcm::Repository[dataTypes__Repository]
 	call {
+		Logger.getLogger("cipm.consistency.cpr.pcmjava").info(_getCurrentCaller.class.simpleName)
 		findOrCreateOrDecideJavaClassifierForDataType(newValue)
 	}
 }
 
-reaction RemovedCompositeDataType {
-	after element pcm::CompositeDataType removed from pcm::Repository[dataTypes__Repository]
-	call {
-		removeJavaClassifierCorrespondenceForDataType(oldValue)
-	}
-}
+// Disabled since unused in Teammates integration test
+//
+//reaction RemovedCompositeDataType {
+//	after element pcm::CompositeDataType removed from pcm::Repository[dataTypes__Repository]
+//	call {
+//		Logger.getLogger("cipm.consistency.cpr.pcmjava").info(_getCurrentCaller.class.simpleName)
+//		removeJavaClassifierCorrespondenceForDataType(oldValue)
+//	}
+//}
 
 reaction AddedInnerDeclaration {
 	after element pcm::InnerDeclaration inserted in pcm::CompositeDataType[innerDeclaration_CompositeDataType]
 	call {
+		Logger.getLogger("cipm.consistency.cpr.pcmjava").info(_getCurrentCaller.class.simpleName)
 		createOrLocateCorrespondingFieldForInnerDeclaration(newValue, newValue.datatype_InnerDeclaration,
 			affectedEObject)
 	}
 }
 
-reaction RemovedInnerDeclaration {
-	after element pcm::InnerDeclaration removed from pcm::CompositeDataType[innerDeclaration_CompositeDataType]
-	call {
-		removeCorrespondingFieldForInnerDeclaration(oldValue, oldValue.datatype_InnerDeclaration)
-	}
-}
+// Disabled since unused in Teammates integration test
+//
+//reaction RemovedInnerDeclaration {
+//	after element pcm::InnerDeclaration removed from pcm::CompositeDataType[innerDeclaration_CompositeDataType]
+//	call {
+//		Logger.getLogger("cipm.consistency.cpr.pcmjava").info(_getCurrentCaller.class.simpleName)
+//		removeCorrespondingFieldForInnerDeclaration(oldValue, oldValue.datatype_InnerDeclaration)
+//	}
+//}
 
-reaction ReplacedInnerDeclarationDataType {
-	after element pcm::DataType replaced at pcm::InnerDeclaration[datatype_InnerDeclaration]
-	call {
-		replaceCorrespondingFieldTypeForInnerDeclarationType(affectedEObject, newValue)
-	}
-}
+
+// Disabled since unused in Teammates integration test
+//
+//reaction ReplacedInnerDeclarationDataType {
+//	after element pcm::DataType replaced at pcm::InnerDeclaration[datatype_InnerDeclaration]
+//	call {
+//		Logger.getLogger("cipm.consistency.cpr.pcmjava").info(_getCurrentCaller.class.simpleName)
+//		replaceCorrespondingFieldTypeForInnerDeclarationType(affectedEObject, newValue)
+//	}
+//}
 
 // TODO For replacing field types, check if its references can be automatically changed without breaking the code
 // Return types, Parameter types, Generic types, method call chains that target the field
 //
-routine replaceCorrespondingFieldTypeForInnerDeclarationType(pcm::InnerDeclaration pcmInnerDecl, pcm::DataType pcmInnerDeclType) {
-	match {
-		val field = retrieve java::Field corresponding to pcmInnerDecl
-		val newJavaType = retrieve java::ConcreteClassifier corresponding to pcmInnerDeclType
-	}
-	update {
-		// TODO Add developer task to replace Java Field's type
-	}
-}
+//routine replaceCorrespondingFieldTypeForInnerDeclarationType(pcm::InnerDeclaration pcmInnerDecl, pcm::DataType pcmInnerDeclType) {
+//	match {
+//		val field = retrieve java::Field corresponding to pcmInnerDecl
+//		val newJavaType = retrieve java::ConcreteClassifier corresponding to pcmInnerDeclType
+//	}
+//	update {
+//		// TODO Add developer task to replace Java Field's type
+//	}
+//}
 
-routine removeCorrespondingFieldForInnerDeclaration(pcm::InnerDeclaration pcmInnerDecl, pcm::DataType pcmOuterType) {
-	match {
-		val field = retrieve java::Field corresponding to pcmInnerDecl
-		val outerCls = retrieve java::ConcreteClassifier corresponding to pcmOuterType
-	}
-	update {
-		// TODO User interaction for whether the field should be removed, as it is not always
-		// possible to determine automatically (ex: if the field is referenced somewhere)
-		//
-		outerCls.members -= field
-		removeCorrespondenceBetween(field, pcmInnerDecl)
-	}
-}
+//routine removeCorrespondingFieldForInnerDeclaration(pcm::InnerDeclaration pcmInnerDecl, pcm::DataType pcmOuterType) {
+//	match {
+//		val field = retrieve java::Field corresponding to pcmInnerDecl
+//		val outerCls = retrieve java::ConcreteClassifier corresponding to pcmOuterType
+//	}
+//	update {
+//		// TODO User interaction for whether the field should be removed, as it is not always
+//		// possible to determine automatically (ex: if the field is referenced somewhere)
+//		//
+//		outerCls.members -= field
+//		removeCorrespondenceBetween(field, pcmInnerDecl)
+//	}
+//}
 
 routine createOrLocateCorrespondingFieldForInnerDeclaration(pcm::InnerDeclaration pcmInnerDecl, pcm::DataType pcmInnerType, pcm::DataType pcmOuterType) {
 	match {
@@ -120,35 +133,35 @@ routine createOrLocateCorrespondingFieldForInnerDeclaration(pcm::InnerDeclaratio
 	}
 }
 
-routine removeJavaClassifierCorrespondenceForDataType(pcm::CompositeDataType type) {
-	match {
-		val cls = retrieve java::ConcreteClassifier corresponding to type
-	}
-	update {
+//routine removeJavaClassifierCorrespondenceForDataType(pcm::CompositeDataType type) {
+//	match {
+//		val cls = retrieve java::ConcreteClassifier corresponding to type
+//	}
+//	update {
+//
+//		// TODO User interaction for optionally removing cls
+//		//
+//		// Check for dependencies and ask the user what to do:
+//		// 1) Leave Java counterpart
+//		// 2) Delete (user-defined) Java counterpart
+//		type.innerDeclaration_CompositeDataType.forall[removeJavaFieldCorrespondencesForInnerDeclaration]
+//		removeCorrespondenceBetween(type, cls)
+//	}
+//}
 
-		// TODO User interaction for optionally removing cls
-		//
-		// Check for dependencies and ask the user what to do:
-		// 1) Leave Java counterpart
-		// 2) Delete (user-defined) Java counterpart
-		type.innerDeclaration_CompositeDataType.forall[removeJavaFieldCorrespondencesForInnerDeclaration]
-		removeCorrespondenceBetween(type, cls)
-	}
-}
-
-routine removeJavaFieldCorrespondencesForInnerDeclaration(pcm::InnerDeclaration pcmInnerDecl) {
-	match {
-		val field = retrieve java::Field corresponding to pcmInnerDecl
-	}
-	update {
-		// TODO User interaction for optionally removing field
-		//
-		// Check for dependencies and ask the user what to do:
-		// 1) Leave Java counterpart
-		// 2) Delete (user-defined) Java counterpart
-		removeCorrespondenceBetween(field, pcmInnerDecl)
-	}
-}
+//routine removeJavaFieldCorrespondencesForInnerDeclaration(pcm::InnerDeclaration pcmInnerDecl) {
+//	match {
+//		val field = retrieve java::Field corresponding to pcmInnerDecl
+//	}
+//	update {
+//		// TODO User interaction for optionally removing field
+//		//
+//		// Check for dependencies and ask the user what to do:
+//		// 1) Leave Java counterpart
+//		// 2) Delete (user-defined) Java counterpart
+//		removeCorrespondenceBetween(field, pcmInnerDecl)
+//	}
+//}
 
 routine findOrCreateOrDecideJavaClassifierForDataType(pcm::CompositeDataType pcmDataType) {
 	// Concept:
