@@ -29,7 +29,7 @@ routine renameClassifierCorrespondingToCompositeDataType(pcm::CompositeDataType 
 	}
 	update {
 //		if (cls.package.classifiers.exists[it.name.equals(newName)]) {
-//			// FIXME Conflict => There is a Classifier under the same package
+//			// Conflict => There is a Classifier under the same package
 //			// with "newName", which violates Java language rules
 //			//
 //			// TODO Deal with the conflict and continue
@@ -45,7 +45,7 @@ routine renameFieldCorrespondingToInnerDeclaration(pcm::InnerDeclaration innerDe
 	}
 	update {
 //		if (fieldCls.fields.exists[it.name.equals(newName)]) {
-//			// FIXME Conflict => There is a Field in the same concrete classifier
+//			// Conflict => There is a Field in the same concrete classifier
 //			// with "newName", which violates Java language rules
 //			//
 //			// TODO Deal with the conflict and continue

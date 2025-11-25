@@ -9,7 +9,6 @@ import cipm.consistency.cpr.pcmjava.userinteraction.NamespaceUserInteraction
 import cipm.consistency.cpr.pcmjava.userinteraction.JavaCorrespondentDecisionUserInteraction
 import java.util.ArrayList
 import org.eclipse.emf.ecore.EObject
-import org.emftext.language.java.modifiers.ModifiersFactory
 import cipm.consistency.cpr.pcmjava.internal.CprLogUtil
 
 import "http://www.emftext.org/java" as java
@@ -45,8 +44,6 @@ routine findOrCreateOrDecideJavaInterface(pcm::OperationInterface pcmIfc) {
 			PcmUserInteractionManager.addUserInteraction(namespacesUI)
 			namespacesUI.resolveAll
 
-			// FIXME Remove modifier creation
-			cls.annotationsAndModifiers += ModifiersFactory.eINSTANCE.createPublic
 			PcmJavaCPRUtils.prepareJavaClassifier(cls)
 
 			PcmJavaCPRUtils.integrateJavaClassifierCorrespondent(correspondenceModel, pcmIfc, cls,
@@ -56,7 +53,6 @@ routine findOrCreateOrDecideJavaInterface(pcm::OperationInterface pcmIfc) {
 
 		} else if (matchingJavaIfcs.size == 1) {
 			addCorrespondenceBetween(pcmIfc, matchingJavaIfcs.get(0), "")
-		// TODO Adapt tag
 		} else {
 			var ifcList = new ArrayList<EObject>(matchingJavaIfcs)
 			val ui = new JavaCorrespondentDecisionUserInteraction(pcmIfc, ifcList, "")
@@ -64,7 +60,6 @@ routine findOrCreateOrDecideJavaInterface(pcm::OperationInterface pcmIfc) {
 			ui.resolveAll
 
 			addCorrespondenceBetween(pcmIfc, ui.javaCorrespondent, "")
-		// TODO Adapt tag
 		}
 	}
 }
@@ -85,7 +80,6 @@ routine findOrCreateOrDecideJavaInterface(pcm::OperationInterface pcmIfc) {
 //	update {
 //		// TODO Ask if Java correspondent should be removed
 //		// Check for dependencies and remove if not referenced
-//		// FIXME Synchronise with paper
 //		javaIfc.eContainer.eContents.remove(javaIfc)
 //	}
 //}
@@ -146,9 +140,7 @@ routine findOrCreateJavaInterfaceMethod(pcm::OperationSignature pcmSig) {
 			return
 		}
 
-		// FIXME Remove modifier creation
 		val javaInterfaceMethod = MembersFactory.eINSTANCE.createInterfaceMethod
-		javaInterfaceMethod.annotationsAndModifiers += ModifiersFactory.eINSTANCE.createPublic
 		javaInterfaceMethod.name = pcmSig.entityName
 		javaIfc.members += javaInterfaceMethod
 	}
@@ -170,7 +162,6 @@ routine findOrCreateJavaInterfaceMethod(pcm::OperationSignature pcmSig) {
 //	update {
 //		// TODO Check if removing the Java Method breaks the code
 //		// TODO User interaction to ask user if Java method should be kept
-//		// FIXME Synchronise with paper
 //		javaMet.eContainer.eContents.remove(javaMet)
 //	}
 //}
@@ -184,19 +175,19 @@ reaction AddedParameterToOperationSignature {
 
 routine addParameterToJavaInterfaceMethod(pcm::OperationSignature pcmSig, pcm::Parameter pcmParam) {
 	match {
+		require absence of java::Parameter corresponding to pcmParam
 		val javaMet = retrieve java::Method corresponding to pcmSig
 		val javaParamCls = retrieve java::ConcreteClassifier corresponding to pcmParam.dataType__Parameter
 	}
 	update {
-		// TODO Check if adding a new parameter to Java method breaks code (most likely)
 		val javaParamTypeRef = TypesFactory.eINSTANCE.createClassifierReference
 		javaParamTypeRef.target = javaParamCls
 		val javaParam = ParametersFactory.eINSTANCE.createOrdinaryParameter
 		javaParam.name = pcmParam.parameterName
 		javaParam.typeReference = javaParamTypeRef
 
-		// FIXME Add the parameter to Java method
-		PcmJavaCPRUtils.addCorrespondenceToJavaCorrespondent(correspondenceModel, pcmParam, javaParam)
+		javaMet.parameters += javaParam
+		addCorrespondenceBetween(pcmParam, javaParam, "")
 	}
 }
 

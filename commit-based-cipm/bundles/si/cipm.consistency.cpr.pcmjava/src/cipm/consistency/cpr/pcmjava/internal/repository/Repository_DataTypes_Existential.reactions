@@ -10,7 +10,6 @@ import cipm.consistency.cpr.pcmjava.userinteraction.NamespaceUserInteraction
 import org.eclipse.emf.ecore.EObject
 import java.util.ArrayList
 import org.palladiosimulator.pcm.core.entity.NamedElement
-import org.emftext.language.java.modifiers.ModifiersFactory
 import cipm.consistency.cpr.pcmjava.internal.CprLogUtil
 
 import "http://www.emftext.org/java" as java
@@ -115,11 +114,9 @@ routine createOrLocateCorrespondingFieldForInnerDeclaration(pcm::InnerDeclaratio
 			return
 		}
 
-		// FIXME Remove modifier creation
 		// TODO User interaction for whether a field should be created, as it is not always
 		// possible to handle so easily (ex: with element nodes)
 		var field = MembersFactory.eINSTANCE.createField()
-		field.annotationsAndModifiers += ModifiersFactory.eINSTANCE.createPrivate
 		field.name = pcmInnerDecl.entityName
 		field.typeReference = newTypeRef
 
@@ -192,9 +189,7 @@ routine findOrCreateOrDecideJavaClassifierForDataType(pcm::CompositeDataType pcm
 			PcmUserInteractionManager.addUserInteraction(namespacesUI)
 			namespacesUI.resolveAll
 
-			// FIXME Remove modifier creation
 			if (namespacesUI.namespaces !== null) {
-				cls.annotationsAndModifiers += ModifiersFactory.eINSTANCE.createPublic
 				PcmJavaCPRUtils.prepareJavaClassifier(cls)
 
 				PcmJavaCPRUtils.integrateJavaClassifierCorrespondent(correspondenceModel, pcmDataType, cls,
