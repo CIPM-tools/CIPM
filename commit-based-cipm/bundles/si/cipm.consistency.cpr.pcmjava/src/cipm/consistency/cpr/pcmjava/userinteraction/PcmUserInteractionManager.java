@@ -9,7 +9,7 @@ import java.util.Set;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
-import cipm.consistency.cpr.pcmjava.logger.PcmCprLogger;
+import cipm.consistency.cpr.pcmjava.logger.PcmToJavaChangePropagationLogger;
 
 public final class PcmUserInteractionManager {
 	private static final Map<Class<? extends CanModifyEntries>, Integer> addedInstanceCount = new HashMap<>();
@@ -71,14 +71,14 @@ public final class PcmUserInteractionManager {
 	public static void removeUserInteraction(AbstractUserInteraction userInteraction) {
 		if (wrappers.contains(userInteraction)) {
 			wrappers.remove(userInteraction);
-			PcmCprLogger.getInstance().userInteractionRemoved(userInteraction);
+			PcmToJavaChangePropagationLogger.getInstance().userInteractionRemoved(userInteraction);
 		}
 	}
 
 	public static void removeConflictResolutionStrategy(ConflictResolutionStrategy strat) {
 		if (resolutionStrats.contains(strat)) {
 			resolutionStrats.remove(strat);
-			PcmCprLogger.getInstance().conflictResolutionStrategyRemoved(strat);
+			PcmToJavaChangePropagationLogger.getInstance().conflictResolutionStrategyRemoved(strat);
 		}
 	}
 
@@ -92,9 +92,9 @@ public final class PcmUserInteractionManager {
 			if (!currentW.hasDesiredFeature(entry.getTriggeringPCMElement(), entry.getAffectedJavaElementFeature())) {
 				continue;
 			} else {
-				PcmCprLogger.getInstance().manualUserInteractionTriggered(currentW);
+				PcmToJavaChangePropagationLogger.getInstance().manualUserInteractionTriggered(currentW);
 				currentW.performManualUserInteraction();
-				PcmCprLogger.getInstance().manualUserInteractionPerformed(currentW);
+				PcmToJavaChangePropagationLogger.getInstance().manualUserInteractionPerformed(currentW);
 				// Manual interaction should update entry
 				return desiredFeatureValues.getAssignedDesiredFeatureEntry(entry.getTriggeringPCMElement(),
 						entry.getAffectedJavaElementFeature()).orElseGet(() -> null);
@@ -173,9 +173,9 @@ public final class PcmUserInteractionManager {
 			if (!currentW.hasDesiredCorrespondence(corEntry.getKnownElement(), corEntry.getCorrespondenceTag())) {
 				continue;
 			} else {
-				PcmCprLogger.getInstance().manualUserInteractionTriggered(currentW);
+				PcmToJavaChangePropagationLogger.getInstance().manualUserInteractionTriggered(currentW);
 				currentW.performManualUserInteraction();
-				PcmCprLogger.getInstance().manualUserInteractionPerformed(currentW);
+				PcmToJavaChangePropagationLogger.getInstance().manualUserInteractionPerformed(currentW);
 				// Manual interaction is supposed to update the correspondences
 				return desiredCorrespondences.getCompleteDesiredCorrespondence(corEntry.getKnownElement(),
 						corEntry.getCorrespondenceTag());
@@ -199,7 +199,7 @@ public final class PcmUserInteractionManager {
 	private static void addUserInteractionStrategy(AbstractUserInteraction userInteraction) {
 		if (!wrappers.contains(userInteraction)) {
 			wrappers.add(userInteraction);
-			PcmCprLogger.getInstance().userInteractionRegistered(userInteraction);
+			PcmToJavaChangePropagationLogger.getInstance().userInteractionRegistered(userInteraction);
 		}
 	}
 
@@ -207,7 +207,7 @@ public final class PcmUserInteractionManager {
 		if (!resolutionStrats.contains(strat)) {
 			incrementAddedInstanceCountAndSetID(strat);
 			resolutionStrats.add(strat);
-			PcmCprLogger.getInstance().conflictResolutionStrategyRegistered(strat);
+			PcmToJavaChangePropagationLogger.getInstance().conflictResolutionStrategyRegistered(strat);
 		}
 	}
 

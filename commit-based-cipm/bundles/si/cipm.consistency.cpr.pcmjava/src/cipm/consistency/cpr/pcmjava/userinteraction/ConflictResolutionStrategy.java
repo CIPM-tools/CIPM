@@ -6,7 +6,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 
-import cipm.consistency.cpr.pcmjava.logger.PcmCprLogger;
+import cipm.consistency.cpr.pcmjava.logger.PcmToJavaChangePropagationLogger;
 
 public abstract class ConflictResolutionStrategy implements CanModifyEntries {
 	private String id;
@@ -36,12 +36,12 @@ public abstract class ConflictResolutionStrategy implements CanModifyEntries {
 			var uiWasResolved = userInteraction.isResolved();
 			applyStrategy(userInteraction);
 			userInteraction.conflictResolutionStrategyApplied(this);
-			PcmCprLogger.getInstance().conflictResolutionStrategyAppliedFor(this, userInteraction);
+			PcmToJavaChangePropagationLogger.getInstance().conflictResolutionStrategyAppliedFor(this, userInteraction);
 			var uiIsResolved = userInteraction.isResolved();
 			if (!uiWasResolved && uiIsResolved) {
-				PcmCprLogger.getInstance().conflictResolutionStrategyInterceptedUserInteraction(this, userInteraction);
+				PcmToJavaChangePropagationLogger.getInstance().conflictResolutionStrategyInterceptedUserInteraction(this, userInteraction);
 			} else if (!uiWasResolved && !uiIsResolved) {
-				PcmCprLogger.getInstance().conflictResolutionStrategyPartiallyInterceptedUserInteraction(this,
+				PcmToJavaChangePropagationLogger.getInstance().conflictResolutionStrategyPartiallyInterceptedUserInteraction(this,
 						userInteraction);
 			}
 		}
@@ -50,12 +50,12 @@ public abstract class ConflictResolutionStrategy implements CanModifyEntries {
 
 	protected void reportDesiredFeatureValue(AbstractUserInteraction userInteraction, FeatureEntry featEntry) {
 		PcmUserInteractionManager.setDesiredFeatureValue(this, featEntry);
-		PcmCprLogger.getInstance().conflictResolutionStrategyReportedFeature(userInteraction, this, featEntry);
+		PcmToJavaChangePropagationLogger.getInstance().conflictResolutionStrategyReportedFeature(userInteraction, this, featEntry);
 	}
 
 	protected void reportDesiredCorrespondence(AbstractUserInteraction userInteraction, CorrespondenceEntry corEntry) {
 		PcmUserInteractionManager.setDesiredCorrespondence(this, corEntry);
-		PcmCprLogger.getInstance().conflictResolutionStrategyReportedCorrespondence(userInteraction, this, corEntry);
+		PcmToJavaChangePropagationLogger.getInstance().conflictResolutionStrategyReportedCorrespondence(userInteraction, this, corEntry);
 	}
 
 	protected abstract void applyStrategy(AbstractUserInteraction userInteraction);

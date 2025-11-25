@@ -11,112 +11,112 @@ import cipm.consistency.cpr.pcmjava.userinteraction.ConflictResolutionStrategy;
 import cipm.consistency.cpr.pcmjava.userinteraction.CorrespondenceEntry;
 import cipm.consistency.cpr.pcmjava.userinteraction.FeatureEntry;
 
-public class PcmCprEntry {
-	private final Map<PcmCprEntryKey, Object> entries = new LinkedHashMap<>();
+public class PcmToJavaChangePropagationEntry {
+	private final Map<PcmToJavaChangePropagationEntryKey, Object> entries = new LinkedHashMap<>();
 
-	private void set(PcmCprEntryKey key, Object val) {
+	private void set(PcmToJavaChangePropagationEntryKey key, Object val) {
 		entries.put(key, val);
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> T get(PcmCprEntryKey key) {
+	private <T> T get(PcmToJavaChangePropagationEntryKey key) {
 		return entries.containsKey(key) ? (T) entries.get(key) : null;
 	}
 
 	public void setUserInteraction(AbstractUserInteraction userInteraction) {
-		set(PcmCprEntryKey.USER_INTERACTION, userInteraction);
+		set(PcmToJavaChangePropagationEntryKey.USER_INTERACTION, userInteraction);
 	}
 
 	public AbstractUserInteraction getUserInteraction() {
-		return get(PcmCprEntryKey.USER_INTERACTION);
+		return get(PcmToJavaChangePropagationEntryKey.USER_INTERACTION);
 	}
 
 	public void setUserInteractionState(PcmUserInteractionState userInteractionState) {
-		set(PcmCprEntryKey.USER_INTERACTION_STATE, userInteractionState);
+		set(PcmToJavaChangePropagationEntryKey.USER_INTERACTION_STATE, userInteractionState);
 	}
 
 	public PcmUserInteractionState getUserInteractionState() {
-		return get(PcmCprEntryKey.USER_INTERACTION_STATE);
+		return get(PcmToJavaChangePropagationEntryKey.USER_INTERACTION_STATE);
 	}
 
 	public void setAffectedPcmElements(List<EObject> affectedPcmElements) {
-		set(PcmCprEntryKey.AFFECTED_PCM_ELEMENTS, affectedPcmElements);
+		set(PcmToJavaChangePropagationEntryKey.AFFECTED_PCM_ELEMENTS, affectedPcmElements);
 	}
 
 	public List<EObject> getAffectedPcmElements() {
-		return get(PcmCprEntryKey.AFFECTED_PCM_ELEMENTS);
+		return get(PcmToJavaChangePropagationEntryKey.AFFECTED_PCM_ELEMENTS);
 	}
 
 	public void setAffectedJavaElements(List<EObject> affectedJavaElements) {
-		set(PcmCprEntryKey.AFFECTED_JAVA_ELEMENTS, affectedJavaElements);
+		set(PcmToJavaChangePropagationEntryKey.AFFECTED_JAVA_ELEMENTS, affectedJavaElements);
 	}
 
 	public List<EObject> getAffectedJavaElements() {
-		return get(PcmCprEntryKey.AFFECTED_JAVA_ELEMENTS);
+		return get(PcmToJavaChangePropagationEntryKey.AFFECTED_JAVA_ELEMENTS);
 	}
 
 	public void setAskedFeature(FeatureEntry askedFeats) {
-		set(PcmCprEntryKey.ASKED_FEATURES, askedFeats);
+		set(PcmToJavaChangePropagationEntryKey.ASKED_FEATURES, askedFeats);
 	}
 
 	public FeatureEntry getAskedFeature() {
-		return get(PcmCprEntryKey.ASKED_FEATURES);
+		return get(PcmToJavaChangePropagationEntryKey.ASKED_FEATURES);
 	}
 
 	public void setAskedCorrespondence(CorrespondenceEntry askedCor) {
-		set(PcmCprEntryKey.ASKED_CORRESPONDENCE, askedCor);
+		set(PcmToJavaChangePropagationEntryKey.ASKED_CORRESPONDENCE, askedCor);
 	}
 
 	public CorrespondenceEntry getAskedCorrespondence() {
-		return get(PcmCprEntryKey.ASKED_CORRESPONDENCE);
+		return get(PcmToJavaChangePropagationEntryKey.ASKED_CORRESPONDENCE);
 	}
 
 	public void setReceivedFeature(Object receivedFeats) {
-		set(PcmCprEntryKey.RECEIVED_FEATURES, receivedFeats);
+		set(PcmToJavaChangePropagationEntryKey.RECEIVED_FEATURES, receivedFeats);
 	}
 
 	public Object getReceivedFeature() {
-		return get(PcmCprEntryKey.RECEIVED_FEATURES);
+		return get(PcmToJavaChangePropagationEntryKey.RECEIVED_FEATURES);
 	}
 
 	public void setReceivedCorrespondence(CorrespondenceEntry receivedCors) {
-		set(PcmCprEntryKey.RECEIVED_CORRESPONDENCES, receivedCors);
+		set(PcmToJavaChangePropagationEntryKey.RECEIVED_CORRESPONDENCES, receivedCors);
 	}
 
 	public CorrespondenceEntry getReceivedCorrespondence() {
-		return get(PcmCprEntryKey.RECEIVED_CORRESPONDENCES);
+		return get(PcmToJavaChangePropagationEntryKey.RECEIVED_CORRESPONDENCES);
 	}
 
 	public void setReportedFeature(FeatureEntry reportedFeats) {
-		set(PcmCprEntryKey.REPORTED_FEATURES, reportedFeats);
+		set(PcmToJavaChangePropagationEntryKey.REPORTED_FEATURES, reportedFeats);
 	}
 
 	public FeatureEntry getReportedFeature() {
-		return get(PcmCprEntryKey.REPORTED_FEATURES);
+		return get(PcmToJavaChangePropagationEntryKey.REPORTED_FEATURES);
 	}
 
 	public void setReportedCorrespondence(CorrespondenceEntry reportedCors) {
-		set(PcmCprEntryKey.REPORTED_CORRESPONDENCES, reportedCors);
+		set(PcmToJavaChangePropagationEntryKey.REPORTED_CORRESPONDENCES, reportedCors);
 	}
 
 	public CorrespondenceEntry getReportedCorrespondence() {
-		return get(PcmCprEntryKey.REPORTED_CORRESPONDENCES);
+		return get(PcmToJavaChangePropagationEntryKey.REPORTED_CORRESPONDENCES);
 	}
 
 	public void setConflictResolutionStrategy(ConflictResolutionStrategy crs) {
-		set(PcmCprEntryKey.CONFLICT_RESOLUTION_STRATEGY, crs);
+		set(PcmToJavaChangePropagationEntryKey.CONFLICT_RESOLUTION_STRATEGY, crs);
 	}
 
 	public ConflictResolutionStrategy getConflictResolutionStrategy() {
-		return get(PcmCprEntryKey.CONFLICT_RESOLUTION_STRATEGY);
+		return get(PcmToJavaChangePropagationEntryKey.CONFLICT_RESOLUTION_STRATEGY);
 	}
 
 	public void setComputeIfAbsent(boolean computeIfAbsent) {
-		set(PcmCprEntryKey.COMPUTE_IF_ABSENT, computeIfAbsent);
+		set(PcmToJavaChangePropagationEntryKey.COMPUTE_IF_ABSENT, computeIfAbsent);
 	}
 
 	public boolean getComputeIfAbsent() {
-		return get(PcmCprEntryKey.COMPUTE_IF_ABSENT);
+		return get(PcmToJavaChangePropagationEntryKey.COMPUTE_IF_ABSENT);
 	}
 
 	@Override

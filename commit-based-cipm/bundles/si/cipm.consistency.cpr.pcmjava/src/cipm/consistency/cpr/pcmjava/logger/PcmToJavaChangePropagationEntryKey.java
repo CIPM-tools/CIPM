@@ -1,6 +1,6 @@
 package cipm.consistency.cpr.pcmjava.logger;
 
-public enum PcmCprEntryKey {
+public enum PcmToJavaChangePropagationEntryKey {
 	USER_INTERACTION, USER_INTERACTION_STATE, AFFECTED_PCM_ELEMENTS, AFFECTED_JAVA_ELEMENTS,
 	
 	CONFLICT_RESOLUTION_STRATEGY,

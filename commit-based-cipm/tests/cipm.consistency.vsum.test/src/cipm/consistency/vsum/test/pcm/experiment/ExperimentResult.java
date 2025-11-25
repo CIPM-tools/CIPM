@@ -19,7 +19,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import cipm.consistency.commitintegration.diff.util.ComparisonBasedJaccardCoefficientCalculator.JaccardCoefficientResult;
-import cipm.consistency.cpr.pcmjava.logger.PcmCprLogger;
+import cipm.consistency.cpr.pcmjava.logger.PcmToJavaChangePropagationLogger;
 import cipm.consistency.cpr.pcmjava.logger.PcmUserInteractionAutomaticityStatistics;
 import cipm.consistency.cpr.pcmjava.logger.PcmUserInteractionTimeStatistics;
 import cipm.consistency.tools.evaluation.data.ImUpdateEvalData;
@@ -40,7 +40,7 @@ public class ExperimentResult {
 	private Map<String, Number> fOneScoreForImInPcmToJavaPropagation;
 
 	private PcmUserInteractionAutomaticityStatistics pcmStats = PcmUserInteractionAutomaticityStatistics.getInstance();
-	private PcmCprLogger pcmLogger = PcmCprLogger.getInstance();
+	private PcmToJavaChangePropagationLogger pcmLogger = PcmToJavaChangePropagationLogger.getInstance();
 	private PcmUserInteractionTimeStatistics pcmTimeMeasurements = PcmUserInteractionTimeStatistics.getInstance();
 
 	private int originalPcmChangeCount = 0;

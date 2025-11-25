@@ -13,13 +13,13 @@ import cipm.consistency.cpr.pcmjava.userinteraction.ConflictResolutionStrategy;
 import cipm.consistency.cpr.pcmjava.userinteraction.CorrespondenceEntry;
 import cipm.consistency.cpr.pcmjava.userinteraction.FeatureEntry;
 
-public class PcmCprLogger {
-	private static PcmCprLogger instance;
+public class PcmToJavaChangePropagationLogger {
+	private static PcmToJavaChangePropagationLogger instance;
 	/**
 	 * Contains log entries about triggered user interactions and used conflict
 	 * resolution strategies
 	 */
-	private static final List<PcmCprEntry> entries = new ArrayList<>();
+	private static final List<PcmToJavaChangePropagationEntry> entries = new ArrayList<>();
 	/**
 	 * Tracks status information for individual user interactions, used for deriving
 	 * automaticity statistics.
@@ -30,26 +30,26 @@ public class PcmCprLogger {
 
 	private final Map<String, String> serialisedEntries = new LinkedHashMap<>();
 
-	private PcmCprLogger() {
+	private PcmToJavaChangePropagationLogger() {
 	}
 
-	public static PcmCprLogger getInstance() {
+	public static PcmToJavaChangePropagationLogger getInstance() {
 		if (instance == null) {
-			instance = new PcmCprLogger();
+			instance = new PcmToJavaChangePropagationLogger();
 		}
 		return instance;
 	}
 
 	public void manualUserInteractionTriggered(AbstractUserInteraction abstractUserInteraction) {
 		PcmUserInteractionTimeStatistics.getInstance().endPropagationTimeMeasurement();
-		var entry = new PcmCprEntry();
+		var entry = new PcmToJavaChangePropagationEntry();
 		entry.setUserInteraction(abstractUserInteraction);
 		entry.setUserInteractionState(PcmUserInteractionState.MANUAL_INTERVENTION_TRIGGERED);
 		entries.add(entry);
 	}
 
 	public void manualUserInteractionPerformed(AbstractUserInteraction abstractUserInteraction) {
-		var entry = new PcmCprEntry();
+		var entry = new PcmToJavaChangePropagationEntry();
 		entry.setUserInteraction(abstractUserInteraction);
 		setStatus(abstractUserInteraction, PcmUserInteractionState.MANUAL_INTERVENTION_OVER);
 		entry.setUserInteractionState(PcmUserInteractionState.MANUAL_INTERVENTION_OVER);
@@ -59,7 +59,7 @@ public class PcmCprLogger {
 
 	public void userInteractionAskedForCorrespondence(AbstractUserInteraction abstractUserInteraction,
 			EObject knownSide, String correspondenceTag, boolean computeIfAbsent) {
-		var entry = new PcmCprEntry();
+		var entry = new PcmToJavaChangePropagationEntry();
 		entry.setUserInteraction(abstractUserInteraction);
 		entry.setUserInteractionState(PcmUserInteractionState.USER_INTERACTION_ASKED_FOR_CORRESPONDENCES);
 		entry.setAskedCorrespondence(new CorrespondenceEntry(knownSide, correspondenceTag));
@@ -69,7 +69,7 @@ public class PcmCprLogger {
 
 	public void userInteractionGotCorrespondenceFor(AbstractUserInteraction abstractUserInteraction,
 			CorrespondenceEntry result, EObject knownSide, String correspondenceTag, boolean computeIfAbsent) {
-		var entry = new PcmCprEntry();
+		var entry = new PcmToJavaChangePropagationEntry();
 		entry.setUserInteraction(abstractUserInteraction);
 		entry.setUserInteractionState(PcmUserInteractionState.USER_INTERACTION_RECEIVED_CORRESPONDENCES);
 		entry.setAskedCorrespondence(new CorrespondenceEntry(knownSide, correspondenceTag));
@@ -81,7 +81,7 @@ public class PcmCprLogger {
 	public void userInteractionAskedForFeature(AbstractUserInteraction abstractUserInteraction,
 			EObject triggeringPCMElement, EObject affectedJavaElement, EStructuralFeature feat,
 			boolean computeIfAbsent) {
-		var entry = new PcmCprEntry();
+		var entry = new PcmToJavaChangePropagationEntry();
 		entry.setUserInteraction(abstractUserInteraction);
 		entry.setUserInteractionState(PcmUserInteractionState.USER_INTERACTION_ASKED_FOR_FEATURES);
 		entry.setAskedFeature(new FeatureEntry(triggeringPCMElement, affectedJavaElement, feat));
@@ -92,7 +92,7 @@ public class PcmCprLogger {
 	public void userInteractionGotFeatureFor(AbstractUserInteraction abstractUserInteraction, Object result,
 			EObject triggeringPCMElement, EObject affectedJavaElement, EStructuralFeature feat,
 			boolean computeIfAbsent) {
-		var entry = new PcmCprEntry();
+		var entry = new PcmToJavaChangePropagationEntry();
 		entry.setUserInteraction(abstractUserInteraction);
 		entry.setUserInteractionState(PcmUserInteractionState.USER_INTERACTION_RECEIVED_FEATURES);
 		entry.setAskedFeature(new FeatureEntry(triggeringPCMElement, affectedJavaElement, feat));
@@ -102,7 +102,7 @@ public class PcmCprLogger {
 	}
 
 	public void userInteractionFinalised(AbstractUserInteraction abstractUserInteraction) {
-		var entry = new PcmCprEntry();
+		var entry = new PcmToJavaChangePropagationEntry();
 		entry.setUserInteraction(abstractUserInteraction);
 		setStatus(abstractUserInteraction, PcmUserInteractionState.USER_INTERACTION_FINALISED);
 		entry.setUserInteractionState(PcmUserInteractionState.USER_INTERACTION_FINALISED);
@@ -111,7 +111,7 @@ public class PcmCprLogger {
 
 	public void userInteractionReportedCorrespondence(AbstractUserInteraction abstractUserInteraction,
 			CorrespondenceEntry corEntry) {
-		var entry = new PcmCprEntry();
+		var entry = new PcmToJavaChangePropagationEntry();
 		entry.setUserInteraction(abstractUserInteraction);
 		entry.setUserInteractionState(PcmUserInteractionState.USER_INTERACTION_REPORTED_CORRESPONDENCES);
 		entry.setReportedCorrespondence(corEntry);
@@ -120,7 +120,7 @@ public class PcmCprLogger {
 
 	public void userInteractionReportedFeature(AbstractUserInteraction abstractUserInteraction,
 			FeatureEntry featEntry) {
-		var entry = new PcmCprEntry();
+		var entry = new PcmToJavaChangePropagationEntry();
 		entry.setUserInteraction(abstractUserInteraction);
 		entry.setUserInteractionState(PcmUserInteractionState.USER_INTERACTION_REPORTED_FEATURES);
 		entry.setReportedFeature(featEntry);
@@ -129,7 +129,7 @@ public class PcmCprLogger {
 
 	public void conflictResolutionStrategyPartiallyInterceptedUserInteraction(
 			ConflictResolutionStrategy conflictResolutionStrategy, AbstractUserInteraction userInteraction) {
-		var entry = new PcmCprEntry();
+		var entry = new PcmToJavaChangePropagationEntry();
 		entry.setUserInteraction(userInteraction);
 		setStatus(userInteraction,
 				PcmUserInteractionState.USER_INTERACTION_PARTIALLY_INTERCEPTED_BY_CONFLICT_RESOLUTION_STRATEGY);
@@ -141,7 +141,7 @@ public class PcmCprLogger {
 
 	public void conflictResolutionStrategyInterceptedUserInteraction(
 			ConflictResolutionStrategy conflictResolutionStrategy, AbstractUserInteraction userInteraction) {
-		var entry = new PcmCprEntry();
+		var entry = new PcmToJavaChangePropagationEntry();
 		entry.setUserInteraction(userInteraction);
 		setStatus(userInteraction,
 				PcmUserInteractionState.USER_INTERACTION_INTERCEPTED_BY_CONFLICT_RESOLUTION_STRATEGY);
@@ -154,7 +154,7 @@ public class PcmCprLogger {
 
 	public void conflictResolutionStrategyAppliedFor(ConflictResolutionStrategy conflictResolutionStrategy,
 			AbstractUserInteraction userInteraction) {
-		var entry = new PcmCprEntry();
+		var entry = new PcmToJavaChangePropagationEntry();
 		entry.setUserInteraction(userInteraction);
 		entry.setUserInteractionState(PcmUserInteractionState.CONFLICT_RESOLUTION_STRATEGY_APPLIED_TO_USER_INTERACTION);
 		entry.setConflictResolutionStrategy(conflictResolutionStrategy);
@@ -162,14 +162,14 @@ public class PcmCprLogger {
 	}
 
 	public void conflictResolutionStrategyRegistered(ConflictResolutionStrategy strat) {
-		var entry = new PcmCprEntry();
+		var entry = new PcmToJavaChangePropagationEntry();
 		entry.setConflictResolutionStrategy(strat);
 		entry.setUserInteractionState(PcmUserInteractionState.CONFLICT_RESOLUTION_STRATEGY_REGISTERED);
 		entries.add(entry);
 	}
 
 	public void conflictResolutionStrategyRemoved(ConflictResolutionStrategy strat) {
-		var entry = new PcmCprEntry();
+		var entry = new PcmToJavaChangePropagationEntry();
 		entry.setConflictResolutionStrategy(strat);
 		entry.setUserInteractionState(PcmUserInteractionState.CONFLICT_RESOLUTION_STRATEGY_REMOVED);
 		entries.add(entry);
@@ -177,7 +177,7 @@ public class PcmCprLogger {
 
 	public void conflictResolutionStrategyReportedCorrespondence(AbstractUserInteraction abstractUserInteraction,
 			ConflictResolutionStrategy strat, CorrespondenceEntry corEntry) {
-		var entry = new PcmCprEntry();
+		var entry = new PcmToJavaChangePropagationEntry();
 		entry.setUserInteraction(abstractUserInteraction);
 		entry.setConflictResolutionStrategy(strat);
 		entry.setUserInteractionState(PcmUserInteractionState.CONFLICT_RESOLUTION_STRATEGY_REPORTED_CORRESPONDENCES);
@@ -187,7 +187,7 @@ public class PcmCprLogger {
 
 	public void conflictResolutionStrategyReportedFeature(AbstractUserInteraction abstractUserInteraction,
 			ConflictResolutionStrategy strat, FeatureEntry featEntry) {
-		var entry = new PcmCprEntry();
+		var entry = new PcmToJavaChangePropagationEntry();
 		entry.setUserInteraction(abstractUserInteraction);
 		entry.setConflictResolutionStrategy(strat);
 		entry.setUserInteractionState(PcmUserInteractionState.CONFLICT_RESOLUTION_STRATEGY_REPORTED_FEATURES);
@@ -196,7 +196,7 @@ public class PcmCprLogger {
 	}
 
 	public void userInteractionRegistered(AbstractUserInteraction userInteraction) {
-		var entry = new PcmCprEntry();
+		var entry = new PcmToJavaChangePropagationEntry();
 		entry.setUserInteraction(userInteraction);
 		setStatus(userInteraction, PcmUserInteractionState.USER_INTERACTION_REGISTERED);
 		entry.setUserInteractionState(PcmUserInteractionState.USER_INTERACTION_REGISTERED);
@@ -204,7 +204,7 @@ public class PcmCprLogger {
 	}
 
 	public void userInteractionRemoved(AbstractUserInteraction userInteraction) {
-		var entry = new PcmCprEntry();
+		var entry = new PcmToJavaChangePropagationEntry();
 		entry.setUserInteraction(userInteraction);
 		setStatus(userInteraction, PcmUserInteractionState.USER_INTERACTION_REMOVED);
 		entry.setUserInteractionState(PcmUserInteractionState.USER_INTERACTION_REMOVED);
