@@ -11,7 +11,7 @@ import org.eclipse.emf.ecore.EObject
 import java.util.ArrayList
 import org.palladiosimulator.pcm.core.entity.NamedElement
 import org.emftext.language.java.modifiers.ModifiersFactory
-import org.apache.log4j.Logger
+import cipm.consistency.cpr.pcmjava.internal.CprLogUtil
 
 import "http://www.emftext.org/java" as java
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
@@ -29,7 +29,7 @@ execute actions in java
 reaction AddedCompositeDataType {
 	after element pcm::CompositeDataType inserted in pcm::Repository[dataTypes__Repository]
 	call {
-		Logger.getLogger("cipm.consistency.cpr.pcmjava").info(_getCurrentCaller.class.simpleName)
+		CprLogUtil.logCpr(_getCurrentCaller)
 		findOrCreateOrDecideJavaClassifierForDataType(newValue)
 	}
 }
@@ -39,15 +39,14 @@ reaction AddedCompositeDataType {
 //reaction RemovedCompositeDataType {
 //	after element pcm::CompositeDataType removed from pcm::Repository[dataTypes__Repository]
 //	call {
-//		Logger.getLogger("cipm.consistency.cpr.pcmjava").info(_getCurrentCaller.class.simpleName)
+//		CprLogUtil.logCpr(_getCurrentCaller)
 //		removeJavaClassifierCorrespondenceForDataType(oldValue)
 //	}
 //}
-
 reaction AddedInnerDeclaration {
 	after element pcm::InnerDeclaration inserted in pcm::CompositeDataType[innerDeclaration_CompositeDataType]
 	call {
-		Logger.getLogger("cipm.consistency.cpr.pcmjava").info(_getCurrentCaller.class.simpleName)
+		CprLogUtil.logCpr(_getCurrentCaller)
 		createOrLocateCorrespondingFieldForInnerDeclaration(newValue, newValue.datatype_InnerDeclaration,
 			affectedEObject)
 	}
@@ -58,22 +57,19 @@ reaction AddedInnerDeclaration {
 //reaction RemovedInnerDeclaration {
 //	after element pcm::InnerDeclaration removed from pcm::CompositeDataType[innerDeclaration_CompositeDataType]
 //	call {
-//		Logger.getLogger("cipm.consistency.cpr.pcmjava").info(_getCurrentCaller.class.simpleName)
+//		CprLogUtil.logCpr(_getCurrentCaller)
 //		removeCorrespondingFieldForInnerDeclaration(oldValue, oldValue.datatype_InnerDeclaration)
 //	}
 //}
-
-
 // Disabled since unused in Teammates integration test
 //
 //reaction ReplacedInnerDeclarationDataType {
 //	after element pcm::DataType replaced at pcm::InnerDeclaration[datatype_InnerDeclaration]
 //	call {
-//		Logger.getLogger("cipm.consistency.cpr.pcmjava").info(_getCurrentCaller.class.simpleName)
+//		CprLogUtil.logCpr(_getCurrentCaller)
 //		replaceCorrespondingFieldTypeForInnerDeclarationType(affectedEObject, newValue)
 //	}
 //}
-
 // TODO For replacing field types, check if its references can be automatically changed without breaking the code
 // Return types, Parameter types, Generic types, method call chains that target the field
 //
@@ -86,7 +82,6 @@ reaction AddedInnerDeclaration {
 //		// TODO Add developer task to replace Java Field's type
 //	}
 //}
-
 //routine removeCorrespondingFieldForInnerDeclaration(pcm::InnerDeclaration pcmInnerDecl, pcm::DataType pcmOuterType) {
 //	match {
 //		val field = retrieve java::Field corresponding to pcmInnerDecl
@@ -100,7 +95,6 @@ reaction AddedInnerDeclaration {
 //		removeCorrespondenceBetween(field, pcmInnerDecl)
 //	}
 //}
-
 routine createOrLocateCorrespondingFieldForInnerDeclaration(pcm::InnerDeclaration pcmInnerDecl, pcm::DataType pcmInnerType, pcm::DataType pcmOuterType) {
 	match {
 		val outerCls = retrieve java::ConcreteClassifier corresponding to pcmOuterType
@@ -148,7 +142,6 @@ routine createOrLocateCorrespondingFieldForInnerDeclaration(pcm::InnerDeclaratio
 //		removeCorrespondenceBetween(type, cls)
 //	}
 //}
-
 //routine removeJavaFieldCorrespondencesForInnerDeclaration(pcm::InnerDeclaration pcmInnerDecl) {
 //	match {
 //		val field = retrieve java::Field corresponding to pcmInnerDecl
@@ -162,7 +155,6 @@ routine createOrLocateCorrespondingFieldForInnerDeclaration(pcm::InnerDeclaratio
 //		removeCorrespondenceBetween(field, pcmInnerDecl)
 //	}
 //}
-
 routine findOrCreateOrDecideJavaClassifierForDataType(pcm::CompositeDataType pcmDataType) {
 	// Concept:
 	// 1) Check if a corresponding classifier exists. Add correspondence if it does

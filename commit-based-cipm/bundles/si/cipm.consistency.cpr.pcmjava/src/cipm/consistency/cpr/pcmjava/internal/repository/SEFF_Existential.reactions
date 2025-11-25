@@ -1,5 +1,5 @@
 import com.google.common.collect.Lists
-import org.apache.log4j.Logger
+import cipm.consistency.cpr.pcmjava.internal.CprLogUtil
 
 import "http://www.emftext.org/java" as java
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
@@ -11,7 +11,7 @@ execute actions in java
 reaction ReplacedSEFFDescribedService {
 	after element pcm::OperationSignature replaced at pcm::ServiceEffectSpecification[describedService__SEFF]
 	call {
-		Logger.getLogger("cipm.consistency.cpr.pcmjava").info(_getCurrentCaller.class.simpleName)
+		CprLogUtil.logCpr(_getCurrentCaller)
 		adjustCorrespondenceBetweenComponentAndSEFFJavaClass(affectedEObject, oldValue, newValue)
 	}
 }
