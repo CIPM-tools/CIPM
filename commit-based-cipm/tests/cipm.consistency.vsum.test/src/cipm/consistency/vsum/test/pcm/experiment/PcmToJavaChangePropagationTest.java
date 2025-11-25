@@ -152,8 +152,7 @@ public class PcmToJavaChangePropagationTest {
 	 *         code models and PCM repositories in Teammates vsum tests.
 	 */
 	private Resource getParsedModelCounterpart(Path modelDirPath) {
-		var codePath = resWrapper.getExperimentLayout().getNewJavaToPcmPropagationDirLayout().getCodeDirPath();
-		var parsedFilesList = List.of(codePath.toFile().listFiles()).stream()
+		var parsedFilesList = List.of(modelDirPath.toFile().listFiles()).stream()
 				.filter((f) -> f.getName().split("-").length == 3).collect(Collectors.toList());
 		var parsedModelFile = parsedFilesList.stream()
 				.filter((f) -> Integer.valueOf(f.getName().split("-")[1]).intValue() == parsedFilesList.size())
