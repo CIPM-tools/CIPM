@@ -47,6 +47,7 @@ reaction ReplacedOperationSignatureReturnType {
 	after element pcm::DataType replaced at pcm::OperationSignature[returnType__OperationSignature]
 	call {
 		CprLogUtil.logCpr(_getCurrentCaller)
+	// FIXME Set return type in Java
 	// TODO Add developer task to adapt operation signature return type
 	}
 }
@@ -73,6 +74,7 @@ reaction ReplacedParameterDataType {
 	after element pcm::DataType replaced at pcm::Parameter[dataType__Parameter]
 	call {
 		CprLogUtil.logCpr(_getCurrentCaller)
+	// FIXME Set parameter type in Java
 	// TODO Add developer task to adapt parameter type in Java method
 	}
 }

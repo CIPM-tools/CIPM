@@ -1,5 +1,5 @@
-import org.emftext.language.java.imports.ImportsFactory
-import cipm.consistency.cpr.pcmjava.internal.CprLogUtil
+// import org.emftext.language.java.imports.ImportsFactory
+// import cipm.consistency.cpr.pcmjava.internal.CprLogUtil
 
 import "http://www.emftext.org/java" as java
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
@@ -8,13 +8,13 @@ reactions: interfaceRequiringEntity
 in reaction to changes in pcm
 execute actions in java
 
-reaction AddedRequiredRole {
-	after element pcm::OperationRequiredRole inserted in pcm::InterfaceRequiringEntity[requiredRoles_InterfaceRequiringEntity]
-	call {
-		CprLogUtil.logCpr(_getCurrentCaller)
-		addRequiredRoleToRequiringEntity(affectedEObject, newValue)
-	}
-}
+//reaction AddedRequiredRole {
+//	after element pcm::OperationRequiredRole inserted in pcm::InterfaceRequiringEntity[requiredRoles_InterfaceRequiringEntity]
+//	call {
+//		CprLogUtil.logCpr(_getCurrentCaller)
+//		addRequiredRoleToRequiringEntity(affectedEObject, newValue)
+//	}
+//}
 
 // Disabled since unused in Teammates integration test
 //
@@ -25,37 +25,41 @@ reaction AddedRequiredRole {
 //		removeRequiredRoleFromRequiringEntity(oldValue)
 //	}
 //}
-routine addRequiredRoleToRequiringEntity(pcm::InterfaceRequiringEntity entity, pcm::OperationRequiredRole role) {
-	match {
-		val javaCorrespondents = retrieve many java::ConcreteClassifier corresponding to entity
-		val requiredJavaIfc = retrieve java::Interface corresponding to role.requiredInterface__OperationRequiredRole
-	}
-	update {
-		// Filter out the javaCorrespondents that are either in the same package as requiredJavaIfc
-		// or those that already import it
-		var potentialImportingClss = javaCorrespondents.filter [
-			(it.package === null || !it.package.classifiersInSamePackage.contains(requiredJavaIfc)) &&
-				(it.containingCompilationUnit === null || !it.containingCompilationUnit.imports.exists [
-					it.classifier == requiredJavaIfc
-				])
-		].toList
-
-		// TODO Replace importingClss with selection via user interaction
-		// Ignore if there is only 1 possible candidate
-		var importingClss = potentialImportingClss
-
-		// Chosen importingClss should each have an import to requiredJavaIfc,
-		// since they use that interface
-		for (importingCls : importingClss) {
-			var imp = ImportsFactory.eINSTANCE.createClassifierImport
-			imp.classifier = requiredJavaIfc
-			imp.namespaces += requiredJavaIfc.containingCompilationUnit.namespaces
-			importingCls.containingCompilationUnit.imports.add(imp)
-		}
-
-	// TODO Developer task to integrate the interface in code
-	}
-}
+//
+// Disabled since adding imports for roles requires either large amounts of user interaction or
+// overestimating imports and importing the necessary interface in each corresponding ConcreteClassifier of the component
+//
+//routine addRequiredRoleToRequiringEntity(pcm::InterfaceRequiringEntity entity, pcm::OperationRequiredRole role) {
+//	match {
+//		val javaCorrespondents = retrieve many java::ConcreteClassifier corresponding to entity
+//		val requiredJavaIfc = retrieve java::Interface corresponding to role.requiredInterface__OperationRequiredRole
+//	}
+//	update {
+//		// Filter out the javaCorrespondents that are either in the same package as requiredJavaIfc
+//		// or those that already import it
+//		var potentialImportingClss = javaCorrespondents.filter [
+//			(it.package === null || !it.package.classifiersInSamePackage.contains(requiredJavaIfc)) &&
+//				(it.containingCompilationUnit === null || !it.containingCompilationUnit.imports.exists [
+//					it.classifier == requiredJavaIfc
+//				])
+//		].toList
+//
+//		// TODO Replace importingClss with selection via user interaction
+//		// Ignore if there is only 1 possible candidate
+//		var importingClss = potentialImportingClss
+//
+//		// Chosen importingClss should each have an import to requiredJavaIfc,
+//		// since they use that interface
+//		for (importingCls : importingClss) {
+//			var imp = ImportsFactory.eINSTANCE.createClassifierImport
+//			imp.classifier = requiredJavaIfc
+//			imp.namespaces += requiredJavaIfc.containingCompilationUnit.namespaces
+//			importingCls.containingCompilationUnit.imports.add(imp)
+//		}
+//
+//	// TODO Developer task to integrate the interface in code
+//	}
+//}
 
 // Disabled since unused in Teammates integration test
 //

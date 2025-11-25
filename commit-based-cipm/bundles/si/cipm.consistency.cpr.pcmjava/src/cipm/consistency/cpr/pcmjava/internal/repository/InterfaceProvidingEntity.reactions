@@ -1,5 +1,5 @@
-import org.emftext.language.java.imports.ImportsFactory
-import cipm.consistency.cpr.pcmjava.internal.CprLogUtil
+// import org.emftext.language.java.imports.ImportsFactory
+// import cipm.consistency.cpr.pcmjava.internal.CprLogUtil
 
 import "http://www.emftext.org/java" as java
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
@@ -8,14 +8,16 @@ reactions: interfaceProvidingEntity
 in reaction to changes in pcm
 execute actions in java
 
-reaction AddedProvidedRole {
-	after element pcm::OperationProvidedRole inserted in pcm::InterfaceProvidingEntity[providedRoles_InterfaceProvidingEntity]
-	call {
-		CprLogUtil.logCpr(_getCurrentCaller)
-		addProvidingRoleToProvidingEntity(affectedEObject, newValue)
-	}
-}
-
+// Disabled since unused in Teammates integration test
+//
+//reaction AddedProvidedRole {
+//	after element pcm::OperationProvidedRole inserted in pcm::InterfaceProvidingEntity[providedRoles_InterfaceProvidingEntity]
+//	call {
+//		CprLogUtil.logCpr(_getCurrentCaller)
+//		addProvidingRoleToProvidingEntity(affectedEObject, newValue)
+//	}
+//}
+//
 // Disabled since unused in Teammates integration test
 //
 //reaction RemovedProvidedRole {
@@ -25,35 +27,39 @@ reaction AddedProvidedRole {
 //		removeProvidingRoleFromProvidingEntity(oldValue)
 //	}
 //}
-routine addProvidingRoleToProvidingEntity(pcm::InterfaceProvidingEntity entity, pcm::OperationProvidedRole role) {
-	match {
-		val javaCorrespondents = retrieve many java::ConcreteClassifier corresponding to entity
-		val providedJavaIfc = retrieve java::Interface corresponding to role.providedInterface__OperationProvidedRole
-	}
-	update {
-		// TODO Replace with selection of user via user interaction
-		// Do not use user interaction, if there is only one javaCorrespondent
-		var chosenProvidingClss = javaCorrespondents
-
-		// Filter out the chosenProvidingClss that are either in the same package as providedJavaIfc
-		// or those that already import it
-		var importingClss = chosenProvidingClss.filter [
-			(it.package === null || !it.package.classifiersInSamePackage.contains(providedJavaIfc)) &&
-				(it.containingCompilationUnit === null || !it.containingCompilationUnit.imports.exists [
-					it.classifier == providedJavaIfc
-				])
-		].toList
-
-		// importingClss should each have an import to requiredJavaIfc,
-		// since they use that interface
-		for (importingCls : importingClss) {
-			var imp = ImportsFactory.eINSTANCE.createClassifierImport
-			imp.classifier = providedJavaIfc
-			imp.namespaces += providedJavaIfc.containingCompilationUnit.namespaces
-			importingCls.containingCompilationUnit.imports.add(imp)
-		}
-
-	// TODO Each importingClss should implement providedJavaIfc
+//
+// Disabled since adding imports for roles requires either large amounts of user interaction or
+// overestimating imports and importing the necessary interface in each corresponding ConcreteClassifier of the component
+//
+//routine addProvidingRoleToProvidingEntity(pcm::InterfaceProvidingEntity entity, pcm::OperationProvidedRole role) {
+//	match {
+//		val javaCorrespondents = retrieve many java::ConcreteClassifier corresponding to entity
+//		val providedJavaIfc = retrieve java::Interface corresponding to role.providedInterface__OperationProvidedRole
+//	}
+//	update {
+//		// TODO Replace with selection of user via user interaction
+//		// Do not use user interaction, if there is only one javaCorrespondent
+//		var chosenProvidingClss = javaCorrespondents
+//
+//		// Filter out the chosenProvidingClss that are either in the same package as providedJavaIfc
+//		// or those that already import it
+//		var importingClss = chosenProvidingClss.filter [
+//			(it.package === null || !it.package.classifiersInSamePackage.contains(providedJavaIfc)) &&
+//				(it.containingCompilationUnit === null || !it.containingCompilationUnit.imports.exists [
+//					it.classifier == providedJavaIfc
+//				])
+//		].toList
+//
+//		// importingClss should each have an import to requiredJavaIfc,
+//		// since they use that interface
+//		for (importingCls : importingClss) {
+//			var imp = ImportsFactory.eINSTANCE.createClassifierImport
+//			imp.classifier = providedJavaIfc
+//			imp.namespaces += providedJavaIfc.containingCompilationUnit.namespaces
+//			importingCls.containingCompilationUnit.imports.add(imp)
+//		}
+//
+//	// TODO Each importingClss should implement providedJavaIfc
 //		val nonImplementingClss = importingClss.filter[!it.superTypeReferences.exists[it.target == providedJavaIfc]].
 //			toList
 //
@@ -65,10 +71,10 @@ routine addProvidingRoleToProvidingEntity(pcm::InterfaceProvidingEntity entity, 
 //				addCorrespondenceBetween(tRef, role)
 //			}
 //		}
-	// TODO Developer task to properly implement the interface in code
-	}
-}
-
+//	// TODO Developer task to properly implement the interface in code
+//	}
+//}
+//
 // Disabled since unused in Teammates integration test
 //
 //routine removeProvidingRoleFromProvidingEntity(pcm::OperationProvidedRole role) {

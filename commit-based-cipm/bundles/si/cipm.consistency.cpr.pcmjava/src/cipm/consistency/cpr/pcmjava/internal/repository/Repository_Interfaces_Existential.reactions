@@ -45,6 +45,7 @@ routine findOrCreateOrDecideJavaInterface(pcm::OperationInterface pcmIfc) {
 			PcmUserInteractionManager.addUserInteraction(namespacesUI)
 			namespacesUI.resolveAll
 
+			// FIXME Remove modifier creation
 			cls.annotationsAndModifiers += ModifiersFactory.eINSTANCE.createPublic
 			PcmJavaCPRUtils.prepareJavaClassifier(cls)
 
@@ -145,6 +146,7 @@ routine findOrCreateJavaInterfaceMethod(pcm::OperationSignature pcmSig) {
 			return
 		}
 
+		// FIXME Remove modifier creation
 		val javaInterfaceMethod = MembersFactory.eINSTANCE.createInterfaceMethod
 		javaInterfaceMethod.annotationsAndModifiers += ModifiersFactory.eINSTANCE.createPublic
 		javaInterfaceMethod.name = pcmSig.entityName
