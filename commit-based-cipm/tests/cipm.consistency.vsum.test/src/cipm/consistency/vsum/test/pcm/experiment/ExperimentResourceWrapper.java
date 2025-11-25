@@ -250,9 +250,11 @@ public class ExperimentResourceWrapper {
 	}
 
 	private void adaptURIsInChanges() {
+		var uriPrefixesToSkip = List
+				.of(PcmToJavaChangePropagationDirLayoutConstants.getPcmprimitivetypesrepositoryuri());
 		ChangeUtil.adaptChangeURIs(propagatedJavaChanges, propagatedJavaModel);
 		ResourceOperationsUtil.saveResource(propagatedJavaChanges);
-		ChangeUtil.adaptChangeURIs(propagatedPcmChanges, propagatedPcmRepository);
+		ChangeUtil.adaptChangeURIs(propagatedPcmChanges, propagatedPcmRepository, uriPrefixesToSkip);
 		ResourceOperationsUtil.saveResource(propagatedPcmChanges);
 		ChangeUtil.adaptChangeURIs(propagatedImChanges, propagatedIm);
 		ResourceOperationsUtil.saveResource(propagatedImChanges);

@@ -71,28 +71,44 @@ public final class ChangeUtil {
 		return uri.startsWith(cacheIDPrefix);
 	}
 
-	public static void adaptChangeURIs(Resource changeResource, Resource targetModelResource) {
+	public static void adaptChangeURIs(Resource changeResource, Resource targetModelResource, List<String> uriPrefixesToSkip) {
 		for (var change : changeResource.getContents()) {
 			if (change instanceof EChange)
-				adaptChangeURIs((EChange) change, targetModelResource);
+				adaptChangeURIs((EChange) change, targetModelResource, uriPrefixesToSkip);
 		}
+	}
+	
+	public static void adaptChangeURIs(Resource changeResource, Resource targetModelResource) {
+		adaptChangeURIs(changeResource, targetModelResource, List.of());
 	}
 
 	public static void adaptChangeURIs(EChange change, Resource targetModelResource) {
+		adaptChangeURIs(change, targetModelResource, List.of());
+	}
+	
+	public static boolean uriStartsWith(String uri, List<String> prefixes) {
+		return prefixes.stream().anyMatch((p) -> uriStartsWith(uri, p));
+	}
+	
+	public static boolean uriStartsWith(String uri, String prefix) {
+		return uri.startsWith(prefix);
+	}
+	
+	public static void adaptChangeURIs(EChange change, Resource targetModelResource, List<String> uriPrefixesToSkip) {
 		var affectedID = getAffectedEObjectID(change);
-		if (affectedID != null) {
+		if (affectedID != null && !uriStartsWith(affectedID, uriPrefixesToSkip)) {
 			setAffectedEObjectID(change, adaptURI(affectedID, targetModelResource));
 		}
 		var oldID = getOldValueID(change);
-		if (oldID != null) {
+		if (oldID != null && !uriStartsWith(oldID, uriPrefixesToSkip)) {
 			setOldValueID(change, adaptURI(oldID, targetModelResource));
 		}
 		var newID = getNewValueID(change);
-		if (newID != null) {
+		if (newID != null && !uriStartsWith(newID, uriPrefixesToSkip)) {
 			setNewValueID(change, adaptURI(newID, targetModelResource));
 		}
 		var uri = getRootChangeURI(change);
-		if (uri != null) {
+		if (uri != null && !uriStartsWith(uri, uriPrefixesToSkip)) {
 			setRootChangeURI(change, targetModelResource.getURI().toString());
 		}
 	}

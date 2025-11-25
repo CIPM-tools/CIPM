@@ -31,6 +31,12 @@ public final class PcmToJavaChangePropagationDirLayoutConstants {
 
 	private static final String vsumCorrespondenceModelName = "correspondences.correspondence";
 
+	private static final String pcmPrimitiveTypesRepositoryURI = "pathmap://PCM_MODELS/PrimitiveTypes.repository";
+	
+	public static String getPcmprimitivetypesrepositoryuri() {
+		return pcmPrimitiveTypesRepositoryURI;
+	}
+
 	public static String getExperimentresultadaptedmodelsdir() {
 		return experimentResultAdaptedModelsDir;
 	}
