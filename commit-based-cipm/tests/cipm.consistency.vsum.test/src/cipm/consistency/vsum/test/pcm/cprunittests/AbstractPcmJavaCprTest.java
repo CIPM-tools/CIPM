@@ -26,7 +26,16 @@ import tools.vitruv.framework.views.changederivation.DefaultStateBasedChangeReso
 public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 	private static final Path javaCommitIntegrationSettingsContainer = Path.of("javaSettings.txt");
 	private JavaModelFacade javaFacade;
+
+	/**
+	 * TODO Remove after fixing the issue with empty Java model Resources getting
+	 * deleted by Vitruvius
+	 */
 	private EObject placeholder;
+	/**
+	 * TODO Remove after fixing the issue with empty Java model Resources getting
+	 * deleted by Vitruvius
+	 */
 	private static final String placeholderName = "placeholder";
 
 	@BeforeEach
@@ -51,10 +60,7 @@ public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 	 * Sets up and returns a {@link JavaModelFacade} to be used in tests. <br>
 	 * <br>
 	 * Note: Always keep the returned model facade's Java model resource consistent
-	 * with the current Java model resource in JavaModelAccess. <br>
-	 * <br>
-	 * TODO: Maybe use listener-observer pattern between the 2 classes to automate
-	 * this
+	 * with the current Java model resource in JavaModelAccess.
 	 */
 	protected JavaModelFacade setupJavaFacade() {
 		var model = new JavaModelFacade();
@@ -82,23 +88,13 @@ public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 		return model;
 	}
 
+	/**
+	 * TODO Remove after fixing the issue with empty Java model Resources getting
+	 * deleted by Vitruvius
+	 */
 	protected void createPlaceholderForJavaModelResource() {
 		placeholder = ClassifiersFactory.eINSTANCE.createClass();
 		((org.emftext.language.java.classifiers.Class) placeholder).setName(placeholderName);
-	}
-
-	protected void addPlaceholderToJavaModelResource(Resource modelRes) {
-		if (modelRes.getContents().isEmpty()) {
-			if (placeholder == null) {
-				this.createPlaceholderForJavaModelResource();
-			}
-			modelRes.getContents().add(placeholder);
-			try {
-				modelRes.save(null);
-			} catch (IOException e) {
-				this.failTest(e);
-			}
-		}
 	}
 
 	/**
@@ -118,10 +114,6 @@ public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 		var d = new DefaultStateBasedChangeResolutionStrategy(UseIdentifiers.NEVER);
 		var changes = d.getChangeSequenceBetween(modifiedResDupl, unmodifiedResDupl).getEChanges();
 		return changes;
-	}
-
-	protected List<EChange> getEChangesFor(String resourceInModelFacade, Consumer<Resource> modifications) {
-		return this.getEChangesFor(this.getResourceFromPcmFacade(resourceInModelFacade), modifications);
 	}
 
 	@Override
@@ -147,11 +139,5 @@ public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 
 	protected JavaModelFacade getJavaFacade() {
 		return this.javaFacade;
-	}
-
-	@Override
-	protected void reloadVsumFacade() {
-		javaFacade = this.setupJavaFacade();
-		super.reloadVsumFacade();
 	}
 }

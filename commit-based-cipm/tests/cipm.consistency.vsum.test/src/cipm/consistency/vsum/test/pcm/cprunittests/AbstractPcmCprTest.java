@@ -17,7 +17,6 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -225,11 +224,6 @@ public abstract class AbstractPcmCprTest {
 		Assertions.fail(e);
 	}
 
-	protected void failTest(String msg) {
-		LOGGER.error(msg);
-		Assert.fail(msg);
-	}
-
 	protected Propagation propagatePcmChanges(Resource pcmResourceToPropagate, Collection<EChange> changes) {
 		LOGGER.info(String.format("Propagating"));
 
@@ -298,8 +292,6 @@ public abstract class AbstractPcmCprTest {
 	 * This should be the propagation target, as propagating and modifying the same
 	 * Resource instance results in issues (due to concurrent changes (?)).
 	 * 
-	 * TODO Clarify whether this is true
-	 * 
 	 * @return A loaded "copy" of the Resource with the given file name inside the
 	 *         PcmFacade
 	 */
@@ -312,8 +304,6 @@ public abstract class AbstractPcmCprTest {
 	 * {@link #getResourceFromPcmFacade(String)} into a separate Resource instance.
 	 * This should be the propagation target, as propagating and modifying the same
 	 * Resource instance results in issues (due to concurrent changes (?)).
-	 * 
-	 * TODO Clarify whether this is true
 	 * 
 	 * @return A loaded "copy" of the Resource with the given file name inside the
 	 *         PcmFacade
@@ -362,11 +352,5 @@ public abstract class AbstractPcmCprTest {
 
 	protected ImFacade getImFacade() {
 		return this.imFacade;
-	}
-
-	protected void reloadVsumFacade() {
-		imFacade = this.setupImFacade();
-		pcmFacade = this.setupPcmFacade();
-		vsumFacade = this.setupVsumFacade();
 	}
 }
