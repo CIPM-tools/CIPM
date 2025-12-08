@@ -109,7 +109,6 @@ public class PcmToJavaChangePropagationTest {
 
 	@AfterEach
 	public void tearDown() {
-		// TODO Close all resources and models
 		result = null;
 		PcmToJavaChangePropagationLogger.getInstance().clearEntries();
 	}
