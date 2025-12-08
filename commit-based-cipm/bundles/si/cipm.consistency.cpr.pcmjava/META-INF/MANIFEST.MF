@@ -7,8 +7,6 @@ Export-Package: cipm.consistency.cpr.pcmjava,
  cipm.consistency.cpr.pcmjava.internal,
  cipm.consistency.cpr.pcmjava.logger,
  cipm.consistency.cpr.pcmjava.preprocessing,
- cipm.consistency.cpr.pcmjava.preprocessing.rules,
- cipm.consistency.cpr.pcmjava.preprocessing.rules.atomic,
  cipm.consistency.cpr.pcmjava.userinteraction,
  mir.reactions.allPcm,
  mir.reactions.allRepository
