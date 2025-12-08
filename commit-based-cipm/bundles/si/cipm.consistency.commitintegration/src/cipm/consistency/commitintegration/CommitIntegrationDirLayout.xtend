@@ -11,6 +11,7 @@ class CommitIntegrationDirLayout extends ModelDirLayoutImpl {
 	static String vsumDirName = "vsum"
 	static String imDirName = "im"
 	static String pcmDirName = "pcm"
+	static String measurementsDirName = "measurements"
 	static String codeDirName = "code"
 	static String instrumentedCodeDirName = "instrumented-code"
 
@@ -23,6 +24,7 @@ class CommitIntegrationDirLayout extends ModelDirLayoutImpl {
 	Path vsumDirPath
 	Path pcmDirPath
 	Path imDirPath
+	Path measurementsDirPath
 	Path codeDirPath
 	Path instrumentedCodeDirPath
 
@@ -39,6 +41,7 @@ class CommitIntegrationDirLayout extends ModelDirLayoutImpl {
 		vsumDirPath = rootDirPath.resolve(vsumDirName)
 		pcmDirPath = rootDirPath.resolve(pcmDirName)
 		imDirPath = rootDirPath.resolve(imDirName)
+		measurementsDirPath = rootDirPath.resolve(measurementsDirName)
 		codeDirPath = rootDirPath.resolve(codeDirName)
 		instrumentedCodeDirPath = rootDirPath.resolve(instrumentedCodeDirName)
 		

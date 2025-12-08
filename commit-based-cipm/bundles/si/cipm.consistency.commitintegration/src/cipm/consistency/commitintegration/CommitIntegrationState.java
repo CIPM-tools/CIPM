@@ -14,6 +14,7 @@ import cipm.consistency.commitintegration.git.GitRepositoryWrapper;
 import cipm.consistency.commitintegration.settings.CommitIntegrationSettingsContainer;
 import cipm.consistency.models.code.CodeModelFacade;
 import cipm.consistency.models.im.ImFacade;
+import cipm.consistency.models.measurements.MeasurementsFacade;
 import cipm.consistency.models.pcm.PcmFacade;
 import cipm.consistency.tools.evaluation.data.EvaluationDataContainer;
 import cipm.consistency.tools.evaluation.data.EvaluationDataContainerReaderWriter;
@@ -40,6 +41,7 @@ public class CommitIntegrationState<CM extends CodeModelFacade> {
     private VsumFacade vsumFacade;
     private PcmFacade pcmFacade;
     private ImFacade imFacade;
+    private MeasurementsFacade measurementsFacade;
     private CM codeModelFacade;
 
     private int snapshotCount = 0;
@@ -57,6 +59,7 @@ public class CommitIntegrationState<CM extends CodeModelFacade> {
         vsumFacade = new VsumFacadeImpl();
         pcmFacade = new PcmFacade();
         imFacade = new ImFacade();
+        measurementsFacade = new MeasurementsFacade();
 
         // the codeModel is initialized in initialize()
     }
@@ -92,6 +95,7 @@ public class CommitIntegrationState<CM extends CodeModelFacade> {
         // initialize models
         pcmFacade.initialize(dirLayout.getPcmDirPath());
         imFacade.initialize(dirLayout.getImDirPath());
+        measurementsFacade.initialize(dirLayout.getMeasurementsDirPath());
 
         // initialize the code model
         codeModelFacade = commitIntegration.getCodeModelFacadeSupplier()
@@ -103,7 +107,7 @@ public class CommitIntegrationState<CM extends CodeModelFacade> {
 
         // initialize the vsum
         if (loadVsum) {
-            vsumFacade.initialize(dirLayout.getVsumDirPath(), List.of(pcmFacade, imFacade),
+            vsumFacade.initialize(dirLayout.getVsumDirPath(), List.of(pcmFacade, imFacade, measurementsFacade),
                     commitIntegration.getChangeSpecs(), commitIntegration.getStateBasedChangeResolutionStrategy());
         }
     }
@@ -245,6 +249,10 @@ public class CommitIntegrationState<CM extends CodeModelFacade> {
 
     public ImFacade getImFacade() {
         return imFacade;
+    }
+
+    public MeasurementsFacade getMeasurementsFacade() {
+        return measurementsFacade;
     }
 
     public CM getCodeModelFacade() {
