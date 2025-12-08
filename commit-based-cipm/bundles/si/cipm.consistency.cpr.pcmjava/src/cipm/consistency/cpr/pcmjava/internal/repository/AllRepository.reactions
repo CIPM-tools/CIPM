@@ -5,8 +5,6 @@ reactions: allRepository
 in reaction to changes in pcm
 execute actions in java
 
-import interfaceProvidingEntity
-import interfaceRequiringEntity
 import repositoryDataTypesExistential
 import repositoryDataTypesAttributes
 import repositoryInterfacesExistential
