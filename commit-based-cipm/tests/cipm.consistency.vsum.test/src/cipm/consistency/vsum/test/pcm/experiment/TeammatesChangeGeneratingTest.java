@@ -9,8 +9,11 @@ import cipm.consistency.vsum.test.java.TEAMMATESCITestController;
 import cipm.consistency.vsum.test.pcm.ChangeSaver;
 
 /**
- * Evaluates the Java -> PCM change propagation, since it extends
- * TEAMMATESCITestController
+ * Runs all TEAMMATES test cases and saves the propagated changes while doing
+ * so.
+ * <p>
+ * It is recommended to keep it disabled, in order to avoid unnecessarily
+ * removing previously saved changes and test resources from TEAMMATES tests.
  */
 @Disabled("Enable to generate propagated changes during vsum tests")
 public class TeammatesChangeGeneratingTest extends TEAMMATESCITestController {

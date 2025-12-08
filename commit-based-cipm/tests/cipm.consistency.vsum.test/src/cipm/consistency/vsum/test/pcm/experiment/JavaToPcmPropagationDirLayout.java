@@ -4,6 +4,13 @@ import java.nio.file.Path;
 
 import cipm.consistency.commitintegration.CommitIntegrationDirLayout;
 
+/**
+ * Extends {@link CommitIntegrationDirLayout} with layout information on model
+ * changes, as well as utility methods for accessing paths of individual model
+ * resource files.
+ * 
+ * @author Alp Torac Genc
+ */
 public class JavaToPcmPropagationDirLayout extends CommitIntegrationDirLayout {
 	private Path changesSavePath;
 	private Path javaChangesSaveFilePath;

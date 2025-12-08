@@ -11,6 +11,11 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.junit.jupiter.api.Assertions;
 
+/**
+ * Contains various utility methods for Resource-related operations.
+ * 
+ * @author Alp Torac Genc
+ */
 public class ResourceOperationsUtil {
 	public static Resource createEmptyResource(ResourceSet resSet, Path path) {
 		return createEmptyResource(resSet, pathToURI(path));

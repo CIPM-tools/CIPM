@@ -2,6 +2,11 @@ package cipm.consistency.vsum.test.pcm.experiment;
 
 import java.nio.file.Path;
 
+/**
+ * Aggregates all file layout information for the experiment.
+ * 
+ * @author Alp Torac Genc
+ */
 public class PcmToJavaChangePropagationDirLayout {
 	// Root path
 

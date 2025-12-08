@@ -12,10 +12,17 @@ import tools.vitruv.change.atomic.eobject.CreateEObject;
 import tools.vitruv.change.atomic.feature.reference.InsertEReference;
 import tools.vitruv.change.atomic.feature.reference.ReplaceSingleValuedEReference;
 
+/**
+ * A PCM change pre-processor that re-orders given PCM change sequences. Orders
+ * the changes based on the maximum amount of segments in the URI fragments of
+ * the {@link EObject} IDs they store.
+ * 
+ * @author Alp Torac Genc
+ */
 public class ExperimentPcmChangePreprocessor {
 	private final static String cachedEObjectURI = "cache:/0";
 
-	public int getMaxDepth(EChange change) {
+	private int getMaxDepth(EChange change) {
 		var aID = ChangeUtil.getAffectedEObjectID(change);
 		var oID = ChangeUtil.getOldValueID(change);
 		var nID = ChangeUtil.getNewValueID(change);
@@ -37,7 +44,7 @@ public class ExperimentPcmChangePreprocessor {
 		return Math.max(aDepth, Math.max(oDepth, nDepth));
 	}
 
-	public int getDepth(URI uri) {
+	private int getDepth(URI uri) {
 		if (uri == null || !uri.hasFragment())
 			return 0;
 		var depth = uri.fragment().split("/").length;

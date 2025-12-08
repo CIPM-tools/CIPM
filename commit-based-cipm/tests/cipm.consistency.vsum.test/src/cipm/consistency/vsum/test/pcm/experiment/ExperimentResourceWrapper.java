@@ -15,6 +15,23 @@ import cipm.consistency.cpr.pcmjava.preprocessing.ChangeUtil;
 import tools.vitruv.change.correspondence.Correspondences;
 import tools.vitruv.dsls.reactions.runtime.correspondence.CorrespondenceFactory;
 
+/**
+ * Stores all Resource instances that are relevant for the experiment
+ * {@link PcmToJavaChangePropagationTest#PcmToJavaChangePropagationTest()}.
+ * <ul>
+ * <li>initial...: Initial models in the original vsum test (Java -> PCM
+ * propagation). All initial models are empty for integration tests.
+ * <li>target...: Post Java -> PCM propagation models in original vsum test
+ * <li>propagated...: Models propagated during the experiment (PCM -> Java
+ * propagation)
+ * <li>original...changes: Changes propagated in original vsum test (Java -> PCM
+ * propagation)
+ * <li>propagated...changes: Changes propagated during experiment (PCM -> Java
+ * propagation)
+ * </ul>
+ * 
+ * @author Alp Torac Genc
+ */
 public class ExperimentResourceWrapper {
 	private ResourceSet resSet;
 
@@ -62,6 +79,11 @@ public class ExperimentResourceWrapper {
 	private JavaToPcmPropagationDirLayout targetLayout;
 	private PcmToJavaChangePropagationDirLayout experimentLayout;
 
+	/**
+	 * @param resSet           The resource set that will be used throughout the
+	 *                         experiment
+	 * @param experimentLayout The file layout of the experiment
+	 */
 	public ExperimentResourceWrapper(ResourceSet resSet, PcmToJavaChangePropagationDirLayout experimentLayout) {
 		this.resSet = resSet;
 		this.experimentLayout = experimentLayout;
@@ -69,6 +91,10 @@ public class ExperimentResourceWrapper {
 		this.targetLayout = experimentLayout.getNewJavaToPcmPropagationDirLayout();
 	}
 
+	/**
+	 * Loads and prepares all Resource instances that will be needed for the
+	 * experiment
+	 */
 	public void initialise() {
 		loadTargetModels();
 		loadInitialModels();

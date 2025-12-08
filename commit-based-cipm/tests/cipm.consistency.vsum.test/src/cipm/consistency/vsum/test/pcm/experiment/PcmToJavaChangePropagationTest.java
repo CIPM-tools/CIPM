@@ -45,6 +45,11 @@ import mir.reactions.pcmImUpdate.PcmImUpdateChangePropagationSpecification;
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
 
+/**
+ * Contains the test case for the experiment (PCM to Java change propagation).
+ * 
+ * @author Alp Torac Genc
+ */
 public class PcmToJavaChangePropagationTest {
 	private static final Logger LOGGER = Logger.getLogger(PcmToJavaChangePropagationTest.class);
 
@@ -266,6 +271,9 @@ public class PcmToJavaChangePropagationTest {
 				+ PcmUserInteractionAutomaticityStatistics.getInstance().getAutomaticityDegree());
 	}
 
+	/**
+	 * The method that runs the experiment for the given file layout.
+	 */
 	public void pcmToJavaChangePropagationTestTemplate(PcmToJavaChangePropagationDirLayout dirLayout) {
 		this.initialiseResources(dirLayout);
 
@@ -373,6 +381,10 @@ public class PcmToJavaChangePropagationTest {
 		return changeSpecs;
 	}
 
+	/**
+	 * The test method, which encapsulates the experiment run. Currently only for
+	 * the TEAMMATES integration test case.
+	 */
 	@Test
 	public void testPcmPropagation() {
 		LoggingSetup.setMinLogLevel(Level.DEBUG);

@@ -23,6 +23,11 @@ import cipm.consistency.cpr.pcmjava.logger.PcmUserInteractionAutomaticityStatist
 import cipm.consistency.cpr.pcmjava.logger.PcmUserInteractionTimeStatistics;
 import cipm.consistency.tools.evaluation.data.ImUpdateEvalData;
 
+/**
+ * Aggregates and stores measurements from the experiment run.
+ * 
+ * @author Alp Torac Genc
+ */
 public class ExperimentResult {
 	private String vsumTestPath;
 

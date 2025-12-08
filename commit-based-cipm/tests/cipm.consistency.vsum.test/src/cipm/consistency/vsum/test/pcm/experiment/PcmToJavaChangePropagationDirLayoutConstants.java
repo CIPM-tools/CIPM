@@ -1,5 +1,11 @@
 package cipm.consistency.vsum.test.pcm.experiment;
 
+/**
+ * Stores and grants access to file names that are used throughout the
+ * experiment.
+ * 
+ * @author Alp Torac Genc
+ */
 public final class PcmToJavaChangePropagationDirLayoutConstants {
 	private static final String vsumDirName = "vsum";
 
@@ -19,7 +25,7 @@ public final class PcmToJavaChangePropagationDirLayoutConstants {
 
 	private static final String copiedRootDirName = "copied";
 	private static final String propagatedRootDirName = "propagated";
-	
+
 	private static final String propagatedChangesDir = "propagatedChanges";
 	private static final String experimentResultAdaptedModelsDir = "adaptedModels";
 
@@ -32,7 +38,7 @@ public final class PcmToJavaChangePropagationDirLayoutConstants {
 	private static final String vsumCorrespondenceModelName = "correspondences.correspondence";
 
 	private static final String pcmPrimitiveTypesRepositoryURI = "pathmap://PCM_MODELS/PrimitiveTypes.repository";
-	
+
 	public static String getPcmprimitivetypesrepositoryuri() {
 		return pcmPrimitiveTypesRepositoryURI;
 	}
