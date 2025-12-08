@@ -36,6 +36,18 @@ import tools.vitruv.framework.views.ViewType;
 import tools.vitruv.framework.views.changederivation.StateBasedChangeResolutionStrategy;
 import tools.vitruv.framework.vsum.internal.InternalVirtualModel;
 
+/**
+ * A {@link View} implementation, which accepts model changes (as
+ * {@link EChange} instances) from outside.
+ * 
+ * <p>
+ * TODO Move to tools.vitruv.framework.views
+ * <p>
+ * TODO Re-use existing methods in BasicView and other views once they are
+ * accessible
+ * 
+ * @author Alp Torac Genc
+ */
 @SuppressWarnings("restriction")
 public class ChangeAcceptingView implements IChangeAcceptingView, CommittableView, ChangePropagationListener {
 	@Accessors({ AccessorType.PUBLIC_GETTER, AccessorType.PROTECTED_SETTER })
@@ -46,27 +58,6 @@ public class ChangeAcceptingView implements IChangeAcceptingView, CommittableVie
 
 	@Accessors({ AccessorType.PROTECTED_GETTER, AccessorType.PROTECTED_SETTER })
 	private ResourceSet viewResourceSet;
-
-	/*
-	 * TODO Remove the underlying view, make operations on vsum instead
-	 * 
-	 * Only implement the methods that you actually need / use. For the rest, just
-	 * implement placeholders and minimally for now. Do not throw
-	 * UnsupportedOperationException, do nothing or do what you need to keep working
-	 * instead.
-	 * 
-	 * If implementing those methods is not possible, change the visibility
-	 * modifiers in tools.vitruv.framework.views.impl (submodule).
-	 * 
-	 * In the future, once access to BasicView is possible, extend it instead.
-	 */
-
-	/*
-	 * TODO If changes create or introduce new EObjects, the view gets them (not the
-	 * vsum)
-	 * 
-	 * Therefore, make sure to transfer those changes from that view to vsum.
-	 */
 
 	private InternalVirtualModel vsum;
 
@@ -130,15 +121,15 @@ public class ChangeAcceptingView implements IChangeAcceptingView, CommittableVie
 			return List.of();
 
 		var transactionalChange = VitruviusChangeFactory.getInstance().createTransactionalChange(this.changes);
-		
-		final List<PropagatedChange> propagatedChanges = vsum
-				.propagateChange(transactionalChange);
+
+		final List<PropagatedChange> propagatedChanges = vsum.propagateChange(transactionalChange);
 
 		this.cleanChanges();
 
 		return propagatedChanges;
 	}
 
+	// Adapted from BasicView
 	@Override
 	public void close() throws Exception {
 		final Consumer<Resource> _function = (Resource it) -> {
@@ -149,6 +140,7 @@ public class ChangeAcceptingView implements IChangeAcceptingView, CommittableVie
 		this.removeChangeListeners(this.viewResourceSet);
 	}
 
+	// Copied from BasicView
 	private void removeChangeListeners(final ResourceSet resourceSet) {
 		final Procedure1<Notifier> _function = (Notifier it) -> {
 			it.eAdapters().clear();
@@ -166,6 +158,7 @@ public class ChangeAcceptingView implements IChangeAcceptingView, CommittableVie
 		return null;
 	}
 
+	// Adapted from BasicView
 	public Collection<EObject> getRootObjects() {
 		List<EObject> _xblockexpression = null;
 		{
