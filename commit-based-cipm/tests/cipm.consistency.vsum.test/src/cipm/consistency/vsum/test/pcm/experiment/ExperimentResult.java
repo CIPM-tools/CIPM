@@ -1,6 +1,5 @@
 package cipm.consistency.vsum.test.pcm.experiment;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -152,33 +151,10 @@ public class ExperimentResult {
 	}
 
 	/**
-	 * Compares Java -> PCM Teammates test results to PCM -> Java Teammates test
-	 * results
-	 */
-	public void interpretResults() {
-
-	}
-
-	/**
 	 * Saves all metrics and computations under the given path
 	 */
 	public void save(Path pathToSave) {
 		this.write(this, pathToSave);
-	}
-
-	/**
-	 * Reads evaluation data from a file.
-	 * 
-	 * @param file the file from which the data is read.
-	 * @return the read data.
-	 */
-	public ExperimentResult read(Path file) {
-		try (BufferedReader reader = Files.newBufferedReader(file)) {
-			return new GsonBuilder().serializeSpecialFloatingPointValues().create().fromJson(reader,
-					ExperimentResult.class);
-		} catch (IOException e) {
-			return null;
-		}
 	}
 
 	/**
