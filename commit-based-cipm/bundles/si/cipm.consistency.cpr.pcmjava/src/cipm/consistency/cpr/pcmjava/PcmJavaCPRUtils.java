@@ -1,267 +1,40 @@
 package cipm.consistency.cpr.pcmjava;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
 
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emftext.language.java.classifiers.ConcreteClassifier;
-import org.emftext.language.java.classifiers.Implementor;
-import org.emftext.language.java.classifiers.Interface;
 import org.emftext.language.java.commons.Commentable;
 import org.emftext.language.java.containers.CompilationUnit;
 import org.emftext.language.java.containers.ContainersFactory;
 import org.emftext.language.java.containers.JavaRoot;
 import org.emftext.language.java.containers.Origin;
-import org.emftext.language.java.expressions.Expression;
-import org.emftext.language.java.literals.Literal;
-import org.emftext.language.java.literals.LiteralsFactory;
-import org.emftext.language.java.members.InterfaceMethod;
 import org.emftext.language.java.members.Method;
-import org.emftext.language.java.modifiers.Abstract;
-import org.emftext.language.java.modifiers.AnnotableAndModifiable;
-import org.emftext.language.java.modifiers.Default;
-import org.emftext.language.java.parameters.Parametrizable;
-import org.emftext.language.java.statements.LocalVariableStatement;
-import org.emftext.language.java.statements.Statement;
-import org.emftext.language.java.statements.StatementContainer;
-import org.emftext.language.java.statements.StatementListContainer;
-import org.emftext.language.java.statements.StatementsFactory;
-import org.emftext.language.java.types.PrimitiveType;
 import org.emftext.language.java.types.TypeReference;
-import org.emftext.language.java.types.TypesFactory;
 import org.palladiosimulator.pcm.repository.OperationSignature;
 
-import com.google.common.base.Preconditions;
-
 public final class PcmJavaCPRUtils {
-	private static final String abstractModifierName = Abstract.class.getSimpleName();
-	private static final String defaultModifierName = Default.class.getSimpleName();
-
-	public static List<LocalVariableStatement> getLocalVariableStatements(Statement st) {
-		if (st instanceof LocalVariableStatement) {
-			return List.of((LocalVariableStatement) st);
-		}
-		return List.of();
-	}
-
-	public static List<LocalVariableStatement> getLocalVariableStatements(StatementContainer sc) {
-		return getLocalVariableStatements(sc.getStatement());
-	}
-
-	public static List<LocalVariableStatement> getLocalVariableStatements(StatementListContainer slc) {
-		return getLocalVariableStatements(slc.getStatements());
-	}
-
-	public static List<LocalVariableStatement> getLocalVariableStatements(List<Statement> statementList) {
-		var localVars = new ArrayList<LocalVariableStatement>();
-		statementList.forEach((s) -> localVars.addAll(getLocalVariableStatements(s)));
-		return localVars;
-	}
-
-	public static List<LocalVariableStatement> getAllLocalVariableStatements(Statement st) {
-		var localVars = new ArrayList<LocalVariableStatement>();
-		if (st instanceof LocalVariableStatement) {
-			localVars.add((LocalVariableStatement) st);
-		}
-		if (st instanceof StatementContainer) {
-			localVars.addAll(getAllLocalVariableStatements(((StatementContainer) st).getStatement()));
-		}
-		if (st instanceof StatementListContainer) {
-			localVars.addAll(getAllLocalVariableStatements(((StatementListContainer) st).getStatements()));
-		}
-		return localVars;
-	}
-
-	public static List<LocalVariableStatement> getAllLocalVariableStatements(List<Statement> statementList) {
-		var localVars = new ArrayList<LocalVariableStatement>();
-		statementList.forEach((s) -> localVars.addAll(getAllLocalVariableStatements(s)));
-		return localVars;
-	}
-
-	public static List<org.emftext.language.java.members.Method> getAllNonStaticMethodsOf(ConcreteClassifier javaCls) {
-		return javaCls.getMethods().stream().filter((m) -> !m.isStatic())
-				.collect(Collectors.toCollection(ArrayList::new));
-	}
-
-	public static List<org.emftext.language.java.members.Method> getAllNonStaticNonAbstractMethodsOf(
-			ConcreteClassifier javaCls) {
-		return javaCls.getMethods().stream().filter((m) -> !m.isStatic() && !isJavaElementAbstract(m))
-				.collect(Collectors.toCollection(ArrayList::new));
-	}
-
-	public static List<org.emftext.language.java.members.Method> getAllJavaMethodsRequiringImplementation(
-			ConcreteClassifier javaCls) {
-		return javaCls.getMethods().stream().filter((m) -> doesJavaMethodRequireImplementation(m))
-				.collect(Collectors.toCollection(ArrayList::new));
-	}
-
-	public static boolean doesJavaMethodRequireImplementation(org.emftext.language.java.members.Method javaMet) {
-		return !javaMet.isStatic() && (isJavaElementAbstract(javaMet)
-				|| (javaMet instanceof InterfaceMethod && !isJavaElementDefault(javaMet)));
-	}
-
-	public static TypeReference implementJavaInterfaceInJavaClassifier(Implementor javaCls, Interface javaIfc) {
-		if (javaCls.getImplements().stream().anyMatch((tr) -> tr.getPureClassifierReference().getTarget() == javaIfc))
-			return null;
-
-		var implementsRef = TypesFactory.eINSTANCE.createClassifierReference();
-		implementsRef.setTarget(javaIfc);
-		javaCls.getImplements().add(implementsRef);
-
-		return implementsRef;
-	}
-
-	public static List<org.emftext.language.java.members.Method> generateJavaInterfaceMethodStubsInImplementors(
-			Interface javaIfc) {
-		var generatedStubs = new ArrayList<org.emftext.language.java.members.Method>();
-		javaIfc.eCrossReferences().stream().filter((cr) -> cr instanceof TypeReference)
-				.map((tr) -> ((TypeReference) tr).getContainingConcreteClassifier())
-				.filter((cls) -> cls instanceof Implementor).forEach((cls) -> {
-					var stubs = generateJavaInterfaceMethodStubsInJavaClassifier((Implementor) cls, javaIfc);
-					generatedStubs.addAll(stubs);
-					cls.getMembers().addAll(stubs);
-				});
-		return generatedStubs;
-	}
-
-	public static List<org.emftext.language.java.members.Method> generateJavaInterfaceMethodStubsInJavaClassifier(
-			Implementor javaCls, Interface javaIfc) {
-		var methodStubs = new ArrayList<org.emftext.language.java.members.Method>();
-
-		/*
-		 * Note: Even if javaCls is abstract, javaIfc method stubs will be added to it
-		 * instead of each sub class of javaCls
-		 */
-
-		// All Implementor instances are actually also ConcreteClassifier instances
-		// since concrete Implementors are either Class or Enumeration
-		var castedJavaCls = (ConcreteClassifier) javaCls;
-		var javaIfcMets = getAllJavaMethodsRequiringImplementation(javaIfc);
-		for (var javaIfcMet : javaIfcMets) {
-			if (!doesJavaClassifierImplementMethod(castedJavaCls, javaIfcMet)) {
-				var metStub = getJavaMethodStubFor(javaIfcMet);
-				methodStubs.add(metStub);
-				castedJavaCls.getMembers().add(metStub);
-			}
-		}
-
-		return methodStubs;
-	}
-
-	public static Literal getJavaParameterStubFor(TypeReference tref) {
-		Literal literalStub = null;
-		var returnType = tref.getTarget();
-		var returnTypeCls = returnType.getClass();
-		if (PrimitiveType.class.isAssignableFrom(returnTypeCls)) {
-			if (org.emftext.language.java.types.Boolean.class.equals(returnTypeCls)) {
-				var boolLit = LiteralsFactory.eINSTANCE.createBooleanLiteral();
-				boolLit.setValue(false);
-				literalStub = boolLit;
-			} else if (org.emftext.language.java.types.Void.class.equals(returnTypeCls)) {
-				literalStub = null;
-			} else if (org.emftext.language.java.types.Char.class.equals(returnTypeCls)) {
-				var charLit = LiteralsFactory.eINSTANCE.createCharacterLiteral();
-				charLit.setValue("");
-				literalStub = charLit;
-			} else {
-				var numLit = LiteralsFactory.eINSTANCE.createDecimalIntegerLiteral();
-				numLit.setDecimalValue(BigInteger.ZERO);
-				literalStub = numLit;
-			}
-		} else {
-			var nullLit = LiteralsFactory.eINSTANCE.createNullLiteral();
-			literalStub = nullLit;
-		}
-		return literalStub;
-	}
-
-	public static org.emftext.language.java.members.Method getJavaMethodStubFor(
-			org.emftext.language.java.members.Method javaMetToImplement) {
-		var stub = EcoreUtil.copy(javaMetToImplement);
-
-		// stub.getStatement(): The block of the method
-		// stub.getStatements(): Individual statements in method body
-		//
-		// Ensure that the method stub has a block, otherwise inserting
-		// statements will not work (EMFText limitation)
-		if (stub.getBlock() == null)
-			stub.setStatement(StatementsFactory.eINSTANCE.createBlock());
-
-		stub.getStatements().clear();
-
-		var returnSt = StatementsFactory.eINSTANCE.createReturn();
-		Expression returnVal = null;
-		var returnType = javaMetToImplement.getTypeReference();
-
-		returnVal = getJavaParameterStubFor(returnType);
-		if (returnVal != null) {
-			returnSt.setReturnValue(returnVal);
-			stub.getStatements().add(returnSt);
-		}
-
-		return stub;
-	}
-
-	public static boolean doesJavaClassifierImplementMethod(ConcreteClassifier javaCls,
-			org.emftext.language.java.members.Method met) {
-		return getAllNonStaticMethodsOf(javaCls).stream().anyMatch((jcm) -> jcm.isSignatureMatching(met));
-	}
-
-	public static boolean areJavaReturnTypesMatching(org.emftext.language.java.members.Method implementingMet,
-			org.emftext.language.java.members.Method metToImplement) {
-		var rt1 = implementingMet.getTypeReference().getPureClassifierReference().getTarget();
-		var rt2 = metToImplement.getTypeReference().getPureClassifierReference().getTarget();
-
-		return EcoreUtil.equals(rt1, rt2)
-				|| rt2.getAllSuperClassifiers().stream().anyMatch((sc) -> EcoreUtil.equals(rt1, sc));
-	}
-
-	public static boolean areJavaModifiersEqual(AnnotableAndModifiable aam1, AnnotableAndModifiable aam2) {
-		var mods1 = aam1.getModifiers();
-		var mods2 = aam2.getModifiers();
-
-		if (mods1.size() != mods2.size())
+	public static boolean doMethodParametersMatch(List<org.palladiosimulator.pcm.repository.Parameter> pcmParams,
+			List<org.emftext.language.java.parameters.Parameter> javaParams) {
+		if (pcmParams.size() != javaParams.size())
 			return false;
 
-		for (int i = 0; i < mods1.size(); i++) {
-			if (!EcoreUtil.equals(mods1.get(i), mods2.get(i)))
+		for (int i = 0; i < pcmParams.size(); i++) {
+			if (!doMethodParametersMatch(pcmParams.get(i), javaParams.get(i)))
 				return false;
 		}
 
 		return true;
 	}
 
-	public static boolean areJavaParametersEqual(Parametrizable p1, Parametrizable p2) {
-		var params1 = p1.getParameters();
-		var params2 = p2.getParameters();
-
-		if (params1.size() != params2.size())
-			return false;
-
-		for (int i = 0; i < params1.size(); i++) {
-			if (!EcoreUtil.equals(params1.get(i), params2.get(i)))
-				return false;
-		}
-
-		return true;
-	}
-
-	public static boolean isJavaElementAbstract(AnnotableAndModifiable javaElem) {
-		return javaElem.getModifiers().stream()
-				.anyMatch((m) -> m.getClass().getSimpleName().equals(abstractModifierName));
-	}
-
-	public static boolean isJavaElementDefault(AnnotableAndModifiable javaElem) {
-		return javaElem.getModifiers().stream()
-				.anyMatch((m) -> m.getClass().getSimpleName().equals(defaultModifierName));
+	public static boolean doMethodParametersMatch(org.palladiosimulator.pcm.repository.Parameter pcmParam,
+			org.emftext.language.java.parameters.Parameter javaParam) {
+		return pcmParam.getParameterName().equals(javaParam.getName())
+				&& PcmJavaTypeUtil.doTypesMatch(pcmParam.getDataType__Parameter(), javaParam.getTypeReference());
 	}
 
 	/**
@@ -277,7 +50,7 @@ public final class PcmJavaCPRUtils {
 		// Note: PCM parameters are NOT first class entities
 		var pcmParams = pcmSig.getParameters__OperationSignature();
 		var javaParams = javaMet.getParameters();
-		if (PCMElementUtil.doMethodParametersMatch(pcmParams, javaParams)) {
+		if (doMethodParametersMatch(pcmParams, javaParams)) {
 			for (int i = 0; i < pcmParams.size(); i++) {
 				addCorrespondenceToJavaCorrespondent(corView, pcmParams.get(i), javaParams.get(i));
 			}
@@ -307,39 +80,6 @@ public final class PcmJavaCPRUtils {
 	public static <O extends Commentable> O addCorrespondenceToJavaCorrespondent(
 			EditableCorrespondenceModelView<?> corView, EObject pcmElement, O javaCorrespondent) {
 		return addCorrespondenceToJavaCorrespondent(corView, pcmElement, javaCorrespondent, null);
-	}
-
-	/**
-	 * Adds javaCorrespondent to javaModelResource by using
-	 * placeInJavaModelResourceFunc, if javaCorrespondent is not already in a
-	 * Resource. placeInJavaModelResourceFunc denotes how and to which location in
-	 * javaModelResource javaCorrespondent is to be inserted.
-	 * 
-	 * @return javaCorrespondent
-	 */
-	public static <O extends Commentable> O addToJavaModelIfNotThere(Resource javaModelResource, O javaCorrespondent,
-			BiConsumer<Resource, O> placeInJavaModelResourceFunc) {
-		if (javaCorrespondent != null && javaCorrespondent.eResource() == null) {
-			placeInJavaModelResourceFunc.accept(javaModelResource, javaCorrespondent);
-		}
-
-		return javaCorrespondent;
-	}
-
-	/**
-	 * Adds javaCorrespondent to a Resource by using placeInJavaModelResourceFunc,
-	 * if javaCorrespondent is not already in a Resource.
-	 * placeInJavaModelResourceFunc denotes how and to which location in a Resource
-	 * javaCorrespondent is to be inserted.
-	 * <p>
-	 * Use this method, if javaCorrespondent should be nested in another Java model
-	 * element, which is already in a Resource.
-	 * 
-	 * @return javaCorrespondent
-	 */
-	public static <O extends Commentable> O addToJavaModelIfNotThere(O javaCorrespondent,
-			Consumer<O> placeInJavaModelResourceFunc) {
-		return addToJavaModelIfNotThere(null, javaCorrespondent, (r, o) -> placeInJavaModelResourceFunc.accept(o));
 	}
 
 	/**
@@ -480,29 +220,6 @@ public final class PcmJavaCPRUtils {
 		} else {
 			return addJavaClassifierIntoJavaPackage(moduleOfJavaCls, null, javaCls, javaClsNss);
 		}
-
-//		var createdContainers = new ArrayList<JavaRoot>();
-//
-//		var longestNsPrefix = getLongestCommonNamespacePrefix(moduleOfJavaCls.getNamespaces(), javaClsNss);
-//		if (longestNsPrefix.size() == javaClsNss.size()) {
-//			// Module's namespace matches directly with that of Java Classifier
-//			// create a package for the Java Classifier as well as a CompilationUnit
-//			var pacs = createJavaPackages(moduleOfJavaCls, javaClsNss);
-//			createdContainers.addAll(pacs);
-//			pacs.get(pacs.size() - 1).getClassifiers().add(javaCls);
-//
-//			if (javaCls.getContainingCompilationUnit() == null) {
-//				createdContainers.add(createCompilationUnitForJavaClassifier(javaCls, javaClsNss));
-//			}
-//		} else {
-//			// Create the necessary Packages
-//			var cons = addJavaClassifierIntoJavaPackage(moduleOfJavaCls, null, javaCls, javaClsNss);
-//			createdContainers
-//					.addAll(cons.stream().filter((c) -> c instanceof org.emftext.language.java.containers.Package)
-//							.collect(Collectors.toList()));
-//		}
-//
-//		return createdContainers;
 	}
 
 	/**
@@ -607,17 +324,6 @@ public final class PcmJavaCPRUtils {
 		pac.getNamespaces().addAll(javaPacNss);
 
 		return pac;
-	}
-
-	public static List<org.emftext.language.java.containers.Package> createJavaPackages(
-			org.emftext.language.java.containers.Module moduleOfJavaCls, List<String> javaPacNss) {
-		var createdPacs = new ArrayList<org.emftext.language.java.containers.Package>();
-		// Create the necessary packages
-		for (int i = 0; i < javaPacNss.size(); i++) {
-			createdPacs.add(createJavaPackage(moduleOfJavaCls, javaPacNss.subList(0, i + javaPacNss.size() + 1)));
-		}
-
-		return createdPacs;
 	}
 
 	/**
