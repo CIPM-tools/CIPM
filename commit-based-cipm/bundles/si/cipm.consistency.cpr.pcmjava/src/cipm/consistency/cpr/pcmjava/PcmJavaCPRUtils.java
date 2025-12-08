@@ -17,7 +17,18 @@ import org.emftext.language.java.members.Method;
 import org.emftext.language.java.types.TypeReference;
 import org.palladiosimulator.pcm.repository.OperationSignature;
 
+/**
+ * A utility class for PCM to Java CPRs
+ * 
+ * @author Alp Torac Genc
+ */
 public final class PcmJavaCPRUtils {
+	/**
+	 * Compares parameters wrt. their type and name
+	 * 
+	 * @return Whether the given list of PCM parameters and the given list of Java
+	 *         parameters match
+	 */
 	public static boolean doMethodParametersMatch(List<org.palladiosimulator.pcm.repository.Parameter> pcmParams,
 			List<org.emftext.language.java.parameters.Parameter> javaParams) {
 		if (pcmParams.size() != javaParams.size())
@@ -31,6 +42,12 @@ public final class PcmJavaCPRUtils {
 		return true;
 	}
 
+	/**
+	 * Compares parameters wrt. their type and name
+	 * 
+	 * @return Whether the given list of PCM parameters and the given list of Java
+	 *         parameters match
+	 */
 	public static boolean doMethodParametersMatch(org.palladiosimulator.pcm.repository.Parameter pcmParam,
 			org.emftext.language.java.parameters.Parameter javaParam) {
 		return pcmParam.getParameterName().equals(javaParam.getName())

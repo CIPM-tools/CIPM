@@ -9,6 +9,11 @@ import org.palladiosimulator.pcm.repository.DataType;
 import org.palladiosimulator.pcm.repository.InnerDeclaration;
 import org.palladiosimulator.pcm.repository.PrimitiveDataType;
 
+/**
+ * A utility class for PCM to Java CPRs
+ * 
+ * @author Alp Torac Genc
+ */
 public class PcmJavaTypeUtil {
 	/**
 	 * @return The Java field in javaType, which matches the given inner type

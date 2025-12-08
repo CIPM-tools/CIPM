@@ -33,6 +33,10 @@ public final class JavaModelAccess {
 	private JavaModelAccess() {
 	}
 
+	/**
+	 * @return The synthetic compilation unit in the given resource
+	 * @see {@link jamopp.recovery.trivial.TrivialRecovery}
+	 */
 	public static CompilationUnit getSyntheticCompilationUnit(Resource res) {
 		if (res == null)
 			return null;
@@ -42,12 +46,18 @@ public final class JavaModelAccess {
 		return cu.orElseGet(() -> null);
 	}
 
+	/**
+	 * @return The synthetic compilation unit in the current Java code model
+	 * @see {@link jamopp.recovery.trivial.TrivialRecovery}
+	 */
 	public static CompilationUnit getSyntheticCompilationUnit() {
 		return getSyntheticCompilationUnit(javaModel);
 	}
 
 	/**
 	 * Ignores synthetic elements ({@link jamopp.recovery.trivial.TrivialRecovery})
+	 * 
+	 * @return A list of root contents of the current Java code model
 	 */
 	public static List<EObject> getTopLevelJavaModelElements() {
 		var topLevelContents = new ArrayList<>(javaModel.getContents());
@@ -55,6 +65,9 @@ public final class JavaModelAccess {
 		return topLevelContents;
 	}
 
+	/**
+	 * @return Whether the given EObject is in the current Java code model
+	 */
 	public static boolean isInJavaModelResource(EObject obj) {
 		return obj.eResource() != null && obj.eResource() == javaModel;
 	}
@@ -64,8 +77,8 @@ public final class JavaModelAccess {
 	 * ConcreteClassifier have to be contained in a CompilationUnit to be eligible
 	 * here.
 	 * 
-	 * @return A set of ConcreteClassifier found in the Java code model, whose name
-	 *         (without namespaces) matches the given name.
+	 * @return A set of ConcreteClassifier found in the current Java code model,
+	 *         whose name (without namespaces) matches the given name.
 	 */
 	public static Set<ConcreteClassifier> findPotentialConcreteClassifiers(String name) {
 		var clsSet = new HashSet<ConcreteClassifier>();
@@ -92,6 +105,9 @@ public final class JavaModelAccess {
 		}
 	}
 
+	/**
+	 * Unloads and removes the current Java code model, if existent.
+	 */
 	public static void removeJavaModel() {
 		unloadJavaModel();
 		if (javaModel != null) {
@@ -121,6 +137,9 @@ public final class JavaModelAccess {
 		}
 	}
 
+	/**
+	 * Sets the current Java code model to the given resource
+	 */
 	public static void setJavaModel(Resource javaModelResource) {
 		javaModel = javaModelResource;
 		if (javaModel != null && !javaModel.isLoaded()) {
@@ -133,6 +152,9 @@ public final class JavaModelAccess {
 		}
 	}
 
+	/**
+	 * Saves the current Java code model
+	 */
 	public static void saveJavaModel() {
 		try {
 			javaModel.save(null);
