@@ -17,6 +17,15 @@ import cipm.consistency.vsum.test.pcm.experiment.JavaToPcmPropagationDirLayout;
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.atomic.resolve.EChangeResolverAndApplicator;
 
+/**
+ * Saves the unresolved versions of model changes stored in given
+ * {@link Propagation} instances, without modifying the model changes inside the
+ * propagation instance. Puts the changes in {@link Resource} instances and
+ * saves them at the given paths. Includes both original and consequential
+ * changes.
+ * 
+ * @author Alp Torac Genc
+ */
 public final class ChangeSaver {
 	public static void saveUnresolvedChanges(Propagation prop, Path javaChangesSavePath, Path pcmChangesSavePath,
 			Path imChangesSavePath) {

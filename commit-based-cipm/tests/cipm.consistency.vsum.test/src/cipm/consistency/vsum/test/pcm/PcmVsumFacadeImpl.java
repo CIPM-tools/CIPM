@@ -28,6 +28,11 @@ import tools.vitruv.framework.views.ViewTypeFactory;
 import tools.vitruv.framework.vsum.VirtualModelBuilder;
 import tools.vitruv.framework.vsum.internal.InternalVirtualModel;
 
+/**
+ * Facade to the VSUM for PCM to Java change propagation.
+ * 
+ * @author Alp Torac Genc
+ */
 @SuppressWarnings("restriction")
 public class PcmVsumFacadeImpl implements PcmVsumFacade {
 	private static final Logger LOGGER = Logger.getLogger(PcmVsumFacadeImpl.class.getName());
@@ -120,7 +125,7 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 		return view;
 	}
 
-	// FIXME Clarify whether ChangeRecordingView can be used like this
+	@Override
 	public CommittableView getChangeRecordingView() {
 		var viewType = ViewTypeFactory.createIdentityMappingViewType("myRecordingView");
 		var viewSelector = viewType.createSelector(vsum);
@@ -193,16 +198,6 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 		return propagateResource(resource, null);
 	}
 
-	/**
-	 * Propagate a resource into the underlying vsum
-	 * 
-	 * @param resource           The propagated resource
-	 * @param targetUri          The uri where vitruv persists the propagated
-	 *                           resource
-	 * @param changesToPropagate All changes that should be propagated to the
-	 *                           underlying model
-	 * @return The propagated changes
-	 */
 	@Override
 	public Propagation propagateResource(Resource resource, URI targetUri) {
 		var view = getChangeAcceptingView();
@@ -217,7 +212,6 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 		return propagation;
 	}
 
-	// FIXME Clarify whether ChangeRecordingView can be used like this
 	@Override
 	public Propagation propagateResource(URI targetUri, Consumer<Resource> modifications) {
 		var view = getChangeRecordingView();
@@ -302,39 +296,6 @@ public class PcmVsumFacadeImpl implements PcmVsumFacade {
 			return vsum.getCorrespondenceModel();
 		}
 		return null;
-	}
-
-	/**
-	 * Saving correspondences directly is currently not possible. It only triggers
-	 * during change propagation. So, perform changes that do not lead to any
-	 * effective changes and propagate them.
-	 */
-	@Override
-	public void saveCorrespondences() {
-		Resource nonEmptyResource = null;
-		var modelIt = this.models.iterator();
-		while (nonEmptyResource == null && modelIt.hasNext()) {
-			var m = modelIt.next();
-			var mSingleRes = m.getResource();
-			var mMultRes = m.getResources();
-			if (mSingleRes != null && !mSingleRes.getContents().isEmpty()) {
-				nonEmptyResource = mSingleRes;
-				break;
-			}
-			if (mMultRes != null && !mMultRes.isEmpty()) {
-				var optRes = mMultRes.stream().filter((r) -> !r.getContents().isEmpty()).findFirst();
-				if (optRes.isPresent()) {
-					nonEmptyResource = optRes.get();
-					break;
-				}
-			}
-		}
-		this.propagateResource(nonEmptyResource.getURI(), (r) -> {
-			var rObj = r.getContents().get(0);
-			var rObjDupl = EcoreUtil.copy(rObj);
-			r.getContents().add(rObjDupl);
-			r.getContents().remove(rObjDupl);
-		});
 	}
 
 	@Override
