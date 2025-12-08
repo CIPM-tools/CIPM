@@ -22,6 +22,7 @@ import cipm.consistency.commitintegration.diff.util.JavaModelComparator;
 import cipm.consistency.commitintegration.diff.util.ComparisonBasedJaccardCoefficientCalculator.JaccardCoefficientResult;
 import cipm.consistency.commitintegration.diff.util.pcm.PCMModelComparator;
 import cipm.consistency.commitintegration.lang.java.JavaModelFacade;
+import cipm.consistency.cpr.pcmjava.CommitIntegrationPCMJavaChangePropagationSpecification;
 import cipm.consistency.cpr.pcmjava.JavaModelAccess;
 import cipm.consistency.cpr.pcmjava.logger.PcmToJavaChangePropagationLogger;
 import cipm.consistency.cpr.pcmjava.logger.PcmUserInteractionAutomaticityStatistics;
@@ -41,7 +42,6 @@ import cipm.consistency.vsum.test.pcm.ChangeSaver;
 import cipm.consistency.vsum.test.pcm.PcmVsumFacade;
 import cipm.consistency.vsum.test.pcm.PcmVsumFacadeImpl;
 import cipm.consistency.vsum.test.pcm.cprunittests.UnnamedModuleComponentDetectionStrategy;
-import mir.reactions.allPcm.AllPcmChangePropagationSpecification;
 import mir.reactions.imInit.ImInitChangePropagationSpecification;
 import mir.reactions.pcmImUpdate.PcmImUpdateChangePropagationSpecification;
 import mir.reactions.pcmInit.PcmInitChangePropagationSpecification;
@@ -365,7 +365,7 @@ public class PcmToJavaChangePropagationTest {
 		List<ChangePropagationSpecification> changeSpecs = new ArrayList<>();
 		changeSpecs.add(new PcmInitChangePropagationSpecification());
 		changeSpecs.add(new ImInitChangePropagationSpecification());
-		changeSpecs.add(new AllPcmChangePropagationSpecification());
+		changeSpecs.add(new CommitIntegrationPCMJavaChangePropagationSpecification());
 		changeSpecs.add(new PcmImUpdateChangePropagationSpecification());
 		return changeSpecs;
 	}
