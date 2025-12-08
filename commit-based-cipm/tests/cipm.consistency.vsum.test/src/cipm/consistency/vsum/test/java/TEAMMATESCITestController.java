@@ -9,19 +9,15 @@ import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import cipm.consistency.commitintegration.CommitIntegrationDirLayout;
 import cipm.consistency.commitintegration.CommitIntegrationState;
 import cipm.consistency.commitintegration.lang.java.JavaModelFacade;
 import cipm.consistency.commitintegration.settings.CommitIntegrationSettingsContainer;

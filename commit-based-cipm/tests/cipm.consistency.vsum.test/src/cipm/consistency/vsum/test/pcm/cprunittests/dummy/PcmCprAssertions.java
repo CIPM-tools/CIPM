@@ -22,9 +22,6 @@ import cipm.consistency.cpr.pcmjava.userinteraction.PcmUserInteractionManager;
 import cipm.consistency.vsum.test.pcm.PcmVsumFacade;
 
 public final class PcmCprAssertions {
-
-	// TODO Add logging to all methods, so that assertion flow is clear
-
 	private static final Logger LOGGER = Logger.getLogger(PcmCprAssertions.class);
 
 	/**
@@ -250,17 +247,7 @@ public final class PcmCprAssertions {
 
 		Assertions.assertEquals(pcmManagerFeatVal, fullPcmManagerFeatVal);
 
-		// TODO Move inside if-block, in case of errors
 		assertFeatureValueEquals(affectedJavaElement, affectedJavaElementFeat, pcmManagerFeatVal);
-
-//		if (!affectedJavaElementFeat.isMany()) {
-//		} else {
-//			var correspondentFeatVal = (List<?>) affectedJavaElement
-//					.eGet(affectedJavaElement.eClass().getEStructuralFeature(affectedJavaElementFeat.getName()));
-//			var castedPcmManagerFeatVal = (List<?>) pcmManagerFeatVal;
-//			Assertions.assertEquals(castedPcmManagerFeatVal.size(), correspondentFeatVal.size());
-//			Assertions.assertTrue(castedPcmManagerFeatVal.containsAll(correspondentFeatVal));
-//		}
 	}
 
 	/**
