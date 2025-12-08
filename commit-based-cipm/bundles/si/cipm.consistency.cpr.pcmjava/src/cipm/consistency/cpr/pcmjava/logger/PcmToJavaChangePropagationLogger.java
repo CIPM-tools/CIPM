@@ -13,6 +13,19 @@ import cipm.consistency.cpr.pcmjava.userinteraction.ConflictResolutionStrategy;
 import cipm.consistency.cpr.pcmjava.userinteraction.CorrespondenceEntry;
 import cipm.consistency.cpr.pcmjava.userinteraction.FeatureEntry;
 
+/**
+ * A class that aggregates information on what happens during the PCM to Java
+ * change propagation, in form of {@link PcmToJavaChangePropagationEntry}.
+ * 
+ * <p>
+ * Attributes of this class can be serialised and saved via the GSON library. If
+ * this is desired, a call to {@link #prepareForSerialisation()} is needed
+ * before saving its contents.
+ * 
+ * @see {@link GSON}
+ * 
+ * @author Alp Torac Genc
+ */
 public class PcmToJavaChangePropagationLogger {
 	private static PcmToJavaChangePropagationLogger instance;
 	/**
@@ -216,12 +229,14 @@ public class PcmToJavaChangePropagationLogger {
 
 		if (status == PcmUserInteractionState.MANUAL_INTERVENTION_OVER) {
 			if (prevStatus == PcmUserInteractionState.USER_INTERACTION_INTERCEPTED_BY_CONFLICT_RESOLUTION_STRATEGY) {
-				PcmUserInteractionAutomaticityStatistics.getInstance().addFullyAutomaticUserInteraction(userInteraction);
+				PcmUserInteractionAutomaticityStatistics.getInstance()
+						.addFullyAutomaticUserInteraction(userInteraction);
 			} else if (prevStatus == PcmUserInteractionState.USER_INTERACTION_PARTIALLY_INTERCEPTED_BY_CONFLICT_RESOLUTION_STRATEGY) {
 				PcmUserInteractionAutomaticityStatistics.getInstance()
 						.semiAutomaticPartiallyInterceptedUserInteractionTriggered(userInteraction);
 			} else {
-				PcmUserInteractionAutomaticityStatistics.getInstance().semiAutomaticUserInteractionTriggered(userInteraction);
+				PcmUserInteractionAutomaticityStatistics.getInstance()
+						.semiAutomaticUserInteractionTriggered(userInteraction);
 			}
 		}
 

@@ -1,16 +1,21 @@
 package cipm.consistency.cpr.pcmjava.logger;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-
-import org.eclipse.emf.ecore.EObject;
 
 import cipm.consistency.cpr.pcmjava.userinteraction.AbstractUserInteraction;
 import cipm.consistency.cpr.pcmjava.userinteraction.ConflictResolutionStrategy;
 import cipm.consistency.cpr.pcmjava.userinteraction.CorrespondenceEntry;
 import cipm.consistency.cpr.pcmjava.userinteraction.FeatureEntry;
 
+/**
+ * A class that can contain various information on events throughout change
+ * propagation.
+ * 
+ * @see {@link PcmToJavaChangePropagationEntryKey} for more information
+ * 
+ * @author Alp Torac Genc
+ */
 public class PcmToJavaChangePropagationEntry {
 	private final Map<PcmToJavaChangePropagationEntryKey, Object> entries = new LinkedHashMap<>();
 
@@ -37,22 +42,6 @@ public class PcmToJavaChangePropagationEntry {
 
 	public PcmUserInteractionState getUserInteractionState() {
 		return get(PcmToJavaChangePropagationEntryKey.USER_INTERACTION_STATE);
-	}
-
-	public void setAffectedPcmElements(List<EObject> affectedPcmElements) {
-		set(PcmToJavaChangePropagationEntryKey.AFFECTED_PCM_ELEMENTS, affectedPcmElements);
-	}
-
-	public List<EObject> getAffectedPcmElements() {
-		return get(PcmToJavaChangePropagationEntryKey.AFFECTED_PCM_ELEMENTS);
-	}
-
-	public void setAffectedJavaElements(List<EObject> affectedJavaElements) {
-		set(PcmToJavaChangePropagationEntryKey.AFFECTED_JAVA_ELEMENTS, affectedJavaElements);
-	}
-
-	public List<EObject> getAffectedJavaElements() {
-		return get(PcmToJavaChangePropagationEntryKey.AFFECTED_JAVA_ELEMENTS);
 	}
 
 	public void setAskedFeature(FeatureEntry askedFeats) {

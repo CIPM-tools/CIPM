@@ -7,17 +7,40 @@ import java.util.List;
 
 import org.eclipse.net4j.util.collection.Pair;
 
+/**
+ * A class that aggregates information on the time aspect of PCM to Java change
+ * propagation.
+ * 
+ * <p>
+ * Attributes of this class can be serialised via the {@link GSON} library.
+ * 
+ * @author Alp Torac Genc
+ */
 public class PcmUserInteractionTimeStatistics {
 	private static PcmUserInteractionTimeStatistics instance;
 
 	private ChronoUnit timeUnit = ChronoUnit.MILLIS;
 
+	/**
+	 * Time entries here consist of 2 {@link LocalDateTime} instances that stand for
+	 * the start and end time points of individual measurements. Summing up the time
+	 * differences of all these entries gives the total execution time of the PCM to
+	 * Java change propagation.
+	 */
 	private List<Pair<LocalDateTime, LocalDateTime>> timeEntries = new ArrayList<>();
 
 	private LocalDateTime timeMeasurementStartTime;
 	private LocalDateTime timeMeasurementEndTime;
 
+	/**
+	 * Execution time of the PCM to Java change propagation (exclusively the
+	 * automatic part of the change propagation)
+	 */
 	private long propagationTimeWithoutUserInteractionsInMillis = 0;
+	/**
+	 * Execution time of the PCM to Java change propagation (including the manual
+	 * parts of the change propagation)
+	 */
 	private long propagationTimeWithUserInteractionsInMillis = 0;
 
 	private PcmUserInteractionTimeStatistics() {
@@ -33,6 +56,10 @@ public class PcmUserInteractionTimeStatistics {
 		return !timeEntries.isEmpty() ? timeEntries.get(timeEntries.size() - 1) : null;
 	}
 
+	/**
+	 * @return Complete the most recent time entry by setting the end time point for
+	 *         that entry.
+	 */
 	private Pair<LocalDateTime, LocalDateTime> completeMostRecentTimeEntry() {
 		var mostRecentEntry = getMostRecentEntry();
 		if (mostRecentEntry != null && mostRecentEntry.getElement2() == null) {

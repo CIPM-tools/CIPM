@@ -6,6 +6,12 @@ import java.util.List;
 import cipm.consistency.cpr.pcmjava.userinteraction.AbstractUserInteraction;
 import cipm.consistency.cpr.pcmjava.userinteraction.ConflictResolutionStrategy;
 
+/**
+ * A class that aggregates information on the automaticity of user interaction
+ * occurrences throughout PCM to Java change propagation.
+ * 
+ * @author Alp Torac Genc
+ */
 public class PcmUserInteractionAutomaticityStatistics {
 	private static PcmUserInteractionAutomaticityStatistics instance;
 
