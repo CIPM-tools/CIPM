@@ -5,12 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EStructuralFeature;
-import org.palladiosimulator.pcm.core.entity.EntityPackage;
 import org.palladiosimulator.pcm.repository.Repository;
-import org.palladiosimulator.pcm.repository.RepositoryPackage;
-import org.palladiosimulator.pcm.seff.SeffPackage;
-import org.palladiosimulator.pcm.seff.ServiceEffectSpecification;
 
 import cipm.consistency.cpr.pcmjava.preprocessing.ChangeUtil;
 import tools.vitruv.change.atomic.EChange;
@@ -123,59 +118,5 @@ public class ExperimentPcmChangePreprocessor {
 		}
 
 		return newChangeList;
-	}
-
-	private List<EChange> orderOperationSignaturesBeforeSEFFCreation(List<EChange> changes) {
-		var newChangeList = new ArrayList<EChange>();
-
-		var seffChanges = new ArrayList<EChange>();
-		for (var c : changes) {
-			if (isSetSEFFDescribedServiceChange(c)
-					|| ChangeUtil.createsEObjectOfType(c, SeffPackage.Literals.SERVICE_EFFECT_SPECIFICATION)) {
-				seffChanges.add(c);
-			} else {
-				newChangeList.add(c);
-			}
-		}
-
-		newChangeList.addAll(seffChanges);
-		return newChangeList;
-	}
-
-	private List<EChange> orderRolesAfterSEFFCreation(List<EChange> changes) {
-		var newChangeList = new ArrayList<EChange>();
-
-		var roleChanges = new ArrayList<EChange>();
-		for (var c : changes) {
-			if (ChangeUtil.involvesFeature(c,
-					EntityPackage.Literals.INTERFACE_PROVIDING_ENTITY__PROVIDED_ROLES_INTERFACE_PROVIDING_ENTITY)
-					|| ChangeUtil.involvesFeature(c,
-							EntityPackage.Literals.INTERFACE_REQUIRING_ENTITY__REQUIRED_ROLES_INTERFACE_REQUIRING_ENTITY)
-					|| ChangeUtil.createsEObjectOfType(c, RepositoryPackage.Literals.ROLE)) {
-				roleChanges.add(c);
-			} else {
-				newChangeList.add(c);
-			}
-		}
-
-		newChangeList.addAll(roleChanges);
-		return newChangeList;
-	}
-
-	private boolean shouldSkipChange(EChange change) {
-		return isSEFFactionChange(change);
-	}
-
-	private boolean isSetSEFFDescribedServiceChange(EChange change) {
-		return RepositoryPackage.Literals.BASIC_COMPONENT__SERVICE_EFFECT_SPECIFICATIONS_BASIC_COMPONENT
-				.equals(ChangeUtil.getAffectedFeature(change));
-	}
-
-	private boolean isSEFFactionChange(EChange change) {
-		return ChangeUtil.involvesFeature(change, SeffPackage.Literals.BRANCH_ACTION__BRANCHES_BRANCH)
-				|| ChangeUtil.involvesFeature(change, SeffPackage.Literals.ABSTRACT_LOOP_ACTION__BODY_BEHAVIOUR_LOOP)
-				|| ChangeUtil.involvesFeature(change,
-						SeffPackage.Literals.EXTERNAL_CALL_ACTION__CALLED_SERVICE_EXTERNAL_SERVICE)
-				|| ChangeUtil.involvesFeature(change, SeffPackage.Literals.EXTERNAL_CALL_ACTION__ROLE_EXTERNAL_SERVICE);
 	}
 }

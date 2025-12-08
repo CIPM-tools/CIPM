@@ -9,29 +9,12 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emftext.language.java.annotations.AnnotationInstance;
-import org.emftext.language.java.arrays.ArrayDimension;
-import org.emftext.language.java.classifiers.ConcreteClassifier;
-import org.emftext.language.java.containers.JavaRoot;
-import org.emftext.language.java.containers.Origin;
-import org.emftext.language.java.expressions.Expression;
-import org.emftext.language.java.generics.TypeArgument;
-import org.emftext.language.java.modifiers.Modifier;
-import org.emftext.language.java.modifiers.Private;
-import org.emftext.language.java.modifiers.Public;
-import org.emftext.language.java.statements.Statement;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.palladiosimulator.pcm.repository.Repository;
-import org.palladiosimulator.pcm.seff.AbstractBranchTransition;
-import org.palladiosimulator.pcm.seff.AbstractLoopAction;
-import org.palladiosimulator.pcm.seff.BranchAction;
-import org.palladiosimulator.pcm.seff.ResourceDemandingBehaviour;
 
 import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationModel;
 import cipm.consistency.commitintegration.diff.util.ComparisonBasedJaccardCoefficientCalculator;
@@ -205,116 +188,6 @@ public class PcmToJavaChangePropagationTest {
 		}
 		pcmChangeRes.getContents().addAll(orderedPCMChangeList);
 		return orderedPCMChangeList;
-	}
-
-	// TODO Rename statementless Java model and SEFFless PCM model
-
-	private void setJCForAdaptedJavaModels() {
-		LOGGER.info("Computing JC for adapted Java model (Pcm -> Java propagation)");
-
-		var adaptedRes = ResourceOperationsUtil.loadNewResourceInstance(resWrapper.getTargetJavaModel());
-		var adaptedResPath = resWrapper.getExperimentLayout().getPropagatedDirLayout().getRootDirPath()
-				.resolve(PcmToJavaChangePropagationDirLayoutConstants.getExperimentresultadaptedmodelsdir())
-				.resolve(adaptedRes.getURI().lastSegment());
-		adaptedRes.setURI(ResourceOperationsUtil.pathToURI(adaptedResPath));
-
-		// Remove the synthetic compilation unit, since it does not initially exist
-		// during PCM propagation and PCM propagation cannot generate it nor account for
-		// it
-		//
-		// Cannot remove it without turning their occurrences into proxies
-		// => Leave it as is
-		//
-//		var syntheticCU = JavaModelAccess.getSyntheticCompilationUnit(adaptedRes);
-//		if (syntheticCU != null) {
-//			EcoreUtil.remove(syntheticCU);
-//		}
-
-		var allContents = new ArrayList<EObject>();
-		adaptedRes.getAllContents().forEachRemaining(allContents::add);
-		for (var o : allContents) {
-			if (o.eResource() != adaptedRes)
-				continue;
-
-			// Remove JavaRoots with ARCHIVE and BINDING, since PCM
-			// propagation cannot generate them and they do not initially exist
-			//
-			// Cannot remove them without turning their occurrences into proxies
-			// => Leave them as is
-			//
-//			if (o instanceof JavaRoot && ((JavaRoot) o).getOrigin() != null
-//					&& (((JavaRoot) o).getOrigin().equals(Origin.ARCHIVE)
-//							|| ((JavaRoot) o).getOrigin().equals(Origin.BINDING))) {
-//				EcoreUtil.remove(o);
-//			}
-
-			// Remove all Java Statements, since PCM propagation currently cannot account
-			// for them. Make sure to exclude ConcreteClassifiers, as they are
-			// Statement instances.
-			else if (o instanceof Statement && !(o instanceof ConcreteClassifier)) {
-				EcoreUtil.remove(o);
-			}
-			// Remove all Expressions, since they are not considered in PCM
-			// propagation
-			else if (o instanceof Expression) {
-				EcoreUtil.remove(o);
-			}
-			// Remove all TypeArguments, since they are not considered in PCM
-			// propagation
-			else if (o instanceof TypeArgument) {
-				EcoreUtil.remove(o);
-			}
-			// Remove all TypeArguments, since they are not considered in PCM
-			// propagation
-			else if (o instanceof ArrayDimension) {
-				EcoreUtil.remove(o);
-			}
-			// Remove all non Public / Private modifiers, since they are not considered in
-			// PCM propagation
-			else if (o instanceof Modifier && !(o instanceof Public || o instanceof Private)) {
-				EcoreUtil.remove(o);
-			}
-		}
-
-		result.setJaccardCoefficientForAdaptedJavaModelInPcmToJavaPropagation(
-				computeJCForJava(resWrapper.getPropagatedJavaModel(), adaptedRes));
-
-		ResourceOperationsUtil.saveResource(adaptedRes);
-		adaptedRes.unload();
-		adaptedRes.getResourceSet().getResources().remove(adaptedRes);
-	}
-
-	private void setJCForAdaptedPCMs() {
-		LOGGER.info("Computing JC for adapted PCM (Pcm -> Java propagation)");
-
-		var adaptedRes = ResourceOperationsUtil.loadNewResourceInstance(resWrapper.getTargetPcmRepository());
-		var adaptedResPath = resWrapper.getExperimentLayout().getPropagatedDirLayout().getRootDirPath()
-				.resolve(PcmToJavaChangePropagationDirLayoutConstants.getExperimentresultadaptedmodelsdir())
-				.resolve(adaptedRes.getURI().lastSegment());
-		adaptedRes.setURI(ResourceOperationsUtil.pathToURI(adaptedResPath));
-
-		var allContents = new ArrayList<EObject>();
-		adaptedRes.getAllContents().forEachRemaining(allContents::add);
-		for (var o : allContents) {
-			if (o.eResource() != adaptedRes)
-				continue;
-			// Remove all loop / branch bodies and branch transitions, since PCM propagation
-			// does not consider them
-			if ((o instanceof ResourceDemandingBehaviour
-					&& (((ResourceDemandingBehaviour) o).getAbstractLoopAction_ResourceDemandingBehaviour() != null
-							|| ((ResourceDemandingBehaviour) o)
-									.getAbstractBranchTransition_ResourceDemandingBehaviour() != null))
-					|| o instanceof AbstractBranchTransition)
-				EcoreUtil.remove(o);
-		}
-		;
-
-		result.setJaccardCoefficientForAdaptedPcmRepositoryInPcmToJavaPropagation(
-				computeJCForPcm(resWrapper.getPropagatedPcmRepository(), adaptedRes));
-
-		ResourceOperationsUtil.saveResource(adaptedRes);
-		adaptedRes.unload();
-		adaptedRes.getResourceSet().getResources().remove(adaptedRes);
 	}
 
 	private void addCRSs() {
