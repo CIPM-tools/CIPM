@@ -363,8 +363,16 @@ public class PcmToJavaChangePropagationTest {
 
 	protected List<ChangePropagationSpecification> getCPRs() {
 		List<ChangePropagationSpecification> changeSpecs = new ArrayList<>();
-		changeSpecs.add(new PcmInitChangePropagationSpecification());
-		changeSpecs.add(new ImInitChangePropagationSpecification());
+		/*
+		 * Do not add the PcmInit and ImInit change propagation specifications here,
+		 * because the top-level root elements of PCM and IM (Repository and
+		 * InstrumentationModel respectively) should be copies of their counterparts in
+		 * the original TEAMMATES integration test.
+		 * 
+		 * Correspondences between those root elements and EReferences, which would be
+		 * added in the PcmInit and ImInit change propagation specifications, are added
+		 * in the experiment resource wrapper (ExperimentResourceWrapper).
+		 */
 		changeSpecs.add(new CommitIntegrationPCMJavaChangePropagationSpecification());
 		changeSpecs.add(new PcmImUpdateChangePropagationSpecification());
 		return changeSpecs;
