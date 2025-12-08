@@ -135,10 +135,6 @@ public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 		return list;
 	}
 
-	protected Resource getJavaModelResource() {
-		return JavaModelAccess.getJavaModel();
-	}
-
 	protected Resource getJavaModelResourceFromJavaFacade() {
 		return this.javaFacade.getResource();
 	}
