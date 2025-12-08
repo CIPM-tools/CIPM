@@ -46,14 +46,6 @@ public class ResourceOperationsUtil {
 	}
 
 	/**
-	 * Creates, loads and returns a new Resource instance for the same URI. Can be
-	 * used to create a separate Resource instance for the given resource.
-	 */
-	public static Resource loadNewResourceInstance(Resource resource) {
-		return loadResource(resource.getURI());
-	}
-
-	/**
 	 * Loads and returns the given resource. Does not create a new resource
 	 * instance.
 	 */
