@@ -19,6 +19,7 @@
 		<module>cipm.consistency.domains.im</module>
 		<module>cipm.consistency.domains.java</module>
 		<module>cipm.consistency.domains.pcm</module>
+		<module>cipm.consistency.measurements</module>
 		<module>cipm.consistency.models.instrumentation</module>
 		<module>cipm.consistency.tools.evaluation.data</module>
 		<module>org.splevo.commons</module>

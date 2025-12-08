@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel"
+    copyrightText="Copyright (c) 2025&#xA;Developer: Manar Mazkatli&#xA;All rights reserved."
+    modelDirectory="/cipm.consistency.measurements/src-gen" editDirectory="/cipm.consistency.measurements.edit/src-gen"
+    editorDirectory="/cipm.consistency.measurements.editor/src-gen" modelPluginID="cipm.consistency.measurements"
+    modelName="Measurements" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    codeFormatting="true" testsDirectory="/cipm.consistency.measurements.tests/src-gen" importerID="org.eclipse.emf.importer.ecore"
+    complianceLevel="11.0" copyrightFields="false"
+    interfaceNamePattern="" importOrganizing="true">
+  <foreignModel>measurements.ecore</foreignModel>
+  <genPackages prefix="Measurements" basePackage="cipm.consistency" disposableProviderFactory="true"
+      ecorePackage="measurements.ecore#/">
+    <genClasses ecoreClass="measurements.ecore#//Measurements">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference measurements.ecore#//Measurements/repositories"/>
+    </genClasses>
+    <genClasses ecoreClass="measurements.ecore#//MeasurementsRepository">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//MeasurementsRepository/uri"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//MeasurementsRepository/vcsUri"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//MeasurementsRepository/commit"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference measurements.ecore#//MeasurementsRepository/blocks"/>
+    </genClasses>
+    <genClasses ecoreClass="measurements.ecore#//MeasurementsBlock">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference measurements.ecore#//MeasurementsBlock/records"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="measurements.ecore#//MeasurementRecord"/>
+    <genClasses ecoreClass="measurements.ecore#//PCMContextRecord"/>
+    <genClasses ecoreClass="measurements.ecore#//SessionContextRecord">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//SessionContextRecord/sessionID"/>
+    </genClasses>
+    <genClasses ecoreClass="measurements.ecore#//HostContextRecord">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//HostContextRecord/hostID"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//HostContextRecord/hostName"/>
+    </genClasses>
+    <genClasses ecoreClass="measurements.ecore#//ServiceContextRecord">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//ServiceContextRecord/serviceID"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//ServiceContextRecord/serviceExecutionID"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//ServiceContextRecord/callerExecutionID"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//ServiceContextRecord/externalCallID"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//ServiceContextRecord/entryTime"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//ServiceContextRecord/exitTime"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//ServiceContextRecord/parameters"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//ServiceContextRecord/returnValue"/>
+    </genClasses>
+    <genClasses ecoreClass="measurements.ecore#//InternalActionRecord">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//InternalActionRecord/internalActionID"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//InternalActionRecord/requestedResourceID"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//InternalActionRecord/entryTime"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//InternalActionRecord/exitTime"/>
+    </genClasses>
+    <genClasses ecoreClass="measurements.ecore#//InternalCallRecord">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//InternalCallRecord/internalCallID"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//InternalCallRecord/parameters"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//InternalCallRecord/entryTime"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//InternalCallRecord/exitTime"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//InternalCallRecord/returnValue"/>
+    </genClasses>
+    <genClasses ecoreClass="measurements.ecore#//ResourceUtilizationRecord">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//ResourceUtilizationRecord/resourceID"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//ResourceUtilizationRecord/utilization"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//ResourceUtilizationRecord/timestamp"/>
+    </genClasses>
+    <genClasses ecoreClass="measurements.ecore#//LoopActionRecord">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//LoopActionRecord/loopID"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//LoopActionRecord/loopIterationCount"/>
+    </genClasses>
+    <genClasses ecoreClass="measurements.ecore#//BranchActionRecord">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//BranchActionRecord/branchID"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute measurements.ecore#//BranchActionRecord/executedBranchID"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

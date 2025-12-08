@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Bundle-SymbolicName: cipm.consistency.measurements;singleton:=true
+Bundle-Version: 0.2.0.qualifier
+Bundle-ClassPath: .
+Bundle-Vendor: %providerName
+Bundle-Localization: plugin
+Export-Package: cipm.consistency.measurements,
+ cipm.consistency.measurements.impl,
+ cipm.consistency.measurements.util
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.emf.ecore;visibility:=reexport
+Bundle-ActivationPolicy: lazy
+Automatic-Module-Name: cipm.consistency.measurements
+Bundle-RequiredExecutionEnvironment: JavaSE-11
