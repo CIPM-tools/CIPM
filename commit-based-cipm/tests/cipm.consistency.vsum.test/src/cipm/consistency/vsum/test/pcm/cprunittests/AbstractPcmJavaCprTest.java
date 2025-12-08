@@ -2,7 +2,6 @@ package cipm.consistency.vsum.test.pcm.cprunittests;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 
-import cipm.consistency.commitintegration.lang.detection.strategy.ComponentDetectionStrategy;
 import cipm.consistency.commitintegration.lang.java.JavaModelFacade;
 import cipm.consistency.commitintegration.settings.CommitIntegrationSettingsContainer;
 import cipm.consistency.cpr.pcmjava.JavaModelAccess;
@@ -23,6 +21,11 @@ import cipm.consistency.models.ModelFacade;
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.framework.views.changederivation.DefaultStateBasedChangeResolutionStrategy;
 
+/**
+ * An abstract test class for dummy PCM to Java CPRs.
+ * 
+ * @author Alp Torac Genc
+ */
 public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 	private static final Path javaCommitIntegrationSettingsContainer = Path.of("javaSettings.txt");
 	private JavaModelFacade javaFacade;
@@ -49,6 +52,12 @@ public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 		super.setup();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * <p>
+	 * Resets the {@link PcmUserInteractionManager}.
+	 */
 	@AfterEach
 	@Override
 	public void tearDown() {
@@ -64,7 +73,6 @@ public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 	 */
 	protected JavaModelFacade setupJavaFacade() {
 		var model = new JavaModelFacade();
-		model.setComponentDetectionStrategies(getComponentDetectionStrategies());
 		model.initialize(this.getPropagatedModelsRootPath());
 		if (model.getResource() == null) {
 			model.parseSourceCodeDir(this.getPropagatedModelsRootPath());
@@ -107,6 +115,10 @@ public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 		}
 	}
 
+	/**
+	 * @return The EChanges representing how the given modifications affect the
+	 *         given resource.
+	 */
 	protected List<EChange> getEChangesFor(Resource resourceInModelFacade, Consumer<Resource> modifications) {
 		var unmodifiedResDupl = this.getNewInstanceForResourceFromPcmFacade(resourceInModelFacade);
 		var modifiedResDupl = this.getNewInstanceForResourceFromPcmFacade(resourceInModelFacade);
@@ -120,12 +132,6 @@ public abstract class AbstractPcmJavaCprTest extends AbstractPcmCprTest {
 	protected List<ModelFacade> getVsumFacadeModels() {
 		var list = super.getVsumFacadeModels();
 		list.add(javaFacade);
-		return list;
-	}
-
-	protected List<ComponentDetectionStrategy> getComponentDetectionStrategies() {
-		var list = new ArrayList<ComponentDetectionStrategy>();
-		list.add(new UnnamedModuleComponentDetectionStrategy());
 		return list;
 	}
 

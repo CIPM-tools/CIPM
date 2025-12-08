@@ -41,7 +41,6 @@ import cipm.consistency.vsum.test.appspace.LoggingSetup;
 import cipm.consistency.vsum.test.pcm.ChangeSaver;
 import cipm.consistency.vsum.test.pcm.PcmVsumFacade;
 import cipm.consistency.vsum.test.pcm.PcmVsumFacadeImpl;
-import cipm.consistency.vsum.test.pcm.cprunittests.UnnamedModuleComponentDetectionStrategy;
 import mir.reactions.pcmImUpdate.PcmImUpdateChangePropagationSpecification;
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
@@ -328,7 +327,6 @@ public class PcmToJavaChangePropagationTest {
 
 	protected JavaModelFacade setupJavaFacade() {
 		var model = new JavaModelFacade();
-		model.setComponentDetectionStrategies(List.of(new UnnamedModuleComponentDetectionStrategy()));
 		model.initialize(getDirLayout().getPropagatedDirLayout().getCodeDirPath());
 		var modelRes = model.getResource();
 		JavaModelAccess.setJavaModel(modelRes);

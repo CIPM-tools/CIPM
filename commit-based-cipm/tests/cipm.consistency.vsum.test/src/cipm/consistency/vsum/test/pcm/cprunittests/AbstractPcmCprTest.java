@@ -39,6 +39,11 @@ import jamopp.resource.JavaResource2Factory;
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
 
+/**
+ * An abstract test class for dummy PCM to Java CPRs.
+ * 
+ * @author Alp Torac Genc
+ */
 public abstract class AbstractPcmCprTest {
 	private static final Logger LOGGER = Logger.getLogger(AbstractPcmCprTest.class);
 
@@ -61,6 +66,11 @@ public abstract class AbstractPcmCprTest {
 	private PcmFacade pcmFacade;
 	private ImFacade imFacade;
 
+	/**
+	 * Sets up for the test by creating the file layout and initialising
+	 * {@link ModelFacade} instances for PCM and IM, as well as the VSUM facade for
+	 * PCM to Java change propagation.
+	 */
 	@BeforeEach
 	public void setup() {
 		this.setupModelResources();
@@ -71,6 +81,9 @@ public abstract class AbstractPcmCprTest {
 		vsumFacade = this.setupVsumFacade();
 	}
 
+	/**
+	 * Cleans all saved test resource files and VSUM models.
+	 */
 	@AfterEach
 	public void tearDown() {
 		vsumFacade.close();
@@ -153,6 +166,9 @@ public abstract class AbstractPcmCprTest {
 		return pcmFacade;
 	}
 
+	/**
+	 * @return The IM facade that will be used within this test.
+	 */
 	protected ImFacade setupImFacade() {
 		var imFacade = new ImFacade();
 		imFacade.initialize(this.getPropagatedModelsRootPath());
@@ -173,6 +189,10 @@ public abstract class AbstractPcmCprTest {
 		return new PcmVsumFacadeImpl(this.getRootPath(), this.getVsumFacadeModels(), this.getCPRs());
 	}
 
+	/**
+	 * @return The {@link ModelFacade} instances that are currently used by the
+	 *         VSUM.
+	 */
 	protected List<ModelFacade> getVsumFacadeModels() {
 		var list = new ArrayList<ModelFacade>();
 		list.add(pcmFacade);
@@ -180,6 +200,9 @@ public abstract class AbstractPcmCprTest {
 		return list;
 	}
 
+	/**
+	 * @return The list of CPRs that will be used by the VSUM.
+	 */
 	protected abstract List<ChangePropagationSpecification> getCPRs();
 
 	/**
@@ -222,16 +245,6 @@ public abstract class AbstractPcmCprTest {
 	protected void failTest(Exception e) {
 		LOGGER.error(String.format("Exception thrown during test: ", e.getClass().getSimpleName()), e);
 		Assertions.fail(e);
-	}
-
-	protected Propagation propagatePcmChanges(Resource pcmResourceToPropagate, Collection<EChange> changes) {
-		LOGGER.info(String.format("Propagating"));
-
-		this.getPcmVsumFacade().addChanges(changes);
-		// the actual propagation is done here
-		var propagation = this.getPcmVsumFacade().propagateResource(pcmResourceToPropagate);
-
-		return propagation;
 	}
 
 	protected void logPropagatedChanges(Propagation props) {
@@ -343,6 +356,12 @@ public abstract class AbstractPcmCprTest {
 		return this.vsumFacade;
 	}
 
+	/**
+	 * Applies the given changes to the given resource and then propagates them to
+	 * other {@link ModelFacade} instances within the VSUM.
+	 * 
+	 * @return The result of the change propagation
+	 */
 	protected Propagation propagateChangesToResource(Resource res, Collection<EChange> changes) {
 		this.getPcmVsumFacade().addChanges(changes);
 		var prop = this.getPcmVsumFacade().propagateResource(res);

@@ -52,7 +52,7 @@ public class PcmCprTriggerTest extends AbstractPcmCprTest {
 
 		// Propagate the changes to repoRes, which results in applying the change to the
 		// Resource in PcmFacade
-		var props = propagatePcmChanges(pcmRepoResource, List.of(attrChange));
+		var props = propagateChangesToResource(pcmRepoResource, List.of(attrChange));
 		// The propagation DOES NOT change the passed Resource instance (repoRes here)
 		// It instead applies the change to the Resource inside the PcmFacade
 
