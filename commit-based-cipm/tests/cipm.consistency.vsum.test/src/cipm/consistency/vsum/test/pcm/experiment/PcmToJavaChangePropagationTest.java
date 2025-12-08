@@ -42,9 +42,7 @@ import cipm.consistency.vsum.test.pcm.ChangeSaver;
 import cipm.consistency.vsum.test.pcm.PcmVsumFacade;
 import cipm.consistency.vsum.test.pcm.PcmVsumFacadeImpl;
 import cipm.consistency.vsum.test.pcm.cprunittests.UnnamedModuleComponentDetectionStrategy;
-import mir.reactions.imInit.ImInitChangePropagationSpecification;
 import mir.reactions.pcmImUpdate.PcmImUpdateChangePropagationSpecification;
-import mir.reactions.pcmInit.PcmInitChangePropagationSpecification;
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
 
@@ -378,23 +376,13 @@ public class PcmToJavaChangePropagationTest {
 		return changeSpecs;
 	}
 
-	private static final String experimentRootDirNamePrefix = "Teammates-Experiment-";
-
-	private static final List<JavaToPcmPropagationDirLayout> dirLayouts = new ArrayList<>();
-
 	@Test
 	public void testPcmPropagation() {
 		LoggingSetup.setMinLogLevel(Level.DEBUG);
+		var targetDirName = "target";
 
-		dirLayouts.add(new JavaToPcmPropagationDirLayout(Paths.get("target", "TEAMMATESCITest-1-6484257")));
-		dirLayouts.add(new JavaToPcmPropagationDirLayout(Paths.get("target", "TEAMMATESCITest-2-48b67ba")));
-		dirLayouts.add(new JavaToPcmPropagationDirLayout(Paths.get("target", "TEAMMATESCITest-3-83f518e")));
-		dirLayouts.add(new JavaToPcmPropagationDirLayout(Paths.get("target", "TEAMMATESCITest-4-f33d0bc")));
-		dirLayouts.add(new JavaToPcmPropagationDirLayout(Paths.get("target", "TEAMMATESCITest-5-ce4463a")));
-
-		var pcmToJavaPropTest = new PcmToJavaChangePropagationTest();
-
-		pcmToJavaPropTest.pcmToJavaChangePropagationTestTemplate(new PcmToJavaChangePropagationDirLayout(null,
-				dirLayouts.get(0), Path.of("target", experimentRootDirNamePrefix + 1).toAbsolutePath()));
+		pcmToJavaChangePropagationTestTemplate(new PcmToJavaChangePropagationDirLayout(null,
+				new JavaToPcmPropagationDirLayout(Paths.get(targetDirName, "TEAMMATESCITest-1-6484257")),
+				Path.of(targetDirName, "Teammates-Experiment-" + 1).toAbsolutePath()));
 	}
 }
