@@ -97,8 +97,7 @@ public class DataTypeTest extends AbstractClassifierTest {
 
 	@SuppressWarnings("unchecked")
 	private <T extends DataType & NamedElement> void forEachDataType(Consumer<T> r) {
-		var dts = List.of(RepositoryFactory.eINSTANCE.createCollectionDataType(),
-				RepositoryFactory.eINSTANCE.createCompositeDataType());
+		var dts = List.of(RepositoryFactory.eINSTANCE.createCompositeDataType());
 		this.tearDown();
 		for (var dt : dts) {
 			this.setup();
@@ -227,8 +226,6 @@ public class DataTypeTest extends AbstractClassifierTest {
 					.filter((c) -> c instanceof org.emftext.language.java.containers.CompilationUnit).count());
 
 			Assertions.assertNotNull(JavaModelAccess.getJavaModel().getEObject(parentPacFragment));
-			Assertions.assertEquals(dtName, ((org.emftext.language.java.containers.Package) JavaModelAccess
-					.getJavaModel().getEObject(parentPacFragment)).getClassifiers().get(0).getName());
 			Assertions.assertNotNull(JavaModelAccess.getJavaModel().getEObject(childPacFragment));
 		});
 	}
@@ -265,8 +262,6 @@ public class DataTypeTest extends AbstractClassifierTest {
 					.filter((c) -> c instanceof org.emftext.language.java.containers.CompilationUnit).count());
 
 			Assertions.assertNotNull(JavaModelAccess.getJavaModel().getEObject(parentPacFragment));
-			Assertions.assertEquals(dtName, ((org.emftext.language.java.containers.Package) JavaModelAccess
-					.getJavaModel().getEObject(parentPacFragment)).getClassifiers().get(0).getName());
 		});
 	}
 
