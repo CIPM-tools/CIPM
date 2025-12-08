@@ -83,12 +83,6 @@ public final class JavaModelAccess {
 		return clsSet;
 	}
 
-	public static ConcreteClassifier getObjectClass() {
-		var potentialMatches = findPotentialConcreteClassifiers(Object.class.getSimpleName());
-		return potentialMatches.stream().filter((cls) -> Object.class.getName().equals(cls.getQualifiedName()))
-				.findFirst().orElseGet(() -> null);
-	}
-
 	/**
 	 * Unloads the current Java code model, if it is loaded.
 	 */
