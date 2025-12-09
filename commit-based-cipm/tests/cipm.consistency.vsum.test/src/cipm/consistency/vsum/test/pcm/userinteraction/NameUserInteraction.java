@@ -101,11 +101,6 @@ public class NameUserInteraction extends AbstractUserInteraction {
 	}
 
 	@Override
-	public List<EObject> getAffectedPCMElements() {
-		return List.of(triggeringPCMElement);
-	}
-
-	@Override
 	public List<EObject> getAffectedJavaElements() {
 		return List.of(toBeNamed);
 	}

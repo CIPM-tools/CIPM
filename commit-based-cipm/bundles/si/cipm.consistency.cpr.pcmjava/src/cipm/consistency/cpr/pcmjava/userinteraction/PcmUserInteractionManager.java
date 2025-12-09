@@ -11,15 +11,28 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 
 import cipm.consistency.cpr.pcmjava.logger.PcmToJavaChangePropagationLogger;
 
+/**
+ * A singleton for managing user interactions ({@link AbstractUserInteraction})
+ * throughout PCM to Java change propagation. User interactions should be
+ * registered to and handled by this class.
+ * 
+ * <p>
+ * Allows registering strategies ({@link ConflictResolutionStrategy}) that
+ * attempt to automate user interactions for better automaticity.
+ * 
+ * <p>
+ * Aggregates information on features of Java code model elements and
+ * correspondences between Java and PCM elements. Provides this aggregated
+ * information to future user interactions to potentially automate them.
+ * 
+ * @author Alp Torac Genc
+ */
 public final class PcmUserInteractionManager {
 	private static final Map<Class<? extends CanModifyEntries>, Integer> addedInstanceCount = new HashMap<>();
 	private static final List<AbstractUserInteraction> wrappers = new ArrayList<AbstractUserInteraction>();
 
 	private static final List<ConflictResolutionStrategy> resolutionStrats = new ArrayList<ConflictResolutionStrategy>();
-	/**
-	 * Assumption: All features only have to be changed once at most after change
-	 * pre-processing
-	 */
+
 	private static final FeatureEntryContainer desiredFeatureValues = new FeatureEntryContainer();
 	private static final CorrespondenceEntryContainer desiredCorrespondences = new CorrespondenceEntryContainer();
 
@@ -131,16 +144,6 @@ public final class PcmUserInteractionManager {
 		return desiredFeatureValues.hasDesiredFeatureValue(triggeringPCMElement, affectedJavaElement, feat);
 	}
 
-	public static Object removeDesiredFeatureValue(EObject triggeringPCMElement, EStructuralFeature feat,
-			Object value) {
-		return desiredFeatureValues.removeDesiredFeatureValue(triggeringPCMElement, feat, value);
-	}
-
-	public static Object removeDesiredFeatureValue(EObject triggeringPCMElement, EObject affectedJavaElement,
-			EStructuralFeature feat, Object value) {
-		return desiredFeatureValues.removeDesiredFeatureValue(triggeringPCMElement, affectedJavaElement, feat, value);
-	}
-
 	public static void setDesiredFeatureValue(CanModifyEntries modifierOfFeatEntry, FeatureEntry featEntry) {
 		desiredFeatureValues.setDesiredFeatureValue(featEntry);
 	}
@@ -186,10 +189,6 @@ public final class PcmUserInteractionManager {
 
 	public static boolean hasDesiredCorrespondence(EObject knownSide, String correspondenceTag) {
 		return desiredCorrespondences.hasDesiredCorrespondence(knownSide, correspondenceTag);
-	}
-
-	public static Object removeDesiredCorrespondence(EObject knownSide, EObject otherSide, String correspondenceTag) {
-		return desiredCorrespondences.removeDesiredCorrespondence(knownSide, otherSide, correspondenceTag);
 	}
 
 	public static void setDesiredCorrespondence(CanModifyEntries modifierOfCorEntry, CorrespondenceEntry corEntry) {

@@ -4,6 +4,21 @@ import java.util.List;
 
 import org.emftext.language.java.commons.CommonsPackage;
 
+/**
+ * A strategy for forcefully automating manual user interactions. Currently only
+ * accounts for {@link NamespaceUserInteraction} and
+ * {@link JavaCorrespondentDecisionUserInteraction}.
+ * <ul>
+ * <li>For {@link NamespaceUserInteraction}, inputs the given namespaces
+ * <li>For {@link JavaCorrespondentDecisionUserInteraction}, always picks the
+ * first choice
+ * </ul>
+ * <p>
+ * This strategy is not realistic and is only meant to fully automate the PCM to
+ * Java change propagation experiment.
+ * 
+ * @author Alp Torac Genc
+ */
 public class AutomatingConflictResolutionStrategy extends ConflictResolutionStrategy {
 	private List<String> defaultNss;
 

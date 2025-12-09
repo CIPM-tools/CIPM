@@ -8,6 +8,14 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
+/**
+ * Aggregates {@link FeatureEntry} instances and offers methods for retrieving
+ * them.
+ * 
+ * @see {@link FeatureEntry} for more information on feature entries
+ * 
+ * @author Alp Torac Genc
+ */
 public class FeatureEntryContainer {
 	private final Set<FeatureEntry> desiredFeatureValues = new HashSet<FeatureEntry>();
 

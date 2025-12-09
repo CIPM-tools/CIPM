@@ -12,6 +12,24 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 
 import com.google.common.base.Preconditions;
 
+/**
+ * Contains information on correspondences. Each instance of this class should
+ * have a knownElement, which is one side of the correspondence that is known
+ * during this instance's construction. Additionally, all instances of this
+ * class should have a correspondence tag that describes the correspondence (can
+ * be empty String).
+ * 
+ * <p>
+ * Instead of representing 1 to 1 correspondences, represents 1 to many
+ * correspondences, because a user interaction could be asking for multiple
+ * correspondences for a knownElement at once.
+ * 
+ * <p>
+ * A correspondence entry is considered "complete", if it has any correspondents
+ * other than the knownElement.
+ * 
+ * @author Alp Torac Genc
+ */
 public class CorrespondenceEntry implements IPcmUserInteractionManagerEntry {
 	private static final PcmUserInteractionManagerEntrySerialiser serialiser = new PcmUserInteractionManagerEntrySerialiser();
 

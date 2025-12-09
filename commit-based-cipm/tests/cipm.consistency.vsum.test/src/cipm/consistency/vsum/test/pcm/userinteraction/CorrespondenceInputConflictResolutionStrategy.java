@@ -1,9 +1,13 @@
-package cipm.consistency.cpr.pcmjava.userinteraction;
+package cipm.consistency.vsum.test.pcm.userinteraction;
 
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.emf.ecore.EObject;
+
+import cipm.consistency.cpr.pcmjava.userinteraction.AbstractUserInteraction;
+import cipm.consistency.cpr.pcmjava.userinteraction.ConflictResolutionStrategy;
+import cipm.consistency.cpr.pcmjava.userinteraction.CorrespondenceEntry;
 
 public class CorrespondenceInputConflictResolutionStrategy extends ConflictResolutionStrategy {
 	private final List<EObject> triggeringPCMelement;

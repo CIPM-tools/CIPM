@@ -9,6 +9,12 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 
 import tools.vitruv.change.interaction.UserInteractionFactory;
 
+/**
+ * A user interaction that allows choosing Java code model element
+ * correspondents for a PCM element.
+ * 
+ * @author Alp Torac Genc
+ */
 public class JavaCorrespondentDecisionUserInteraction extends AbstractUserInteraction {
 	private static final String noneChoiceText = "None of the above";
 
@@ -112,10 +118,5 @@ public class JavaCorrespondentDecisionUserInteraction extends AbstractUserIntera
 	@Override
 	public List<EObject> getAffectedJavaElements() {
 		return List.copyOf(possibleJavaCorrespondents);
-	}
-
-	@Override
-	public List<EObject> getAffectedPCMElements() {
-		return List.of(triggeringPCMelement);
 	}
 }

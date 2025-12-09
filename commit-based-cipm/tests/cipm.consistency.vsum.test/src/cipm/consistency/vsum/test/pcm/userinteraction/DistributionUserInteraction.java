@@ -135,8 +135,7 @@ public class DistributionUserInteraction extends AbstractUserInteraction {
 
 	@Override
 	public List<EObject> getAffectedPCMElements() {
-		var pcmElems = new ArrayList<EObject>();
-		pcmElems.add(deletedElement);
+		var pcmElems = new ArrayList<EObject>(getTriggeringPCMelements());
 		pcmElems.addAll(possibleDistributionTargets);
 		return pcmElems;
 	}

@@ -7,6 +7,12 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
+/**
+ * A class that can be used to serialise {@link IPcmUserInteractionManagerEntry}
+ * implementors.
+ * 
+ * @author Alp Torac Genc
+ */
 public class PcmUserInteractionManagerEntrySerialiser {
 	private static final String unsetKeySerialisation = "Unset";
 	private static final String noResourceSerialisation = "without resource";

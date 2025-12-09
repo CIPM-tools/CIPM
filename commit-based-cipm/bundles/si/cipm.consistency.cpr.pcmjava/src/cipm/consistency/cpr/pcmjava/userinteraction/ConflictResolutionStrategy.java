@@ -8,6 +8,17 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 
 import cipm.consistency.cpr.pcmjava.logger.PcmToJavaChangePropagationLogger;
 
+/**
+ * Encapsulates strategies for automating user interactions under certain
+ * conditions. Integrates {@link PcmUserInteractionManager} and
+ * {@link PcmToJavaChangePropagationLogger}, since concrete classes'
+ * interactions with them are mostly similar.
+ * <p>
+ * Use {@link #applyIfPossible(AbstractUserInteraction)} to attempt to apply
+ * this strategy to user interactions.
+ * 
+ * @author Alp Torac Genc
+ */
 public abstract class ConflictResolutionStrategy implements CanModifyEntries {
 	private String id;
 
@@ -30,6 +41,11 @@ public abstract class ConflictResolutionStrategy implements CanModifyEntries {
 		return super.toString();
 	}
 
+	/**
+	 * Attempts to apply this strategy for the given user interaction
+	 * 
+	 * @return Whether this strategy was applied to the given user interaction
+	 */
 	public boolean applyIfPossible(AbstractUserInteraction userInteraction) {
 		var applicable = checkInternalApplicationConditions(userInteraction);
 		if (applicable) {
@@ -39,62 +55,124 @@ public abstract class ConflictResolutionStrategy implements CanModifyEntries {
 			PcmToJavaChangePropagationLogger.getInstance().conflictResolutionStrategyAppliedFor(this, userInteraction);
 			var uiIsResolved = userInteraction.isResolved();
 			if (!uiWasResolved && uiIsResolved) {
-				PcmToJavaChangePropagationLogger.getInstance().conflictResolutionStrategyInterceptedUserInteraction(this, userInteraction);
+				PcmToJavaChangePropagationLogger.getInstance()
+						.conflictResolutionStrategyInterceptedUserInteraction(this, userInteraction);
 			} else if (!uiWasResolved && !uiIsResolved) {
-				PcmToJavaChangePropagationLogger.getInstance().conflictResolutionStrategyPartiallyInterceptedUserInteraction(this,
-						userInteraction);
+				PcmToJavaChangePropagationLogger.getInstance()
+						.conflictResolutionStrategyPartiallyInterceptedUserInteraction(this, userInteraction);
 			}
 		}
 		return applicable;
 	}
 
+	/**
+	 * Reports the given feature entry to {@link PcmUserInteractionManager}, in
+	 * efforts to automate the given user interaction.
+	 */
 	protected void reportDesiredFeatureValue(AbstractUserInteraction userInteraction, FeatureEntry featEntry) {
 		PcmUserInteractionManager.setDesiredFeatureValue(this, featEntry);
-		PcmToJavaChangePropagationLogger.getInstance().conflictResolutionStrategyReportedFeature(userInteraction, this, featEntry);
+		PcmToJavaChangePropagationLogger.getInstance().conflictResolutionStrategyReportedFeature(userInteraction, this,
+				featEntry);
 	}
 
+	/**
+	 * Reports the given correspondence entry to {@link PcmUserInteractionManager},
+	 * in efforts to automate the given user interaction.
+	 */
 	protected void reportDesiredCorrespondence(AbstractUserInteraction userInteraction, CorrespondenceEntry corEntry) {
 		PcmUserInteractionManager.setDesiredCorrespondence(this, corEntry);
-		PcmToJavaChangePropagationLogger.getInstance().conflictResolutionStrategyReportedCorrespondence(userInteraction, this, corEntry);
+		PcmToJavaChangePropagationLogger.getInstance().conflictResolutionStrategyReportedCorrespondence(userInteraction,
+				this, corEntry);
 	}
 
+	/**
+	 * Applies the actual logic of this strategy to the given user interaction.
+	 * Concrete classes should implement their user interaction automation logic
+	 * here.
+	 */
 	protected abstract void applyStrategy(AbstractUserInteraction userInteraction);
 
+	/**
+	 * @return Whether this strategy is applicable to the given user interaction.
+	 */
 	protected abstract boolean checkInternalApplicationConditions(AbstractUserInteraction userInteraction);
 
-	public boolean isRelevantFor(AbstractUserInteraction userInteraction, List<EObject> triggeringPCMelement,
+	/**
+	 * A variant of
+	 * {@link #isRelevantFor(AbstractUserInteraction, List, boolean, List, boolean, List, boolean)}
+	 * that does not consider any sub-list matches.
+	 */
+	public boolean isRelevantFor(AbstractUserInteraction userInteraction, List<EObject> pcmContext,
 			List<EObject> javaContext, List<EStructuralFeature> featList) {
-		return isRelevantFor(userInteraction, triggeringPCMelement, false, javaContext, false, featList, false);
+		return isRelevantFor(userInteraction, pcmContext, false, javaContext, false, featList, false);
 	}
 
-	public boolean isRelevantFor(AbstractUserInteraction userInteraction, List<EObject> triggeringPCMelement,
-			boolean considerTriggeringPCMelementSubset, List<EObject> javaContext, boolean considerJavaContextSubset,
+	/**
+	 * @param userInteraction           A given user interaction
+	 * @param pcmContext                A list of PCM elements that this strategy is
+	 *                                  applicable for
+	 * @param considerPcmContextSubset  Whether this strategy still applies, if a
+	 *                                  only sub-list of pcmContext is involved in
+	 *                                  userInteraction
+	 * @param javaContext               A list of Java code model elements that this
+	 *                                  strategy is applicable for
+	 * @param considerJavaContextSubset Whether this strategy still applies, if a
+	 *                                  only sub-list of javaContext is involved in
+	 *                                  userInteraction
+	 * @param featList                  A list of EStructuralFeatures that this
+	 *                                  strategy is applicable for
+	 * @param considerFeatListSubset    Whether this strategy still applies, if a
+	 *                                  only sub-list of featList is involved in
+	 *                                  userInteraction
+	 * 
+	 * @return Whether this strategy is relevant, given the parameters
+	 */
+	public boolean isRelevantFor(AbstractUserInteraction userInteraction, List<EObject> pcmContext,
+			boolean considerPcmContextSubset, List<EObject> javaContext, boolean considerJavaContextSubset,
 			List<EStructuralFeature> featList, boolean considerFeatListSubset) {
-		return (isApplicableForTriggeringPCMElements(userInteraction, triggeringPCMelement,
-				considerTriggeringPCMelementSubset)
+		return (isApplicableForTriggeringPCMElements(userInteraction, pcmContext, considerPcmContextSubset)
 				|| isApplicableForJavaContext(userInteraction, javaContext, considerJavaContextSubset))
 				&& isApplicableForFeatList(userInteraction, featList, considerFeatListSubset);
 	}
 
+	/**
+	 * @param userInteraction          A given user interaction
+	 * @param pcmContext               A list of PCM elements that this strategy is
+	 *                                 applicable for
+	 * @param considerPcmContextSubset Whether this strategy still applies, if a
+	 *                                 only sub-list of pcmContext is involved in
+	 *                                 userInteraction
+	 * @return Whether this strategy is relevant, given the parameters
+	 */
 	public boolean isApplicableForTriggeringPCMElements(AbstractUserInteraction userInteraction,
-			List<EObject> triggeringPCMelement, boolean considerJavaContextSubset) {
+			List<EObject> pcmContext, boolean considerPcmContextSubset) {
 		var uiTriggeringPCMElems = userInteraction.getTriggeringPCMelements();
 		if (uiTriggeringPCMElems.isEmpty())
 			return true;
 
-		if (triggeringPCMelement == null || triggeringPCMelement.isEmpty())
+		if (pcmContext == null || pcmContext.isEmpty())
 			return false;
 
-		return (considerJavaContextSubset && uiTriggeringPCMElems.stream()
-				.anyMatch((uipcm) -> triggeringPCMelement.stream().anyMatch((pcm) -> EcoreUtil.equals(uipcm, pcm))))
+		return (considerPcmContextSubset && uiTriggeringPCMElems.stream()
+				.anyMatch((uipcm) -> pcmContext.stream().anyMatch((pcm) -> EcoreUtil.equals(uipcm, pcm))))
 
 				||
 
-				(!considerJavaContextSubset && uiTriggeringPCMElems.size() == triggeringPCMelement.size()
-						&& uiTriggeringPCMElems.stream().allMatch((uipcm) -> triggeringPCMelement.stream()
-								.anyMatch((pcm) -> EcoreUtil.equals(uipcm, pcm))));
+				(!considerPcmContextSubset && uiTriggeringPCMElems.size() == pcmContext.size()
+						&& uiTriggeringPCMElems.stream().allMatch(
+								(uipcm) -> pcmContext.stream().anyMatch((pcm) -> EcoreUtil.equals(uipcm, pcm))));
 	}
 
+	/**
+	 * @param userInteraction           A given user interaction
+	 * @param javaContext               A list of Java code model elements that this
+	 *                                  strategy is applicable for
+	 * @param considerJavaContextSubset Whether this strategy still applies, if a
+	 *                                  only sub-list of javaContext is involved in
+	 *                                  userInteraction
+	 * 
+	 * @return Whether this strategy is relevant, given the parameters
+	 */
 	public boolean isApplicableForJavaContext(AbstractUserInteraction userInteraction, List<EObject> javaContext,
 			boolean considerJavaContextSubset) {
 		var uiJavaContext = userInteraction.getAffectedJavaElements();
@@ -113,6 +191,16 @@ public abstract class ConflictResolutionStrategy implements CanModifyEntries {
 						.allMatch((uijc) -> javaContext.stream().anyMatch((jc) -> EcoreUtil.equals(uijc, jc))));
 	}
 
+	/**
+	 * @param userInteraction        A given user interaction
+	 * @param featList               A list of EStructuralFeatures that this
+	 *                               strategy is applicable for
+	 * @param considerFeatListSubset Whether this strategy still applies, if a only
+	 *                               sub-list of featList is involved in
+	 *                               userInteraction
+	 * 
+	 * @return Whether this strategy is relevant, given the parameters
+	 */
 	public boolean isApplicableForFeatList(AbstractUserInteraction userInteraction, List<EStructuralFeature> featList,
 			boolean considerFeatListSubset) {
 		var uiFeatList = userInteraction.getDesiredFeatures();

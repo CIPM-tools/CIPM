@@ -9,6 +9,19 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 
 import com.google.common.base.Preconditions;
 
+/**
+ * Contains information on features of model elements. Each instance of this
+ * class should have a EStructuralFeature (for a Java code model element), a PCM
+ * element and a Java code model element. The PCM element is important for
+ * context purposes.
+ * 
+ * <p>
+ * A feature entry is considered "assigned", if it has a value for
+ * {@code javaElement.feature}. That value can also be null. Unless this value
+ * is unset ({@link #unset()}), this instance remains assigned.
+ * 
+ * @author Alp Torac Genc
+ */
 public class FeatureEntry implements IPcmUserInteractionManagerEntry {
 	/**
 	 * Indicates that the value is unset. Null cannot be used for that purpose,
@@ -17,7 +30,7 @@ public class FeatureEntry implements IPcmUserInteractionManagerEntry {
 	private static final Object unsetKey = new Object();
 
 	private static final PcmUserInteractionManagerEntrySerialiser serialiser = new PcmUserInteractionManagerEntrySerialiser();
-	
+
 	private final EObject triggeringPCMElement;
 	private final EObject affectedJavaElement;
 	private final EStructuralFeature affectedJavaElementFeature;
@@ -203,7 +216,7 @@ public class FeatureEntry implements IPcmUserInteractionManagerEntry {
 	public boolean isUnset() {
 		return this.affectedJavaElementFeatureValue == unsetKey;
 	}
-	
+
 	@Override
 	public boolean equals(Object triggeringPCMElement) {
 		if (!(triggeringPCMElement instanceof FeatureEntry)) {

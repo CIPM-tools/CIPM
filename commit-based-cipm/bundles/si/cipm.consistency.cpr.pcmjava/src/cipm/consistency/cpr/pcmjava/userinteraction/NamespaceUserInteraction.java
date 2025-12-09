@@ -10,6 +10,12 @@ import org.emftext.language.java.commons.CommonsPackage;
 
 import tools.vitruv.change.interaction.UserInteractionFactory;
 
+/**
+ * A user interaction that allows inputting namespaces for a Java code model
+ * element that is created as a correspondent of a PCM element.
+ * 
+ * @author Alp Torac Genc
+ */
 public class NamespaceUserInteraction extends AbstractUserInteraction {
 	private static final String noneChoiceText = "None of the above";
 	private final static String namespaceSeparator = "\\.";
@@ -160,10 +166,5 @@ public class NamespaceUserInteraction extends AbstractUserInteraction {
 	@Override
 	public List<EObject> getAffectedJavaElements() {
 		return List.of(toBeAssignedNamespace);
-	}
-
-	@Override
-	public List<EObject> getAffectedPCMElements() {
-		return List.of(triggeringPCMElement);
 	}
 }

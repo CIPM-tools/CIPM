@@ -1,9 +1,13 @@
-package cipm.consistency.cpr.pcmjava.userinteraction;
+package cipm.consistency.vsum.test.pcm.userinteraction;
 
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+
+import cipm.consistency.cpr.pcmjava.userinteraction.AbstractUserInteraction;
+import cipm.consistency.cpr.pcmjava.userinteraction.ConflictResolutionStrategy;
+import cipm.consistency.cpr.pcmjava.userinteraction.FeatureEntry;
 
 public class FeatureInputConflictResolutionStrategy extends ConflictResolutionStrategy {
 	private final List<EObject> triggeringPCMelement;

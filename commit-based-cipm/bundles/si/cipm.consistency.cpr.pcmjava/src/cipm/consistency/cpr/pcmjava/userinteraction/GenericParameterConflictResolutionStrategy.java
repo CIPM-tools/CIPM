@@ -3,6 +3,20 @@ package cipm.consistency.cpr.pcmjava.userinteraction;
 import java.util.List;
 import java.util.function.Predicate;
 
+/**
+ * A strategy for automating user interactions UI that ask for namespaces. If UI
+ * asks for namespaces of a Java code model element matching certain conditions
+ * (set in the constructor of this class), this strategy intercepts UI and makes
+ * it return no namespaces instead.
+ * <p>
+ * The reason for this is, currently Java -> PCM CPRs create a PCM DataType for
+ * each generic type parameter, as PCM currently does not support representing
+ * them by other specialised means. These DataTypes, however, should not have
+ * Java Classifier correspondents, because generic type parameters are no
+ * concrete classifiers.
+ * 
+ * @author Alp Torac Genc
+ */
 public class GenericParameterConflictResolutionStrategy extends ConflictResolutionStrategy {
 	private Predicate<String> genericParameterNamePredicate;
 	private List<String> genericParameterNames;

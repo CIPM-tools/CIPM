@@ -14,8 +14,19 @@ import org.emftext.language.java.commons.NamespaceAwareElement;
 
 import com.google.common.base.Strings;
 
+/**
+ * A strategy for looking up namespaces for certain Java code model elements and
+ * providing them to user interactions asking for them.
+ * 
+ * <p>
+ * This strategy is not realistic and is only used to fully automate the PCM to
+ * Java change propagation experiment.
+ * 
+ * @author Alp Torac Genc
+ */
 public class NamespaceConflictResolutionStrategy extends ConflictResolutionStrategy {
 	private static final Logger LOGGER = Logger.getLogger(NamespaceConflictResolutionStrategy.class);
+	private static final String namespaceSeparatorRegex = "\\.";
 
 	private Resource javaModelRes;
 	private List<EObject> javaElems;
@@ -26,8 +37,6 @@ public class NamespaceConflictResolutionStrategy extends ConflictResolutionStrat
 		this.javaModelRes.getAllContents().forEachRemaining(javaElems::add);
 	}
 
-	// TODO Intercept manual user interactions for generic types
-	
 	@Override
 	protected void applyStrategy(AbstractUserInteraction userInteraction) {
 		var castedUI = (NamespaceUserInteraction) userInteraction;
@@ -75,8 +84,8 @@ public class NamespaceConflictResolutionStrategy extends ConflictResolutionStrat
 				LOGGER.info(String.format("Reporting namespace \"%s\" for %s (name: %s)", nss, castedNE,
 						Strings.nullToEmpty(castedNE.getName())));
 
-				reportDesiredFeatureValue(userInteraction, new FeatureEntry(castedUI.getTriggeringPCMelements().get(0), javaObj,
-						CommonsPackage.Literals.NAMESPACE_AWARE_ELEMENT__NAMESPACES, nss));
+				reportDesiredFeatureValue(userInteraction, new FeatureEntry(castedUI.getTriggeringPCMelements().get(0),
+						javaObj, CommonsPackage.Literals.NAMESPACE_AWARE_ELEMENT__NAMESPACES, nss));
 			} else {
 				castedUI.setSuggestions(List.copyOf(possibleNamespaces));
 			}
@@ -88,8 +97,6 @@ public class NamespaceConflictResolutionStrategy extends ConflictResolutionStrat
 		// Trim the unnecessary "." at the end of nss
 		return nss.length() > 0 ? nss.substring(0, nss.length() - 1) : nss;
 	}
-
-	private static final String namespaceSeparatorRegex = "\\.";
 
 	private List<String> getNamespacesAsList(String nss) {
 		return List.of(nss.split(namespaceSeparatorRegex));

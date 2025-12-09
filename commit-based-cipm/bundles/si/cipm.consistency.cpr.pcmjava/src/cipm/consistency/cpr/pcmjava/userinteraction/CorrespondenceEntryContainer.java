@@ -7,6 +7,15 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 
+/**
+ * Aggregates {@link CorrespondenceEntry} instances and offers methods for
+ * retrieving them.
+ * 
+ * @see {@link CorrespondenceEntry} for more information on correspondence
+ *      entries
+ * 
+ * @author Alp Torac Genc
+ */
 public class CorrespondenceEntryContainer {
 	private final Set<CorrespondenceEntry> desiredCorrespondences = new HashSet<CorrespondenceEntry>();
 
@@ -15,8 +24,8 @@ public class CorrespondenceEntryContainer {
 	}
 
 	public Optional<CorrespondenceEntry> getDesiredCorrespondenceEntry(EObject obj, String correspondenceTag) {
-		return desiredCorrespondences.stream().filter((t) -> t.hasElement(obj) && t.isCorrespondenceTagEqual(correspondenceTag))
-				.findFirst();
+		return desiredCorrespondences.stream()
+				.filter((t) -> t.hasElement(obj) && t.isCorrespondenceTagEqual(correspondenceTag)).findFirst();
 	}
 
 	public CorrespondenceEntry getCompleteDesiredCorrespondence(EObject obj, String correspondenceTag) {
@@ -28,18 +37,9 @@ public class CorrespondenceEntryContainer {
 
 	public Optional<CorrespondenceEntry> getCompleteDesiredCorrespondence(EObject knownSide, EObject otherSide,
 			String correspondenceTag) {
-		return desiredCorrespondences.stream()
-				.filter((t) -> t.hasCorrespondence(knownSide, otherSide) && t.isCorrespondenceTagEqual(correspondenceTag))
+		return desiredCorrespondences.stream().filter(
+				(t) -> t.hasCorrespondence(knownSide, otherSide) && t.isCorrespondenceTagEqual(correspondenceTag))
 				.findFirst();
-	}
-
-	public CorrespondenceEntry getDesiredCorrespondence(EObject knownSide, String correspondenceTag,
-			boolean computeIfAbsent) {
-		var corEntry = getCompleteDesiredCorrespondence(knownSide, correspondenceTag);
-		if (corEntry.hasAnyCompleteCorrespondences())
-			return corEntry;
-
-		return null;
 	}
 
 	public boolean hasDesiredCorrespondence(EObject knownSide, String correspondenceTag) {

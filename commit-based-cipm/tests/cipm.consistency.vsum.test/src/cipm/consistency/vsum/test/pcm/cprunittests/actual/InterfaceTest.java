@@ -17,10 +17,10 @@ import org.palladiosimulator.pcm.repository.RepositoryFactory;
 
 import cipm.consistency.cpr.pcmjava.JavaModelAccess;
 import cipm.consistency.cpr.pcmjava.userinteraction.ConflictResolutionStrategy;
-import cipm.consistency.cpr.pcmjava.userinteraction.CorrespondenceInputConflictResolutionStrategy;
-import cipm.consistency.cpr.pcmjava.userinteraction.FeatureInputConflictResolutionStrategy;
 import cipm.consistency.cpr.pcmjava.userinteraction.PcmUserInteractionManager;
 import cipm.consistency.vsum.test.pcm.cprunittests.dummy.PcmCprAssertions;
+import cipm.consistency.vsum.test.pcm.userinteraction.CorrespondenceInputConflictResolutionStrategy;
+import cipm.consistency.vsum.test.pcm.userinteraction.FeatureInputConflictResolutionStrategy;
 import mir.reactions.allRepository.AllRepositoryChangePropagationSpecification;
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
 
