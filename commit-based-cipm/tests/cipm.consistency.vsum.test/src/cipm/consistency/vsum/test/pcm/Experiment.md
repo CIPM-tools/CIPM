@@ -2,6 +2,8 @@
 
 To evaluate the CIPM extention I introduced in my Practice of Research (Praxis der Forschung, PdF) paper, I ran an experiment which I described in my paper. It is implemented in "commit-based-cipm/tests/cipm.consistency.vsum.test/src/cipm/consistency/vsum/test/pcm/experiment/PcmToJavaChangePropagationTest.java"
 
+Precisely, the experiment in my final paper and presentation was run on commit bf46619fa2e6480c767c0271dc7f866150bc32be. The follow-up commits are only for clean up and do not affect the outcome of the experiment.
+
 # How to Run the Experiment
 
 1) Install and setup CIPM workspace in accordance with [CIPM Readme](https://github.com/CIPM-tools/CIPM/blob/apm-to-code-propagation/README.md)
