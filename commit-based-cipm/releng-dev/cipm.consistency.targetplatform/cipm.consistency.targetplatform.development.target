@@ -124,5 +124,10 @@
 			<unit id="org.somox.seff.feature.feature.group" version="5.1.0.202410301305"/>
 			<unit id="org.somox.util" version="5.1.0.202410301305"/>
 		</location>
+		<!-- Kieker Monitoring Framework -->
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+			<repository location="https://maui.se.informatik.uni-kiel.de/repo/kieker/1.15/"/>
+			<unit id="kieker" version="0.0.0"/>
+		</location>
 	</locations>
 </target>
