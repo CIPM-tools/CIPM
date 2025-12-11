@@ -36,19 +36,18 @@ import cipm.consistency.tools.evaluation.data.ImUpdateEvalData;
  */
 public class IMUpdateEvaluator {
 	private ImUpdateEvalData currentEvalResult;
-	
+
 	public void evaluateIMUpdate(Repository repo, InstrumentationModel im, ImUpdateEvalData evalData, String rootDir) {
 		currentEvalResult = evalData;
-		
+
 		for (TreeIterator<EObject> iter = im.eAllContents(); iter.hasNext(); iter.next()) {
 			currentEvalResult.setNumberIP(currentEvalResult.getNumberIP() + 1);
 		}
-		
+
 		for (RepositoryComponent com : repo.getComponents__Repository()) {
 			if (com instanceof BasicComponent) {
 				BasicComponent basicCom = (BasicComponent) com;
-				for (ServiceEffectSpecification seff
-						: basicCom.getServiceEffectSpecifications__BasicComponent()) {
+				for (ServiceEffectSpecification seff : basicCom.getServiceEffectSpecifications__BasicComponent()) {
 					if (seff instanceof ResourceDemandingSEFF) {
 						ResourceDemandingSEFF rdseff = (ResourceDemandingSEFF) seff;
 						var sip = findSIP(im, rdseff);
@@ -59,11 +58,11 @@ public class IMUpdateEvaluator {
 				}
 			}
 		}
-		
+
 		currentEvalResult.calculateDerivedValues();
 //		this.checkChangedActions(repo, rootDir, im);
 	}
-	
+
 	private ServiceInstrumentationPoint findSIP(InstrumentationModel im, ResourceDemandingSEFF seff) {
 		for (var sip : im.getPoints()) {
 			if (sip.getService() == seff) {
@@ -75,16 +74,22 @@ public class IMUpdateEvaluator {
 		currentEvalResult.getUnmatchedSEFFs().add(seff.getId());
 		return null;
 	}
-	
+
 	private void checkActionInstrumentationPoints(ServiceInstrumentationPoint sip, ResourceDemandingSEFF seff) {
 		for (AbstractAction aa : seff.getSteps_Behaviour()) {
 			checkActionInstrumentationPoint(sip, aa);
 		}
 	}
-	
+
 	private void checkActionInstrumentationPoint(ServiceInstrumentationPoint sip, AbstractAction aa) {
 		if (aa instanceof AbstractLoopAction) {
 			AbstractLoopAction loop = (AbstractLoopAction) aa;
+
+			// TODO Remove this check once PCM change preprocessing includes all SEFF
+			// changes. Added temporarily to allow use of this evaluation class in PCM ->
+			// Java propagation
+			if (loop.getBodyBehaviour_Loop() == null)
+				return;
 			for (AbstractAction innerAA : loop.getBodyBehaviour_Loop().getSteps_Behaviour()) {
 				checkActionInstrumentationPoint(sip, innerAA);
 			}
@@ -92,8 +97,7 @@ public class IMUpdateEvaluator {
 		} else if (aa instanceof BranchAction) {
 			BranchAction branch = (BranchAction) aa;
 			for (var transition : branch.getBranches_Branch()) {
-				for (AbstractAction innerAA
-						: transition.getBranchBehaviour_BranchTransition().getSteps_Behaviour()) {
+				for (AbstractAction innerAA : transition.getBranchBehaviour_BranchTransition().getSteps_Behaviour()) {
 					checkActionInstrumentationPoint(sip, innerAA);
 				}
 			}
@@ -103,7 +107,7 @@ public class IMUpdateEvaluator {
 			findAIP(sip, aa);
 		}
 	}
-	
+
 	private void findAIP(ServiceInstrumentationPoint sip, AbstractAction aa) {
 		for (var aip : sip.getActionInstrumentationPoints()) {
 			if (aip.getAction() == aa) {
@@ -116,11 +120,11 @@ public class IMUpdateEvaluator {
 		}
 		currentEvalResult.getUnmatchedActions().add(aa.getId());
 	}
-	
+
 	private void checkChangedActions(Repository repo1, String rootDir, InstrumentationModel im) {
 		ResourceSet set = new ResourceSetImpl();
-		Resource res = set.getResource(URI.createFileURI(
-				new File(rootDir, "Repository.repository").getAbsolutePath()), true);
+		Resource res = set.getResource(URI.createFileURI(new File(rootDir, "Repository.repository").getAbsolutePath()),
+				true);
 		Repository repo2 = (Repository) res.getContents().get(0);
 		var comparison = PCMModelComparator.compareRepositoryModelsIDBased(repo1, repo2);
 		ArrayList<String> newActions = new ArrayList<>();
@@ -150,7 +154,7 @@ public class IMUpdateEvaluator {
 		difference += newActions.size();
 //		currentEvalResult.setDifferenceChangedActionsActivatedAIP(difference);
 	}
-	
+
 	private boolean hasResourceDemandingSEFFAsParent(AbstractAction action) {
 		EObject parent = action.eContainer();
 		while (parent != null && (!(parent instanceof ResourceDemandingSEFF)

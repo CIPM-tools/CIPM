@@ -6,7 +6,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
@@ -15,10 +14,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.xmi.XMLResource;
-import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.eclipse.emf.ecore.xmi.impl.XMLParserPoolImpl;
-import org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl;
 
 /**
  * General utility which provides operations for EMF models.
@@ -41,9 +36,9 @@ public class ModelUtil {
      */
     public static <T> T readFromFile(File path, Class<T> clazz) {
         ResourceSet resourceSet = new ResourceSetImpl();
-        resourceSet.getResourceFactoryRegistry()
-            .getExtensionToFactoryMap()
-            .put(Resource.Factory.Registry.DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
+//        resourceSet.getResourceFactoryRegistry()
+//            .getExtensionToFactoryMap()
+//            .put(Resource.Factory.Registry.DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
 
         URI filePathUri = org.eclipse.emf.common.util.URI.createFileURI(path.getAbsolutePath());
 
@@ -65,24 +60,24 @@ public class ModelUtil {
      */
     public static <T> T readFromFile(String path, Class<T> clazz) {
         ResourceSet resourceSet = new ResourceSetImpl();
-        resourceSet.getResourceFactoryRegistry()
-            .getExtensionToFactoryMap()
-            .put(Resource.Factory.Registry.DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
+//        resourceSet.getResourceFactoryRegistry()
+//            .getExtensionToFactoryMap()
+//            .put(Resource.Factory.Registry.DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
 
         URI filePathUri = org.eclipse.emf.common.util.URI.createFileURI(new File(path).getAbsolutePath());
 
         Resource resource = resourceSet.createResource(filePathUri);
 
-        Map<Object, Object> loadOptions = ((XMLResourceImpl) resource).getDefaultLoadOptions();
-        loadOptions.put(XMLResource.OPTION_DEFER_ATTACHMENT, Boolean.TRUE);
-        loadOptions.put(XMLResource.OPTION_DEFER_IDREF_RESOLUTION, Boolean.TRUE);
-        loadOptions.put(XMLResource.OPTION_USE_DEPRECATED_METHODS, Boolean.TRUE);
-        loadOptions.put(XMLResource.OPTION_USE_PARSER_POOL, new XMLParserPoolImpl());
-        loadOptions.put(XMLResource.OPTION_USE_XML_NAME_TO_FEATURE_MAP, new HashMap<>());
+//        Map<Object, Object> loadOptions = ((XMLResourceImpl) resource).getDefaultLoadOptions();
+//        loadOptions.put(XMLResource.OPTION_DEFER_ATTACHMENT, Boolean.TRUE);
+//        loadOptions.put(XMLResource.OPTION_DEFER_IDREF_RESOLUTION, Boolean.TRUE);
+//        loadOptions.put(XMLResource.OPTION_USE_DEPRECATED_METHODS, Boolean.TRUE);
+//        loadOptions.put(XMLResource.OPTION_USE_PARSER_POOL, new XMLParserPoolImpl());
+//        loadOptions.put(XMLResource.OPTION_USE_XML_NAME_TO_FEATURE_MAP, new HashMap<>());
 
         ((ResourceImpl) resource).setIntrinsicIDToEObjectMap(new HashMap<>());
         try {
-            resource.load(loadOptions);
+            resource.load(null);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -104,24 +99,24 @@ public class ModelUtil {
      */
     public static <T> T readFromResource(URL resourceURL, Class<T> clazz) {
         ResourceSet resourceSet = new ResourceSetImpl();
-        resourceSet.getResourceFactoryRegistry()
-            .getExtensionToFactoryMap()
-            .put(Resource.Factory.Registry.DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
+//        resourceSet.getResourceFactoryRegistry()
+//            .getExtensionToFactoryMap()
+//            .put(Resource.Factory.Registry.DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
 
         URI resourceUri = org.eclipse.emf.common.util.URI.createURI(resourceURL.toString());
 
         Resource resource = resourceSet.createResource(resourceUri);
 
-        Map<Object, Object> loadOptions = ((XMLResourceImpl) resource).getDefaultLoadOptions();
-        loadOptions.put(XMLResource.OPTION_DEFER_ATTACHMENT, Boolean.TRUE);
-        loadOptions.put(XMLResource.OPTION_DEFER_IDREF_RESOLUTION, Boolean.TRUE);
-        loadOptions.put(XMLResource.OPTION_USE_DEPRECATED_METHODS, Boolean.TRUE);
-        loadOptions.put(XMLResource.OPTION_USE_PARSER_POOL, new XMLParserPoolImpl());
-        loadOptions.put(XMLResource.OPTION_USE_XML_NAME_TO_FEATURE_MAP, new HashMap<>());
+//        Map<Object, Object> loadOptions = ((XMLResourceImpl) resource).getDefaultLoadOptions();
+//        loadOptions.put(XMLResource.OPTION_DEFER_ATTACHMENT, Boolean.TRUE);
+//        loadOptions.put(XMLResource.OPTION_DEFER_IDREF_RESOLUTION, Boolean.TRUE);
+//        loadOptions.put(XMLResource.OPTION_USE_DEPRECATED_METHODS, Boolean.TRUE);
+//        loadOptions.put(XMLResource.OPTION_USE_PARSER_POOL, new XMLParserPoolImpl());
+//        loadOptions.put(XMLResource.OPTION_USE_XML_NAME_TO_FEATURE_MAP, new HashMap<>());
 
         ((ResourceImpl) resource).setIntrinsicIDToEObjectMap(new HashMap<>());
         try {
-            resource.load(loadOptions);
+            resource.load(null);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -165,12 +160,12 @@ public class ModelUtil {
     public static <T extends EObject> void saveToFile(T model, String path) {
         URI writeModelURI = URI.createFileURI(path);
 
-        final Resource.Factory.Registry resourceRegistry = Resource.Factory.Registry.INSTANCE;
-        final Map<String, Object> map = resourceRegistry.getExtensionToFactoryMap();
-        map.put("*", new XMIResourceFactoryImpl());
+//        final Resource.Factory.Registry resourceRegistry = Resource.Factory.Registry.INSTANCE;
+//        final Map<String, Object> map = resourceRegistry.getExtensionToFactoryMap();
+//        map.put("*", new XMIResourceFactoryImpl());
 
         final ResourceSet resourceSet = new ResourceSetImpl();
-        resourceSet.setResourceFactoryRegistry(resourceRegistry);
+//        resourceSet.setResourceFactoryRegistry(resourceRegistry);
 
         final Resource resource = resourceSet.createResource(writeModelURI);
         resource.getContents()

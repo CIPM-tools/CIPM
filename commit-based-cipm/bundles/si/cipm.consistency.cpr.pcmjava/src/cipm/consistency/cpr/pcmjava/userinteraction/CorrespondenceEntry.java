@@ -1,0 +1,199 @@
+package cipm.consistency.cpr.pcmjava.userinteraction;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+
+import com.google.common.base.Preconditions;
+
+/**
+ * Contains information on correspondences. Each instance of this class should
+ * have a knownElement, which is one side of the correspondence that is known
+ * during this instance's construction. Additionally, all instances of this
+ * class should have a correspondence tag that describes the correspondence (can
+ * be empty String).
+ * 
+ * <p>
+ * Instead of representing 1 to 1 correspondences, represents 1 to many
+ * correspondences, because a user interaction could be asking for multiple
+ * correspondences for a knownElement at once.
+ * 
+ * <p>
+ * A correspondence entry is considered "complete", if it has any correspondents
+ * other than the knownElement.
+ * 
+ * @author Alp Torac Genc
+ */
+public class CorrespondenceEntry implements IPcmUserInteractionManagerEntry {
+	private static final PcmUserInteractionManagerEntrySerialiser serialiser = new PcmUserInteractionManagerEntrySerialiser();
+
+	private final EObject knownElement;
+	private final Set<EObject> correspondents;
+	private String correspondenceTag;
+
+	public CorrespondenceEntry(EObject knownSide, String correspondenceTag) {
+		this(knownSide, Set.of(), correspondenceTag);
+	}
+
+	public CorrespondenceEntry(EObject knownSide, EObject otherSide, String correspondenceTag) {
+		this(knownSide, Set.of(otherSide), correspondenceTag);
+	}
+
+	public CorrespondenceEntry(EObject knownElement, Set<EObject> correspondents, String correspondenceTag) {
+		Preconditions.checkArgument(knownElement != null, "knownElement cannot be null");
+		Preconditions.checkArgument(correspondents != null, "correspondents cannot be null");
+		Preconditions.checkArgument(correspondenceTag != null, "tag cannot be null");
+
+		// Correspondences are supposed to be symmetric and handled as such
+		// Therefore, knownElement too belongs in correspondents
+		this.correspondents = new HashSet<>(correspondents);
+		this.knownElement = knownElement;
+
+		this.correspondenceTag = correspondenceTag;
+	}
+
+	@Override
+	public String toString() {
+		return serialiser.serialiseCorrespondenceEntry(this);
+	}
+
+	public String getCorrespondenceTag() {
+		return correspondenceTag;
+	}
+
+	public void setCorrespondenceTag(String tag) {
+		Preconditions.checkArgument(tag != null, "tag cannot be null");
+		this.correspondenceTag = tag;
+	}
+
+	public EObject getKnownElement() {
+		return knownElement;
+	}
+
+	public Set<EObject> getCorrespondentsForKnownElement() {
+		return new HashSet<>(correspondents);
+	}
+
+	public Set<EObject> getCorrespondentsFor(EObject correspondent) {
+		if (eObjectEquals(knownElement, correspondent))
+			return this.getCorrespondentsForKnownElement();
+
+		var result = new HashSet<EObject>();
+		if (this.hasCorrespondent(correspondent))
+			result.add(knownElement);
+		return result;
+	}
+
+	public int getCorrespondenceCount() {
+		return this.correspondents.size();
+	}
+
+	public boolean addCorrespondent(EObject correspondent) {
+		if (eObjectEquals(knownElement, correspondent) || hasCorrespondent(correspondent))
+			return false;
+
+		return this.correspondents.add(correspondent);
+	}
+
+	public List<EObject> addCorrespondences(CorrespondenceEntry entry) {
+		if (!isCorrespondenceTagEqual(entry.correspondenceTag)) {
+			return null;
+		}
+
+		var addedCors = new ArrayList<EObject>();
+		if (eObjectEquals(knownElement, entry.knownElement)) {
+			for (var cor : entry.correspondents) {
+				if (this.addCorrespondent(cor)) {
+					addedCors.add(cor);
+				}
+			}
+		} else if (entry.hasElement(knownElement)) {
+			this.addCorrespondent(entry.knownElement);
+			addedCors.add(entry.knownElement);
+		}
+		return addedCors;
+	}
+
+	public EObject removeCorrespondent(EObject correspondent) {
+		if (eObjectEquals(knownElement, correspondent))
+			return null;
+
+		var corOpt = this.getCorrespondentFor(correspondent);
+		if (corOpt.isPresent()) {
+			var corToRemove = corOpt.get();
+			this.correspondents.remove(corToRemove);
+			return corToRemove;
+		}
+
+		return null;
+	}
+
+	public void clearCorrespondents() {
+		this.correspondents.clear();
+	}
+
+	public boolean hasCorrespondence(EObject correspondent1, EObject correspondent2) {
+		return eObjectEquals(knownElement, correspondent1) && hasCorrespondent(correspondent2)
+				|| eObjectEquals(knownElement, correspondent2) && hasCorrespondent(correspondent1);
+	}
+
+	public boolean hasCorrespondent(EObject correspondent) {
+		return this.getCorrespondentFor(correspondent).isPresent();
+	}
+
+	public boolean hasElement(EObject element) {
+		return eObjectEquals(knownElement, element) || hasCorrespondent(element);
+	}
+
+	public boolean hasCorrespondents(Collection<EObject> correspondents) {
+		return correspondents.stream().allMatch((cc) -> hasCorrespondent(cc));
+	}
+
+	private Optional<EObject> getCorrespondentFor(EObject correspondent) {
+		return this.correspondents.stream().filter((c) -> eObjectEquals(c, correspondent)).findFirst();
+	}
+
+	private boolean eObjectEquals(EObject obj1, EObject obj2) {
+		return EcoreUtil.equals(obj1, obj2);
+	}
+
+	public boolean hasAnyCompleteCorrespondences() {
+		return !this.correspondents.isEmpty();
+	}
+
+	public boolean hasAnyCompleteCorrespondences(String tag) {
+		return isCorrespondenceTagEqual(tag) && hasAnyCompleteCorrespondences();
+	}
+
+	public boolean hasAnyCompleteCorrespondencesWith(EObject correspondent) {
+		return hasCorrespondent(correspondent)
+				|| (eObjectEquals(knownElement, correspondent) && hasAnyCompleteCorrespondences());
+	}
+
+	public boolean hasAnyCompleteCorrespondencesWith(EObject correspondent, String correspondenceTag) {
+		return isCorrespondenceTagEqual(correspondenceTag) && hasAnyCompleteCorrespondencesWith(correspondent);
+	}
+
+	public boolean isCorrespondenceTagEqual(String correspondenceTag) {
+		return this.correspondenceTag.equals(correspondenceTag);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof CorrespondenceEntry))
+			return false;
+
+		var castedO = (CorrespondenceEntry) obj;
+
+		return eObjectEquals(this.knownElement, castedO.knownElement)
+				&& this.correspondents.size() == castedO.correspondents.size()
+				&& this.hasCorrespondents(castedO.correspondents)
+				&& this.correspondenceTag.equals(castedO.correspondenceTag);
+	}
+}

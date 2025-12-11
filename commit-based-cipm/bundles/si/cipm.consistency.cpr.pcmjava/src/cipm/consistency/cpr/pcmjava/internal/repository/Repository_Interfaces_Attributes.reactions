@@ -1,0 +1,113 @@
+import cipm.consistency.cpr.pcmjava.internal.CprLogUtil
+import org.emftext.language.java.types.TypesFactory
+
+import "http://www.emftext.org/java" as java
+import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
+
+reactions: repositoryInterfacesAttributes
+in reaction to changes in pcm
+execute actions in java
+
+reaction RenamedInterface {
+	after attribute replaced at pcm::OperationInterface[entityName]
+	call {
+		CprLogUtil.logCpr(_getCurrentCaller)
+		renameJavaInterface(affectedEObject, newValue)
+	}
+}
+
+routine renameJavaInterface(pcm::OperationInterface pcmIfc, String newName) {
+	match {
+		val javaIfc = retrieve java::Interface corresponding to pcmIfc
+	}
+	update {
+		// TODO Check for name conflicts
+		javaIfc.name = newName
+	}
+}
+
+reaction RenamedOperationSignature {
+	after attribute replaced at pcm::OperationSignature[entityName]
+	call {
+		CprLogUtil.logCpr(_getCurrentCaller)
+		renameJavaInterfaceMethod(affectedEObject, newValue)
+	}
+}
+
+routine renameJavaInterfaceMethod(pcm::OperationSignature pcmSig, String newName) {
+	match {
+		val javaMet = retrieve java::Method corresponding to pcmSig
+	}
+	update {
+		// TODO Consider adapting overriding methods (account for covariance)
+		// TODO Check for name conflicts
+		javaMet.name = newName
+	}
+}
+
+reaction ReplacedOperationSignatureReturnType {
+	after element pcm::DataType replaced at pcm::OperationSignature[returnType__OperationSignature]
+	call {
+		CprLogUtil.logCpr(_getCurrentCaller)
+		replaceJavaMethodReturnType(affectedEObject, newValue)
+	}
+}
+
+routine replaceJavaMethodReturnType(pcm::OperationSignature pcmSig, pcm::DataType newType) {
+	match {
+		val javaMet = retrieve java::Method corresponding to pcmSig
+		// TODO Account for newType being PrimitiveDataType (which only exist as Enums in PCM)
+		val newJavaReturnType = retrieve java::ConcreteClassifier corresponding to newType
+	}
+	update {
+		var newReturnTypeRef = TypesFactory.eINSTANCE.createClassifierReference
+		newReturnTypeRef.target = newJavaReturnType
+		javaMet.typeReference = newReturnTypeRef
+
+	// TODO Consider adapting overriding methods (account for covariance)
+	// TODO Developer task to adapt Java method body
+	}
+}
+
+reaction RenamedParameter {
+	after attribute replaced at pcm::Parameter[parameterName]
+	call {
+		CprLogUtil.logCpr(_getCurrentCaller)
+		renameJavaInterfaceMethodParameter(affectedEObject, newValue)
+	}
+}
+
+routine renameJavaInterfaceMethodParameter(pcm::Parameter pcmParam, String newName) {
+	match {
+		val javaParam = retrieve java::Parameter corresponding to pcmParam
+	}
+	update {
+		// TODO Consider adapting overriding methods
+		// TODO Check for conflicts
+		javaParam.name = newName
+	}
+}
+
+reaction ReplacedParameterDataType {
+	after element pcm::DataType replaced at pcm::Parameter[dataType__Parameter]
+	call {
+		CprLogUtil.logCpr(_getCurrentCaller)
+		replaceJavaParameterType(affectedEObject, newValue)
+		// TODO Consider adapting overriding methods
+		// TODO Add developer task to adapt parameter type in Java method
+	}
+}
+
+routine replaceJavaParameterType(pcm::Parameter pcmParam, pcm::DataType newType) {
+	match {
+		val javaMet = retrieve java::Method corresponding to pcmParam.operationSignature__Parameter
+		val javaParam = retrieve java::Parameter corresponding to pcmParam
+		// TODO Account for newType being PrimitiveDataType (which only exist as Enums in PCM)
+		val newJavaType = retrieve java::ConcreteClassifier corresponding to newType
+	}
+	update {
+		var newTypeRef = TypesFactory.eINSTANCE.createClassifierReference
+		newTypeRef.target = newJavaType
+		javaMet.typeReference = newTypeRef
+	}
+}

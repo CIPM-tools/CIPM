@@ -1,0 +1,397 @@
+package cipm.consistency.vsum.test.pcm.experiment;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.palladiosimulator.pcm.repository.Repository;
+
+import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationModel;
+import cipm.consistency.commitintegration.diff.util.ComparisonBasedJaccardCoefficientCalculator;
+import cipm.consistency.commitintegration.diff.util.JavaModelComparator;
+import cipm.consistency.commitintegration.diff.util.ComparisonBasedJaccardCoefficientCalculator.JaccardCoefficientResult;
+import cipm.consistency.commitintegration.diff.util.pcm.PCMModelComparator;
+import cipm.consistency.commitintegration.lang.java.JavaModelFacade;
+import cipm.consistency.cpr.pcmjava.CommitIntegrationPCMJavaChangePropagationSpecification;
+import cipm.consistency.cpr.pcmjava.JavaModelAccess;
+import cipm.consistency.cpr.pcmjava.logger.PcmToJavaChangePropagationLogger;
+import cipm.consistency.cpr.pcmjava.logger.PcmUserInteractionAutomaticityStatistics;
+import cipm.consistency.cpr.pcmjava.logger.PcmUserInteractionTimeStatistics;
+import cipm.consistency.cpr.pcmjava.userinteraction.AutomatingConflictResolutionStrategy;
+import cipm.consistency.cpr.pcmjava.userinteraction.GenericParameterConflictResolutionStrategy;
+import cipm.consistency.cpr.pcmjava.userinteraction.NamespaceConflictResolutionStrategy;
+import cipm.consistency.cpr.pcmjava.userinteraction.PcmUserInteractionManager;
+import cipm.consistency.cpr.pcmjava.userinteraction.SyntheticElementConflictResolutionStrategy;
+import cipm.consistency.models.im.ImFacade;
+import cipm.consistency.models.pcm.PcmFacade;
+import cipm.consistency.tools.evaluation.data.ImUpdateEvalData;
+import cipm.consistency.vsum.Propagation;
+import cipm.consistency.vsum.test.IMUpdateEvaluator;
+import cipm.consistency.vsum.test.appspace.LoggingSetup;
+import cipm.consistency.vsum.test.pcm.ChangeSaver;
+import cipm.consistency.vsum.test.pcm.PcmVsumFacade;
+import cipm.consistency.vsum.test.pcm.PcmVsumFacadeImpl;
+import mir.reactions.pcmImUpdate.PcmImUpdateChangePropagationSpecification;
+import tools.vitruv.change.atomic.EChange;
+import tools.vitruv.change.propagation.ChangePropagationSpecification;
+
+/**
+ * Contains the test case for the experiment (PCM to Java change propagation).
+ * 
+ * @author Alp Torac Genc
+ */
+public class PcmToJavaChangePropagationTest {
+	private static final Logger LOGGER = Logger.getLogger(PcmToJavaChangePropagationTest.class);
+
+	private PcmVsumFacade vsumFacade;
+	private PcmFacade pcmFacade;
+	private ImFacade imFacade;
+	private JavaModelFacade javaFacade;
+
+	private ExperimentResourceWrapper resWrapper;
+
+	private ExperimentResult result;
+
+	public PcmFacade getPcmFacade() {
+		return this.pcmFacade;
+	}
+
+	public PcmVsumFacade getPcmVsumFacade() {
+		return this.vsumFacade;
+	}
+
+	protected Propagation propagateChangesToResource(Resource res, Collection<EChange> changes) {
+		this.getPcmVsumFacade().addChanges(changes);
+		var prop = this.getPcmVsumFacade().propagateResource(res);
+		Assertions.assertNull(prop.getException());
+		return prop;
+	}
+
+	protected ImFacade getImFacade() {
+		return this.imFacade;
+	}
+
+	protected JavaModelFacade getJavaFacade() {
+		return this.javaFacade;
+	}
+
+	public void initialiseResources(PcmToJavaChangePropagationDirLayout dirLayout) {
+		result = new ExperimentResult();
+		if (dirLayout.getOldJavaToPcmPropagationDirLayout() != null) {
+			result.setVsumTestPath(dirLayout.getOldJavaToPcmPropagationDirLayout().getRootDirPath());
+		} else {
+			result.setVsumTestPath(dirLayout.getNewJavaToPcmPropagationDirLayout().getRootDirPath());
+		}
+		this.resWrapper = new ExperimentResourceWrapper(new ResourceSetImpl(), dirLayout);
+		this.resWrapper.initialise();
+
+		result.setOriginalJavaChangeCount(resWrapper.getOriginalJavaChanges().getContents().size());
+		result.setOriginalPcmChangeCount(resWrapper.getOriginalPcmChanges().getContents().size());
+		result.setOriginalImChangeCount(resWrapper.getOriginalImChanges().getContents().size());
+
+		imFacade = this.setupImFacade();
+		pcmFacade = this.setupPcmFacade();
+		javaFacade = this.setupJavaFacade();
+		vsumFacade = this.setupVsumFacade();
+
+		computeEvaluationResultsForJavaToPcmPropagation();
+	}
+
+	private PcmToJavaChangePropagationDirLayout getDirLayout() {
+		return this.resWrapper.getExperimentLayout();
+	}
+
+	@AfterEach
+	public void tearDown() {
+		result = null;
+		PcmToJavaChangePropagationLogger.getInstance().clearEntries();
+	}
+
+	protected PcmFacade setupPcmFacade() {
+		var pcmFacade = new PcmFacade();
+		pcmFacade.initialize(getDirLayout().getPropagatedDirLayout().getPcmDirPath());
+		return pcmFacade;
+	}
+
+	/**
+	 * Finds the model that was parsed from source files or was copied from the
+	 * previous propagation. Assumes that the parsed models will have the naming
+	 * scheme: "X-NUMBER-Y", where NUMBER is the propagation number in the vsum
+	 * test, X and Y are arbitrary Strings.
+	 * 
+	 * @param modelDirPath The path to the directory, under which models directly
+	 *                     reside (ex: If model is "testFolder/model.modelext",
+	 *                     modelDirPath is "testFolder")
+	 * @return Returns the parsed model in the modelDirPath. Meant for parsed Java
+	 *         code models and PCM repositories in Teammates vsum tests.
+	 */
+	private Resource getParsedModelCounterpart(Path modelDirPath) {
+		var parsedFilesList = List.of(modelDirPath.toFile().listFiles()).stream()
+				.filter((f) -> f.getName().split("-").length == 3).collect(Collectors.toList());
+		var parsedModelFile = parsedFilesList.stream()
+				.filter((f) -> Integer.valueOf(f.getName().split("-")[1]).intValue() == parsedFilesList.size())
+				.findFirst().get();
+		return ResourceOperationsUtil.loadResource(parsedModelFile.toPath().toAbsolutePath());
+	}
+
+	private void computeEvaluationResultsForJavaToPcmPropagation() {
+		result.setJaccardCoefficientForJavaModelInJavaToPcmPropagation(
+				computeJCForJava(resWrapper.getTargetJavaModel(), getParsedModelCounterpart(
+						resWrapper.getExperimentLayout().getNewJavaToPcmPropagationDirLayout().getCodeDirPath())));
+		result.setJaccardCoefficientForPcmRepositoryInJavaToPcmPropagation(
+				computeJCForPcm(resWrapper.getTargetPcmRepository(), getParsedModelCounterpart(
+						resWrapper.getExperimentLayout().getNewJavaToPcmPropagationDirLayout().getPcmDirPath())));
+		result.setfOneScoreForImInJavaToPcmPropagation(
+				computeFScoreForIm((Repository) resWrapper.getTargetPcmRepository().getContents().get(0),
+						(InstrumentationModel) resWrapper.getTargetIm().getContents().get(0)));
+	}
+
+	/**
+	 * Use {@link #getRootPath()} as the root directory of the PcmVsumFacade.<br>
+	 * <br>
+	 * It is not recommended to call the super method from the concrete classes
+	 * while overriding this method, in order to keep the construction clear and to
+	 * avoid possible side effects. If only a minimal PCM without correspondences is
+	 * desired, the super method can be used.
+	 * 
+	 * @return The VSUM facade for the PCM that will be used in this test.
+	 */
+	protected PcmVsumFacade setupVsumFacade() {
+		return new PcmVsumFacadeImpl(getDirLayout().getPropagatedDirLayout().getVsumDirPath(),
+				List.of(pcmFacade, imFacade, javaFacade), this.getCPRs());
+	}
+
+	private List<EChange> getPcmChanges(Resource res) {
+		var pcmChangeRes = res;
+		var pcmChangeList = new ArrayList<EChange>();
+		for (var c : pcmChangeRes.getContents()) {
+			pcmChangeList.add((EChange) c);
+		}
+		return pcmChangeList;
+	}
+
+	private List<EChange> preprocessPCMchanges() {
+		var pcmChangeRes = resWrapper.getPropagatedPcmChanges();
+		var pcmChangeList = getPcmChanges(pcmChangeRes);
+		var orderedPCMChangeList = new ExperimentPcmChangePreprocessor().orderPCMchanges(pcmChangeList);
+		for (var o : pcmChangeList) {
+			pcmChangeRes.getContents().remove(o);
+		}
+		pcmChangeRes.getContents().addAll(orderedPCMChangeList);
+		return orderedPCMChangeList;
+	}
+
+	private void addCRSs() {
+		// Order of adding CRSs matters here
+
+		// Realistic CRS that prevents creation of Java ConcreteClassifiers for generic
+		// parameters
+		var genericCRS = new GenericParameterConflictResolutionStrategy((s) -> s.length() < 2);
+		PcmUserInteractionManager.addConflictResolutionStrategy(genericCRS);
+		PcmUserInteractionAutomaticityStatistics.getInstance().addTestIndependentConflictResolutionStrategy(genericCRS);
+
+		// Oracle CRS that looks up namespaces from target Java code model, in order to
+		// automate experiment with valid input
+		var namespaceCRS = new NamespaceConflictResolutionStrategy(resWrapper.getTargetJavaModel());
+		PcmUserInteractionManager.addConflictResolutionStrategy(namespaceCRS);
+		PcmUserInteractionAutomaticityStatistics.getInstance().addTestSpecificConflictResolutionStrategy(namespaceCRS);
+
+		// Oracle CRS that addresses Java code model elements that are synthetic in
+		// target model during the propagation
+		var syntheticCRS = new SyntheticElementConflictResolutionStrategy(resWrapper.getTargetJavaModel(),
+				List.of("synthetic"));
+		PcmUserInteractionManager.addConflictResolutionStrategy(syntheticCRS);
+		PcmUserInteractionAutomaticityStatistics.getInstance().addTestSpecificConflictResolutionStrategy(syntheticCRS);
+
+		// Oracle CRS that automates all other non-addressed user interactions, in order
+		// to fully automate the experiment
+		var bruteForceAutomationCRS = new AutomatingConflictResolutionStrategy(List.of("automated"));
+		PcmUserInteractionManager.addConflictResolutionStrategy(bruteForceAutomationCRS);
+		PcmUserInteractionAutomaticityStatistics.getInstance()
+				.addTestSpecificConflictResolutionStrategy(bruteForceAutomationCRS);
+	}
+
+	private void savePropagatedChanges(Propagation prop) {
+		var propLayout = resWrapper.getExperimentLayout().getPropagatedDirLayout();
+		var propagatedChangesPath = propLayout.getRootDirPath()
+				.resolve(PcmToJavaChangePropagationDirLayoutConstants.getPropagatedchangesdir());
+		var propJavaChangesPath = propagatedChangesPath
+				.resolve(PcmToJavaChangePropagationDirLayoutConstants.getJavachangessavefilename());
+		var propPcmChangesPath = propagatedChangesPath
+				.resolve(PcmToJavaChangePropagationDirLayoutConstants.getPcmchangessavefilename());
+		var propImChangesPath = propagatedChangesPath
+				.resolve(PcmToJavaChangePropagationDirLayoutConstants.getImchangessavefilename());
+
+		ChangeSaver.saveUnresolvedChanges(prop, propJavaChangesPath, propPcmChangesPath, propImChangesPath);
+
+		var propagatedJavaChanges = ResourceOperationsUtil.loadResource(propJavaChangesPath);
+		var propagatedPcmChanges = ResourceOperationsUtil.loadResource(propPcmChangesPath);
+		var propagatedIMChanges = ResourceOperationsUtil.loadResource(propImChangesPath);
+
+		result.setPropagatedJavaChangeCount(propagatedJavaChanges.getContents().size());
+		result.setPropagatedPcmChangeCount(propagatedPcmChanges.getContents().size());
+		result.setPropagatedImChangeCount(propagatedIMChanges.getContents().size());
+	}
+
+	private void logPropagationTime() {
+		LOGGER.info("Pcm to Java propagation over in "
+				+ PcmUserInteractionTimeStatistics.getInstance().getPropagationTimeWithUserInteractionsInMillis()
+				+ " millis with user interactions, and "
+				+ PcmUserInteractionTimeStatistics.getInstance().getPropagationTimeWithoutUserInteractionsInMillis()
+				+ " millis without user interactions (difference in millis: "
+				+ (PcmUserInteractionTimeStatistics.getInstance().getPropagationTimeWithUserInteractionsInMillis()
+						- PcmUserInteractionTimeStatistics.getInstance()
+								.getPropagationTimeWithoutUserInteractionsInMillis())
+				+ ")");
+	}
+
+	private void logAutomaticityDegree() {
+		LOGGER.info(PcmUserInteractionAutomaticityStatistics.getInstance().getNumberOfTriggeredUserInteractions()
+				+ " user interactions triggered");
+		LOGGER.info(PcmUserInteractionAutomaticityStatistics.getInstance()
+				.getNumberOfTriggeredFullyAutomaticUserInteractions() + " would realistically be fully automatic");
+		LOGGER.info(PcmUserInteractionAutomaticityStatistics.getInstance()
+				.getNumberOfTriggeredSemiAutomaticPartiallyInterceptedUserInteractions()
+				+ " would realistically be semi-automatic partially intercepted");
+		LOGGER.info(PcmUserInteractionAutomaticityStatistics.getInstance()
+				.getNumberOfTriggeredSemiAutomaticNonInterceptedUserInteractions()
+				+ " would realistically be semi-automatic non-intercepted");
+
+		LOGGER.info("Automaticity degree: "
+				+ PcmUserInteractionAutomaticityStatistics.getInstance().getAutomaticityDegree());
+	}
+
+	/**
+	 * The method that runs the experiment for the given file layout.
+	 */
+	public void pcmToJavaChangePropagationTestTemplate(PcmToJavaChangePropagationDirLayout dirLayout) {
+		this.initialiseResources(dirLayout);
+
+//		var changeList = getPcmChanges(resWrapper.getPropagatedPcmChanges());
+		var changeList = preprocessPCMchanges();
+
+		var newPcmRepoRes = pcmFacade.getResources().stream()
+				.filter((r) -> r.getURI().lastSegment()
+						.equals(PcmToJavaChangePropagationDirLayoutConstants.getPcmrepositoryfilename()))
+				.findFirst().get();
+
+		addCRSs();
+
+		// Propagate PCM changes
+		PcmUserInteractionTimeStatistics.getInstance().startPropagationTimeMeasurement();
+		var pcmToJavaProp = this.propagateChangesToResource(newPcmRepoRes, changeList);
+		PcmUserInteractionTimeStatistics.getInstance().endPropagationTimeMeasurement();
+		PcmUserInteractionTimeStatistics.getInstance().finaliseTimeMeasurement();
+
+		PcmUserInteractionAutomaticityStatistics.getInstance().computeAutomaticityDegree();
+
+		logPropagationTime();
+		logAutomaticityDegree();
+
+		LOGGER.info("Saving propagated changes");
+
+		savePropagatedChanges(pcmToJavaProp);
+		// Propagated change Resources must be reloaded anew, if they are to be used
+
+		LOGGER.info("Reloading propagated models for evaluation");
+		resWrapper.reloadPropagatedResources();
+
+		LOGGER.info("Computing JC for Java model (Pcm -> Java propagation)");
+		result.setJaccardCoefficientForJavaModelInPcmToJavaPropagation(
+				computeJCForJava(resWrapper.getPropagatedJavaModel(), resWrapper.getTargetJavaModel()));
+
+//		setJCForAdaptedJavaModels();
+
+		LOGGER.info("Computing JC for Pcm repository (Pcm -> Java propagation)");
+		result.setJaccardCoefficientForPcmRepositoryInPcmToJavaPropagation(
+				computeJCForPcm(resWrapper.getPropagatedPcmRepository(), resWrapper.getTargetPcmRepository()));
+
+//		setJCForAdaptedPCMs();
+
+		LOGGER.info("Computing F1-Score for Im (Pcm -> Java propagation)");
+		result.setfOneScoreForImInPcmToJavaPropagation(
+				computeFScoreForIm((Repository) resWrapper.getPropagatedPcmRepository().getContents().get(0),
+						(InstrumentationModel) resWrapper.getPropagatedIm().getContents().get(0)));
+
+		LOGGER.info("Serialising user interaction manager entries");
+		PcmToJavaChangePropagationLogger.getInstance().prepareForSerialisation();
+		LOGGER.info("Saving experiment result");
+		result.save(getDirLayout().getExperimentResultSavePath());
+		LOGGER.info("Saved experiment result");
+
+		LOGGER.info("Tearing down");
+		this.tearDown();
+	}
+
+	protected JavaModelFacade setupJavaFacade() {
+		var model = new JavaModelFacade();
+		model.initialize(getDirLayout().getPropagatedDirLayout().getCodeDirPath());
+		var modelRes = model.getResource();
+		JavaModelAccess.setJavaModel(modelRes);
+		return model;
+	}
+
+	protected ImFacade setupImFacade() {
+		var imFacade = new ImFacade();
+		imFacade.initialize(getDirLayout().getPropagatedDirLayout().getImDirPath());
+		return imFacade;
+	}
+
+	private JaccardCoefficientResult computeJCForJava(Resource newJavaModel, Resource oldJavaModel) {
+		return ComparisonBasedJaccardCoefficientCalculator.calculateJaccardCoefficient(
+				JavaModelComparator.compareJavaModels(newJavaModel, oldJavaModel, null, null, null));
+	}
+
+	private JaccardCoefficientResult computeJCForPcm(Resource newPcmRepo, Resource oldPcmRepo) {
+		return ComparisonBasedJaccardCoefficientCalculator
+				.calculateJaccardCoefficient(PCMModelComparator.compareRepositoryModelsIDBased(newPcmRepo, oldPcmRepo));
+	}
+
+	private ImUpdateEvalData computeFScoreForIm(Repository repo, InstrumentationModel im) {
+		var evalData = new ImUpdateEvalData();
+		var eval = new IMUpdateEvaluator();
+		eval.evaluateIMUpdate(repo, im, evalData, null);
+		return evalData;
+	}
+
+	protected List<ChangePropagationSpecification> getCPRs() {
+		List<ChangePropagationSpecification> changeSpecs = new ArrayList<>();
+		/*
+		 * Do not add the PcmInit and ImInit change propagation specifications here,
+		 * because the top-level root elements of PCM and IM (Repository and
+		 * InstrumentationModel respectively) should be copies of their counterparts in
+		 * the original TEAMMATES integration test.
+		 * 
+		 * Correspondences between those root elements and EReferences, which would be
+		 * added in the PcmInit and ImInit change propagation specifications, are added
+		 * in the experiment resource wrapper (ExperimentResourceWrapper).
+		 */
+		changeSpecs.add(new CommitIntegrationPCMJavaChangePropagationSpecification());
+		changeSpecs.add(new PcmImUpdateChangePropagationSpecification());
+		return changeSpecs;
+	}
+
+	/**
+	 * The test method, which encapsulates the experiment run. Currently only for
+	 * the TEAMMATES integration test case.
+	 */
+	@Test
+	public void testPcmPropagation() {
+		LoggingSetup.setMinLogLevel(Level.DEBUG);
+		var targetDirName = "target";
+
+		pcmToJavaChangePropagationTestTemplate(new PcmToJavaChangePropagationDirLayout(null,
+				new JavaToPcmPropagationDirLayout(Paths.get(targetDirName, "TEAMMATESCITest-1-6484257")),
+				Path.of(targetDirName, "Teammates-Experiment-" + 1).toAbsolutePath()));
+	}
+}

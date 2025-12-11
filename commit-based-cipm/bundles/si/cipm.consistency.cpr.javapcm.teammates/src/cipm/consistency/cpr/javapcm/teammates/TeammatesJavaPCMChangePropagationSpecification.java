@@ -32,12 +32,12 @@ public class TeammatesJavaPCMChangePropagationSpecification extends AllTeammates
 		return super.doesHandleChange(change, correspondenceModel) || this.bodyTransformation.doesHandleChange(change, correspondenceModel);
 	}
 	
-	@Override
-	public void propagateChange(EChange change, EditableCorrespondenceModelView<Correspondence> correspondenceModel,
-			ResourceAccess resourceAccess) {
-		super.propagateChange(change, correspondenceModel, resourceAccess);
-		if (this.bodyTransformation.doesHandleChange(change, correspondenceModel)) {
-			this.bodyTransformation.propagateChange(change, correspondenceModel, resourceAccess);
-		}
-	}
+//	@Override
+//	public void propagateChange(EChange change, EditableCorrespondenceModelView<Correspondence> correspondenceModel,
+//			ResourceAccess resourceAccess) {
+//		super.propagateChange(change, correspondenceModel, resourceAccess);
+//		if (this.bodyTransformation.doesHandleChange(change, correspondenceModel)) {
+//			this.bodyTransformation.propagateChange(change, correspondenceModel, resourceAccess);
+//		}
+//	}
 }

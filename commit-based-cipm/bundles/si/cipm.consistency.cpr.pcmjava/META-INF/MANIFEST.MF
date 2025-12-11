@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Consistency Preservation Rules for PCM to Java
+Bundle-SymbolicName: cipm.consistency.cpr.pcmjava
+Bundle-Version: 0.2.0.qualifier
+Export-Package: cipm.consistency.cpr.pcmjava,
+ cipm.consistency.cpr.pcmjava.internal,
+ cipm.consistency.cpr.pcmjava.logger,
+ cipm.consistency.cpr.pcmjava.preprocessing,
+ cipm.consistency.cpr.pcmjava.userinteraction,
+ mir.reactions.allPcm,
+ mir.reactions.allRepository
+Require-Bundle: org.palladiosimulator.pcm,
+ org.apache.log4j,
+ org.eclipse.emf.ecore,
+ org.eclipse.core.resources,
+ tools.vitruv.change.correspondence,
+ tools.vitruv.change.interaction,
+ tools.vitruv.dsls.reactions.runtime,
+ cipm.consistency.models.instrumentation,
+ org.eclipse.xtext,
+ org.emftext.language.java,
+ org.apache.commons.lang
+Automatic-Module-Name: cipm.consistency.cpr.pcmjava
+Bundle-RequiredExecutionEnvironment: JavaSE-11
