@@ -84,10 +84,5 @@
             <repository location="https://cipm-tools.github.io/updatesite/archive/cipm-0.1.1/"/>
 			<unit id="cipm.consistency.models.instrumentation" version="0.0.0"/>
 		</location>
-		<!-- Kieker Monitoring Framework -->
-		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://maui.se.informatik.uni-kiel.de/repo/kieker/1.15/"/>
-			<unit id="kieker" version="0.0.0"/>
-		</location>
 	</locations>
 </target>
