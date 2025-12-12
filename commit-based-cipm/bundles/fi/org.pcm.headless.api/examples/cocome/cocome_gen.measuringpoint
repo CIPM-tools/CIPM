@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="ASCII"?>
+<org.palladiosimulator.edp2.models:MeasuringPointRepository xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:org.palladiosimulator.edp2.models="http://palladiosimulator.org/EDP2/MeasuringPoint/1.0" xmlns:pcmmeasuringpoint="http://palladiosimulator.org/PCM/MeasuringPoint/1.0" id="_MpqdkBxwEeqfmfnHQS_WPQ">
+  <measuringPoints xsi:type="pcmmeasuringpoint:ExternalCallActionMeasuringPoint" stringRepresentation="ExternalCall getPersistenceContext from TradingSystem.Inventory.Application.ProductDispatcher to PersistenceIf->getPersistenceContext [_EJT-ANLyEduQ7qbNANXHPw]" resourceURIRepresentation="file:/Users/david/Desktop/PCM-Headless/git/org.pcm.headless.api/examples/cocome/cocome.repository#_EJT-ANLyEduQ7qbNANXHPw">
+    <externalCall href="cocome.repository#_EJT-ANLyEduQ7qbNANXHPw"/>
+  </measuringPoints>
+  <measuringPoints xsi:type="pcmmeasuringpoint:ExternalCallActionMeasuringPoint" stringRepresentation="ExternalCall queryEnterpriseById from TradingSystem.Inventory.Application.ProductDispatcher to EnterpriseQueryIf->queryEnterpriseById [__MsdkNLyEduQ7qbNANXHPw]" resourceURIRepresentation="file:/Users/david/Desktop/PCM-Headless/git/org.pcm.headless.api/examples/cocome/cocome.repository#__MsdkNLyEduQ7qbNANXHPw">
+    <externalCall href="cocome.repository#__MsdkNLyEduQ7qbNANXHPw"/>
+  </measuringPoints>
+  <measuringPoints xsi:type="pcmmeasuringpoint:ExternalCallActionMeasuringPoint" stringRepresentation="ExternalCall flushDatabase from TradingSystem.Inventory.Application.ProductDispatcher to StoreIf->flushDatabase [_dVr08NL0EduQ7qbNANXHPw]" resourceURIRepresentation="file:/Users/david/Desktop/PCM-Headless/git/org.pcm.headless.api/examples/cocome/cocome.repository#_dVr08NL0EduQ7qbNANXHPw">
+    <externalCall href="cocome.repository#_dVr08NL0EduQ7qbNANXHPw"/>
+  </measuringPoints>
+  <measuringPoints xsi:type="pcmmeasuringpoint:ExternalCallActionMeasuringPoint" stringRepresentation="ExternalCall queryStoreById from TradingSystem.Inventory.Application.ProductDispatcher to StoreQueryIf->queryStoreById [_5f_VQNL5EdujoZKiiOMQBA]" resourceURIRepresentation="file:/Users/david/Desktop/PCM-Headless/git/org.pcm.headless.api/examples/cocome/cocome.repository#_5f_VQNL5EdujoZKiiOMQBA">
+    <externalCall href="cocome.repository#_5f_VQNL5EdujoZKiiOMQBA"/>
+  </measuringPoints>
+  <measuringPoints xsi:type="pcmmeasuringpoint:ExternalCallActionMeasuringPoint" stringRepresentation="ExternalCall queryProductsById from TradingSystem.Inventory.Application.ProductDispatcher to StoreQueryIf->queryProductById [_EnQIINL7EdujoZKiiOMQBA]" resourceURIRepresentation="file:/Users/david/Desktop/PCM-Headless/git/org.pcm.headless.api/examples/cocome/cocome.repository#_EnQIINL7EdujoZKiiOMQBA">
+    <externalCall href="cocome.repository#_EnQIINL7EdujoZKiiOMQBA"/>
+  </measuringPoints>
+  <measuringPoints xsi:type="pcmmeasuringpoint:ExternalCallActionMeasuringPoint" stringRepresentation="ExternalCall markProductsUnavailableInStock from TradingSystem.Inventory.Application.ProductDispatcher to StoreIf->markProductsUnavailableInStock [_BmEuwNL-EdujoZKiiOMQBA]" resourceURIRepresentation="file:/Users/david/Desktop/PCM-Headless/git/org.pcm.headless.api/examples/cocome/cocome.repository#_BmEuwNL-EdujoZKiiOMQBA">
+    <externalCall href="cocome.repository#_BmEuwNL-EdujoZKiiOMQBA"/>
+  </measuringPoints>
+  <measuringPoints xsi:type="pcmmeasuringpoint:ExternalCallActionMeasuringPoint" stringRepresentation="ExternalCall getPersistenceContext from TradingSystem.Inventory.Application.Store to PersistenceIf->getPersistenceContext [_qPZWwNJOEduQ7qbNANXHPw]" resourceURIRepresentation="file:/Users/david/Desktop/PCM-Headless/git/org.pcm.headless.api/examples/cocome/cocome.repository#_qPZWwNJOEduQ7qbNANXHPw">
+    <externalCall href="cocome.repository#_qPZWwNJOEduQ7qbNANXHPw"/>
+  </measuringPoints>
+  <measuringPoints xsi:type="pcmmeasuringpoint:ExternalCallActionMeasuringPoint" stringRepresentation="ExternalCall queryStockItemById from TradingSystem.Inventory.Application.Store to StoreQueryIf->queryStockItemById [_3isY0NJOEduQ7qbNANXHPw]" resourceURIRepresentation="file:/Users/david/Desktop/PCM-Headless/git/org.pcm.headless.api/examples/cocome/cocome.repository#_3isY0NJOEduQ7qbNANXHPw">
+    <externalCall href="cocome.repository#_3isY0NJOEduQ7qbNANXHPw"/>
+  </measuringPoints>
+  <measuringPoints xsi:type="pcmmeasuringpoint:ExternalCallActionMeasuringPoint" stringRepresentation="ExternalCall getPersistenceContext from TradingSystem.Inventory.Application.Store to PersistenceIf->getPersistenceContext [_M7N1kNJPEduQ7qbNANXHPw]" resourceURIRepresentation="file:/Users/david/Desktop/PCM-Headless/git/org.pcm.headless.api/examples/cocome/cocome.repository#_M7N1kNJPEduQ7qbNANXHPw">
+    <externalCall href="cocome.repository#_M7N1kNJPEduQ7qbNANXHPw"/>
+  </measuringPoints>
+  <measuringPoints xsi:type="pcmmeasuringpoint:ExternalCallActionMeasuringPoint" stringRepresentation="ExternalCall queryLowStockItemsWithRespectToIncomingProducts from TradingSystem.Inventory.Application.Store to StoreQueryIf->queryLowStockItemsWithRespectToIncomingProducts [_YeyxANJQEduQ7qbNANXHPw]" resourceURIRepresentation="file:/Users/david/Desktop/PCM-Headless/git/org.pcm.headless.api/examples/cocome/cocome.repository#_YeyxANJQEduQ7qbNANXHPw">
+    <externalCall href="cocome.repository#_YeyxANJQEduQ7qbNANXHPw"/>
+  </measuringPoints>
+  <measuringPoints xsi:type="pcmmeasuringpoint:ExternalCallActionMeasuringPoint" stringRepresentation="ExternalCall queryStoreById from TradingSystem.Inventory.Application.Store to StoreQueryIf->queryStoreById [_1UJywNJQEduQ7qbNANXHPw]" resourceURIRepresentation="file:/Users/david/Desktop/PCM-Headless/git/org.pcm.headless.api/examples/cocome/cocome.repository#_1UJywNJQEduQ7qbNANXHPw">
+    <externalCall href="cocome.repository#_1UJywNJQEduQ7qbNANXHPw"/>
+  </measuringPoints>
+  <measuringPoints xsi:type="pcmmeasuringpoint:UsageScenarioMeasuringPoint" stringRepresentation="Usage Scenario: aName" resourceURIRepresentation="file:/Users/david/Desktop/PCM-Headless/git/org.pcm.headless.api/examples/cocome/cocome.usagemodel#_jJphMAsjEeqvBqh1fs4E1Q">
+    <usageScenario href="cocome.usagemodel#_jJphMAsjEeqvBqh1fs4E1Q"/>
+  </measuringPoints>
+</org.palladiosimulator.edp2.models:MeasuringPointRepository>
