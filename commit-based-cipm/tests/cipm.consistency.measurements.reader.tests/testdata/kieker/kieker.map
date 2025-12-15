@@ -1,0 +1,4 @@
+$0=cipm.consistency.bridge.monitoring.records.ResponseTimeRecord
+$1=cipm.consistency.bridge.monitoring.records.ServiceCallRecord
+$2=cipm.consistency.bridge.monitoring.records.LoopRecord
+$3=cipm.consistency.bridge.monitoring.records.ResourceUtilizationRecord

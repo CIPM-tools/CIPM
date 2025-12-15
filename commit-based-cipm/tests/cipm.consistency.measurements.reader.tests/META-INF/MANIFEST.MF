@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Measurements Reader Tests
+Bundle-SymbolicName: cipm.consistency.measurements.reader.tests
+Bundle-Version: 0.2.0.qualifier
+Automatic-Module-Name: cipm.consistency.measurements.reader.tests
+Require-Bundle: cipm.consistency.measurements.reader,
+ cipm.consistency.measurements,
+ org.junit,
+ junit-jupiter-api;bundle-version="5.9.0",
+ junit-jupiter-engine,
+ org.apache.log4j
+Export-Package: cipm.consistency.measurements.reader.tests,
+ cipm.consistency.bridge.monitoring.records
+Bundle-RequiredExecutionEnvironment: JavaSE-11

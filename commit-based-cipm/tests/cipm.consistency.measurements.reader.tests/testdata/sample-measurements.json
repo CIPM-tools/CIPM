@@ -1,0 +1,85 @@
+{
+  "records": [
+    {
+      "type": "InternalActionRecord",
+      "internalActionID": "_testInternalAction1",
+      "entryTime": 1000000000,
+      "exitTime": 1000050000,
+      "requestedResourceID": "_cpu1"
+    },
+    {
+      "type": "InternalActionRecord",
+      "internalActionID": "_testInternalAction2",
+      "entryTime": 1000060000,
+      "exitTime": 1000080000,
+      "requestedResourceID": "_cpu1"
+    },
+    {
+      "type": "LoopActionRecord",
+      "loopID": "_testLoop1",
+      "loopIterationCount": 10
+    },
+    {
+      "type": "LoopActionRecord",
+      "loopID": "_testLoop2",
+      "loopIterationCount": 5
+    },
+    {
+      "type": "BranchActionRecord",
+      "branchID": "_testBranch1",
+      "executedBranchID": "_testBranch1_case1"
+    },
+    {
+      "type": "BranchActionRecord",
+      "branchID": "_testBranch1",
+      "executedBranchID": "_testBranch1_case2"
+    },
+    {
+      "type": "ServiceContextRecord",
+      "serviceID": "_testService1",
+      "serviceExecutionID": "exec-001",
+      "callerExecutionID": "",
+      "sessionID": "session-abc",
+      "hostID": "host-001",
+      "hostName": "localhost",
+      "entryTime": 1000000000,
+      "exitTime": 1000100000,
+      "parameters": "userId=123",
+      "returnValue": "success"
+    },
+    {
+      "type": "ServiceContextRecord",
+      "serviceID": "_testService2",
+      "serviceExecutionID": "exec-002",
+      "callerExecutionID": "exec-001",
+      "externalCallID": "_externalCall1",
+      "sessionID": "session-abc",
+      "hostID": "host-001",
+      "hostName": "localhost",
+      "entryTime": 1000020000,
+      "exitTime": 1000040000,
+      "parameters": "itemId=456",
+      "returnValue": "item-data"
+    },
+    {
+      "type": "InternalCallRecord",
+      "internalCallID": "_testInternalCall1",
+      "parameters": "param1=value1",
+      "entryTime": 1000010000,
+      "exitTime": 1000015000,
+      "returnValue": "result1"
+    },
+    {
+      "type": "ResourceUtilizationRecord",
+      "resourceID": "_cpu1",
+      "utilization": 0.75,
+      "timestamp": 1000000000
+    },
+    {
+      "type": "ResourceUtilizationRecord",
+      "resourceID": "_cpu1",
+      "utilization": 0.85,
+      "timestamp": 1000050000
+    }
+  ]
+}
