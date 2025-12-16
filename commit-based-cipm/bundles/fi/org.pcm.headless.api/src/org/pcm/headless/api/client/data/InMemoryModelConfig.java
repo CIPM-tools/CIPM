@@ -7,9 +7,6 @@ import org.eclipse.emf.ecore.EObject;
 
 import com.google.common.collect.Lists;
 
-import lombok.Data;
-
-@Data
 public class InMemoryModelConfig {
 
 	private List<EObject> repositorys = new ArrayList<>();
@@ -38,4 +35,59 @@ public class InMemoryModelConfig {
 		additionals.clear();
 	}
 
+	public List<EObject> getRepositorys() {
+		return repositorys;
+	}
+
+	public void setRepositorys(List<EObject> repositorys) {
+		this.repositorys = repositorys;
+	}
+
+	public EObject getSystem() {
+		return system;
+	}
+
+	public void setSystem(EObject system) {
+		this.system = system;
+	}
+
+	public EObject getAllocation() {
+		return allocation;
+	}
+
+	public void setAllocation(EObject allocation) {
+		this.allocation = allocation;
+	}
+
+	public EObject getUsage() {
+		return usage;
+	}
+
+	public void setUsage(EObject usage) {
+		this.usage = usage;
+	}
+
+	public EObject getResourceEnvironment() {
+		return resourceEnvironment;
+	}
+
+	public void setResourceEnvironment(EObject resourceEnvironment) {
+		this.resourceEnvironment = resourceEnvironment;
+	}
+
+	public EObject getMonitorRepository() {
+		return monitorRepository;
+	}
+
+	public void setMonitorRepository(EObject monitorRepository) {
+		this.monitorRepository = monitorRepository;
+	}
+
+	public List<EObject> getAdditionals() {
+		return additionals;
+	}
+
+	public void setAdditionals(List<EObject> additionals) {
+		this.additionals = additionals;
+	}
 }

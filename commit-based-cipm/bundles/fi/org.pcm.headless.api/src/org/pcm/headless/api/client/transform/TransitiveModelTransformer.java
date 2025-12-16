@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,10 +21,8 @@ import org.pcm.headless.api.util.MonitorRepositoryTransformer;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import lombok.extern.java.Log;
-
-@Log
 public class TransitiveModelTransformer {
+	private static final Logger log = Logger.getLogger(TransitiveModelTransformer.class.getCanonicalName());
 	// base
 	private List<EObject> models;
 

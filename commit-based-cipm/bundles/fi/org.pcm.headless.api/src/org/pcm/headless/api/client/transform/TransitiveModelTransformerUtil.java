@@ -1,6 +1,7 @@
 package org.pcm.headless.api.client.transform;
 
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
@@ -12,12 +13,9 @@ import org.pcm.headless.api.util.ModelUtil;
 import com.google.common.collect.Sets;
 
 import de.uka.ipd.sdq.stoex.Expression;
-import lombok.NoArgsConstructor;
-import lombok.extern.java.Log;
 
-@Log
-@NoArgsConstructor
 public class TransitiveModelTransformerUtil {
+	private static final Logger log = Logger.getLogger(TransitiveModelTransformerUtil.class.getCanonicalName());
 
 	public List<EObject> copyObjects(List<EObject> obj) {
 		return obj.stream().map(m -> EcoreUtil.copy(m)).collect(Collectors.toList());
