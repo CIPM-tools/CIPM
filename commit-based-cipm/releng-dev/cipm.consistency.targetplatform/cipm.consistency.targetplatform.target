@@ -37,8 +37,32 @@
             <repository location="https://updatesite.palladio-simulator.com/palladio-core-commons/releases/5.0.0/"/>
         </location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-            <unit id="org.palladiosimulator.pcm.feature.feature.group" version="0.0.0"/>
+            <unit id="org.palladiosimulator.pcm.feature.feature.group" version="5.0.0.202102051710"/>
             <repository location="https://updatesite.palladio-simulator.com/palladio-core-pcm/releases/5.0.0/"/>
+			<unit id="org.palladiosimulator.pcm.edp2.measuringpoint.feature.feature.group" version="5.0.0.202102051710"/>
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+            <repository location="https://updatesite.palladio-simulator.com/palladio-qual-metricspecification/releases/5.0.0/"/>
+			<unit id="org.palladiosimulator.metricspec.feature.feature.group" version="0.0.0"/>
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+            <repository location="https://updatesite.palladio-simulator.com/palladio-thirdparty-wrapper/releases/5.0.0/"/>
+			<unit id="org.palladiosimulator.thirdpartywrapper.feature.feature.group" version="5.0.0.202102080846"/>
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+            <repository location="https://updatesite.palladio-simulator.com/palladio-qual-measurementframework/releases/5.0.0/"/>
+			<unit id="org.palladiosimulator.measurementframework.feature.feature.group" version="0.0.0"/>
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+            <repository location="https://updatesite.palladio-simulator.com/palladio-editors-commons/releases/5.0.0/"/>
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+            <repository location="https://updatesite.palladio-simulator.com/palladio-qual-monitorrepository/releases/5.0.0/"/>
+			<unit id="org.palladiosimulator.monitorrepository.feature.feature.group" version="0.0.0"/>
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+            <repository location="https://updatesite.palladio-simulator.com/palladio-qual-edp2/releases/5.0.0/"/>
+			<unit id="org.palladiosimulator.edp2.feature.feature.group" version="0.0.0"/>
 		</location>
         <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
             <repository location="https://updatesite.palladio-simulator.com/palladio-supporting-workflowengine/releases/5.0.0/"/>
