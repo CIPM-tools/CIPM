@@ -7,7 +7,8 @@ Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Require-Bundle: org.apache.log4j,
- com.google.guava
+ com.google.guava,
+ com.fasterxml.jackson.core.jackson-annotations
 Export-Package: org.pcm.headless.shared.data,
  org.pcm.headless.shared.data.config,
  org.pcm.headless.shared.data.results

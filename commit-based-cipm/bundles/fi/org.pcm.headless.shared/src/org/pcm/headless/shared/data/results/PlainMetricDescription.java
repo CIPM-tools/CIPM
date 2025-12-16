@@ -1,12 +1,25 @@
 package org.pcm.headless.shared.data.results;
 
-import lombok.Data;
-
-@Data
 public class PlainMetricDescription {
 
 	private String id;
 	private String textual;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getTextual() {
+		return textual;
+	}
+
+	public void setTextual(String textual) {
+		this.textual = textual;
+	}
 
 	@Override
 	public boolean equals(Object obj) {

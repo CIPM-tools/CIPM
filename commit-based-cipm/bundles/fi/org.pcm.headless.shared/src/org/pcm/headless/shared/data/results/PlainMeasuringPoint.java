@@ -4,15 +4,36 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-import lombok.Data;
-
-@Data
 public class PlainMeasuringPoint {
 
 	private String stringRepresentation;
 	private MeasuringPointType type;
 
 	private List<String> sourceIds;
+
+	public String getStringRepresentation() {
+		return stringRepresentation;
+	}
+
+	public void setStringRepresentation(String stringRepresentation) {
+		this.stringRepresentation = stringRepresentation;
+	}
+
+	public MeasuringPointType getType() {
+		return type;
+	}
+
+	public void setType(MeasuringPointType type) {
+		this.type = type;
+	}
+
+	public List<String> getSourceIds() {
+		return sourceIds;
+	}
+
+	public void setSourceIds(List<String> sourceIds) {
+		this.sourceIds = sourceIds;
+	}
 
 	public void setSourceId(String only) {
 		this.setSourceIds(Lists.newArrayList(only));

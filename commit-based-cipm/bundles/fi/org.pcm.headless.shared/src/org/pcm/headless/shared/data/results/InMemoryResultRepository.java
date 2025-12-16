@@ -8,12 +8,17 @@ import org.pcm.headless.shared.data.KeyValuePair;
 
 import com.google.common.collect.Lists;
 
-import lombok.Data;
-
-@Data
 public class InMemoryResultRepository {
 
 	private List<KeyValuePair<PlainMetricMeasuringPointBundle, List<PlainDataSeries>>> values;
+
+	public List<KeyValuePair<PlainMetricMeasuringPointBundle, List<PlainDataSeries>>> getValues() {
+		return values;
+	}
+
+	public void setValues(List<KeyValuePair<PlainMetricMeasuringPointBundle, List<PlainDataSeries>>> values) {
+		this.values = values;
+	}
 
 	public InMemoryResultRepository() {
 		this.values = new LinkedList<>();

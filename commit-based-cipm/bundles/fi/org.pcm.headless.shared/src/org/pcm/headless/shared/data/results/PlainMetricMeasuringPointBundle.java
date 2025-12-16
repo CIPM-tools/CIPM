@@ -1,12 +1,25 @@
 package org.pcm.headless.shared.data.results;
 
-import lombok.Data;
-
-@Data
 public class PlainMetricMeasuringPointBundle {
 
 	private PlainMetricDescription desc;
 	private PlainMeasuringPoint point;
+	
+	public PlainMetricDescription getDesc() {
+		return desc;
+	}
+
+	public void setDesc(PlainMetricDescription desc) {
+		this.desc = desc;
+	}
+
+	public PlainMeasuringPoint getPoint() {
+		return point;
+	}
+
+	public void setPoint(PlainMeasuringPoint point) {
+		this.point = point;
+	}
 
 	@Override
 	public boolean equals(Object obj) {
