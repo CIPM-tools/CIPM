@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: org.pcm.headless.shared
+Bundle-SymbolicName: org.pcm.headless.shared;singleton:=true
+Bundle-Version: 0.7.0.qualifier
+Bundle-ClassPath: .
+Bundle-Vendor: %providerName
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Require-Bundle: org.apache.log4j,
+ com.google.guava
+Export-Package: org.pcm.headless.shared.data,
+ org.pcm.headless.shared.data.config,
+ org.pcm.headless.shared.data.results
+Bundle-ActivationPolicy: lazy
+Automatic-Module-Name: org.pcm.headless.shared
