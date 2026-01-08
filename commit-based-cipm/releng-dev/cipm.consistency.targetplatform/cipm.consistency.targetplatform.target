@@ -34,6 +34,7 @@
 			<unit id="com.fasterxml.jackson.core.jackson-annotations" version="2.13.2.v20220426-1653"/>
 			<unit id="com.fasterxml.jackson.core.jackson-core" version="2.13.2.v20220426-1653"/>
 			<unit id="com.fasterxml.jackson.core.jackson-databind" version="2.13.2.v20220426-1653"/>
+			<unit id="org.apache.httpcomponents.client5.httpclient5" version="5.1.2.v20220426-0826"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" refresh="true" type="InstallableUnit">
             <unit id="de.uka.ipd.sdq.identifier.feature.feature.group" version="0.0.0"/>

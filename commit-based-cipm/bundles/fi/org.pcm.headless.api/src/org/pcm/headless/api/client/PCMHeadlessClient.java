@@ -1,13 +1,18 @@
 package org.pcm.headless.api.client;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.concurrent.TimeUnit;
 
 import org.pcm.headless.api.util.PCMUtil;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class PCMHeadlessClient {
 	private static final long DEFAULT_TIMEOUT = 30000;
@@ -20,7 +25,7 @@ public class PCMHeadlessClient {
 
 	private String baseUrl;
 
-	private OkHttpClient client;
+	private HttpClient client;
 
 	public PCMHeadlessClient(String baseUrl) {
 		this.client = produceClient(DEFAULT_TIMEOUT);
@@ -40,10 +45,14 @@ public class PCMHeadlessClient {
 	 * Be aware: this can break currently running simulations.
 	 */
 	public boolean clear() {
-		Request request = new Request.Builder().url(this.baseUrl + CLEAR_URL).build();
-		try (Response response = client.newCall(request).execute()) {
+		HttpRequest request = HttpRequest
+				.newBuilder(URI.create(this.baseUrl + CLEAR_URL))
+				.timeout(client.connectTimeout().get())
+				.build();
+		try {
+			client.send(request, BodyHandlers.discarding());
 			return true;
-		} catch (IOException e) {
+		} catch (IOException | InterruptedException e) {
 			return false;
 		}
 	}
@@ -55,13 +64,17 @@ public class PCMHeadlessClient {
 	 * @return true if the backend is reachable, false if not
 	 */
 	public boolean isReachable(long timeout) {
-		OkHttpClient client = produceShallow(timeout);
-		Request request = new Request.Builder().url(this.baseUrl + PING_URL).build();
+		HttpClient client = produceShallow(timeout);
+		HttpRequest request = HttpRequest
+				.newBuilder(URI.create(this.baseUrl + PING_URL))
+				.timeout(client.connectTimeout().get())
+				.build();
 
 		boolean reach;
-		try (Response response = client.newCall(request).execute()) {
-			reach = response.body().string().equals("{}");
-		} catch (IOException e) {
+		try {
+			HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+			reach = response.body().equals("{}");
+		} catch (IOException | InterruptedException e) {
 			reach = false;
 		}
 		return reach;
@@ -74,22 +87,23 @@ public class PCMHeadlessClient {
 	 *         simulation.
 	 */
 	public SimulationClient prepareSimulation() {
-		Request request = new Request.Builder().url(this.baseUrl + PREPARE_URL).build();
-		try (Response response = client.newCall(request).execute()) {
-			return new SimulationClient(this.baseUrl, response.body().string(), this.client);
-		} catch (IOException e) {
+		HttpRequest request = HttpRequest
+				.newBuilder(URI.create(this.baseUrl + PREPARE_URL))
+				.timeout(client.connectTimeout().get())
+				.build();
+		try {
+			HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+			return new SimulationClient(this.baseUrl, response.body(), this.client);
+		} catch (IOException | InterruptedException e) {
 			return null;
 		}
 	}
 
-	private OkHttpClient produceClient(long timeout) {
-		return new OkHttpClient.Builder().connectTimeout(timeout, TimeUnit.MILLISECONDS)
-				.writeTimeout(timeout, TimeUnit.MILLISECONDS).readTimeout(timeout, TimeUnit.MILLISECONDS).build();
+	private HttpClient produceClient(long timeout) {
+		return HttpClient.newBuilder().connectTimeout(Duration.of(timeout, ChronoUnit.MILLIS)).build();
 	}
 
-	private OkHttpClient produceShallow(long timeout) {
-		return client.newBuilder().connectTimeout(timeout, TimeUnit.MILLISECONDS)
-				.writeTimeout(timeout, TimeUnit.MILLISECONDS).readTimeout(timeout, TimeUnit.MILLISECONDS).build();
+	private HttpClient produceShallow(long timeout) {
+		return HttpClient.newBuilder().connectTimeout(Duration.of(timeout, ChronoUnit.MILLIS)).build();
 	}
-
 }

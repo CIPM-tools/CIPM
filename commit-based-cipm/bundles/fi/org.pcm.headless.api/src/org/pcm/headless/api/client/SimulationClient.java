@@ -7,6 +7,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
+import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.palladiosimulator.monitorrepository.MonitorRepository;
@@ -25,16 +34,13 @@ import org.pcm.headless.shared.data.ESimulationState;
 import org.pcm.headless.shared.data.config.HeadlessSimulationConfig;
 import org.pcm.headless.shared.data.results.InMemoryResultRepository;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import okhttp3.FormBody;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 
 public class SimulationClient {
 	// STATICS
@@ -57,11 +63,11 @@ public class SimulationClient {
 
 	private InMemoryModelConfig models;
 
-	private OkHttpClient client;
+	private HttpClient client;
 
 	private boolean synced = false;
 
-	public SimulationClient(String baseUrl, String id, OkHttpClient client) {
+	public SimulationClient(String baseUrl, String id, HttpClient client) {
 		this.baseUrl = baseUrl;
 		this.id = id;
 		this.client = client;
@@ -70,10 +76,13 @@ public class SimulationClient {
 	}
 
 	public InMemoryResultRepository getResults() {
-		Request request = new Request.Builder().url(this.baseUrl + integrateId(RESULTS_URL)).build();
-		try (Response response = client.newCall(request).execute()) {
-			return JSON_MAPPER.readValue(response.body().string(), InMemoryResultRepository.class);
-		} catch (IOException e) {
+		HttpRequest request = HttpRequest
+				.newBuilder(URI.create(this.baseUrl + integrateId(RESULTS_URL)))
+				.build();
+		try {
+			HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+			return JSON_MAPPER.readValue(response.body(), InMemoryResultRepository.class);
+		} catch (IOException | InterruptedException e) {
 			return null;
 		}
 	}
@@ -126,10 +135,13 @@ public class SimulationClient {
 		ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
 		if (synced) {
-			Request request = new Request.Builder().url(this.baseUrl + integrateId(START_URL)).build();
-			try (Response response = client.newCall(request).execute()) {
+			HttpRequest request = HttpRequest
+					.newBuilder(URI.create(this.baseUrl + integrateId(START_URL)))
+					.build();
+			try {
+				client.send(request, BodyHandlers.discarding());
 				executorService.submit(new ResultListenerTask(resultListener, executorService, timeout, delay));
-			} catch (IOException e) {
+			} catch (IOException | InterruptedException e) {
 				return false;
 			}
 		}
@@ -159,37 +171,41 @@ public class SimulationClient {
 	}
 
 	public boolean clear() {
-		Request request = new Request.Builder().url(this.baseUrl + integrateId(CLEAR_URL)).build();
-		try (Response response = client.newCall(request).execute()) {
-			response.body().string();
-		} catch (IOException e) {
+		HttpRequest request = HttpRequest
+				.newBuilder(URI.create(this.baseUrl + integrateId(CLEAR_URL)))
+				.build();
+		try {
+			client.send(request, BodyHandlers.discarding());
+		} catch (IOException | InterruptedException e) {
 			return false;
 		}
 		return true;
 	}
 
 	public ESimulationState getState() {
-		Request request = new Request.Builder().url(this.baseUrl + integrateId(GET_STATE_URL)).build();
-		try (Response response = client.newCall(request).execute()) {
-			return ESimulationState.fromString(response.body().string());
-		} catch (IOException e) {
+		HttpRequest request = HttpRequest
+				.newBuilder(URI.create(this.baseUrl + integrateId(GET_STATE_URL)))
+				.build();
+		try {
+			HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+			return ESimulationState.fromString(response.body());
+		} catch (IOException | InterruptedException e) {
 			return null;
 		}
 	}
 
 	public void setSimulationConfig(HeadlessSimulationConfig config) {
-		RequestBody formBody;
-		try {
-			formBody = new FormBody.Builder().add("configJson", JSON_MAPPER.writeValueAsString(config)).build();
-		} catch (JsonProcessingException e1) {
-			return;
-		}
-
-		Request request = new Request.Builder().url(this.baseUrl + integrateId(SET_CONFIG_URL)).post(formBody).build();
-		try (Response response = client.newCall(request).execute()) {
-			response.body().string();
-		} catch (IOException e) {
-			e.printStackTrace();
+		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+			var entity = new UrlEncodedFormEntity(
+				List.of(new BasicNameValuePair("configJson", JSON_MAPPER.writeValueAsString(config)))
+			);
+		
+			var postRequest = new HttpPost(this.baseUrl + integrateId(SET_CONFIG_URL));
+			postRequest.setEntity(entity);
+			
+			var response = httpClient.execute(postRequest);
+			response.close();
+		} catch (IOException e1) {
 		}
 	}
 
@@ -232,12 +248,19 @@ public class SimulationClient {
 				MonitorRepositoryTransformer.makePersistable(copy);
 			}
 			ModelUtil.saveToFile(copy, tempFile.getAbsolutePath());
-
-			RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart("file",
-					orgFileName, RequestBody.create(tempFile, MediaType.parse("application/octet-stream"))).build();
-			Request request = new Request.Builder().url(this.baseUrl + integrateId(SET_URL) + part.toString())
-					.post(requestBody).build();
-			client.newCall(request).execute();
+			
+			try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+				HttpPost postRequest = new HttpPost(this.baseUrl + integrateId(SET_URL) + part.toString());
+				
+				HttpEntity requestBody = MultipartEntityBuilder
+						.create()
+						.addBinaryBody("file", tempFile, ContentType.DEFAULT_BINARY, orgFileName)
+						.build();
+				postRequest.setEntity(requestBody);
+				
+				CloseableHttpResponse response =  httpClient.execute(postRequest);
+				response.close();
+			}
 
 			tempFile.delete();
 		} catch (IOException e) {

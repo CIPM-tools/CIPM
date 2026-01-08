@@ -18,7 +18,9 @@ Require-Bundle: org.apache.log4j,
  org.palladiosimulator.pcm.edp2.measuringpoint,
  org.pcm.headless.shared,
  com.fasterxml.jackson.core.jackson-core,
- com.fasterxml.jackson.core.jackson-databind
+ com.fasterxml.jackson.core.jackson-databind,
+ org.apache.httpcomponents.client5.httpclient5,
+ org.apache.httpcomponents.core5.httpcore5
 Export-Package: org.pcm.headless.api.client,
  org.pcm.headless.api.client.data,
  org.pcm.headless.api.client.measure,
