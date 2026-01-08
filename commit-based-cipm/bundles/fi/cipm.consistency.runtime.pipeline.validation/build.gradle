@@ -1,0 +1,26 @@
+
+dependencies {
+	api project(":cipm.consistency.base.shared")
+	api project(":cipm.consistency.base.vitruv")
+	
+	implementation project(":cipm.consistency.base.models.instrumentation")
+	implementation project(":cipm.consistency.base.models.runtimeenvironment")
+	
+	testFixturesApi(testFixtures(project(":cipm.consistency.base.vitruv")))
+	testImplementation(testFixtures(project(":cipm.consistency.base.vitruv")))
+	
+	api project(":cipm.consistency.bridge.monitoring")
+	
+	/* External */
+	
+	implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+	
+	// https://mvnrepository.com/artifact/org.eclipse.core/runtime
+	implementation group: 'org.eclipse.core', name: 'runtime', version: '3.10.0-v20140318-2214'
+	
+	// https://mvnrepository.com/artifact/lpg.runtime/java
+	implementation group: 'lpg.runtime', name: 'java', version: '2.0.17-v201004271640'
+	
+	implementation 'org.antlr:antlr-runtime:3.5.2' 
+}
+
