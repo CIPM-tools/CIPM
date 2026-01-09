@@ -1,6 +1,7 @@
 package cipm.consistency.runtime.pipeline.validation.simulation;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.logging.Logger;
 
 import org.pcm.headless.api.client.ISimulationResultListener;
 import org.pcm.headless.api.client.PCMHeadlessClient;
@@ -8,28 +9,22 @@ import org.pcm.headless.api.client.SimulationClient;
 import org.pcm.headless.shared.data.ESimulationType;
 import org.pcm.headless.shared.data.config.HeadlessSimulationConfig;
 import org.pcm.headless.shared.data.results.InMemoryResultRepository;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 import cipm.consistency.base.core.config.ConfigurationContainer;
 import cipm.consistency.base.shared.pcm.InMemoryPCM;
-import lombok.extern.java.Log;
 
-@Log
-@Component
-public class HeadlessPCMSimulator implements IPCMSimulator, InitializingBean {
+public class HeadlessPCMSimulator implements IPCMSimulator {
+	private static final Logger log = Logger.getLogger(HeadlessPCMSimulator.class.getName());
+	
 	private static final long TIMEOUT_VFL = 120000;
 
-	@Autowired
 	private ConfigurationContainer config;
 
 	private PCMHeadlessClient client;
 
 	private boolean reachable;
 
-	@Scheduled(fixedRate = 30000L)
+	// @Scheduled(fixedRate = 30000L)
 	public void checkAvailability() {
 		if (client != null) {
 			this.reachable = client.isReachable(TIMEOUT_VFL);

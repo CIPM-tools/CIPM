@@ -7,11 +7,7 @@ import org.pcm.headless.shared.data.results.PlainMetricDescription;
 
 import com.google.common.collect.Lists;
 
-import lombok.Builder;
-import lombok.Data;
-
-@Data
-@Builder
+// @Builder
 public class ValidationPoint {
 
 	private String id;
@@ -24,7 +20,61 @@ public class ValidationPoint {
 	private TimeValueDistribution analysisDistribution;
 	private TimeValueDistribution monitoringDistribution;
 
-	@Builder.Default
 	private List<ValidationMetricValue> metricValues = Lists.newArrayList();
 
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getServiceId() {
+		return serviceId;
+	}
+
+	public void setServiceId(String serviceId) {
+		this.serviceId = serviceId;
+	}
+
+	public PlainMeasuringPoint getMeasuringPoint() {
+		return measuringPoint;
+	}
+
+	public void setMeasuringPoint(PlainMeasuringPoint measuringPoint) {
+		this.measuringPoint = measuringPoint;
+	}
+
+	public PlainMetricDescription getMetricDescription() {
+		return metricDescription;
+	}
+
+	public void setMetricDescription(PlainMetricDescription metricDescription) {
+		this.metricDescription = metricDescription;
+	}
+
+	public TimeValueDistribution getAnalysisDistribution() {
+		return analysisDistribution;
+	}
+
+	public void setAnalysisDistribution(TimeValueDistribution analysisDistribution) {
+		this.analysisDistribution = analysisDistribution;
+	}
+
+	public TimeValueDistribution getMonitoringDistribution() {
+		return monitoringDistribution;
+	}
+
+	public void setMonitoringDistribution(TimeValueDistribution monitoringDistribution) {
+		this.monitoringDistribution = monitoringDistribution;
+	}
+
+	public List<ValidationMetricValue> getMetricValues() {
+		return metricValues;
+	}
+
+	public void setMetricValues(List<ValidationMetricValue> metricValues) {
+		this.metricValues = metricValues;
+	}
 }

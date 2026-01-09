@@ -1,13 +1,11 @@
 package cipm.consistency.runtime.pipeline.validation.data.metric.impl;
 
 import org.apache.commons.math3.stat.descriptive.rank.Percentile;
-import org.springframework.stereotype.Service;
 
 import cipm.consistency.runtime.pipeline.validation.data.ValidationPoint;
 import cipm.consistency.runtime.pipeline.validation.data.metric.ValidationMetricType;
 import cipm.consistency.runtime.pipeline.validation.data.metric.value.DoubleMetricValue;
 
-@Service
 public class ServiceCallMedianDistanceAbsolute extends ServiceCallMetric {
 
 	@Override

@@ -3,10 +3,6 @@ package cipm.consistency.runtime.pipeline.validation.facade;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.google.common.collect.Maps;
 
 import cipm.consistency.base.core.ISpecificModelProvider;
@@ -18,15 +14,11 @@ import cipm.consistency.base.vsum.facade.CentralVsumFacade;
 import cipm.consistency.base.vsum.manager.VsumManager;
 import cipm.consistency.base.vsum.manager.VsumManager.VsumChangeSource;
 
-@Component
 public class RuntimeEnvironmentQueryImpl implements IRuntimeEnvironmentQueryFacade {
-	@Autowired
 	private CentralVsumFacade vsum;
 
-	@Autowired
 	private ISpecificModelProvider remProvider;
 
-	@Autowired
 	private VsumManager vsumManager;
 
 	private Map<String, RuntimeResourceContainer> containerCache = Maps.newHashMap();

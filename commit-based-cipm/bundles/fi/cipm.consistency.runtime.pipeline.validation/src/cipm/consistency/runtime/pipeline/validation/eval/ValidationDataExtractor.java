@@ -10,8 +10,6 @@ import org.pcm.headless.shared.data.results.InMemoryResultRepository;
 import org.pcm.headless.shared.data.results.LongMeasureValue;
 import org.pcm.headless.shared.data.results.PlainDataMeasure;
 import org.pcm.headless.shared.data.results.PlainDataSeries;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Sets;
 
@@ -21,11 +19,9 @@ import cipm.consistency.runtime.pipeline.validation.data.TimeValueDistribution;
 import cipm.consistency.runtime.pipeline.validation.data.ValidationData;
 import cipm.consistency.runtime.pipeline.validation.data.ValidationPoint;
 
-@Service
 public class ValidationDataExtractor {
 	private static final Set<String> SWAP_SET = Sets.newHashSet("_sefjUeJCEeO6l86uYUhhyw");
 
-	@Autowired
 	private MonitoringDataEnrichment monitoringEnrichment;
 
 	public ValidationData extractValidationData(InMemoryResultRepository analysis, InMemoryPCM pcm,

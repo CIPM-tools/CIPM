@@ -12,7 +12,8 @@ Require-Bundle: org.pcm.headless.api,
  com.fasterxml.jackson.core.jackson-annotations,
  com.google.guava,
  org.apache.commons.lang,
- org.palladiosimulator.pcm
+ org.palladiosimulator.pcm,
+ org.apache.commons.math3
 Export-Package: cipm.consistency.runtime.pipeline.validation,
  cipm.consistency.runtime.pipeline.validation.contracts,
  cipm.consistency.runtime.pipeline.validation.data,

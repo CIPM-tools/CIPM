@@ -4,13 +4,11 @@ import java.util.Arrays;
 import java.util.stream.DoubleStream;
 
 import org.apache.commons.math3.ml.distance.EarthMoversDistance;
-import org.springframework.stereotype.Service;
 
 import cipm.consistency.runtime.pipeline.validation.data.ValidationPoint;
 import cipm.consistency.runtime.pipeline.validation.data.metric.ValidationMetricType;
 import cipm.consistency.runtime.pipeline.validation.data.metric.value.DoubleMetricValue;
 
-@Service
 public class ServiceCallWassersteinDistanceMetric extends ServiceCallMetric {
 
 	@Override

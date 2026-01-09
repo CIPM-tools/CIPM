@@ -13,13 +13,11 @@ import org.palladiosimulator.pcm.seff.ExternalCallAction;
 import org.palladiosimulator.pcm.seff.ResourceDemandingSEFF;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
-import org.springframework.stereotype.Service;
 
 import cipm.consistency.base.shared.pcm.InMemoryPCM;
 import cipm.consistency.base.shared.pcm.util.PCMElementIDCache;
 import cipm.consistency.base.shared.pcm.util.PCMUtils;
 
-@Service
 public class PCMValidationPointMatcher {
 	private PCMElementIDCache<ExternalCallAction> actionCache = new PCMElementIDCache<>(ExternalCallAction.class);
 	private PCMElementIDCache<AssemblyContext> assemblyCache = new PCMElementIDCache<>(AssemblyContext.class);

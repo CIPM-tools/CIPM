@@ -7,9 +7,7 @@ import java.util.Optional;
 import com.google.common.collect.Maps;
 
 import cipm.consistency.runtime.pipeline.validation.data.metric.value.DoubleMetricValue;
-import lombok.Data;
 
-@Data
 public class ValidationData {
 
 	private List<ValidationPoint> validationPoints;
@@ -70,4 +68,19 @@ public class ValidationData {
 		validationImprovementScore = Optional.of(sum / (double) correspondences);
 	}
 
+	public List<ValidationPoint> getValidationPoints() {
+		return validationPoints;
+	}
+
+	public void setValidationPoints(List<ValidationPoint> validationPoints) {
+		this.validationPoints = validationPoints;
+	}
+
+	public Optional<Double> getValidationImprovementScore() {
+		return validationImprovementScore;
+	}
+
+	public void setValidationImprovementScore(Optional<Double> validationImprovementScore) {
+		this.validationImprovementScore = validationImprovementScore;
+	}
 }

@@ -3,9 +3,6 @@ package cipm.consistency.runtime.pipeline.validation;
 import java.util.List;
 
 import org.pcm.headless.shared.data.results.InMemoryResultRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 import cipm.consistency.base.core.health.AbstractHealthStateComponent;
 import cipm.consistency.base.core.health.HealthState;
@@ -18,15 +15,11 @@ import cipm.consistency.runtime.pipeline.validation.data.metric.IValidationMetri
 import cipm.consistency.runtime.pipeline.validation.eval.ValidationDataExtractor;
 import cipm.consistency.runtime.pipeline.validation.simulation.HeadlessPCMSimulator;
 
-@Component
 public class ValidationFeedbackComponent extends AbstractHealthStateComponent implements IValidationProcessor {
-	@Autowired
 	private HeadlessPCMSimulator simulator;
 
-	@Autowired
 	private ValidationDataExtractor extractor;
 
-	@Autowired
 	private List<IValidationMetric<?>> metrics;
 
 	private boolean workingBefore = false;

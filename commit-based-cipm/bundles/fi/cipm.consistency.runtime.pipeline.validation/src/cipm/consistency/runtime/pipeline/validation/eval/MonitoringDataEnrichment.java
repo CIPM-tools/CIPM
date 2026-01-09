@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.cache2k.Cache;
 import org.cache2k.Cache2kBuilder;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -37,13 +36,10 @@ public class MonitoringDataEnrichment {
 
 	private PCMElementIDCache<ResourceContainer> cacheResEnv = new PCMElementIDCache<>(ResourceContainer.class);
 
-	@Autowired
 	private PCMValidationPointMatcher pcmValidationPointMatcher;
 
-	@Autowired
 	private ISpecificVsumFacade vsumFacade;
 
-	@Autowired
 	private IRuntimeEnvironmentQueryFacade remFacade;
 
 	public void enrichWithMonitoringData(InMemoryPCM pcm, List<ValidationPoint> points,
