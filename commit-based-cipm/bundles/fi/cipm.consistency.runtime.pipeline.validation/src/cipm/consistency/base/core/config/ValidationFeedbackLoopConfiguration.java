@@ -7,10 +7,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import cipm.consistency.base.shared.util.IGenericListener;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Configuration of the validation feedback loop (VFL).
@@ -18,20 +14,17 @@ import lombok.Setter;
  * @author David Monschein
  *
  */
-@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ValidationFeedbackLoopConfiguration {
 	/**
 	 * URL where the Headless PCM {@link https://github.com/dmonsch/PCM-Headless} is
 	 * running.
 	 */
-	@Setter(AccessLevel.NONE)
 	private String url;
 
 	/**
 	 * Port of the Headless PCM.
 	 */
-	@Setter(AccessLevel.NONE)
 	private int port;
 
 	/**
@@ -64,8 +57,6 @@ public class ValidationFeedbackLoopConfiguration {
 	/**
 	 * Listeners that are informed when this configuration changes.
 	 */
-	@Getter(AccessLevel.NONE)
-	@Setter(AccessLevel.NONE)
 	@JsonIgnore
 	private List<IGenericListener<Void>> changeListener = new ArrayList<>();
 
@@ -107,5 +98,53 @@ public class ValidationFeedbackLoopConfiguration {
 	public boolean isValid() {
 		return url != null && port > 0 && port < 65535 && simulationTime > 0 && validationShare >= 0
 				&& validationShare <= 1;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public long getSimulationTime() {
+		return simulationTime;
+	}
+
+	public long getMeasurements() {
+		return measurements;
+	}
+
+	public String getTargetServiceId() {
+		return targetServiceId;
+	}
+
+	public double getMinInterarrivalTime() {
+		return minInterarrivalTime;
+	}
+
+	public float getValidationShare() {
+		return validationShare;
+	}
+
+	public void setSimulationTime(long simulationTime) {
+		this.simulationTime = simulationTime;
+	}
+
+	public void setMeasurements(long measurements) {
+		this.measurements = measurements;
+	}
+
+	public void setTargetServiceId(String targetServiceId) {
+		this.targetServiceId = targetServiceId;
+	}
+
+	public void setMinInterarrivalTime(double minInterarrivalTime) {
+		this.minInterarrivalTime = minInterarrivalTime;
+	}
+
+	public void setValidationShare(float validationShare) {
+		this.validationShare = validationShare;
 	}
 }

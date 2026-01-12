@@ -10,7 +10,7 @@ import org.pcm.headless.shared.data.ESimulationType;
 import org.pcm.headless.shared.data.config.HeadlessSimulationConfig;
 import org.pcm.headless.shared.data.results.InMemoryResultRepository;
 
-import cipm.consistency.base.core.config.ConfigurationContainer;
+import cipm.consistency.base.core.config.ValidationFeedbackLoopConfiguration;
 import cipm.consistency.base.shared.pcm.InMemoryPCM;
 
 public class HeadlessPCMSimulator implements IPCMSimulator {
@@ -18,18 +18,18 @@ public class HeadlessPCMSimulator implements IPCMSimulator {
 	
 	private static final long TIMEOUT_VFL = 120000;
 
-	private ConfigurationContainer config;
+	private ValidationFeedbackLoopConfiguration config = new ValidationFeedbackLoopConfiguration();
 
 	private PCMHeadlessClient client;
 
 	private boolean reachable;
 
 	// @Scheduled(fixedRate = 30000L)
-	public void checkAvailability() {
-		if (client != null) {
-			this.reachable = client.isReachable(TIMEOUT_VFL);
-		}
-	}
+//	public void checkAvailability() {
+//		if (client != null) {
+//			this.reachable = client.isReachable(TIMEOUT_VFL);
+//		}
+//	}
 
 	public boolean isReachable() {
 		return reachable;
@@ -40,10 +40,16 @@ public class HeadlessPCMSimulator implements IPCMSimulator {
 		try {
 			// set properties
 			SimulationClient simulationClient = client.prepareSimulation();
+			
 			if (simulationClient != null) {
-				simulationClient.setSimulationConfig(HeadlessSimulationConfig.builder().type(ESimulationType.SIMUCOM)
-						.experimentName(name).repetitions(1).maximumMeasurementCount(config.getVfl().getMeasurements())
-						.simulationTime(config.getVfl().getSimulationTime()).build());
+				var headlessSimConfig = new HeadlessSimulationConfig();
+				headlessSimConfig.setType(ESimulationType.SIMUCOM);
+				headlessSimConfig.setExperimentName(name);
+				headlessSimConfig.setRepetitions(1);
+				headlessSimConfig.setMaximumMeasurementCount(config.getMeasurements());
+				headlessSimConfig.setSimulationTime(config.getSimulationTime());
+				
+				simulationClient.setSimulationConfig(headlessSimConfig);
 				simulationClient.setRepository(pcm.getRepository());
 				simulationClient.setSystem(pcm.getSystem());
 				simulationClient.setResourceEnvironment(pcm.getResourceEnvironmentModel());
@@ -82,16 +88,18 @@ public class HeadlessPCMSimulator implements IPCMSimulator {
 		return wrapper.isSet() ? wrapper.res : null;
 	}
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		config.getVfl().registerChangeListener(v -> {
+	public void initialize() throws Exception {
+		if (!config.isValid()) {
+			throw new IllegalStateException("Configuration not valid.");
+		}
+		config.registerChangeListener(v -> {
 			updatePCMHeadlessClient();
 		});
 		updatePCMHeadlessClient();
 	}
 
 	private void updatePCMHeadlessClient() {
-		client = new PCMHeadlessClient(buildBackendUrl(config.getVfl().getUrl(), config.getVfl().getPort()));
+		client = new PCMHeadlessClient(buildBackendUrl(config.getUrl(), config.getPort()));
 
 		// check if it is available
 		if (client.isReachable(TIMEOUT_VFL)) {
@@ -133,5 +141,4 @@ public class HeadlessPCMSimulator implements IPCMSimulator {
 			client.clear();
 		}
 	}
-
 }
