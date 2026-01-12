@@ -22,7 +22,7 @@ import cipm.consistency.runtime.pipeline.validation.data.ValidationPoint;
 public class ValidationDataExtractor {
 	private static final Set<String> SWAP_SET = Sets.newHashSet("_sefjUeJCEeO6l86uYUhhyw");
 
-	private MonitoringDataEnrichment monitoringEnrichment;
+	private MonitoringDataEnrichment monitoringEnrichment = new MonitoringDataEnrichment();
 
 	public ValidationData extractValidationData(InMemoryResultRepository analysis, InMemoryPCM pcm,
 			List<PCMContextRecord> monitoringData) {
@@ -30,10 +30,12 @@ public class ValidationDataExtractor {
 
 		// start with simulation data
 		List<ValidationPoint> validationPoints = analysis.getValues().stream().map(v -> {
-			return ValidationPoint.builder().measuringPoint(v.getKey().getPoint())
-					.id(v.getKey().getDesc().getId() + "-" + String.join("-", v.getKey().getPoint().getSourceIds()))
-					.metricDescription(v.getKey().getDesc())
-					.analysisDistribution(transformAnalysisData(v.getKey().getDesc().getId(), v.getValue())).build();
+			var point = new ValidationPoint();
+			point.setMeasuringPoint(v.getKey().getPoint());
+			point.setId(v.getKey().getDesc().getId() + "-" + String.join("-", v.getKey().getPoint().getSourceIds()));
+			point.setMetricDescription(v.getKey().getDesc());
+			point.setAnalysisDistribution(transformAnalysisData(v.getKey().getDesc().getId(), v.getValue()));
+			return point;
 		}).collect(Collectors.toList());
 
 		// add monitoring data
@@ -75,5 +77,4 @@ public class ValidationDataExtractor {
 		}
 		return Double.NaN;
 	}
-
 }
