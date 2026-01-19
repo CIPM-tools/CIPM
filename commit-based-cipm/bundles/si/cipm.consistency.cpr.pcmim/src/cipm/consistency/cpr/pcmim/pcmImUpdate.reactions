@@ -2,6 +2,7 @@ import cipm.consistency.base.models.instrumentation.InstrumentationModel.Instrum
 import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationType
 import cipm.consistency.cpr.pcmim.InternalUtils
 import java.util.ArrayList
+import cipm.consistency.base.models.instrumentation.InstrumentationModel.ServiceInstrumentationPoint
 
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
 import "http://www.dmodel.com/InstrumentationMetamodel" as im
@@ -45,27 +46,20 @@ routine checkRemovalOfServiceInstrumentationPoint(pcm::ResourceDemandingSEFF sef
 	}
 	update {
 		logger.debug("Removing SIP for: " + seff.describedService__SEFF.entityName + " " + seff.id)
-		val sips = im.points.filter[it.service === null || it.service.eIsProxy].toSet
+		val sips = im.points.filter[
+				it.service === null || it.service.eIsProxy || it.service === seff
+			].toSet
 		if (sips !== null && !sips.empty) {
 			for (si : sips) {
+				var aips = new ArrayList(si.actionInstrumentationPoints);
+				for (aip : aips) {
+					removeCorrespondenceBetween(aip, aip.action);
+					aip.removeObject
+				}
+				removeCorrespondenceBetween(si, si.service)
 				si.removeObject
 			}
 		}
-		checkRemovalOfNonProxyServiceInstrumentationPoint(seff)
-	}
-}
-
-routine checkRemovalOfNonProxyServiceInstrumentationPoint(pcm::ResourceDemandingSEFF seff) {
-	match {
-		val sip = retrieve im::ServiceInstrumentationPoint corresponding to seff
-	}
-	update {
-		var aips = new ArrayList(sip.actionInstrumentationPoints);
-		for (aip : aips) {
-			removeCorrespondenceBetween(aip, aip.action);
-			aip.removeObject
-		}
-		sip.removeObject
 	}
 }
 
@@ -104,45 +98,63 @@ reaction ActionRemoved {
 	call {
 		var seff = InternalUtils.getParentSEFFNotForInternalBehaviour(affectedEObject)
 		if (seff !== null) {
-			checkRemovalOfActionInstrumentationPoint(oldValue, seff)
-		}
-
-		if (!checkRemovalOfNonProxyActionInstrumentationPoint(oldValue)) {
-			logger.error("Unable to remove action instrumentation point for " + affectedEObject + " (cannot determine SEFF)")
+			removeActionInstrumentationPointWithSeff(oldValue, seff)
+		} else {
+			removeActionInstrumentationPointWithoutSeff(oldValue)
 		}
 	}
 }
 
-routine checkRemovalOfActionInstrumentationPoint(pcm::AbstractAction absAction, pcm::ResourceDemandingSEFF seff) {
+routine removeActionInstrumentationPointWithSeff(pcm::AbstractAction absAction, pcm::ResourceDemandingSEFF seff) {
 	match {
 		val sip = retrieve optional im::ServiceInstrumentationPoint corresponding to seff
+		val im = retrieve im::InstrumentationModel corresponding to InstrumentationModelPackage.Literals.
+			INSTRUMENTATION_MODEL
 	}
 	update {
-		if (sip.present) {
-			val aips = sip.get.actionInstrumentationPoints.filter[it.^action === null || it.^action.eIsProxy].toSet
+		var ServiceInstrumentationPoint actualSip
+		if (sip.isPresent()) {
+			actualSip = sip.get();
+		} else {
+			actualSip = im.points.findFirst[it.service === seff];
+		}
+		if (actualSip !== null) {
+			val aips = actualSip.actionInstrumentationPoints.filter[
+					it.^action === null || it.^action.eIsProxy || it.^action === absAction
+				].toSet
 			if (aips !== null && !aips.empty) {
 				for (ai : aips) {
+					removeCorrespondenceBetween(ai, ai.^action)
 					ai.removeObject
 				}
 			}
 		} else {
-			logger.warn("Cannot find SIP for SEFF")
+			logger.warn("Could not find SIP for SEFF " + seff.id)
+			removeActionInstrumentationPointWithoutSeff(absAction);
 		}
-		checkRemovalOfNonProxyActionInstrumentationPoint(absAction)
 	}
 }
 
-routine checkRemovalOfNonProxyActionInstrumentationPoint(pcm::AbstractAction absAction) {
+routine removeActionInstrumentationPointWithoutSeff(pcm::AbstractAction absAction) {
 	match {
 		val aip = retrieve optional im::ActionInstrumentationPoint corresponding to absAction
+		val im = retrieve im::InstrumentationModel corresponding to InstrumentationModelPackage.Literals.
+			INSTRUMENTATION_MODEL
 	}
 	update {
 		if (aip.present) {
-			logger.debug("Removing AIP for: " + absAction + " " + absAction.id)
+			logger.debug("Removing AIP for: " + absAction + " (" + absAction.id + ")")
 			removeCorrespondenceBetween(aip.get, absAction)
 			aip.get.removeObject
 		} else {
-			logger.debug("Cannot delete action without correspondence")
+			for (sip : im.points) {
+				for (ai : new ArrayList(sip.actionInstrumentationPoints)) {
+					if (ai.^action === absAction) {
+						removeCorrespondenceBetween(absAction, ai)
+						ai.removeObject
+					}
+				}
+			}
 		}
 	}
 }

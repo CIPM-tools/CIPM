@@ -83,10 +83,7 @@ public class FineGrainedClassMethodBodyChangedTransformation extends ExtendedCla
 		// 4) Update the old ResourceDemandingBehaviour by merging the differences.
 		this.mergeDifferences(oldSEFF, newSEFF);
 
-		// 5) Create new correspondences between the SEFF elements and the method.
-		this.createNewCorrespondences(correspondenceModel, oldSEFF);
-
-		// 6) Create correspondences between the SEFF elements and statements.
+		// 5) Create correspondences between the SEFF elements and statements.
 		this.createCorrespondencesForAbstractActionsAndStatements(correspondenceModel, oldSEFF);
 	}
 

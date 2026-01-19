@@ -1,9 +1,11 @@
 package tools.cipm.seff;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emftext.language.java.members.ClassMethod;
 import org.emftext.language.java.members.Method;
@@ -76,9 +78,7 @@ public class ClassMethodBodyChangedTransformation {
 	 * AbstractActions in the SEFF/ResourceDemandingInternalBehaviour) and from
 	 * the correspondenceModel,
 	 * 2) run the SoMoX SEFF extractor for this method,
-	 * 3) reconnect the newly extracted SEFF elements with the old elements,
-	 * 4) create new AbstractAction 2 Method correspondences for the new method
-	 * (and its inner methods).
+	 * 3) reconnect the newly extracted SEFF elements with the old elements.
 	 * 
 	 * @param correspondenceModel the current correspondence model.
 	 * @param userInteracting the user interactor.
@@ -92,7 +92,7 @@ public class ClassMethodBodyChangedTransformation {
 		}
 		
 		// 1)
-		this.removeCorrespondingAbstractActions(correspondenceModel);
+		this.emptyCorrespondingSeffs(correspondenceModel);
 
 		// 2)
 		final ResourceDemandingBehaviour resourceDemandingBehaviour = this
@@ -103,9 +103,6 @@ public class ClassMethodBodyChangedTransformation {
 
 		// 3)
 		this.connectCreatedResourceDemandingBehaviour(resourceDemandingBehaviour, correspondenceModel);
-
-		// 4)
-		this.createNewCorrespondences(correspondenceModel, resourceDemandingBehaviour);
 	}
 
 	/**
@@ -162,13 +159,6 @@ public class ClassMethodBodyChangedTransformation {
 
 	}
 
-	protected void createNewCorrespondences(final EditableCorrespondenceModelView<Correspondence> ci,
-			final ResourceDemandingBehaviour newResourceDemandingBehaviourElements) {
-		for (final AbstractAction abstractAction : newResourceDemandingBehaviourElements.getSteps_Behaviour()) {
-			ci.addCorrespondenceBetween(abstractAction, this.newMethod, "");
-		}
-	}
-
 	private void connectCreatedResourceDemandingBehaviour(final ResourceDemandingBehaviour rdBehavior,
 			final EditableCorrespondenceModelView<Correspondence> ci) {
 		final EList<AbstractAction> steps = rdBehavior.getSteps_Behaviour();
@@ -185,57 +175,33 @@ public class ClassMethodBodyChangedTransformation {
 		VisitorUtils.connectActions(rdBehavior);
 	}
 
-	private void removeCorrespondingAbstractActions(final EditableCorrespondenceModelView<Correspondence> ci) {
-		final List<AbstractAction> correspondingAbstractActions = CorrespondenceModelUtil
-				.getCorrespondingEObjects(ci, this.newMethod, AbstractAction.class);
-		if (null == correspondingAbstractActions) {
+	private void emptyCorrespondingSeffs(final EditableCorrespondenceModelView<Correspondence> ci) {
+		var correspondingSeff = CorrespondenceModelUtil
+				.getCorrespondingEObjects(ci, this.newMethod, ResourceDemandingSEFF.class);
+		
+		if (correspondingSeff == null || correspondingSeff.isEmpty()) {
 			return;
 		}
-		final ResourceDemandingBehaviour resourceDemandingBehaviour = this
-				.getAndValidateResourceDemandingBehavior(correspondingAbstractActions);
-		if (null == resourceDemandingBehaviour) {
-			return;
+		if (correspondingSeff.size() > 1) {
+			LOGGER.warn("More than one SEFF corresponding to a method.");
 		}
-		if (resourceDemandingBehaviour instanceof ResourceDemandingSEFF) {
-			((ResourceDemandingSEFF) resourceDemandingBehaviour).getResourceDemandingInternalBehaviours().clear();
-		}
-		for (final AbstractAction correspondingAbstractAction : correspondingAbstractActions) {
-			CorrespondenceModelUtil.removeCorrespondencesFor(ci, correspondingAbstractAction);
-			EcoreUtil.remove(correspondingAbstractAction);
-		}
-
-		for (final AbstractAction abstractAction : resourceDemandingBehaviour.getSteps_Behaviour()) {
-			if (!(abstractAction instanceof StartAction || abstractAction instanceof StopAction)) {
-				LOGGER.warn(
-						"The resource demanding behavior should be empty, "
-						+ "but it contains at least following AbstractAction "
-								+ abstractAction);
+		
+		for (var seff : correspondingSeff) {
+			for (var action : new ArrayList<>(seff.getSteps_Behaviour())) {
+				removeObjectWithChildren(ci, action);
+			}
+			for (var rdBehavior : new ArrayList<>(seff.getResourceDemandingInternalBehaviours())) {
+				removeObjectWithChildren(ci, rdBehavior);
 			}
 		}
 	}
-
-	private ResourceDemandingBehaviour getAndValidateResourceDemandingBehavior(
-			final List<AbstractAction> correspondingAbstractActions) {
-		ResourceDemandingBehaviour resourceDemandingBehaviour = null;
-		for (final AbstractAction abstractAction : correspondingAbstractActions) {
-			if (null == abstractAction.getResourceDemandingBehaviour_AbstractAction()) {
-				LOGGER.warn("AbstractAction " + abstractAction
-						+ " does not have a parent ResourceDemandingBehaviour - this should not happen.");
-				continue;
-			}
-			if (null == resourceDemandingBehaviour) {
-				// set resourceDemandingBehaviour in first cycle
-				resourceDemandingBehaviour = abstractAction.getResourceDemandingBehaviour_AbstractAction();
-				continue;
-			}
-			if (resourceDemandingBehaviour != abstractAction.getResourceDemandingBehaviour_AbstractAction()) {
-				LOGGER.warn("resourceDemandingBehaviour " + resourceDemandingBehaviour
-						+ " is different that current resourceDemandingBehaviour: "
-						+ abstractAction.getResourceDemandingBehaviour_AbstractAction());
-			}
-
+	
+	private void removeObjectWithChildren(EditableCorrespondenceModelView<Correspondence> ci, EObject obj) {
+		for (var child : new ArrayList<>(obj.eContents())) {
+			removeObjectWithChildren(ci, child);
 		}
-		return resourceDemandingBehaviour;
+		CorrespondenceModelUtil.removeCorrespondencesFor(ci, obj);
+		EcoreUtil.remove(obj);
 	}
 
 	protected ResourceDemandingBehaviour findRdBehaviorToInsertElements(final EditableCorrespondenceModelView<Correspondence> ci) {
