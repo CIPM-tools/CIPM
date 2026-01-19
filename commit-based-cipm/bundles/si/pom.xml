@@ -19,6 +19,8 @@
 		<module>cipm.consistency.cpr.javapcm.msa</module>
 		<module>cipm.consistency.cpr.javapcm.teammates</module>
 		<module>cipm.consistency.cpr.pcmim</module>
+		<module>cipm.consistency.cpr.measurementshelper</module>
+		<module>cipm.consistency.cpr.measurementspcm</module>
 		<module>cipm.consistency.designtime.instrumentation2</module>
 		<module>cipm.consistency.vsum</module>
 		<module>tools.vitruv.applications.pcmjava.seffstatements</module>
@@ -26,6 +28,7 @@
 		<module>tools.vitruv.applications.pcmjava.seffstatements.finegrained</module>
 		<module>tools.vitruv.applications.pcmjava.seffstatements.pojotransformations</module>
 		<module>cipm.consistency.cpr.util</module>
+		<module>cipm.consistency.measurements.reader</module>
 	</modules>
 
 </project>

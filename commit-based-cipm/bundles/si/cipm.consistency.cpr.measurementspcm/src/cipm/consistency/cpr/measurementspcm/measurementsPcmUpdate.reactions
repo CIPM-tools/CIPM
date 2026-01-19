@@ -1,0 +1,219 @@
+import org.palladiosimulator.pcm.repository.RepositoryPackage
+import cipm.consistency.measurements.MeasurementsPackage
+
+import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
+import "http://www.2025.2025/consistency/measurements/1.0" as measurements
+
+// ============================================================================
+// Measurements Init - Create literal correspondence for Measurements model
+// ============================================================================
+
+reactions: measurementsInit
+in reaction to changes in measurements
+execute actions in measurements
+
+reaction AddedMeasurementsModel {
+	after element measurements::Measurements inserted as root
+	call {
+		createMeasurementsLiteralCorrespondence(newValue)
+	}
+}
+
+routine createMeasurementsLiteralCorrespondence(measurements::Measurements m) {
+	update {
+		addCorrespondenceBetween(m, MeasurementsPackage.Literals.MEASUREMENTS)
+	}
+}
+
+// ============================================================================
+// Measurements -> PCM Update Reactions
+// ============================================================================
+
+reactions: measurementsPcmUpdate
+in reaction to changes in measurements
+execute actions in pcm
+
+// ============================================================================
+// InternalActionRecord -> InternalAction Resource Demand Update
+// When InternalActionRecord is added, find matching InternalAction by ID,
+// create correspondence, and update resource demand with response time
+// trigger(record): (currentTime - record.exitTime) >= triggerTime
+// ============================================================================
+
+reaction InternalActionRecordAdded {
+	after element measurements::InternalActionRecord inserted in measurements::MeasurementsBlock[records]
+	call {
+		if (cipm.consistency.cpr.measurementshelper.MeasurementsHelper.trigger(newValue)) {
+			findAndUpdateInternalAction(newValue)
+		}
+	}
+}
+
+routine findAndUpdateInternalAction(measurements::InternalActionRecord actionRecord) {
+	match {
+		val existingAction = retrieve optional pcm::InternalAction corresponding to actionRecord
+		val pcmRepository = retrieve pcm::Repository corresponding to RepositoryPackage.Literals.REPOSITORY
+	}
+	update {
+		if (existingAction.present) {
+			// Correspondence already exists, just update
+			updateInternalActionResourceDemand(actionRecord, existingAction.get)
+		} else {
+			// Find InternalAction by ID using Java utility
+			val internalActionId = actionRecord.internalActionID
+			if (internalActionId !== null) {
+				val foundAction = cipm.consistency.cpr.measurementspcm.PcmActionFinder.findInternalAction(pcmRepository, internalActionId)
+				if (foundAction !== null) {
+					createInternalActionCorrespondenceAndUpdate(actionRecord, foundAction)
+				} else {
+					logger.warn("Could not find InternalAction with ID: " + internalActionId)
+				}
+			}
+		}
+	}
+}
+
+routine createInternalActionCorrespondenceAndUpdate(measurements::InternalActionRecord actionRecord, pcm::InternalAction internalAction) {
+	match {
+		require absence of pcm::InternalAction corresponding to actionRecord
+	}
+	update {
+		logger.debug("Creating correspondence between InternalActionRecord and InternalAction: " + internalAction.id)
+		addCorrespondenceBetween(actionRecord, internalAction)
+		updateInternalActionResourceDemand(actionRecord, internalAction)
+	}
+}
+
+routine updateInternalActionResourceDemand(measurements::InternalActionRecord actionRecord, pcm::InternalAction internalAction) {
+	update {
+		val rd = cipm.consistency.cpr.measurementshelper.MeasurementsHelper.analyse(actionRecord)
+
+		logger.debug("Updating resource demand for InternalAction " + internalAction.id + " with response time: " + rd + " ms")
+
+		// Update the resource demand specification
+		if (!internalAction.resourceDemand_Action.empty) {
+			val resourceDemand = internalAction.resourceDemand_Action.get(0)
+			if (resourceDemand.specification_ParametericResourceDemand !== null) {
+				resourceDemand.specification_ParametericResourceDemand.specification = String.valueOf(rd)
+				logger.debug("Updated resource demand specification to: " + rd)
+			}
+		}
+	}
+}
+
+// ============================================================================
+// LoopActionRecord -> LoopAction Loop Iteration Count Update
+// When LoopActionRecord is added, find matching LoopAction by ID,
+// create correspondence, and update the loop iteration specification
+// ============================================================================
+
+reaction LoopActionRecordAdded {
+	after element measurements::LoopActionRecord inserted in measurements::MeasurementsBlock[records]
+	call findAndUpdateLoopAction(newValue)
+}
+
+routine findAndUpdateLoopAction(measurements::LoopActionRecord loopRecord) {
+	match {
+		val existingAction = retrieve optional pcm::LoopAction corresponding to loopRecord
+		val pcmRepository = retrieve pcm::Repository corresponding to RepositoryPackage.Literals.REPOSITORY
+	}
+	update {
+		if (existingAction.present) {
+			// Correspondence already exists, just update
+			updateLoopActionIterationCount(loopRecord, existingAction.get)
+		} else {
+			// Find LoopAction by ID using Java utility
+			val loopActionId = loopRecord.loopID
+			if (loopActionId !== null) {
+				val foundAction = cipm.consistency.cpr.measurementspcm.PcmActionFinder.findLoopAction(pcmRepository, loopActionId)
+				if (foundAction !== null) {
+					createLoopActionCorrespondenceAndUpdate(loopRecord, foundAction)
+				} else {
+					logger.warn("Could not find LoopAction with ID: " + loopActionId)
+				}
+			}
+		}
+	}
+}
+
+routine createLoopActionCorrespondenceAndUpdate(measurements::LoopActionRecord loopRecord, pcm::LoopAction loopAction) {
+	match {
+		require absence of pcm::LoopAction corresponding to loopRecord
+	}
+	update {
+		logger.debug("Creating correspondence between LoopActionRecord and LoopAction: " + loopAction.id)
+		addCorrespondenceBetween(loopRecord, loopAction)
+		updateLoopActionIterationCount(loopRecord, loopAction)
+	}
+}
+
+routine updateLoopActionIterationCount(measurements::LoopActionRecord loopRecord, pcm::LoopAction loopAction) {
+	update {
+		val iterationCount = loopRecord.loopIterationCount
+
+		logger.debug("Updating loop iteration count for LoopAction " + loopAction.id + " to: " + iterationCount)
+
+		// Update the iteration count specification
+		if (loopAction.iterationCount_LoopAction !== null) {
+			loopAction.iterationCount_LoopAction.specification = String.valueOf(iterationCount)
+			logger.debug("Updated loop iteration specification to: " + iterationCount)
+		}
+	}
+}
+
+// ============================================================================
+// BranchActionRecord -> BranchAction Branch Probability Update
+// When BranchActionRecord is added, find matching BranchAction by ID,
+// create correspondence, and update branch transition probabilities
+// ============================================================================
+
+reaction BranchActionRecordAdded {
+	after element measurements::BranchActionRecord inserted in measurements::MeasurementsBlock[records]
+	call findAndUpdateBranchAction(newValue)
+}
+
+routine findAndUpdateBranchAction(measurements::BranchActionRecord branchRecord) {
+	match {
+		val existingAction = retrieve optional pcm::BranchAction corresponding to branchRecord
+		val pcmRepository = retrieve pcm::Repository corresponding to RepositoryPackage.Literals.REPOSITORY
+	}
+	update {
+		if (existingAction.present) {
+			// Correspondence already exists, just update
+			updateBranchActionProbability(branchRecord, existingAction.get)
+		} else {
+			// Find BranchAction by ID using Java utility
+			val branchActionId = branchRecord.branchID
+			if (branchActionId !== null) {
+				val foundAction = cipm.consistency.cpr.measurementspcm.PcmActionFinder.findBranchAction(pcmRepository, branchActionId)
+				if (foundAction !== null) {
+					createBranchActionCorrespondenceAndUpdate(branchRecord, foundAction)
+				} else {
+					logger.warn("Could not find BranchAction with ID: " + branchActionId)
+				}
+			}
+		}
+	}
+}
+
+routine createBranchActionCorrespondenceAndUpdate(measurements::BranchActionRecord branchRecord, pcm::BranchAction branchAction) {
+	match {
+		require absence of pcm::BranchAction corresponding to branchRecord
+	}
+	update {
+		logger.debug("Creating correspondence between BranchActionRecord and BranchAction: " + branchAction.id)
+		addCorrespondenceBetween(branchRecord, branchAction)
+		updateBranchActionProbability(branchRecord, branchAction)
+	}
+}
+
+routine updateBranchActionProbability(measurements::BranchActionRecord branchRecord, pcm::BranchAction branchAction) {
+	update {
+		val executedBranchId = cipm.consistency.cpr.measurementshelper.MeasurementsHelper.analyse(branchRecord)
+
+		logger.debug("Recording branch execution for BranchAction " + branchAction.id + ", executed branch: " + executedBranchId)
+
+		// TODO: Update branch transition probabilities based on observed executions
+		// This would require accumulating statistics over multiple observations
+	}
+}
