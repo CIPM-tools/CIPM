@@ -40,6 +40,7 @@
 			<id>test</id>
 			<modules>
 				<module>tests/cipm.consistency.vsum.test</module>
+				<module>tests/cipm.consistency.measurements.reader.tests</module>
 			</modules>
 		</profile>
 	</profiles>
