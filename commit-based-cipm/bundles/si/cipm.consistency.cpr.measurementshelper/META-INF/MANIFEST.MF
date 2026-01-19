@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: CIPM Measurements Helper
+Bundle-SymbolicName: cipm.consistency.cpr.measurementshelper;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: CIPM
+Automatic-Module-Name: cipm.consistency.cpr.measurementshelper
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Require-Bundle: cipm.consistency.measurements
+Export-Package: cipm.consistency.cpr.measurementshelper
