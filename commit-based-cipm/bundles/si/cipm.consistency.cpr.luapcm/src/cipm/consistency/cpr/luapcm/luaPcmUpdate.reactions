@@ -1,4 +1,4 @@
-import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationModelPackage
+import tools.cipm.models.instrumentation.InstrumentationModel.InstrumentationModelPackage
 import cipm.consistency.commitintegration.lang.lua.appspace.AppSpaceSemantics
 import cipm.consistency.cpr.luapcm.Config
 import cipm.consistency.cpr.luapcm.seffreconstruction.ActionReconstruction

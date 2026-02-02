@@ -19,7 +19,7 @@ Require-Bundle: javax.inject,
  org.eclipse.jdt.core,
  com.google.guava,
  org.eclipse.text,
- cipm.consistency.models.instrumentation,
+ tools.cipm.models.instrumentation,
  cipm.consistency.commitintegration,
  cipm.consistency.models,
  cipm.consistency.vsum

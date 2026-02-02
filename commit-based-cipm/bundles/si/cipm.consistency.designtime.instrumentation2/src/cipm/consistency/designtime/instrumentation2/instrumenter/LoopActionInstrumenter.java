@@ -1,6 +1,6 @@
 package cipm.consistency.designtime.instrumentation2.instrumenter;
 
-import cipm.consistency.base.models.instrumentation.InstrumentationModel.ActionInstrumentationPoint;
+import tools.cipm.models.instrumentation.InstrumentationModel.ActionInstrumentationPoint;
 import cipm.consistency.designtime.instrumentation.transformation.impl.ApplicationProjectInstrumenterNamespace;
 import cipm.consistency.designtime.instrumentation2.ActionStatementMapping;
 import java.math.BigInteger;

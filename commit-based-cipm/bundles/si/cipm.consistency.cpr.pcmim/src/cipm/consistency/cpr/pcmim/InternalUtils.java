@@ -12,7 +12,7 @@ import org.palladiosimulator.pcm.seff.ResourceDemandingBehaviour;
 import org.palladiosimulator.pcm.seff.ResourceDemandingInternalBehaviour;
 import org.palladiosimulator.pcm.seff.ResourceDemandingSEFF;
 
-import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationType;
+import tools.cipm.models.instrumentation.InstrumentationModel.InstrumentationType;
 
 /**
  * An internal utility class for the CPRs from the PCM to the extended IM.

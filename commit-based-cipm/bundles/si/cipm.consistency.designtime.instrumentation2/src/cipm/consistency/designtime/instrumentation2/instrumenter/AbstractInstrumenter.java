@@ -1,6 +1,6 @@
 package cipm.consistency.designtime.instrumentation2.instrumenter;
 
-import cipm.consistency.base.models.instrumentation.InstrumentationModel.ActionInstrumentationPoint;
+import tools.cipm.models.instrumentation.InstrumentationModel.ActionInstrumentationPoint;
 import cipm.consistency.designtime.instrumentation2.ActionStatementMapping;
 import org.emftext.language.java.classifiers.ConcreteClassifier;
 import org.emftext.language.java.references.MethodCall;

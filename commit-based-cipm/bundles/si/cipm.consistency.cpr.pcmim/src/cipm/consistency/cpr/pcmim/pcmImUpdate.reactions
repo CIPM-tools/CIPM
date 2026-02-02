@@ -1,8 +1,8 @@
-import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationModelPackage
-import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationType
+import tools.cipm.models.instrumentation.InstrumentationModel.InstrumentationModelPackage
+import tools.cipm.models.instrumentation.InstrumentationModel.InstrumentationType
 import cipm.consistency.cpr.pcmim.InternalUtils
 import java.util.ArrayList
-import cipm.consistency.base.models.instrumentation.InstrumentationModel.ServiceInstrumentationPoint
+import tools.cipm.models.instrumentation.InstrumentationModel.ServiceInstrumentationPoint
 
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
 import "http://www.dmodel.com/InstrumentationMetamodel" as im

@@ -9,7 +9,7 @@ Export-Package: cipm.consistency.models,
  cipm.consistency.models.im,
  cipm.consistency.models.pcm,
  cipm.consistency.models.code
-Import-Package: cipm.consistency.base.models.instrumentation.InstrumentationModel
+Import-Package: tools.cipm.models.instrumentation.InstrumentationModel
 Require-Bundle: org.eclipse.emf.ecore,
  cipm.consistency.base.shared,
  org.palladiosimulator.pcm,

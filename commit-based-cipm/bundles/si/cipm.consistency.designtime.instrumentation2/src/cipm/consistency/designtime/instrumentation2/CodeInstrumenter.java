@@ -15,9 +15,9 @@ import org.emftext.language.java.members.Method;
 import org.emftext.language.java.statements.Statement;
 import org.emftext.language.java.statements.StatementListContainer;
 
-import cipm.consistency.base.models.instrumentation.InstrumentationModel.ActionInstrumentationPoint;
-import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationType;
-import cipm.consistency.base.models.instrumentation.InstrumentationModel.ServiceInstrumentationPoint;
+import tools.cipm.models.instrumentation.InstrumentationModel.ActionInstrumentationPoint;
+import tools.cipm.models.instrumentation.InstrumentationModel.InstrumentationType;
+import tools.cipm.models.instrumentation.InstrumentationModel.ServiceInstrumentationPoint;
 import cipm.consistency.commitintegration.CommitIntegrationState;
 import cipm.consistency.designtime.instrumentation2.instrumenter.MinimalMonitoringEnvironmentModelGenerator;
 import cipm.consistency.designtime.instrumentation2.instrumenter.ServiceInstrumentationPointInstrumenter;

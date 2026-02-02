@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.resource.Resource;
 
-import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationModel;
-import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationModelFactory;
+import tools.cipm.models.instrumentation.InstrumentationModel.InstrumentationModel;
+import tools.cipm.models.instrumentation.InstrumentationModel.InstrumentationModelFactory;
 import cipm.consistency.base.shared.FileBackedModelUtil;
 import cipm.consistency.base.shared.ModelUtil;
 import cipm.consistency.models.ModelFacade;

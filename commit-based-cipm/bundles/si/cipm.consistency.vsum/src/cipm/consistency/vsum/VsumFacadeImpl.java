@@ -12,7 +12,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 //import org.xtext.lua.lua.ComponentSet;
 import org.emftext.language.java.containers.JavaRoot;
 
-import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationModel;
+import tools.cipm.models.instrumentation.InstrumentationModel.InstrumentationModel;
 import cipm.consistency.models.ModelFacade;
 import tools.vitruv.change.composite.description.PropagatedChange;
 import tools.vitruv.change.correspondence.Correspondence;
