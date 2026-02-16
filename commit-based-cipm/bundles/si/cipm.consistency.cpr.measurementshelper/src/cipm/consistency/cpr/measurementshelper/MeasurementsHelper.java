@@ -25,7 +25,6 @@ import cipm.consistency.measurements.MeasurementsBlock;
  * </p>
  */
 public final class MeasurementsHelper {
-
     /** The delegate implementation. */
     private static IMeasurementsHelper delegate = new WindowSlidingMeasurementsHelper();
 
@@ -63,6 +62,41 @@ public final class MeasurementsHelper {
      */
     public static void resetToDefault() {
         delegate = new WindowSlidingMeasurementsHelper();
+    }
+
+    /**
+     * Configures the helper with window size and trigger time.
+     * Creates a new WindowSlidingMeasurementsHelper with the specified settings.
+     *
+     * @param windowSizeMs the window size in milliseconds
+     * @param triggerTimeMs the trigger time threshold in milliseconds
+     */
+    public static void configure(long windowSizeMs, long triggerTimeMs) {
+        delegate = new WindowSlidingMeasurementsHelper(windowSizeMs, triggerTimeMs);
+    }
+
+    /**
+     * Sets the window size for the sliding window analysis.
+     * Only works if the delegate is a WindowSlidingMeasurementsHelper.
+     *
+     * @param windowSizeMs the window size in milliseconds
+     */
+    public static void setWindowSize(long windowSizeMs) {
+        if (delegate instanceof WindowSlidingMeasurementsHelper) {
+            ((WindowSlidingMeasurementsHelper) delegate).setWindowSize(windowSizeMs);
+        }
+    }
+
+    /**
+     * Gets the window size if the delegate is a WindowSlidingMeasurementsHelper.
+     *
+     * @return the window size in milliseconds, or -1 if not applicable
+     */
+    public static long getWindowSize() {
+        if (delegate instanceof WindowSlidingMeasurementsHelper) {
+            return ((WindowSlidingMeasurementsHelper) delegate).getWindowSize();
+        }
+        return -1;
     }
 
     // ===============================
@@ -178,6 +212,16 @@ public final class MeasurementsHelper {
     // ===============================
 
     /**
+     * Tracks an internal action record by adding it to the sliding window
+     * without triggering a resource demand update.
+     *
+     * @param actionRecord the internal action record to track
+     */
+    public static void trackRecord(InternalActionRecord actionRecord) {
+        delegate.trackRecord(actionRecord);
+    }
+
+    /**
      * Analyzes the internal action record to calculate the resource demand.
      *
      * @param actionRecord the internal action record
@@ -205,5 +249,23 @@ public final class MeasurementsHelper {
      */
     public static String analyse(BranchActionRecord branchRecord) {
         return delegate.analyse(branchRecord);
+    }
+
+    // ===============================
+    // Resource Demand Specification
+    // ===============================
+
+    /**
+     * Returns the resource demand specification string for a specific action.
+     *
+     * <p>When using {@link PMFMeasurementsHelper}, this returns a PCM StoEx
+     * DoublePMF string. Otherwise returns null (callers should fall back
+     * to a constant value).</p>
+     *
+     * @param actionId the action identifier
+     * @return the resource demand specification string, or null
+     */
+    public static String getResourceDemandSpecification(String actionId) {
+        return delegate.getResourceDemandSpecification(actionId);
     }
 }

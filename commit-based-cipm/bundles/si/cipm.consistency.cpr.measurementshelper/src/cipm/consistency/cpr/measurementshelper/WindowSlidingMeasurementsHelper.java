@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import cipm.consistency.measurements.BranchActionRecord;
@@ -41,11 +43,16 @@ import cipm.consistency.measurements.MeasurementsBlock;
  */
 public class WindowSlidingMeasurementsHelper implements IMeasurementsHelper {
 
+    private static final Logger LOGGER = Logger.getLogger(WindowSlidingMeasurementsHelper.class.getName());
+
     /** Default window size in milliseconds (5 seconds). */
     public static final long DEFAULT_WINDOW_SIZE = 5000L;
 
     /** Default trigger time in milliseconds (1 second). */
     public static final long DEFAULT_TRIGGER_TIME = 1000L;
+
+    /** Conversion factor from milliseconds to nanoseconds (Kieker timestamps are in ns). */
+    private static final long MS_TO_NS = 1_000_000L;
 
     // ===============================
     // Properties
@@ -63,6 +70,12 @@ public class WindowSlidingMeasurementsHelper implements IMeasurementsHelper {
 
     private final Map<String, Long> lastUpdateTimes = new HashMap<>();
     private final Map<String, LinkedList<TimestampedValue>> slidingWindows = new HashMap<>();
+
+    /** The last trigger timestamp in record-time units (same as record timestamps). */
+    private long lastTriggerRecordTime = -1;
+
+    /** The latest record timestamp seen so far (used as "current time" in record-time space). */
+    private long latestRecordTime = -1;
 
     // ===============================
     // Constructors
@@ -125,9 +138,36 @@ public class WindowSlidingMeasurementsHelper implements IMeasurementsHelper {
 
     @Override
     public boolean trigger(InternalActionRecord actionRecord) {
-        long currentTime = System.currentTimeMillis();
         long recordExitTime = actionRecord.getExitTime();
-        return (currentTime - recordExitTime) >= triggerTime;
+        String actionId = actionRecord.getInternalActionID();
+
+        // Update the latest record time seen (used as "current time" in record-time space)
+        if (recordExitTime > latestRecordTime) {
+            latestRecordTime = recordExitTime;
+        }
+
+        // Initialize last trigger time from first record
+        if (lastTriggerRecordTime < 0) {
+            lastTriggerRecordTime = recordExitTime;
+            LOGGER.info(String.format("TRIGGER: First record for action '%s' - triggering (exitTime=%d ns)",
+                    actionId, recordExitTime));
+            return true; // Always trigger for the first record
+        }
+
+        // Check if enough time has elapsed since last trigger (in record-time units)
+        // triggerTime is in ms; record timestamps are in ns, so convert
+        long triggerTimeNs = triggerTime * MS_TO_NS;
+        long elapsedNs = recordExitTime - lastTriggerRecordTime;
+        if (elapsedNs >= triggerTimeNs) {
+            LOGGER.info(String.format("TRIGGER: Action '%s' - elapsed=%d ms >= threshold=%d ms - triggering",
+                    actionId, elapsedNs / MS_TO_NS, triggerTime));
+            lastTriggerRecordTime = recordExitTime;
+            return true;
+        }
+
+        LOGGER.log(Level.FINE, String.format("TRIGGER: Action '%s' - elapsed=%d ms < threshold=%d ms - skipping",
+                actionId, elapsedNs / MS_TO_NS, triggerTime));
+        return false;
     }
 
     @Override
@@ -147,26 +187,30 @@ public class WindowSlidingMeasurementsHelper implements IMeasurementsHelper {
     @Override
     public <T extends MeasurementRecord> List<T> filterElements(
             Measurements sourceModel, Class<T> recordType, long windowMs) {
-        long currentTime = System.currentTimeMillis();
+        // Use latest record time as reference; convert windowMs to nanoseconds
+        long referenceTime = latestRecordTime;
+        long windowNs = windowMs * MS_TO_NS;
 
         return sourceModel.getRepositories().stream()
                 .flatMap(repo -> repo.getBlocks().stream())
                 .flatMap(block -> block.getRecords().stream())
                 .filter(recordType::isInstance)
                 .map(recordType::cast)
-                .filter(record -> (currentTime - getTimestamp(record)) <= windowMs)
+                .filter(record -> (referenceTime - getTimestamp(record)) <= windowNs)
                 .collect(Collectors.toList());
     }
 
     @Override
     public <T extends MeasurementRecord> List<T> filterElements(
             MeasurementsBlock block, Class<T> recordType, long windowMs) {
-        long currentTime = System.currentTimeMillis();
+        // Use latest record time as reference; convert windowMs to nanoseconds
+        long referenceTime = latestRecordTime;
+        long windowNs = windowMs * MS_TO_NS;
 
         return block.getRecords().stream()
                 .filter(recordType::isInstance)
                 .map(recordType::cast)
-                .filter(record -> (currentTime - getTimestamp(record)) <= windowMs)
+                .filter(record -> (referenceTime - getTimestamp(record)) <= windowNs)
                 .collect(Collectors.toList());
     }
 
@@ -232,8 +276,8 @@ public class WindowSlidingMeasurementsHelper implements IMeasurementsHelper {
         LinkedList<TimestampedValue> window = slidingWindows.computeIfAbsent(
                 actionId, k -> new LinkedList<>());
 
-        // Remove expired entries outside the window
-        long cutoff = timestamp - windowSize;
+        // Remove expired entries outside the window (convert windowSize ms to ns)
+        long cutoff = timestamp - (windowSize * MS_TO_NS);
         while (!window.isEmpty() && window.peekFirst().timestamp < cutoff) {
             window.pollFirst();
         }
@@ -257,8 +301,8 @@ public class WindowSlidingMeasurementsHelper implements IMeasurementsHelper {
             return 0.0;
         }
 
-        // Clean up expired entries
-        long cutoff = System.currentTimeMillis() - windowSize;
+        // Clean up expired entries using latest record time (convert windowSize ms to ns)
+        long cutoff = latestRecordTime - (windowSize * MS_TO_NS);
         while (!window.isEmpty() && window.peekFirst().timestamp < cutoff) {
             window.pollFirst();
         }
@@ -286,8 +330,8 @@ public class WindowSlidingMeasurementsHelper implements IMeasurementsHelper {
             return 0;
         }
 
-        // Clean up expired entries
-        long cutoff = System.currentTimeMillis() - windowSize;
+        // Clean up expired entries using latest record time (convert windowSize ms to ns)
+        long cutoff = latestRecordTime - (windowSize * MS_TO_NS);
         while (!window.isEmpty() && window.peekFirst().timestamp < cutoff) {
             window.pollFirst();
         }
@@ -307,8 +351,8 @@ public class WindowSlidingMeasurementsHelper implements IMeasurementsHelper {
             return new ArrayList<>();
         }
 
-        // Clean up expired entries
-        long cutoff = System.currentTimeMillis() - windowSize;
+        // Clean up expired entries using latest record time (convert windowSize ms to ns)
+        long cutoff = latestRecordTime - (windowSize * MS_TO_NS);
         while (!window.isEmpty() && window.peekFirst().timestamp < cutoff) {
             window.pollFirst();
         }
@@ -337,6 +381,15 @@ public class WindowSlidingMeasurementsHelper implements IMeasurementsHelper {
     // ===============================
     // Single Record Analysis
     // ===============================
+
+    @Override
+    public void trackRecord(InternalActionRecord actionRecord) {
+        long responseTime = actionRecord.getExitTime() - actionRecord.getEntryTime();
+        String actionId = actionRecord.getInternalActionID();
+        if (actionId != null) {
+            addToSlidingWindow(actionId, responseTime, actionRecord.getExitTime());
+        }
+    }
 
     /**
      * Analyzes the internal action record and returns the average response time

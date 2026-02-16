@@ -113,6 +113,14 @@ public interface IMeasurementsHelper {
     // ===============================
 
     /**
+     * Tracks an internal action record by adding it to the sliding window
+     * without triggering a resource demand update.
+     *
+     * @param actionRecord the internal action record to track
+     */
+    void trackRecord(InternalActionRecord actionRecord);
+
+    /**
      * Analyzes the internal action record to calculate the resource demand.
      *
      * @param actionRecord the internal action record
@@ -135,4 +143,22 @@ public interface IMeasurementsHelper {
      * @return the executed branch ID
      */
     String analyse(BranchActionRecord branchRecord);
+
+    // ===============================
+    // Resource Demand Specification
+    // ===============================
+
+    /**
+     * Returns the resource demand specification string for a specific action.
+     *
+     * <p>Implementations may return a PCM Stochastic Expression (StoEx) string
+     * such as a DoublePMF, or null if no specification is available.
+     * When null is returned, callers should fall back to using a constant value.</p>
+     *
+     * @param actionId the action identifier
+     * @return the resource demand specification string, or null if not available
+     */
+    default String getResourceDemandSpecification(String actionId) {
+        return null;
+    }
 }
