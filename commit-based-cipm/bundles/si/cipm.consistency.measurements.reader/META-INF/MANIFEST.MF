@@ -24,6 +24,7 @@ Export-Package: cipm.consistency.measurements.reader,
 Require-Bundle: org.eclipse.emf.ecore,
  cipm.consistency.measurements,
  org.apache.log4j,
- com.google.gson;bundle-version="2.8.9"
+ com.google.gson;bundle-version="2.8.9",
+ cipm.consistency.base.shared
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Automatic-Module-Name: cipm.consistency.measurements.reader

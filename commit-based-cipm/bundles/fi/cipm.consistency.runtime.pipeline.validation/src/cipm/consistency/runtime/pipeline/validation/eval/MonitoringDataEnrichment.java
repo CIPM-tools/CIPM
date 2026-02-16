@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.math3.util.Pair;
+
 //import org.cache2k.Cache;
 //import org.cache2k.Cache2kBuilder;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -25,6 +26,8 @@ import cipm.consistency.bridge.monitoring.records.ServiceCallRecord;
 import cipm.consistency.runtime.pipeline.validation.data.TimeValueDistribution;
 import cipm.consistency.runtime.pipeline.validation.data.ValidationPoint;
 import cipm.consistency.runtime.pipeline.validation.eval.util.PCMValidationPointMatcher;
+import kieker.common.*;
+
 
 // TODO a bit refactor (constants, long method,...)
 public class MonitoringDataEnrichment {
@@ -63,7 +66,7 @@ public class MonitoringDataEnrichment {
 	private void processRecord(InMemoryPCM pcm, List<ValidationPoint> points, PCMContextRecord rec) {
 		if (rec instanceof ResourceUtilizationRecord) {
 			ResourceUtilizationRecord utilRecord = (ResourceUtilizationRecord) rec;
-			Pair<String, String> key = Pair.of(utilRecord.getHostId(), utilRecord.getResourceId());
+			Pair<String, String> key = new Pair<> (utilRecord.getHostId(), utilRecord.getResourceId());
 
 			List<ValidationPoint> assignedPoints = Lists.newArrayList();
 			if (resourceUtilCache.containsKey(key)) {
@@ -92,7 +95,7 @@ public class MonitoringDataEnrichment {
 			}
 		} else if (rec instanceof ServiceCallRecord) {
 			ServiceCallRecord serviceRec = (ServiceCallRecord) rec;
-			Pair<String, String> key = Pair.of(serviceRec.getHostId(), serviceRec.getServiceId());
+			Pair<String, String> key = new Pair<>(serviceRec.getHostId(), serviceRec.getServiceId());
 			List<ValidationPoint> assignedPoints = Lists.newArrayList();
 			if (serviceCallCache.containsKey(key)) {
 				assignedPoints = serviceCallCache.get(key);

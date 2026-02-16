@@ -3,7 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: cipm.consistency.runtime.pipeline.validation
 Bundle-SymbolicName: cipm.consistency.runtime.pipeline.validation;singleton:=true
 Bundle-Version: 0.3.0.qualifier
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ lib/kieker-1.13.jar
 Bundle-Vendor: %providerName
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Require-Bundle: org.pcm.headless.api,
