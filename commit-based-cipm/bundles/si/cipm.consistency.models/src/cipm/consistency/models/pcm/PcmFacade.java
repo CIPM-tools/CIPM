@@ -6,7 +6,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationFactory;
 import org.palladiosimulator.pcm.repository.Repository;
@@ -18,7 +23,6 @@ import org.palladiosimulator.pcm.system.SystemFactory;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
 
-import cipm.consistency.base.shared.ModelUtil;
 import cipm.consistency.base.shared.pcm.InMemoryPCM;
 import cipm.consistency.models.ModelFacade;
 
@@ -98,16 +102,39 @@ public class PcmFacade implements ModelFacade {
         var files = fileLayout.getFilePCM();
         pcm = new InMemoryPCM();
 
-        // using createFromFilesystem causes strange errors when propagating the resource
-        // -> so we don't use it
-//        pcm = InMemoryPCM.createFromFilesystem(filePcm);
-        pcm.setSystem(ModelUtil.readFromFile(files.getSystemFile(), System.class));
-        pcm.setRepository(ModelUtil.readFromFile(files.getRepositoryFile(), Repository.class));
+        // 1. Create shared ResourceSet for all PCM models
+        ResourceSet resourceSet = new ResourceSetImpl();
+        resourceSet.getResourceFactoryRegistry()
+                .getExtensionToFactoryMap()
+                .put(Resource.Factory.Registry.DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
+
+        // 2. Map pathmap://PCM_MODELS/ to the local PCM directory (where PrimitiveTypes.repository lives)
+        //    Register GLOBALLY so the VSUM's internal ResourceSet also resolves to the local file
+        java.io.File pcmDir = files.getRepositoryFile().getParentFile();
+        URI pcmDirUri = URI.createFileURI(pcmDir.getAbsolutePath() + java.io.File.separator);
+        org.eclipse.emf.ecore.resource.URIConverter.URI_MAP.put(
+                URI.createURI("pathmap://PCM_MODELS/"), pcmDirUri);
+
+        // 3. Pre-load PrimitiveTypes.repository directly from the local PCM directory
+        resourceSet.getResource(
+                URI.createURI("pathmap://PCM_MODELS/PrimitiveTypes.repository"), true);
+
+        // 4. Load all PCM models into the shared ResourceSet
+        pcm.setSystem(loadFromResourceSet(resourceSet, files.getSystemFile(), System.class));
+        pcm.setRepository(loadFromResourceSet(resourceSet, files.getRepositoryFile(), Repository.class));
         pcm.setResourceEnvironmentModel(
-                ModelUtil.readFromFile(files.getResourceEnvironmentFile(), ResourceEnvironment.class));
-        pcm.setUsageModel(ModelUtil.readFromFile(files.getUsageModelFile(), UsageModel.class));
-        pcm.setAllocationModel(ModelUtil.readFromFile(files.getAllocationModelFile(), Allocation.class));
-        saveToDisk();
+                loadFromResourceSet(resourceSet, files.getResourceEnvironmentFile(), ResourceEnvironment.class));
+        pcm.setUsageModel(loadFromResourceSet(resourceSet, files.getUsageModelFile(), UsageModel.class));
+        pcm.setAllocationModel(loadFromResourceSet(resourceSet, files.getAllocationModelFile(), Allocation.class));
+
+        // 5. Resolve all cross-references now
+        EcoreUtil.resolveAll(resourceSet);
+    }
+
+    private <T> T loadFromResourceSet(ResourceSet resourceSet, java.io.File file, Class<T> clazz) {
+        URI fileUri = URI.createFileURI(file.getAbsolutePath());
+        Resource resource = resourceSet.getResource(fileUri, true);
+        return clazz.cast(resource.getContents().get(0));
     }
 
     public void saveToDisk() {
