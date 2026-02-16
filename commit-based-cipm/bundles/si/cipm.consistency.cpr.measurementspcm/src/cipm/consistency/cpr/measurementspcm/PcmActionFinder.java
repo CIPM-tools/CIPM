@@ -1,5 +1,8 @@
 package cipm.consistency.cpr.measurementspcm;
 
+import java.util.Set;
+
+import org.eclipse.emf.ecore.EObject;
 import org.palladiosimulator.pcm.repository.BasicComponent;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
@@ -12,6 +15,10 @@ import org.palladiosimulator.pcm.seff.ResourceDemandingBehaviour;
 import org.palladiosimulator.pcm.seff.ResourceDemandingSEFF;
 import org.palladiosimulator.pcm.seff.ServiceEffectSpecification;
 
+import cipm.consistency.measurements.Measurements;
+import cipm.consistency.measurements.MeasurementRecord;
+import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
+
 /**
  * Utility class to find PCM actions by ID in a repository.
  */
@@ -19,6 +26,51 @@ public final class PcmActionFinder {
 
     private PcmActionFinder() {
         // Utility class
+    }
+
+    /**
+     * Finds the PCM Repository corresponding to the Measurements model that contains
+     * the given record. Walks up the containment hierarchy:
+     * record → MeasurementsBlock → MeasurementsRepository → Measurements,
+     * then looks up the Repository correspondence for that Measurements object.
+     *
+     * @param record the measurement record
+     * @param correspondenceModel the correspondence model view
+     * @return the found Repository, or null if not found
+     */
+    public static Repository findRepositoryForRecord(EObject record,
+            EditableCorrespondenceModelView<?> correspondenceModel) {
+        if (record == null || correspondenceModel == null) {
+            return null;
+        }
+
+        // Walk up containment to find the Measurements root
+        Measurements measurements = null;
+        EObject current = record;
+        while (current != null) {
+            if (current instanceof Measurements) {
+                measurements = (Measurements) current;
+                break;
+            }
+            current = current.eContainer();
+        }
+
+        if (measurements == null) {
+            return null;
+        }
+
+        // Look up the Repository that corresponds to this Measurements object
+        try {
+            Set<EObject> correspondingObjects = correspondenceModel.getCorrespondingEObjects(measurements, null);
+            for (EObject obj : correspondingObjects) {
+                if (obj instanceof Repository) {
+                    return (Repository) obj;
+                }
+            }
+        } catch (Exception e) {
+            // Fallback: ignore and return null
+        }
+        return null;
     }
 
     /**

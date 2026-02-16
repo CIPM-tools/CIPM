@@ -15,13 +15,32 @@ execute actions in measurements
 reaction AddedMeasurementsModel {
 	after element measurements::Measurements inserted as root
 	call {
+		logger.info("measurementsInit: AddedMeasurementsModel reaction FIRED")
 		createMeasurementsLiteralCorrespondence(newValue)
+		linkMeasurementsToPcmRepository(newValue)
 	}
 }
 
 routine createMeasurementsLiteralCorrespondence(measurements::Measurements m) {
 	update {
+		logger.info("measurementsInit: Creating ReactionsCorrespondence: Measurements <-> MeasurementsPackage.Literals.MEASUREMENTS")
 		addCorrespondenceBetween(m, MeasurementsPackage.Literals.MEASUREMENTS)
+		logger.info("measurementsInit: Measurements literal correspondence created successfully")
+	}
+}
+
+routine linkMeasurementsToPcmRepository(measurements::Measurements m) {
+	match {
+		val pcmRepository = retrieve optional pcm::Repository corresponding to RepositoryPackage.Literals.REPOSITORY
+	}
+	update {
+		if (pcmRepository.present) {
+			logger.info("measurementsInit: Found PCM Repository via literal: " + pcmRepository.get.entityName + " - creating Measurements<->Repository correspondence")
+			addCorrespondenceBetween(m, pcmRepository.get)
+			logger.info("measurementsInit: Measurements<->Repository correspondence created successfully")
+		} else {
+			logger.warn("measurementsInit: No PCM Repository found via literal correspondence - Measurements<->Repository link NOT created")
+		}
 	}
 }
 
@@ -37,7 +56,7 @@ execute actions in pcm
 // InternalActionRecord -> InternalAction Resource Demand Update
 // When InternalActionRecord is added, find matching InternalAction by ID,
 // create correspondence, and update resource demand with response time
-// trigger(record): (currentTime - record.exitTime) >= triggerTime
+// trigger(record): throttles updates using record-time-based sliding window
 // ============================================================================
 
 reaction InternalActionRecordAdded {
@@ -46,29 +65,52 @@ reaction InternalActionRecordAdded {
 		if (cipm.consistency.cpr.measurementshelper.MeasurementsHelper.trigger(newValue)) {
 			findAndUpdateInternalAction(newValue)
 		}
+		else
+		{
+			trackInternalActionRecord(newValue)
+		}
 	}
 }
 
 routine findAndUpdateInternalAction(measurements::InternalActionRecord actionRecord) {
 	match {
-		val existingAction = retrieve optional pcm::InternalAction corresponding to actionRecord
-		val pcmRepository = retrieve pcm::Repository corresponding to RepositoryPackage.Literals.REPOSITORY
+		val pcmRepository = retrieve optional pcm::Repository corresponding to RepositoryPackage.Literals.REPOSITORY
 	}
 	update {
-		if (existingAction.present) {
-			// Correspondence already exists, just update
-			updateInternalActionResourceDemand(actionRecord, existingAction.get)
+		logger.info("findAndUpdateInternalAction called for record: " + actionRecord.internalActionID)
+
+		if (pcmRepository.present) {
+			logger.info("  PCM Repository (via literal): " + pcmRepository.get.entityName)
+			findInternalActionInRepository(actionRecord, pcmRepository.get)
 		} else {
-			// Find InternalAction by ID using Java utility
-			val internalActionId = actionRecord.internalActionID
-			if (internalActionId !== null) {
-				val foundAction = cipm.consistency.cpr.measurementspcm.PcmActionFinder.findInternalAction(pcmRepository, internalActionId)
-				if (foundAction !== null) {
-					createInternalActionCorrespondenceAndUpdate(actionRecord, foundAction)
-				} else {
-					logger.warn("Could not find InternalAction with ID: " + internalActionId)
-				}
+			// Fallback: walk up record -> block -> repo -> Measurements, then find corresponding Repository
+			logger.warn("  PCM Repository NOT FOUND via literal - navigating from record to Measurements correspondence")
+			val repo = cipm.consistency.cpr.measurementspcm.PcmActionFinder.findRepositoryForRecord(actionRecord, correspondenceModel)
+			if (repo !== null) {
+				logger.info("  Found Repository via record->Measurements correspondence: " + repo.entityName)
+				findInternalActionInRepository(actionRecord, repo)
+			} else {
+				logger.error("  Could not find any PCM Repository - cannot update InternalAction")
 			}
+		}
+	}
+}
+
+routine findInternalActionInRepository(measurements::InternalActionRecord actionRecord, pcm::Repository pcmRepository) {
+	update {
+		// Find InternalAction by ID using Java utility
+		val internalActionId = actionRecord.internalActionID
+		if (internalActionId !== null) {
+			logger.info("  Looking up InternalAction with ID: " + internalActionId)
+			val foundAction = cipm.consistency.cpr.measurementspcm.PcmActionFinder.findInternalAction(pcmRepository, internalActionId)
+			if (foundAction !== null) {
+				logger.info("  Found InternalAction: " + foundAction.entityName + " [" + foundAction.id + "]")
+				createInternalActionCorrespondenceAndUpdate(actionRecord, foundAction)
+			} else {
+				logger.warn("  Could not find InternalAction with ID: " + internalActionId)
+			}
+		} else {
+			logger.warn("  InternalActionRecord has null internalActionID")
 		}
 	}
 }
@@ -98,6 +140,39 @@ routine updateInternalActionResourceDemand(measurements::InternalActionRecord ac
 				logger.debug("Updated resource demand specification to: " + rd)
 			}
 		}
+	}
+}
+
+// ============================================================================
+// Track InternalActionRecord without updating resource demand.
+// Finds the matching InternalAction, creates a correspondence, and adds
+// the record to the sliding window for future aggregation.
+// ============================================================================
+
+routine trackInternalActionRecord(measurements::InternalActionRecord actionRecord) {
+	match {
+		val pcmRepository = retrieve optional pcm::Repository corresponding to RepositoryPackage.Literals.REPOSITORY
+	}
+	update {
+		// Add record to sliding window regardless of whether we find the action
+		cipm.consistency.cpr.measurementshelper.MeasurementsHelper.trackRecord(actionRecord)
+
+		val actionId = actionRecord.internalActionID
+		if (actionId !== null && pcmRepository.present) {
+			val foundAction = cipm.consistency.cpr.measurementspcm.PcmActionFinder.findInternalAction(pcmRepository.get, actionId)
+			if (foundAction !== null) {
+				trackCreateCorrespondence(actionRecord, foundAction)
+			}
+		}
+	}
+}
+
+routine trackCreateCorrespondence(measurements::InternalActionRecord actionRecord, pcm::InternalAction internalAction) {
+	match {
+		require absence of pcm::InternalAction corresponding to actionRecord
+	}
+	update {
+		addCorrespondenceBetween(actionRecord, internalAction)
 	}
 }
 

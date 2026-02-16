@@ -15,3 +15,8 @@ Require-Bundle: org.palladiosimulator.pcm,
  org.eclipse.xtext
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Automatic-Module-Name: cipm.consistency.cpr.measurementspcm
+Export-Package: cipm.consistency.cpr.measurementspcm,
+ mir.reactions.measurementsInit,
+ mir.reactions.measurementsPcmUpdate,
+ mir.routines.measurementsInit,
+ mir.routines.measurementsPcmUpdate
