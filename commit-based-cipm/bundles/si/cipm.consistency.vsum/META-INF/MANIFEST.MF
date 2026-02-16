@@ -11,6 +11,8 @@ Require-Bundle: tools.vitruv.framework.vsum,
  cipm.consistency.models.instrumentation,
  cipm.consistency.commitintegration.settings,
  cipm.consistency.models,
+ cipm.consistency.measurements,
+ org.palladiosimulator.pcm,
  org.eclipse.emf.compare;bundle-version="3.5.3",
  edu.kit.ipd.sdq.commons.util.emf;bundle-version="2.0.0",
  tools.vitruv.framework.views,
@@ -19,4 +21,5 @@ Require-Bundle: tools.vitruv.framework.vsum,
  org.splevo.jamopp.extraction,
  org.splevo.extraction,
  org.splevo.commons
-Export-Package: cipm.consistency.vsum
+Export-Package: cipm.consistency.vsum,
+ tools.cipm.views.measurements

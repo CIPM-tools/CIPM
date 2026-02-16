@@ -2,21 +2,26 @@ package cipm.consistency.vsum;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 //import org.xtext.lua.lua.ComponentSet;
 import org.emftext.language.java.containers.JavaRoot;
+import org.palladiosimulator.pcm.repository.Repository;
 
 import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationModel;
+import cipm.consistency.measurements.Measurements;
 import cipm.consistency.models.ModelFacade;
 import tools.vitruv.change.composite.description.PropagatedChange;
 import tools.vitruv.change.correspondence.Correspondence;
 import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
+import tools.vitruv.change.interaction.InternalUserInteractor;
 import tools.vitruv.change.interaction.UserInteractionFactory;
 import tools.vitruv.change.propagation.ChangePropagationSpecification;
 import tools.vitruv.framework.views.CommittableView;
@@ -41,6 +46,7 @@ public class VsumFacadeImpl implements VsumFacade {
     private StateBasedChangeResolutionStrategy stateBasedChangeResolutionStrategy;
 
     private List<ModelFacade> models;
+    private boolean headlessMode = false;
 
     // initialized is used as a breakpoint conditional
     @SuppressWarnings("unused")
@@ -48,6 +54,14 @@ public class VsumFacadeImpl implements VsumFacade {
 
     public VsumFacadeImpl() {
         dirLayout = new VsumDirLayout();
+    }
+
+    /**
+     * Enable headless mode for testing (uses dummy user interactor instead of dialog).
+     * Must be called before initialize().
+     */
+    public void setHeadlessMode(boolean headless) {
+        this.headlessMode = headless;
     }
 
     public void initialize(Path rootPath, List<ModelFacade> models, List<ChangePropagationSpecification> changeSpecs,
@@ -114,16 +128,11 @@ public class VsumFacadeImpl implements VsumFacade {
         var viewType = ViewTypeFactory.createIdentityMappingViewType("myView");
         var viewSelector = viewType.createSelector(theVsum);
 
-//        // Selecting all elements here
-//        viewSelector.getSelectableElements()
-//            .forEach(ele -> viewSelector.setSelected(ele, true));
-
+        // Select ALL elements so that change derivation works for all model types
+        // (PCM, Measurements, Java). Previously only JavaRoot was selected,
+        // which prevented pcmInit and measurementsInit reactions from firing.
         viewSelector.getSelectableElements()
-            .forEach(ele -> {
-                if (ele instanceof JavaRoot) {
-                    viewSelector.setSelected(ele, true);
-                }
-            });
+            .forEach(ele -> viewSelector.setSelected(ele, true));
 
         var view = viewSelector.createView()
             .withChangeDerivingTrait(stateBasedChangeResolutionStrategy);
@@ -170,8 +179,17 @@ public class VsumFacadeImpl implements VsumFacade {
 //		ExtendedPcmDomain pcmDomain = new ExtendedPcmDomainProvider().getDomain();
 //		pcmDomain.enableTransitiveChangePropagation();
 
+        InternalUserInteractor userInteractor;
+        if (headlessMode) {
+            // For headless mode (testing), create a user interactor with predefined empty results
+            userInteractor = UserInteractionFactory.instance.createUserInteractor(
+                UserInteractionFactory.instance.createPredefinedInteractionResultProvider(null));
+        } else {
+            userInteractor = UserInteractionFactory.instance.createDialogUserInteractor();
+        }
+
         return new VirtualModelBuilder().withStorageFolder(dirLayout.getRootDirPath())
-            .withUserInteractor(UserInteractionFactory.instance.createDialogUserInteractor())
+            .withUserInteractor(userInteractor)
             .withChangePropagationSpecifications(changeSpecs);
     }
 
@@ -283,8 +301,8 @@ public class VsumFacadeImpl implements VsumFacade {
             return null;
         }
 
-        LOGGER.trace(String.format("Propagating resource: %s", resource.getURI()
-            .toString()));
+        LOGGER.info(String.format("Propagating resource: %s (root: %s)", resource.getURI(),
+            resource.getContents().isEmpty() ? "EMPTY" : resource.getContents().get(0).eClass().getName()));
 
         if (resource.getContents()
             .size() == 0) {
@@ -293,35 +311,22 @@ public class VsumFacadeImpl implements VsumFacade {
         }
 
         var view = getChangeDerivingView(vsum);
-//        var newRootEobject = resource.getContents()
-//            .get(0);
-//        
-//        var roots = view.getRootObjects();
-//        var possiblyExistingRoot = roots.stream()
-//            .filter(root -> root.eResource()
-//                .getURI() == actualtargetUri)
-//            .findAny();
-//        var replaceRootObject = possiblyExistingRoot.isPresent();
-//        if (replaceRootObject) {
-//            LOGGER.trace(String.format("Replacing old root object (%s) at %s", newRootEobject.getClass(), targetUri));
-//            // replace the existing root with the new one
-//            var existingContents = possiblyExistingRoot.get()
-//                .eResource()
-//                .getContents();
-//            existingContents.remove(0);
-//            existingContents.add(newRootEobject);
-//        } else {
-//            LOGGER.trace(String.format("Registering new root object (%s) at %s", newRootEobject.getClass(), targetUri));
-//            // or register the new root at the view
-//            view.registerRoot(newRootEobject, targetUri);
-//        }
-        
         var roots = view.getRootObjects();
-        if (!roots.isEmpty()) {
-        	var first = roots.iterator().next();
-        	first.eResource().getContents().clear();
+        // Only clear the root at the target URI, not unrelated models.
+        // The old code cleared the FIRST root found (any model), which destroyed
+        // previously propagated models and their reactions-created correspondences.
+        var existingRoot = roots.stream()
+            .filter(root -> root.eResource() != null && root.eResource().getURI().equals(actualtargetUri))
+            .findFirst();
+        if (existingRoot.isPresent()) {
+            existingRoot.get().eResource().getContents().clear();
         }
-        new ArrayList<>(resource.getContents()).forEach(ele -> view.registerRoot(ele, actualtargetUri));
+        // Copy elements before registering them in the view.
+        // registerRoot() is an EMF containment operation that MOVES elements out of
+        // the source resource. This would empty PcmFacade's ResourceSet, breaking
+        // cross-references for models propagated later (e.g., UsageModel → Repository).
+        Collection<EObject> copies = EcoreUtil.copyAll(resource.getContents());
+        copies.forEach(ele -> view.registerRoot(ele, actualtargetUri));
 
         List<PropagatedChange> changeList = List.of();
         IllegalStateException exception = null;
@@ -342,9 +347,23 @@ public class VsumFacadeImpl implements VsumFacade {
     }
 
     private void logPropagatedChanges(Resource res, Propagation changes) {
-        if (changes.getOriginalChangeCount() > 0 || changes.getConsequentialChangeCount() > 0) {
-            LOGGER.info(String.format("Propagated changes in model %s: ORIGINAL: %d  CONSEQUENTIAL: %d", res.getURI()
-                .lastSegment(), changes.getOriginalChangeCount(), changes.getConsequentialChangeCount()));
+        LOGGER.info(String.format("Propagated changes in model %s: ORIGINAL: %d  CONSEQUENTIAL: %d", res.getURI()
+            .lastSegment(), changes.getOriginalChangeCount(), changes.getConsequentialChangeCount()));
+        if (changes.getOriginalChangeCount() == 0 && changes.getConsequentialChangeCount() == 0) {
+            LOGGER.warn(String.format("  WARNING: No changes derived for %s - reactions will NOT fire", res.getURI().lastSegment()));
+        }
+        // Log individual change types for debugging
+        if (changes.getChanges() != null) {
+            for (var change : changes.getChanges()) {
+                var originalEChanges = change.getOriginalChange().getEChanges();
+                for (var eChange : originalEChanges) {
+                    LOGGER.info(String.format("  Original change: %s", eChange.getClass().getSimpleName()));
+                }
+                var consequentialEChanges = change.getConsequentialChanges().getEChanges();
+                for (var eChange : consequentialEChanges) {
+                    LOGGER.info(String.format("  Consequential change: %s", eChange.getClass().getSimpleName()));
+                }
+            }
         }
     }
 
