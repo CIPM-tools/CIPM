@@ -1,0 +1,921 @@
+<?xml version="1.0" encoding="ASCII"?>
+<repository:Repository xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:repository="http://palladiosimulator.org/PalladioComponentModel/Repository/5.2" xmlns:seff="http://palladiosimulator.org/PalladioComponentModel/SEFF/5.2" xmlns:stoex="http://sdq.ipd.uka.de/StochasticExpressions/2.2" id="_VdKBIDVWEeqPG_FgW3bi6Q">
+  <components__Repository xsi:type="repository:BasicComponent" id="_bC13QDVWEeqPG_FgW3bi6Q" entityName="WebUI">
+    <providedRoles_InterfaceProvidingEntity xsi:type="repository:OperationProvidedRole" id="_xlERkDVXEeqPG_FgW3bi6Q" entityName="Provided_CartActions_WebUI" providedInterface__OperationProvidedRole="_g6IlUDVXEeqPG_FgW3bi6Q"/>
+    <providedRoles_InterfaceProvidingEntity xsi:type="repository:OperationProvidedRole" id="_ybC3UDVXEeqPG_FgW3bi6Q" entityName="Provided_ProductActions_WebUI" providedInterface__OperationProvidedRole="_uy1agDVXEeqPG_FgW3bi6Q"/>
+    <requiredRoles_InterfaceRequiringEntity xsi:type="repository:OperationRequiredRole" id="_jrHNQDVZEeqPG_FgW3bi6Q" entityName="Required_LoadBalancer_WebUI" requiredInterface__OperationRequiredRole="_gGczsDVZEeqPG_FgW3bi6Q"/>
+    <serviceEffectSpecifications__BasicComponent xsi:type="seff:ResourceDemandingSEFF" id="_xliLoDVXEeqPG_FgW3bi6Q" describedService__SEFF="_i1PnIDVXEeqPG_FgW3bi6Q">
+      <steps_Behaviour xsi:type="seff:StartAction" id="_xlmdEDVXEeqPG_FgW3bi6Q" entityName="start" successor_AbstractAction="__VQD0DbfEeq5L_FI-wfNWQ"/>
+      <steps_Behaviour xsi:type="seff:StopAction" id="_xloSQDVXEeqPG_FgW3bi6Q" entityName="stop" predecessor_AbstractAction="_QQ_9gK10EeqcvaJ1A892dQ"/>
+      <steps_Behaviour xsi:type="seff:ExternalCallAction" id="__VQD0DbfEeq5L_FI-wfNWQ" predecessor_AbstractAction="_xlmdEDVXEeqPG_FgW3bi6Q" successor_AbstractAction="_QQ_9gK10EeqcvaJ1A892dQ" calledService_ExternalService="_hE4K0DVZEeqPG_FgW3bi6Q" role_ExternalService="_jrHNQDVZEeqPG_FgW3bi6Q">
+        <inputVariableUsages__CallAction>
+          <variableCharacterisation_VariableUsage type="VALUE">
+            <specification_VariableCharacterisation specification="items.VALUE"/>
+          </variableCharacterisation_VariableUsage>
+          <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="items"/>
+        </inputVariableUsages__CallAction>
+        <inputVariableUsages__CallAction>
+          <variableCharacterisation_VariableUsage type="VALUE">
+            <specification_VariableCharacterisation specification="Round(((((((((((((((((2.0^0.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^24.0))) / (2.0^24.0)) % 2.0)) + ((2.0^1.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^25.0))) / (2.0^25.0)) % 2.0))) + ((2.0^2.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^26.0))) / (2.0^26.0)) % 2.0))) + ((2.0^3.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^27.0))) / (2.0^27.0)) % 2.0))) + ((2.0^4.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^28.0))) / (2.0^28.0)) % 2.0))) + ((2.0^5.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^29.0))) / (2.0^29.0)) % 2.0))) + ((2.0^6.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^30.0))) / (2.0^30.0)) % 2.0))) + ((2.0^7.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^31.0))) / (2.0^31.0)) % 2.0))) + ((2.0^8.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^32.0))) / (2.0^32.0)) % 2.0))) + ((2.0^9.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^33.0))) / (2.0^33.0)) % 2.0))) + ((2.0^10.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^34.0))) / (2.0^34.0)) % 2.0))) + ((2.0^11.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^35.0))) / (2.0^35.0)) % 2.0))) + ((2.0^12.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^36.0))) / (2.0^36.0)) % 2.0))) + ((2.0^13.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^37.0))) / (2.0^37.0)) % 2.0))) + ((2.0^14.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^38.0))) / (2.0^38.0)) % 2.0))) + ((2.0^15.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^39.0))) / (2.0^39.0)) % 2.0)))&#xA;"/>
+          </variableCharacterisation_VariableUsage>
+          <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="orders"/>
+        </inputVariableUsages__CallAction>
+        <inputVariableUsages__CallAction>
+          <variableCharacterisation_VariableUsage type="VALUE">
+            <specification_VariableCharacterisation specification="Round(((((((((((((((((((((((((2.0^0.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^0.0))) / (2.0^0.0)) % 2.0)) + ((2.0^1.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^1.0))) / (2.0^1.0)) % 2.0))) + ((2.0^2.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^2.0))) / (2.0^2.0)) % 2.0))) + ((2.0^3.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^3.0))) / (2.0^3.0)) % 2.0))) + ((2.0^4.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^4.0))) / (2.0^4.0)) % 2.0))) + ((2.0^5.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^5.0))) / (2.0^5.0)) % 2.0))) + ((2.0^6.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^6.0))) / (2.0^6.0)) % 2.0))) + ((2.0^7.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^7.0))) / (2.0^7.0)) % 2.0))) + ((2.0^8.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^8.0))) / (2.0^8.0)) % 2.0))) + ((2.0^9.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^9.0))) / (2.0^9.0)) % 2.0))) + ((2.0^10.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^10.0))) / (2.0^10.0)) % 2.0))) + ((2.0^11.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^11.0))) / (2.0^11.0)) % 2.0))) + ((2.0^12.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^12.0))) / (2.0^12.0)) % 2.0))) + ((2.0^13.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^13.0))) / (2.0^13.0)) % 2.0))) + ((2.0^14.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^14.0))) / (2.0^14.0)) % 2.0))) + ((2.0^15.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^15.0))) / (2.0^15.0)) % 2.0))) + ((2.0^16.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^16.0))) / (2.0^16.0)) % 2.0))) + ((2.0^17.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^17.0))) / (2.0^17.0)) % 2.0))) + ((2.0^18.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^18.0))) / (2.0^18.0)) % 2.0))) + ((2.0^19.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^19.0))) / (2.0^19.0)) % 2.0))) + ((2.0^20.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^20.0))) / (2.0^20.0)) % 2.0))) + ((2.0^21.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^21.0))) / (2.0^21.0)) % 2.0))) + ((2.0^22.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^22.0))) / (2.0^22.0)) % 2.0))) + ((2.0^23.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^23.0))) / (2.0^23.0)) % 2.0)))&#xA;"/>
+          </variableCharacterisation_VariableUsage>
+          <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="orderItems"/>
+        </inputVariableUsages__CallAction>
+        <inputVariableUsages__CallAction>
+          <variableCharacterisation_VariableUsage type="VALUE">
+            <specification_VariableCharacterisation specification="authReps.VALUE"/>
+          </variableCharacterisation_VariableUsage>
+          <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="authReps"/>
+        </inputVariableUsages__CallAction>
+        <inputVariableUsages__CallAction>
+          <variableCharacterisation_VariableUsage type="VALUE">
+            <specification_VariableCharacterisation specification="persistenceReps.VALUE"/>
+          </variableCharacterisation_VariableUsage>
+          <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="persistenceReps"/>
+        </inputVariableUsages__CallAction>
+      </steps_Behaviour>
+      <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_QQ_9gK10EeqcvaJ1A892dQ" predecessor_AbstractAction="__VQD0DbfEeq5L_FI-wfNWQ" successor_AbstractAction="_xloSQDVXEeqPG_FgW3bi6Q" calledService_ExternalService="_J1GicDViEeqPG_FgW3bi6Q" role_ExternalService="_jrHNQDVZEeqPG_FgW3bi6Q">
+        <inputVariableUsages__CallAction>
+          <variableCharacterisation_VariableUsage type="VALUE">
+            <specification_VariableCharacterisation specification="Round(((((((((((((((((2.0^0.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^24.0))) / (2.0^24.0)) % 2.0)) + ((2.0^1.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^25.0))) / (2.0^25.0)) % 2.0))) + ((2.0^2.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^26.0))) / (2.0^26.0)) % 2.0))) + ((2.0^3.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^27.0))) / (2.0^27.0)) % 2.0))) + ((2.0^4.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^28.0))) / (2.0^28.0)) % 2.0))) + ((2.0^5.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^29.0))) / (2.0^29.0)) % 2.0))) + ((2.0^6.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^30.0))) / (2.0^30.0)) % 2.0))) + ((2.0^7.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^31.0))) / (2.0^31.0)) % 2.0))) + ((2.0^8.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^32.0))) / (2.0^32.0)) % 2.0))) + ((2.0^9.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^33.0))) / (2.0^33.0)) % 2.0))) + ((2.0^10.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^34.0))) / (2.0^34.0)) % 2.0))) + ((2.0^11.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^35.0))) / (2.0^35.0)) % 2.0))) + ((2.0^12.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^36.0))) / (2.0^36.0)) % 2.0))) + ((2.0^13.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^37.0))) / (2.0^37.0)) % 2.0))) + ((2.0^14.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^38.0))) / (2.0^38.0)) % 2.0))) + ((2.0^15.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^39.0))) / (2.0^39.0)) % 2.0)))&#xA;"/>
+          </variableCharacterisation_VariableUsage>
+          <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="orders"/>
+        </inputVariableUsages__CallAction>
+        <inputVariableUsages__CallAction>
+          <variableCharacterisation_VariableUsage type="VALUE">
+            <specification_VariableCharacterisation specification="Round(((((((((((((((((((((((((2.0^0.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^0.0))) / (2.0^0.0)) % 2.0)) + ((2.0^1.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^1.0))) / (2.0^1.0)) % 2.0))) + ((2.0^2.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^2.0))) / (2.0^2.0)) % 2.0))) + ((2.0^3.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^3.0))) / (2.0^3.0)) % 2.0))) + ((2.0^4.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^4.0))) / (2.0^4.0)) % 2.0))) + ((2.0^5.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^5.0))) / (2.0^5.0)) % 2.0))) + ((2.0^6.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^6.0))) / (2.0^6.0)) % 2.0))) + ((2.0^7.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^7.0))) / (2.0^7.0)) % 2.0))) + ((2.0^8.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^8.0))) / (2.0^8.0)) % 2.0))) + ((2.0^9.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^9.0))) / (2.0^9.0)) % 2.0))) + ((2.0^10.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^10.0))) / (2.0^10.0)) % 2.0))) + ((2.0^11.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^11.0))) / (2.0^11.0)) % 2.0))) + ((2.0^12.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^12.0))) / (2.0^12.0)) % 2.0))) + ((2.0^13.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^13.0))) / (2.0^13.0)) % 2.0))) + ((2.0^14.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^14.0))) / (2.0^14.0)) % 2.0))) + ((2.0^15.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^15.0))) / (2.0^15.0)) % 2.0))) + ((2.0^16.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^16.0))) / (2.0^16.0)) % 2.0))) + ((2.0^17.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^17.0))) / (2.0^17.0)) % 2.0))) + ((2.0^18.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^18.0))) / (2.0^18.0)) % 2.0))) + ((2.0^19.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^19.0))) / (2.0^19.0)) % 2.0))) + ((2.0^20.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^20.0))) / (2.0^20.0)) % 2.0))) + ((2.0^21.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^21.0))) / (2.0^21.0)) % 2.0))) + ((2.0^22.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^22.0))) / (2.0^22.0)) % 2.0))) + ((2.0^23.0) * (((orderTuple.VALUE - (orderTuple.VALUE % (2.0^23.0))) / (2.0^23.0)) % 2.0)))&#xA;"/>
+          </variableCharacterisation_VariableUsage>
+          <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="orderItems"/>
+        </inputVariableUsages__CallAction>
+      </steps_Behaviour>
+    </serviceEffectSpecifications__BasicComponent>
+    <serviceEffectSpecifications__BasicComponent xsi:type="seff:ResourceDemandingSEFF" id="_xlpgYDVXEeqPG_FgW3bi6Q" describedService__SEFF="_ju390DVXEeqPG_FgW3bi6Q">
+      <steps_Behaviour xsi:type="seff:StartAction" id="_xlpgYTVXEeqPG_FgW3bi6Q" entityName="start" successor_AbstractAction="_EbUxQKpZEeqHXcsU55mirw"/>
+      <steps_Behaviour xsi:type="seff:StopAction" id="_xlpgYjVXEeqPG_FgW3bi6Q" entityName="stop" predecessor_AbstractAction="_EbUxQKpZEeqHXcsU55mirw"/>
+      <steps_Behaviour xsi:type="seff:LoopAction" id="_EbUxQKpZEeqHXcsU55mirw" entityName="itemLoop" predecessor_AbstractAction="_xlpgYTVXEeqPG_FgW3bi6Q" successor_AbstractAction="_xlpgYjVXEeqPG_FgW3bi6Q">
+        <bodyBehaviour_Loop id="_EbeiQKpZEeqHXcsU55mirw">
+          <steps_Behaviour xsi:type="seff:StartAction" id="_EbgXcKpZEeqHXcsU55mirw" successor_AbstractAction="_CgFBEDbgEeq5L_FI-wfNWQ"/>
+          <steps_Behaviour xsi:type="seff:StopAction" id="_Ebg-gKpZEeqHXcsU55mirw" predecessor_AbstractAction="_CgFBEDbgEeq5L_FI-wfNWQ"/>
+          <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_CgFBEDbgEeq5L_FI-wfNWQ" predecessor_AbstractAction="_EbgXcKpZEeqHXcsU55mirw" successor_AbstractAction="_Ebg-gKpZEeqHXcsU55mirw" calledService_ExternalService="_h3laIDVZEeqPG_FgW3bi6Q" role_ExternalService="_jrHNQDVZEeqPG_FgW3bi6Q">
+            <inputVariableUsages__CallAction>
+              <variableCharacterisation_VariableUsage type="VALUE">
+                <specification_VariableCharacterisation specification="authReps.VALUE"/>
+              </variableCharacterisation_VariableUsage>
+              <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="authReps"/>
+            </inputVariableUsages__CallAction>
+          </steps_Behaviour>
+        </bodyBehaviour_Loop>
+        <iterationCount_LoopAction specification="items.VALUE"/>
+      </steps_Behaviour>
+    </serviceEffectSpecifications__BasicComponent>
+    <serviceEffectSpecifications__BasicComponent xsi:type="seff:ResourceDemandingSEFF" id="_ybDeYDVXEeqPG_FgW3bi6Q" describedService__SEFF="_v-0FcDVXEeqPG_FgW3bi6Q">
+      <steps_Behaviour xsi:type="seff:StartAction" id="_ybDeYTVXEeqPG_FgW3bi6Q" entityName="start" successor_AbstractAction="_6n8xwDbgEeq5L_FI-wfNWQ"/>
+      <steps_Behaviour xsi:type="seff:StopAction" id="_ybEFcDVXEeqPG_FgW3bi6Q" entityName="stop" predecessor_AbstractAction="_6n8xwDbgEeq5L_FI-wfNWQ"/>
+      <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_6n8xwDbgEeq5L_FI-wfNWQ" predecessor_AbstractAction="_ybDeYTVXEeqPG_FgW3bi6Q" successor_AbstractAction="_ybEFcDVXEeqPG_FgW3bi6Q" calledService_ExternalService="_pKnpQDVhEeqPG_FgW3bi6Q" role_ExternalService="_jrHNQDVZEeqPG_FgW3bi6Q">
+        <inputVariableUsages__CallAction>
+          <variableCharacterisation_VariableUsage type="VALUE">
+            <specification_VariableCharacterisation specification="cartSize.VALUE"/>
+          </variableCharacterisation_VariableUsage>
+          <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="items"/>
+        </inputVariableUsages__CallAction>
+      </steps_Behaviour>
+    </serviceEffectSpecifications__BasicComponent>
+  </components__Repository>
+  <components__Repository xsi:type="repository:BasicComponent" id="_h7nF4DVWEeqPG_FgW3bi6Q" entityName="ImageProvider"/>
+  <components__Repository xsi:type="repository:BasicComponent" id="_dhM6oDVXEeqPG_FgW3bi6Q" entityName="Registry">
+    <providedRoles_InterfaceProvidingEntity xsi:type="repository:OperationProvidedRole" id="_jGO-kDVZEeqPG_FgW3bi6Q" entityName="Provided_LoadBalancer_Registry" providedInterface__OperationProvidedRole="_gGczsDVZEeqPG_FgW3bi6Q"/>
+    <requiredRoles_InterfaceRequiringEntity xsi:type="repository:OperationRequiredRole" id="_YmykMDVZEeqPG_FgW3bi6Q" entityName="Required_AuthCart_Registry" requiredInterface__OperationRequiredRole="_py9KsDVYEeqPG_FgW3bi6Q"/>
+    <requiredRoles_InterfaceRequiringEntity xsi:type="repository:OperationRequiredRole" id="_RgKYYDVcEeqPG_FgW3bi6Q" entityName="Required_Persistence_Registry" requiredInterface__OperationRequiredRole="_Mh_1QDVcEeqPG_FgW3bi6Q"/>
+    <requiredRoles_InterfaceRequiringEntity xsi:type="repository:OperationRequiredRole" id="_USPXEDVfEeqPG_FgW3bi6Q" entityName="Required_Recommender_Registry" requiredInterface__OperationRequiredRole="_Sb4SYDVfEeqPG_FgW3bi6Q"/>
+    <requiredRoles_InterfaceRequiringEntity xsi:type="repository:OperationRequiredRole" id="_-47BQKTJEeqKjI323B3R3w" entityName="Required_ImageProvider_Registry" requiredInterface__OperationRequiredRole="_oPBcMKTJEeqKjI323B3R3w"/>
+    <requiredRoles_InterfaceRequiringEntity xsi:type="repository:OperationRequiredRole" id="_wpp7cGMREeu1YpggLYVT6g" entityName="Required_AuthCart_Registry_2" requiredInterface__OperationRequiredRole="_py9KsDVYEeqPG_FgW3bi6Q"/>
+    <requiredRoles_InterfaceRequiringEntity xsi:type="repository:OperationRequiredRole" id="_wpqigGMREeu1YpggLYVT6g" entityName="Required_AuthCart_Registry_3" requiredInterface__OperationRequiredRole="_py9KsDVYEeqPG_FgW3bi6Q"/>
+    <requiredRoles_InterfaceRequiringEntity xsi:type="repository:OperationRequiredRole" id="_wp5zEGMREeu1YpggLYVT6g" entityName="Required_Persistence_Registry_2" requiredInterface__OperationRequiredRole="_Mh_1QDVcEeqPG_FgW3bi6Q"/>
+    <requiredRoles_InterfaceRequiringEntity xsi:type="repository:OperationRequiredRole" id="_wp5zEWMREeu1YpggLYVT6g" entityName="Required_Persistence_Registry_3" requiredInterface__OperationRequiredRole="_Mh_1QDVcEeqPG_FgW3bi6Q"/>
+    <serviceEffectSpecifications__BasicComponent xsi:type="seff:ResourceDemandingSEFF" id="_jGYIgDVZEeqPG_FgW3bi6Q" describedService__SEFF="_hE4K0DVZEeqPG_FgW3bi6Q">
+      <steps_Behaviour xsi:type="seff:StartAction" id="_jGYvkDVZEeqPG_FgW3bi6Q" entityName="start" successor_AbstractAction="_wprJkGMREeu1YpggLYVT6g"/>
+      <steps_Behaviour xsi:type="seff:StopAction" id="_jGZWoDVZEeqPG_FgW3bi6Q" entityName="stop" predecessor_AbstractAction="_p_VjAPhqEeqSKeH-EIO_1w"/>
+      <steps_Behaviour xsi:type="seff:BranchAction" id="_wprJkGMREeu1YpggLYVT6g" predecessor_AbstractAction="_jGYvkDVZEeqPG_FgW3bi6Q" successor_AbstractAction="_p_VjAPhqEeqSKeH-EIO_1w">
+        <branches_Branch xsi:type="seff:GuardedBranchTransition" id="_wprwoGMREeu1YpggLYVT6g">
+          <branchBehaviour_BranchTransition id="_wprwpGMREeu1YpggLYVT6g">
+            <steps_Behaviour xsi:type="seff:StartAction" id="_wprwoWMREeu1YpggLYVT6g" successor_AbstractAction="_wprwomMREeu1YpggLYVT6g"/>
+            <steps_Behaviour xsi:type="seff:BranchAction" id="_wprwomMREeu1YpggLYVT6g" predecessor_AbstractAction="_wprwoWMREeu1YpggLYVT6g" successor_AbstractAction="_wprwo2MREeu1YpggLYVT6g">
+              <branches_Branch xsi:type="seff:ProbabilisticBranchTransition" id="_wpsXsGMREeu1YpggLYVT6g" branchProbability="1.0">
+                <branchBehaviour_BranchTransition id="_wpsXtGMREeu1YpggLYVT6g">
+                  <steps_Behaviour xsi:type="seff:StartAction" id="_wpsXsWMREeu1YpggLYVT6g" successor_AbstractAction="_wpsXsmMREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_wpsXsmMREeu1YpggLYVT6g" predecessor_AbstractAction="_wpsXsWMREeu1YpggLYVT6g" successor_AbstractAction="_wpsXs2MREeu1YpggLYVT6g" calledService_ExternalService="_v-SrkDVYEeqPG_FgW3bi6Q" role_ExternalService="_YmykMDVZEeqPG_FgW3bi6Q">
+                    <inputVariableUsages__CallAction>
+                      <variableCharacterisation_VariableUsage type="VALUE">
+                        <specification_VariableCharacterisation specification="items.VALUE"/>
+                      </variableCharacterisation_VariableUsage>
+                      <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="items"/>
+                    </inputVariableUsages__CallAction>
+                    <inputVariableUsages__CallAction>
+                      <variableCharacterisation_VariableUsage type="VALUE">
+                        <specification_VariableCharacterisation specification="persistenceReps.VALUE"/>
+                      </variableCharacterisation_VariableUsage>
+                      <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="persistenceReps"/>
+                    </inputVariableUsages__CallAction>
+                  </steps_Behaviour>
+                  <steps_Behaviour xsi:type="seff:StopAction" id="_wpsXs2MREeu1YpggLYVT6g" predecessor_AbstractAction="_wpsXsmMREeu1YpggLYVT6g"/>
+                </branchBehaviour_BranchTransition>
+              </branches_Branch>
+            </steps_Behaviour>
+            <steps_Behaviour xsi:type="seff:StopAction" id="_wprwo2MREeu1YpggLYVT6g" predecessor_AbstractAction="_wprwomMREeu1YpggLYVT6g"/>
+          </branchBehaviour_BranchTransition>
+          <branchCondition_GuardedBranchTransition specification="authReps.VALUE == 1"/>
+        </branches_Branch>
+        <branches_Branch xsi:type="seff:GuardedBranchTransition" id="_wpsXtWMREeu1YpggLYVT6g">
+          <branchBehaviour_BranchTransition id="_wpsXuWMREeu1YpggLYVT6g">
+            <steps_Behaviour xsi:type="seff:StartAction" id="_wpsXtmMREeu1YpggLYVT6g" successor_AbstractAction="_wpsXt2MREeu1YpggLYVT6g"/>
+            <steps_Behaviour xsi:type="seff:BranchAction" id="_wpsXt2MREeu1YpggLYVT6g" predecessor_AbstractAction="_wpsXtmMREeu1YpggLYVT6g" successor_AbstractAction="_wpsXuGMREeu1YpggLYVT6g">
+              <branches_Branch xsi:type="seff:ProbabilisticBranchTransition" id="_wpsXumMREeu1YpggLYVT6g" branchProbability="0.5">
+                <branchBehaviour_BranchTransition id="_wpsXvmMREeu1YpggLYVT6g">
+                  <steps_Behaviour xsi:type="seff:StartAction" id="_wpsXu2MREeu1YpggLYVT6g" successor_AbstractAction="_wpsXvGMREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_wpsXvGMREeu1YpggLYVT6g" predecessor_AbstractAction="_wpsXu2MREeu1YpggLYVT6g" successor_AbstractAction="_wpsXvWMREeu1YpggLYVT6g" calledService_ExternalService="_v-SrkDVYEeqPG_FgW3bi6Q" role_ExternalService="_YmykMDVZEeqPG_FgW3bi6Q">
+                    <inputVariableUsages__CallAction>
+                      <variableCharacterisation_VariableUsage type="VALUE">
+                        <specification_VariableCharacterisation specification="items.VALUE"/>
+                      </variableCharacterisation_VariableUsage>
+                      <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="items"/>
+                    </inputVariableUsages__CallAction>
+                    <inputVariableUsages__CallAction>
+                      <variableCharacterisation_VariableUsage type="VALUE">
+                        <specification_VariableCharacterisation specification="persistenceReps.VALUE"/>
+                      </variableCharacterisation_VariableUsage>
+                      <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="persistenceReps"/>
+                    </inputVariableUsages__CallAction>
+                  </steps_Behaviour>
+                  <steps_Behaviour xsi:type="seff:StopAction" id="_wpsXvWMREeu1YpggLYVT6g" predecessor_AbstractAction="_wpsXvGMREeu1YpggLYVT6g"/>
+                </branchBehaviour_BranchTransition>
+              </branches_Branch>
+              <branches_Branch xsi:type="seff:ProbabilisticBranchTransition" id="_wpsXv2MREeu1YpggLYVT6g" branchProbability="0.5">
+                <branchBehaviour_BranchTransition id="_wpsXw2MREeu1YpggLYVT6g">
+                  <steps_Behaviour xsi:type="seff:StartAction" id="_wpsXwGMREeu1YpggLYVT6g" successor_AbstractAction="_wpsXwWMREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_wpsXwWMREeu1YpggLYVT6g" predecessor_AbstractAction="_wpsXwGMREeu1YpggLYVT6g" successor_AbstractAction="_wpsXwmMREeu1YpggLYVT6g" calledService_ExternalService="_v-SrkDVYEeqPG_FgW3bi6Q" role_ExternalService="_wpp7cGMREeu1YpggLYVT6g">
+                    <inputVariableUsages__CallAction>
+                      <variableCharacterisation_VariableUsage type="VALUE">
+                        <specification_VariableCharacterisation specification="items.VALUE"/>
+                      </variableCharacterisation_VariableUsage>
+                      <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="items"/>
+                    </inputVariableUsages__CallAction>
+                    <inputVariableUsages__CallAction>
+                      <variableCharacterisation_VariableUsage type="VALUE">
+                        <specification_VariableCharacterisation specification="persistenceReps.VALUE"/>
+                      </variableCharacterisation_VariableUsage>
+                      <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="persistenceReps"/>
+                    </inputVariableUsages__CallAction>
+                  </steps_Behaviour>
+                  <steps_Behaviour xsi:type="seff:StopAction" id="_wpsXwmMREeu1YpggLYVT6g" predecessor_AbstractAction="_wpsXwWMREeu1YpggLYVT6g"/>
+                </branchBehaviour_BranchTransition>
+              </branches_Branch>
+            </steps_Behaviour>
+            <steps_Behaviour xsi:type="seff:StopAction" id="_wpsXuGMREeu1YpggLYVT6g" predecessor_AbstractAction="_wpsXt2MREeu1YpggLYVT6g"/>
+          </branchBehaviour_BranchTransition>
+          <branchCondition_GuardedBranchTransition specification="authReps.VALUE == 2"/>
+        </branches_Branch>
+        <branches_Branch xsi:type="seff:GuardedBranchTransition" id="_wpsXxGMREeu1YpggLYVT6g">
+          <branchBehaviour_BranchTransition id="_wpsXyGMREeu1YpggLYVT6g">
+            <steps_Behaviour xsi:type="seff:StartAction" id="_wpsXxWMREeu1YpggLYVT6g" successor_AbstractAction="_wpsXxmMREeu1YpggLYVT6g"/>
+            <steps_Behaviour xsi:type="seff:BranchAction" id="_wpsXxmMREeu1YpggLYVT6g" predecessor_AbstractAction="_wpsXxWMREeu1YpggLYVT6g" successor_AbstractAction="_wpsXx2MREeu1YpggLYVT6g">
+              <branches_Branch xsi:type="seff:ProbabilisticBranchTransition" id="_wpsXyWMREeu1YpggLYVT6g" branchProbability="0.3333333333333333">
+                <branchBehaviour_BranchTransition id="_wpsXzWMREeu1YpggLYVT6g">
+                  <steps_Behaviour xsi:type="seff:StartAction" id="_wpsXymMREeu1YpggLYVT6g" successor_AbstractAction="_wpsXy2MREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_wpsXy2MREeu1YpggLYVT6g" predecessor_AbstractAction="_wpsXymMREeu1YpggLYVT6g" successor_AbstractAction="_wpsXzGMREeu1YpggLYVT6g" calledService_ExternalService="_v-SrkDVYEeqPG_FgW3bi6Q" role_ExternalService="_YmykMDVZEeqPG_FgW3bi6Q">
+                    <inputVariableUsages__CallAction>
+                      <variableCharacterisation_VariableUsage type="VALUE">
+                        <specification_VariableCharacterisation specification="items.VALUE"/>
+                      </variableCharacterisation_VariableUsage>
+                      <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="items"/>
+                    </inputVariableUsages__CallAction>
+                    <inputVariableUsages__CallAction>
+                      <variableCharacterisation_VariableUsage type="VALUE">
+                        <specification_VariableCharacterisation specification="persistenceReps.VALUE"/>
+                      </variableCharacterisation_VariableUsage>
+                      <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="persistenceReps"/>
+                    </inputVariableUsages__CallAction>
+                  </steps_Behaviour>
+                  <steps_Behaviour xsi:type="seff:StopAction" id="_wpsXzGMREeu1YpggLYVT6g" predecessor_AbstractAction="_wpsXy2MREeu1YpggLYVT6g"/>
+                </branchBehaviour_BranchTransition>
+              </branches_Branch>
+              <branches_Branch xsi:type="seff:ProbabilisticBranchTransition" id="_wpsXzmMREeu1YpggLYVT6g" branchProbability="0.3333333333333333">
+                <branchBehaviour_BranchTransition id="_wps-wGMREeu1YpggLYVT6g">
+                  <steps_Behaviour xsi:type="seff:StartAction" id="_wpsXz2MREeu1YpggLYVT6g" successor_AbstractAction="_wpsX0GMREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_wpsX0GMREeu1YpggLYVT6g" predecessor_AbstractAction="_wpsXz2MREeu1YpggLYVT6g" successor_AbstractAction="_wpsX0WMREeu1YpggLYVT6g" calledService_ExternalService="_v-SrkDVYEeqPG_FgW3bi6Q" role_ExternalService="_wpp7cGMREeu1YpggLYVT6g">
+                    <inputVariableUsages__CallAction>
+                      <variableCharacterisation_VariableUsage type="VALUE">
+                        <specification_VariableCharacterisation specification="items.VALUE"/>
+                      </variableCharacterisation_VariableUsage>
+                      <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="items"/>
+                    </inputVariableUsages__CallAction>
+                    <inputVariableUsages__CallAction>
+                      <variableCharacterisation_VariableUsage type="VALUE">
+                        <specification_VariableCharacterisation specification="persistenceReps.VALUE"/>
+                      </variableCharacterisation_VariableUsage>
+                      <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="persistenceReps"/>
+                    </inputVariableUsages__CallAction>
+                  </steps_Behaviour>
+                  <steps_Behaviour xsi:type="seff:StopAction" id="_wpsX0WMREeu1YpggLYVT6g" predecessor_AbstractAction="_wpsX0GMREeu1YpggLYVT6g"/>
+                </branchBehaviour_BranchTransition>
+              </branches_Branch>
+              <branches_Branch xsi:type="seff:ProbabilisticBranchTransition" id="_wps-wWMREeu1YpggLYVT6g" branchProbability="0.3333333333333333">
+                <branchBehaviour_BranchTransition id="_wps-xWMREeu1YpggLYVT6g">
+                  <steps_Behaviour xsi:type="seff:StartAction" id="_wps-wmMREeu1YpggLYVT6g" successor_AbstractAction="_wps-w2MREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_wps-w2MREeu1YpggLYVT6g" predecessor_AbstractAction="_wps-wmMREeu1YpggLYVT6g" successor_AbstractAction="_wps-xGMREeu1YpggLYVT6g" calledService_ExternalService="_v-SrkDVYEeqPG_FgW3bi6Q" role_ExternalService="_wpqigGMREeu1YpggLYVT6g">
+                    <inputVariableUsages__CallAction>
+                      <variableCharacterisation_VariableUsage type="VALUE">
+                        <specification_VariableCharacterisation specification="items.VALUE"/>
+                      </variableCharacterisation_VariableUsage>
+                      <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="items"/>
+                    </inputVariableUsages__CallAction>
+                    <inputVariableUsages__CallAction>
+                      <variableCharacterisation_VariableUsage type="VALUE">
+                        <specification_VariableCharacterisation specification="persistenceReps.VALUE"/>
+                      </variableCharacterisation_VariableUsage>
+                      <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="persistenceReps"/>
+                    </inputVariableUsages__CallAction>
+                  </steps_Behaviour>
+                  <steps_Behaviour xsi:type="seff:StopAction" id="_wps-xGMREeu1YpggLYVT6g" predecessor_AbstractAction="_wps-w2MREeu1YpggLYVT6g"/>
+                </branchBehaviour_BranchTransition>
+              </branches_Branch>
+            </steps_Behaviour>
+            <steps_Behaviour xsi:type="seff:StopAction" id="_wpsXx2MREeu1YpggLYVT6g" predecessor_AbstractAction="_wpsXxmMREeu1YpggLYVT6g"/>
+          </branchBehaviour_BranchTransition>
+          <branchCondition_GuardedBranchTransition specification="authReps.VALUE == 3"/>
+        </branches_Branch>
+      </steps_Behaviour>
+      <steps_Behaviour xsi:type="seff:InternalAction" id="_p_VjAPhqEeqSKeH-EIO_1w" entityName="REST" predecessor_AbstractAction="_wprJkGMREeu1YpggLYVT6g" successor_AbstractAction="_jGZWoDVZEeqPG_FgW3bi6Q">
+        <resourceDemand_Action>
+          <specification_ParametericResourceDemand specification="Max(0.0,((0.04899512546601471 * items.VALUE) + 0.6463904165769492) + DoublePMF[(-1.143543;0.002973)(-1.114593;0.003278)(-1.085642;0.003604)(-1.056692;0.003954)(-1.027741;0.004326)(-0.998791;0.004721)(-0.96984;0.00514)(-0.94089;0.005582)(-0.911939;0.006046)(-0.882989;0.006533)(-0.854039;0.007042)(-0.825088;0.007572)(-0.796138;0.008121)(-0.767187;0.008687)(-0.738237;0.009271)(-0.709286;0.009869)(-0.680336;0.010479)(-0.651385;0.011099)(-0.622435;0.011727)(-0.593484;0.012358)(-0.564534;0.012992)(-0.535583;0.013624)(-0.506633;0.01425)(-0.477683;0.01487)(-0.448732;0.015476)(-0.419782;0.016067)(-0.390831;0.016639)(-0.361881;0.017189)(-0.33293;0.017713)(-0.30398;0.018206)(-0.275029;0.018667)(-0.246079;0.019092)(-0.217128;0.019477)(-0.188178;0.019821)(-0.159228;0.020121)(-0.130277;0.020374)(-0.101327;0.020578)(-0.072376;0.020733)(-0.043426;0.020837)(-0.014475;0.02089)(0.014475;0.02089)(0.043426;0.020837)(0.072376;0.020733)(0.101327;0.020578)(0.130277;0.020374)(0.159228;0.020121)(0.188178;0.019821)(0.217128;0.019477)(0.246079;0.019092)(0.275029;0.018667)(0.30398;0.018206)(0.33293;0.017713)(0.361881;0.017189)(0.390831;0.016639)(0.419782;0.016067)(0.448732;0.015476)(0.477683;0.01487)(0.506633;0.01425)(0.535583;0.013624)(0.564534;0.012992)(0.593484;0.012358)(0.622435;0.011727)(0.651385;0.011099)(0.680336;0.010479)(0.709286;0.009869)(0.738237;0.009271)(0.767187;0.008687)(0.796138;0.008121)(0.825088;0.007572)(0.854039;0.007042)(0.882989;0.006533)(0.911939;0.006046)(0.94089;0.005582)(0.96984;0.00514)(0.998791;0.004721)(1.027741;0.004326)(1.056692;0.003954)(1.085642;0.003604)(1.114593;0.003278)(1.143543;0.002973)])"/>
+          <requiredResource_ParametricResourceDemand href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+        </resourceDemand_Action>
+      </steps_Behaviour>
+    </serviceEffectSpecifications__BasicComponent>
+    <serviceEffectSpecifications__BasicComponent xsi:type="seff:ResourceDemandingSEFF" id="_jGZ9sDVZEeqPG_FgW3bi6Q" describedService__SEFF="_h3laIDVZEeqPG_FgW3bi6Q">
+      <steps_Behaviour xsi:type="seff:StartAction" id="_jGakwDVZEeqPG_FgW3bi6Q" entityName="start" successor_AbstractAction="_wps-xmMREeu1YpggLYVT6g"/>
+      <steps_Behaviour xsi:type="seff:StopAction" id="_jGakwTVZEeqPG_FgW3bi6Q" entityName="stop" predecessor_AbstractAction="_rez1YLVFEeqTFs1I1gP2AQ"/>
+      <steps_Behaviour xsi:type="seff:BranchAction" id="_wps-xmMREeu1YpggLYVT6g" predecessor_AbstractAction="_jGakwDVZEeqPG_FgW3bi6Q" successor_AbstractAction="_rez1YLVFEeqTFs1I1gP2AQ">
+        <branches_Branch xsi:type="seff:GuardedBranchTransition" id="_wps-x2MREeu1YpggLYVT6g">
+          <branchBehaviour_BranchTransition id="_wps-y2MREeu1YpggLYVT6g">
+            <steps_Behaviour xsi:type="seff:StartAction" id="_wps-yGMREeu1YpggLYVT6g" successor_AbstractAction="_wps-yWMREeu1YpggLYVT6g"/>
+            <steps_Behaviour xsi:type="seff:BranchAction" id="_wps-yWMREeu1YpggLYVT6g" predecessor_AbstractAction="_wps-yGMREeu1YpggLYVT6g" successor_AbstractAction="_wps-ymMREeu1YpggLYVT6g">
+              <branches_Branch xsi:type="seff:ProbabilisticBranchTransition" id="_wps-zGMREeu1YpggLYVT6g" branchProbability="1.0">
+                <branchBehaviour_BranchTransition id="_wps-0GMREeu1YpggLYVT6g">
+                  <steps_Behaviour xsi:type="seff:StartAction" id="_wps-zWMREeu1YpggLYVT6g" successor_AbstractAction="_wps-zmMREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_wps-zmMREeu1YpggLYVT6g" predecessor_AbstractAction="_wps-zWMREeu1YpggLYVT6g" successor_AbstractAction="_wps-z2MREeu1YpggLYVT6g" calledService_ExternalService="_XZ23ADVZEeqPG_FgW3bi6Q" role_ExternalService="_YmykMDVZEeqPG_FgW3bi6Q"/>
+                  <steps_Behaviour xsi:type="seff:StopAction" id="_wps-z2MREeu1YpggLYVT6g" predecessor_AbstractAction="_wps-zmMREeu1YpggLYVT6g"/>
+                </branchBehaviour_BranchTransition>
+              </branches_Branch>
+            </steps_Behaviour>
+            <steps_Behaviour xsi:type="seff:StopAction" id="_wps-ymMREeu1YpggLYVT6g" predecessor_AbstractAction="_wps-yWMREeu1YpggLYVT6g"/>
+          </branchBehaviour_BranchTransition>
+          <branchCondition_GuardedBranchTransition specification="authReps.VALUE == 1"/>
+        </branches_Branch>
+        <branches_Branch xsi:type="seff:GuardedBranchTransition" id="_wptl0GMREeu1YpggLYVT6g">
+          <branchBehaviour_BranchTransition id="_wptl1GMREeu1YpggLYVT6g">
+            <steps_Behaviour xsi:type="seff:StartAction" id="_wptl0WMREeu1YpggLYVT6g" successor_AbstractAction="_wptl0mMREeu1YpggLYVT6g"/>
+            <steps_Behaviour xsi:type="seff:BranchAction" id="_wptl0mMREeu1YpggLYVT6g" predecessor_AbstractAction="_wptl0WMREeu1YpggLYVT6g" successor_AbstractAction="_wptl02MREeu1YpggLYVT6g">
+              <branches_Branch xsi:type="seff:ProbabilisticBranchTransition" id="_wptl1WMREeu1YpggLYVT6g" branchProbability="0.5">
+                <branchBehaviour_BranchTransition id="_wptl2WMREeu1YpggLYVT6g">
+                  <steps_Behaviour xsi:type="seff:StartAction" id="_wptl1mMREeu1YpggLYVT6g" successor_AbstractAction="_wptl12MREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_wptl12MREeu1YpggLYVT6g" predecessor_AbstractAction="_wptl1mMREeu1YpggLYVT6g" successor_AbstractAction="_wptl2GMREeu1YpggLYVT6g" calledService_ExternalService="_XZ23ADVZEeqPG_FgW3bi6Q" role_ExternalService="_YmykMDVZEeqPG_FgW3bi6Q"/>
+                  <steps_Behaviour xsi:type="seff:StopAction" id="_wptl2GMREeu1YpggLYVT6g" predecessor_AbstractAction="_wptl12MREeu1YpggLYVT6g"/>
+                </branchBehaviour_BranchTransition>
+              </branches_Branch>
+              <branches_Branch xsi:type="seff:ProbabilisticBranchTransition" id="_wptl2mMREeu1YpggLYVT6g" branchProbability="0.5">
+                <branchBehaviour_BranchTransition id="_wptl3mMREeu1YpggLYVT6g">
+                  <steps_Behaviour xsi:type="seff:StartAction" id="_wptl22MREeu1YpggLYVT6g" successor_AbstractAction="_wptl3GMREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_wptl3GMREeu1YpggLYVT6g" predecessor_AbstractAction="_wptl22MREeu1YpggLYVT6g" successor_AbstractAction="_wptl3WMREeu1YpggLYVT6g" calledService_ExternalService="_XZ23ADVZEeqPG_FgW3bi6Q" role_ExternalService="_wpp7cGMREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:StopAction" id="_wptl3WMREeu1YpggLYVT6g" predecessor_AbstractAction="_wptl3GMREeu1YpggLYVT6g"/>
+                </branchBehaviour_BranchTransition>
+              </branches_Branch>
+            </steps_Behaviour>
+            <steps_Behaviour xsi:type="seff:StopAction" id="_wptl02MREeu1YpggLYVT6g" predecessor_AbstractAction="_wptl0mMREeu1YpggLYVT6g"/>
+          </branchBehaviour_BranchTransition>
+          <branchCondition_GuardedBranchTransition specification="authReps.VALUE == 2"/>
+        </branches_Branch>
+        <branches_Branch xsi:type="seff:GuardedBranchTransition" id="_wptl32MREeu1YpggLYVT6g">
+          <branchBehaviour_BranchTransition id="_wptl42MREeu1YpggLYVT6g">
+            <steps_Behaviour xsi:type="seff:StartAction" id="_wptl4GMREeu1YpggLYVT6g" successor_AbstractAction="_wptl4WMREeu1YpggLYVT6g"/>
+            <steps_Behaviour xsi:type="seff:BranchAction" id="_wptl4WMREeu1YpggLYVT6g" predecessor_AbstractAction="_wptl4GMREeu1YpggLYVT6g" successor_AbstractAction="_wptl4mMREeu1YpggLYVT6g">
+              <branches_Branch xsi:type="seff:ProbabilisticBranchTransition" id="_wptl5GMREeu1YpggLYVT6g" branchProbability="0.3333333333333333">
+                <branchBehaviour_BranchTransition id="_wptl6GMREeu1YpggLYVT6g">
+                  <steps_Behaviour xsi:type="seff:StartAction" id="_wptl5WMREeu1YpggLYVT6g" successor_AbstractAction="_wptl5mMREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_wptl5mMREeu1YpggLYVT6g" predecessor_AbstractAction="_wptl5WMREeu1YpggLYVT6g" successor_AbstractAction="_wptl52MREeu1YpggLYVT6g" calledService_ExternalService="_XZ23ADVZEeqPG_FgW3bi6Q" role_ExternalService="_YmykMDVZEeqPG_FgW3bi6Q"/>
+                  <steps_Behaviour xsi:type="seff:StopAction" id="_wptl52MREeu1YpggLYVT6g" predecessor_AbstractAction="_wptl5mMREeu1YpggLYVT6g"/>
+                </branchBehaviour_BranchTransition>
+              </branches_Branch>
+              <branches_Branch xsi:type="seff:ProbabilisticBranchTransition" id="_wptl6WMREeu1YpggLYVT6g" branchProbability="0.3333333333333333">
+                <branchBehaviour_BranchTransition id="_wptl7WMREeu1YpggLYVT6g">
+                  <steps_Behaviour xsi:type="seff:StartAction" id="_wptl6mMREeu1YpggLYVT6g" successor_AbstractAction="_wptl62MREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_wptl62MREeu1YpggLYVT6g" predecessor_AbstractAction="_wptl6mMREeu1YpggLYVT6g" successor_AbstractAction="_wptl7GMREeu1YpggLYVT6g" calledService_ExternalService="_XZ23ADVZEeqPG_FgW3bi6Q" role_ExternalService="_wpp7cGMREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:StopAction" id="_wptl7GMREeu1YpggLYVT6g" predecessor_AbstractAction="_wptl62MREeu1YpggLYVT6g"/>
+                </branchBehaviour_BranchTransition>
+              </branches_Branch>
+              <branches_Branch xsi:type="seff:ProbabilisticBranchTransition" id="_wptl7mMREeu1YpggLYVT6g" branchProbability="0.3333333333333333">
+                <branchBehaviour_BranchTransition id="_wptl8mMREeu1YpggLYVT6g">
+                  <steps_Behaviour xsi:type="seff:StartAction" id="_wptl72MREeu1YpggLYVT6g" successor_AbstractAction="_wptl8GMREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_wptl8GMREeu1YpggLYVT6g" predecessor_AbstractAction="_wptl72MREeu1YpggLYVT6g" successor_AbstractAction="_wptl8WMREeu1YpggLYVT6g" calledService_ExternalService="_XZ23ADVZEeqPG_FgW3bi6Q" role_ExternalService="_wpqigGMREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:StopAction" id="_wptl8WMREeu1YpggLYVT6g" predecessor_AbstractAction="_wptl8GMREeu1YpggLYVT6g"/>
+                </branchBehaviour_BranchTransition>
+              </branches_Branch>
+            </steps_Behaviour>
+            <steps_Behaviour xsi:type="seff:StopAction" id="_wptl4mMREeu1YpggLYVT6g" predecessor_AbstractAction="_wptl4WMREeu1YpggLYVT6g"/>
+          </branchBehaviour_BranchTransition>
+          <branchCondition_GuardedBranchTransition specification="authReps.VALUE == 3"/>
+        </branches_Branch>
+      </steps_Behaviour>
+      <steps_Behaviour xsi:type="seff:InternalAction" id="_rez1YLVFEeqTFs1I1gP2AQ" entityName="REST" predecessor_AbstractAction="_wps-xmMREeu1YpggLYVT6g" successor_AbstractAction="_jGakwTVZEeqPG_FgW3bi6Q">
+        <resourceDemand_Action>
+          <specification_ParametericResourceDemand specification="1"/>
+          <requiredResource_ParametricResourceDemand href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+        </resourceDemand_Action>
+      </steps_Behaviour>
+    </serviceEffectSpecifications__BasicComponent>
+    <serviceEffectSpecifications__BasicComponent xsi:type="seff:ResourceDemandingSEFF" id="_5a0osDVeEeqPG_FgW3bi6Q" describedService__SEFF="_WvtmcDVcEeqPG_FgW3bi6Q">
+      <steps_Behaviour xsi:type="seff:StartAction" id="_5uoVgDVeEeqPG_FgW3bi6Q" entityName="start" successor_AbstractAction="_wp5zEmMREeu1YpggLYVT6g"/>
+      <steps_Behaviour xsi:type="seff:StopAction" id="_5uo8kDVeEeqPG_FgW3bi6Q" entityName="stop" predecessor_AbstractAction="_bbWZ0LU6Eeq29rcBS3Ut9g"/>
+      <steps_Behaviour xsi:type="seff:BranchAction" id="_wp5zEmMREeu1YpggLYVT6g" predecessor_AbstractAction="_5uoVgDVeEeqPG_FgW3bi6Q" successor_AbstractAction="_bbWZ0LU6Eeq29rcBS3Ut9g">
+        <branches_Branch xsi:type="seff:GuardedBranchTransition" id="_wp5zE2MREeu1YpggLYVT6g">
+          <branchBehaviour_BranchTransition id="_wp5zF2MREeu1YpggLYVT6g">
+            <steps_Behaviour xsi:type="seff:StartAction" id="_wp5zFGMREeu1YpggLYVT6g" successor_AbstractAction="_wp5zFWMREeu1YpggLYVT6g"/>
+            <steps_Behaviour xsi:type="seff:BranchAction" id="_wp5zFWMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp5zFGMREeu1YpggLYVT6g" successor_AbstractAction="_wp5zFmMREeu1YpggLYVT6g">
+              <branches_Branch xsi:type="seff:ProbabilisticBranchTransition" id="_wp5zGGMREeu1YpggLYVT6g" branchProbability="1.0">
+                <branchBehaviour_BranchTransition id="_wp5zHGMREeu1YpggLYVT6g">
+                  <steps_Behaviour xsi:type="seff:StartAction" id="_wp5zGWMREeu1YpggLYVT6g" successor_AbstractAction="_wp5zGmMREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_wp5zGmMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp5zGWMREeu1YpggLYVT6g" successor_AbstractAction="_wp5zG2MREeu1YpggLYVT6g" calledService_ExternalService="_NiisQDVcEeqPG_FgW3bi6Q" role_ExternalService="_RgKYYDVcEeqPG_FgW3bi6Q"/>
+                  <steps_Behaviour xsi:type="seff:StopAction" id="_wp5zG2MREeu1YpggLYVT6g" predecessor_AbstractAction="_wp5zGmMREeu1YpggLYVT6g"/>
+                </branchBehaviour_BranchTransition>
+              </branches_Branch>
+            </steps_Behaviour>
+            <steps_Behaviour xsi:type="seff:StopAction" id="_wp5zFmMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp5zFWMREeu1YpggLYVT6g"/>
+          </branchBehaviour_BranchTransition>
+          <branchCondition_GuardedBranchTransition specification="persistenceReps.VALUE == 1"/>
+        </branches_Branch>
+        <branches_Branch xsi:type="seff:GuardedBranchTransition" id="_wp5zHWMREeu1YpggLYVT6g">
+          <branchBehaviour_BranchTransition id="_wp5zIWMREeu1YpggLYVT6g">
+            <steps_Behaviour xsi:type="seff:StartAction" id="_wp5zHmMREeu1YpggLYVT6g" successor_AbstractAction="_wp5zH2MREeu1YpggLYVT6g"/>
+            <steps_Behaviour xsi:type="seff:BranchAction" id="_wp5zH2MREeu1YpggLYVT6g" predecessor_AbstractAction="_wp5zHmMREeu1YpggLYVT6g" successor_AbstractAction="_wp5zIGMREeu1YpggLYVT6g">
+              <branches_Branch xsi:type="seff:ProbabilisticBranchTransition" id="_wp5zImMREeu1YpggLYVT6g" branchProbability="0.5">
+                <branchBehaviour_BranchTransition id="_wp5zJmMREeu1YpggLYVT6g">
+                  <steps_Behaviour xsi:type="seff:StartAction" id="_wp5zI2MREeu1YpggLYVT6g" successor_AbstractAction="_wp5zJGMREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_wp5zJGMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp5zI2MREeu1YpggLYVT6g" successor_AbstractAction="_wp5zJWMREeu1YpggLYVT6g" calledService_ExternalService="_NiisQDVcEeqPG_FgW3bi6Q" role_ExternalService="_RgKYYDVcEeqPG_FgW3bi6Q"/>
+                  <steps_Behaviour xsi:type="seff:StopAction" id="_wp5zJWMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp5zJGMREeu1YpggLYVT6g"/>
+                </branchBehaviour_BranchTransition>
+              </branches_Branch>
+              <branches_Branch xsi:type="seff:ProbabilisticBranchTransition" id="_wp5zJ2MREeu1YpggLYVT6g" branchProbability="0.5">
+                <branchBehaviour_BranchTransition id="_wp5zK2MREeu1YpggLYVT6g">
+                  <steps_Behaviour xsi:type="seff:StartAction" id="_wp5zKGMREeu1YpggLYVT6g" successor_AbstractAction="_wp5zKWMREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_wp5zKWMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp5zKGMREeu1YpggLYVT6g" successor_AbstractAction="_wp5zKmMREeu1YpggLYVT6g" calledService_ExternalService="_NiisQDVcEeqPG_FgW3bi6Q" role_ExternalService="_wp5zEGMREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:StopAction" id="_wp5zKmMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp5zKWMREeu1YpggLYVT6g"/>
+                </branchBehaviour_BranchTransition>
+              </branches_Branch>
+            </steps_Behaviour>
+            <steps_Behaviour xsi:type="seff:StopAction" id="_wp5zIGMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp5zH2MREeu1YpggLYVT6g"/>
+          </branchBehaviour_BranchTransition>
+          <branchCondition_GuardedBranchTransition specification="persistenceReps.VALUE == 2"/>
+        </branches_Branch>
+        <branches_Branch xsi:type="seff:GuardedBranchTransition" id="_wp5zLGMREeu1YpggLYVT6g">
+          <branchBehaviour_BranchTransition id="_wp5zMGMREeu1YpggLYVT6g">
+            <steps_Behaviour xsi:type="seff:StartAction" id="_wp5zLWMREeu1YpggLYVT6g" successor_AbstractAction="_wp5zLmMREeu1YpggLYVT6g"/>
+            <steps_Behaviour xsi:type="seff:BranchAction" id="_wp5zLmMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp5zLWMREeu1YpggLYVT6g" successor_AbstractAction="_wp5zL2MREeu1YpggLYVT6g">
+              <branches_Branch xsi:type="seff:ProbabilisticBranchTransition" id="_wp5zMWMREeu1YpggLYVT6g" branchProbability="0.3333333333333333">
+                <branchBehaviour_BranchTransition id="_wp5zNWMREeu1YpggLYVT6g">
+                  <steps_Behaviour xsi:type="seff:StartAction" id="_wp5zMmMREeu1YpggLYVT6g" successor_AbstractAction="_wp5zM2MREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_wp5zM2MREeu1YpggLYVT6g" predecessor_AbstractAction="_wp5zMmMREeu1YpggLYVT6g" successor_AbstractAction="_wp5zNGMREeu1YpggLYVT6g" calledService_ExternalService="_NiisQDVcEeqPG_FgW3bi6Q" role_ExternalService="_RgKYYDVcEeqPG_FgW3bi6Q"/>
+                  <steps_Behaviour xsi:type="seff:StopAction" id="_wp5zNGMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp5zM2MREeu1YpggLYVT6g"/>
+                </branchBehaviour_BranchTransition>
+              </branches_Branch>
+              <branches_Branch xsi:type="seff:ProbabilisticBranchTransition" id="_wp5zNmMREeu1YpggLYVT6g" branchProbability="0.3333333333333333">
+                <branchBehaviour_BranchTransition id="_wp5zOmMREeu1YpggLYVT6g">
+                  <steps_Behaviour xsi:type="seff:StartAction" id="_wp5zN2MREeu1YpggLYVT6g" successor_AbstractAction="_wp5zOGMREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_wp5zOGMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp5zN2MREeu1YpggLYVT6g" successor_AbstractAction="_wp5zOWMREeu1YpggLYVT6g" calledService_ExternalService="_NiisQDVcEeqPG_FgW3bi6Q" role_ExternalService="_wp5zEGMREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:StopAction" id="_wp5zOWMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp5zOGMREeu1YpggLYVT6g"/>
+                </branchBehaviour_BranchTransition>
+              </branches_Branch>
+              <branches_Branch xsi:type="seff:ProbabilisticBranchTransition" id="_wp5zO2MREeu1YpggLYVT6g" branchProbability="0.3333333333333333">
+                <branchBehaviour_BranchTransition id="_wp5zP2MREeu1YpggLYVT6g">
+                  <steps_Behaviour xsi:type="seff:StartAction" id="_wp5zPGMREeu1YpggLYVT6g" successor_AbstractAction="_wp5zPWMREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_wp5zPWMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp5zPGMREeu1YpggLYVT6g" successor_AbstractAction="_wp5zPmMREeu1YpggLYVT6g" calledService_ExternalService="_NiisQDVcEeqPG_FgW3bi6Q" role_ExternalService="_wp5zEWMREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:StopAction" id="_wp5zPmMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp5zPWMREeu1YpggLYVT6g"/>
+                </branchBehaviour_BranchTransition>
+              </branches_Branch>
+            </steps_Behaviour>
+            <steps_Behaviour xsi:type="seff:StopAction" id="_wp5zL2MREeu1YpggLYVT6g" predecessor_AbstractAction="_wp5zLmMREeu1YpggLYVT6g"/>
+          </branchBehaviour_BranchTransition>
+          <branchCondition_GuardedBranchTransition specification="persistenceReps.VALUE == 3"/>
+        </branches_Branch>
+      </steps_Behaviour>
+      <steps_Behaviour xsi:type="seff:InternalAction" id="_bbWZ0LU6Eeq29rcBS3Ut9g" entityName="REST" predecessor_AbstractAction="_wp5zEmMREeu1YpggLYVT6g" successor_AbstractAction="_5uo8kDVeEeqPG_FgW3bi6Q">
+        <resourceDemand_Action>
+          <specification_ParametericResourceDemand specification="Max(0.0,0.9328828993288596 + DoublePMF[(-1.210617;0.002355)(-1.186161;0.002547)(-1.161704;0.00275)(-1.137247;0.002965)(-1.11279;0.003191)(-1.088333;0.00343)(-1.063876;0.003679)(-1.039419;0.003941)(-1.014962;0.004216)(-0.990505;0.004502)(-0.966048;0.004799)(-0.941591;0.005108)(-0.917134;0.005428)(-0.892678;0.005759)(-0.868221;0.006101)(-0.843764;0.006452)(-0.819307;0.006813)(-0.79485;0.007182)(-0.770393;0.007559)(-0.745936;0.007943)(-0.721479;0.008334)(-0.697022;0.008729)(-0.672565;0.009129)(-0.648108;0.009533)(-0.623651;0.009937)(-0.599195;0.010343)(-0.574738;0.010748)(-0.550281;0.01115)(-0.525824;0.011551)(-0.501367;0.011944)(-0.47691;0.012333)(-0.452453;0.012713)(-0.427996;0.013085)(-0.403539;0.013446)(-0.379082;0.013795)(-0.354625;0.01413)(-0.330168;0.014449)(-0.305711;0.014753)(-0.281255;0.015039)(-0.256798;0.015306)(-0.232341;0.015553)(-0.207884;0.015779)(-0.183427;0.015982)(-0.15897;0.016161)(-0.134513;0.016317)(-0.110056;0.016448)(-0.085599;0.016554)(-0.061142;0.016634)(-0.036685;0.016687)(-0.012228;0.016713)(0.012228;0.016713)(0.036685;0.016687)(0.061142;0.016634)(0.085599;0.016554)(0.110056;0.016448)(0.134513;0.016317)(0.15897;0.016161)(0.183427;0.015982)(0.207884;0.015779)(0.232341;0.015553)(0.256798;0.015306)(0.281255;0.015039)(0.305711;0.014753)(0.330168;0.014449)(0.354625;0.01413)(0.379082;0.013795)(0.403539;0.013446)(0.427996;0.013085)(0.452453;0.012713)(0.47691;0.012333)(0.501367;0.011944)(0.525824;0.011551)(0.550281;0.01115)(0.574738;0.010748)(0.599195;0.010343)(0.623651;0.009937)(0.648108;0.009533)(0.672565;0.009129)(0.697022;0.008729)(0.721479;0.008334)(0.745936;0.007943)(0.770393;0.007559)(0.79485;0.007182)(0.819307;0.006813)(0.843764;0.006452)(0.868221;0.006101)(0.892678;0.005759)(0.917134;0.005428)(0.941591;0.005108)(0.966048;0.004799)(0.990505;0.004502)(1.014962;0.004216)(1.039419;0.003941)(1.063876;0.003679)(1.088333;0.00343)(1.11279;0.003191)(1.137247;0.002965)(1.161704;0.00275)(1.186161;0.002547)(1.210617;0.002355)])"/>
+          <requiredResource_ParametricResourceDemand href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+        </resourceDemand_Action>
+      </steps_Behaviour>
+    </serviceEffectSpecifications__BasicComponent>
+    <serviceEffectSpecifications__BasicComponent xsi:type="seff:ResourceDemandingSEFF" id="_6KaSkDVeEeqPG_FgW3bi6Q" describedService__SEFF="_XirUcDVcEeqPG_FgW3bi6Q">
+      <steps_Behaviour xsi:type="seff:StartAction" id="_6X4G0DVeEeqPG_FgW3bi6Q" entityName="start" successor_AbstractAction="_wp6aIGMREeu1YpggLYVT6g"/>
+      <steps_Behaviour xsi:type="seff:StopAction" id="_6X4G0TVeEeqPG_FgW3bi6Q" entityName="stop" predecessor_AbstractAction="_wp6aIGMREeu1YpggLYVT6g"/>
+      <steps_Behaviour xsi:type="seff:BranchAction" id="_wp6aIGMREeu1YpggLYVT6g" predecessor_AbstractAction="_6X4G0DVeEeqPG_FgW3bi6Q" successor_AbstractAction="_6X4G0TVeEeqPG_FgW3bi6Q">
+        <branches_Branch xsi:type="seff:GuardedBranchTransition" id="_wp6aIWMREeu1YpggLYVT6g">
+          <branchBehaviour_BranchTransition id="_wp6aJWMREeu1YpggLYVT6g">
+            <steps_Behaviour xsi:type="seff:StartAction" id="_wp6aImMREeu1YpggLYVT6g" successor_AbstractAction="_wp6aI2MREeu1YpggLYVT6g"/>
+            <steps_Behaviour xsi:type="seff:BranchAction" id="_wp6aI2MREeu1YpggLYVT6g" predecessor_AbstractAction="_wp6aImMREeu1YpggLYVT6g" successor_AbstractAction="_wp6aJGMREeu1YpggLYVT6g">
+              <branches_Branch xsi:type="seff:ProbabilisticBranchTransition" id="_wp6aJmMREeu1YpggLYVT6g" branchProbability="1.0">
+                <branchBehaviour_BranchTransition id="_wp6aKmMREeu1YpggLYVT6g">
+                  <steps_Behaviour xsi:type="seff:StartAction" id="_wp6aJ2MREeu1YpggLYVT6g" successor_AbstractAction="_wp6aKGMREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_wp6aKGMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp6aJ2MREeu1YpggLYVT6g" successor_AbstractAction="_wp6aKWMREeu1YpggLYVT6g" calledService_ExternalService="_OShXsDVcEeqPG_FgW3bi6Q" role_ExternalService="_RgKYYDVcEeqPG_FgW3bi6Q"/>
+                  <steps_Behaviour xsi:type="seff:StopAction" id="_wp6aKWMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp6aKGMREeu1YpggLYVT6g"/>
+                </branchBehaviour_BranchTransition>
+              </branches_Branch>
+            </steps_Behaviour>
+            <steps_Behaviour xsi:type="seff:StopAction" id="_wp6aJGMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp6aI2MREeu1YpggLYVT6g"/>
+          </branchBehaviour_BranchTransition>
+          <branchCondition_GuardedBranchTransition specification="persistenceReps.VALUE == 1"/>
+        </branches_Branch>
+        <branches_Branch xsi:type="seff:GuardedBranchTransition" id="_wp6aK2MREeu1YpggLYVT6g">
+          <branchBehaviour_BranchTransition id="_wp7oQWMREeu1YpggLYVT6g">
+            <steps_Behaviour xsi:type="seff:StartAction" id="_wp6aLGMREeu1YpggLYVT6g" successor_AbstractAction="_wp6aLWMREeu1YpggLYVT6g"/>
+            <steps_Behaviour xsi:type="seff:BranchAction" id="_wp6aLWMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp6aLGMREeu1YpggLYVT6g" successor_AbstractAction="_wp7oQGMREeu1YpggLYVT6g">
+              <branches_Branch xsi:type="seff:ProbabilisticBranchTransition" id="_wp7oQmMREeu1YpggLYVT6g" branchProbability="0.5">
+                <branchBehaviour_BranchTransition id="_wp7oRmMREeu1YpggLYVT6g">
+                  <steps_Behaviour xsi:type="seff:StartAction" id="_wp7oQ2MREeu1YpggLYVT6g" successor_AbstractAction="_wp7oRGMREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_wp7oRGMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp7oQ2MREeu1YpggLYVT6g" successor_AbstractAction="_wp7oRWMREeu1YpggLYVT6g" calledService_ExternalService="_OShXsDVcEeqPG_FgW3bi6Q" role_ExternalService="_RgKYYDVcEeqPG_FgW3bi6Q"/>
+                  <steps_Behaviour xsi:type="seff:StopAction" id="_wp7oRWMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp7oRGMREeu1YpggLYVT6g"/>
+                </branchBehaviour_BranchTransition>
+              </branches_Branch>
+              <branches_Branch xsi:type="seff:ProbabilisticBranchTransition" id="_wp7oR2MREeu1YpggLYVT6g" branchProbability="0.5">
+                <branchBehaviour_BranchTransition id="_wp7oS2MREeu1YpggLYVT6g">
+                  <steps_Behaviour xsi:type="seff:StartAction" id="_wp7oSGMREeu1YpggLYVT6g" successor_AbstractAction="_wp7oSWMREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_wp7oSWMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp7oSGMREeu1YpggLYVT6g" successor_AbstractAction="_wp7oSmMREeu1YpggLYVT6g" calledService_ExternalService="_OShXsDVcEeqPG_FgW3bi6Q" role_ExternalService="_wp5zEGMREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:StopAction" id="_wp7oSmMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp7oSWMREeu1YpggLYVT6g"/>
+                </branchBehaviour_BranchTransition>
+              </branches_Branch>
+            </steps_Behaviour>
+            <steps_Behaviour xsi:type="seff:StopAction" id="_wp7oQGMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp6aLWMREeu1YpggLYVT6g"/>
+          </branchBehaviour_BranchTransition>
+          <branchCondition_GuardedBranchTransition specification="persistenceReps.VALUE == 2"/>
+        </branches_Branch>
+        <branches_Branch xsi:type="seff:GuardedBranchTransition" id="_wp7oTGMREeu1YpggLYVT6g">
+          <branchBehaviour_BranchTransition id="_wp7oUGMREeu1YpggLYVT6g">
+            <steps_Behaviour xsi:type="seff:StartAction" id="_wp7oTWMREeu1YpggLYVT6g" successor_AbstractAction="_wp7oTmMREeu1YpggLYVT6g"/>
+            <steps_Behaviour xsi:type="seff:BranchAction" id="_wp7oTmMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp7oTWMREeu1YpggLYVT6g" successor_AbstractAction="_wp7oT2MREeu1YpggLYVT6g">
+              <branches_Branch xsi:type="seff:ProbabilisticBranchTransition" id="_wp7oUWMREeu1YpggLYVT6g" branchProbability="0.3333333333333333">
+                <branchBehaviour_BranchTransition id="_wp7oVWMREeu1YpggLYVT6g">
+                  <steps_Behaviour xsi:type="seff:StartAction" id="_wp7oUmMREeu1YpggLYVT6g" successor_AbstractAction="_wp7oU2MREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_wp7oU2MREeu1YpggLYVT6g" predecessor_AbstractAction="_wp7oUmMREeu1YpggLYVT6g" successor_AbstractAction="_wp7oVGMREeu1YpggLYVT6g" calledService_ExternalService="_OShXsDVcEeqPG_FgW3bi6Q" role_ExternalService="_RgKYYDVcEeqPG_FgW3bi6Q"/>
+                  <steps_Behaviour xsi:type="seff:StopAction" id="_wp7oVGMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp7oU2MREeu1YpggLYVT6g"/>
+                </branchBehaviour_BranchTransition>
+              </branches_Branch>
+              <branches_Branch xsi:type="seff:ProbabilisticBranchTransition" id="_wp7oVmMREeu1YpggLYVT6g" branchProbability="0.3333333333333333">
+                <branchBehaviour_BranchTransition id="_wp7oWmMREeu1YpggLYVT6g">
+                  <steps_Behaviour xsi:type="seff:StartAction" id="_wp7oV2MREeu1YpggLYVT6g" successor_AbstractAction="_wp7oWGMREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_wp7oWGMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp7oV2MREeu1YpggLYVT6g" successor_AbstractAction="_wp7oWWMREeu1YpggLYVT6g" calledService_ExternalService="_OShXsDVcEeqPG_FgW3bi6Q" role_ExternalService="_wp5zEGMREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:StopAction" id="_wp7oWWMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp7oWGMREeu1YpggLYVT6g"/>
+                </branchBehaviour_BranchTransition>
+              </branches_Branch>
+              <branches_Branch xsi:type="seff:ProbabilisticBranchTransition" id="_wp7oW2MREeu1YpggLYVT6g" branchProbability="0.3333333333333333">
+                <branchBehaviour_BranchTransition id="_wp7oX2MREeu1YpggLYVT6g">
+                  <steps_Behaviour xsi:type="seff:StartAction" id="_wp7oXGMREeu1YpggLYVT6g" successor_AbstractAction="_wp7oXWMREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_wp7oXWMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp7oXGMREeu1YpggLYVT6g" successor_AbstractAction="_wp7oXmMREeu1YpggLYVT6g" calledService_ExternalService="_OShXsDVcEeqPG_FgW3bi6Q" role_ExternalService="_wp5zEWMREeu1YpggLYVT6g"/>
+                  <steps_Behaviour xsi:type="seff:StopAction" id="_wp7oXmMREeu1YpggLYVT6g" predecessor_AbstractAction="_wp7oXWMREeu1YpggLYVT6g"/>
+                </branchBehaviour_BranchTransition>
+              </branches_Branch>
+            </steps_Behaviour>
+            <steps_Behaviour xsi:type="seff:StopAction" id="_wp7oT2MREeu1YpggLYVT6g" predecessor_AbstractAction="_wp7oTmMREeu1YpggLYVT6g"/>
+          </branchBehaviour_BranchTransition>
+          <branchCondition_GuardedBranchTransition specification="persistenceReps.VALUE == 3"/>
+        </branches_Branch>
+      </steps_Behaviour>
+    </serviceEffectSpecifications__BasicComponent>
+    <serviceEffectSpecifications__BasicComponent xsi:type="seff:ResourceDemandingSEFF" id="_NV690DViEeqPG_FgW3bi6Q" describedService__SEFF="_pKnpQDVhEeqPG_FgW3bi6Q">
+      <steps_Behaviour xsi:type="seff:StartAction" id="_OFh10DViEeqPG_FgW3bi6Q" entityName="start" successor_AbstractAction="_P7sGMDViEeqPG_FgW3bi6Q"/>
+      <steps_Behaviour xsi:type="seff:StopAction" id="_OFh10TViEeqPG_FgW3bi6Q" entityName="stop" predecessor_AbstractAction="_lTsV0LRnEeqBG67dKda_bQ"/>
+      <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_P7sGMDViEeqPG_FgW3bi6Q" predecessor_AbstractAction="_OFh10DViEeqPG_FgW3bi6Q" successor_AbstractAction="__EMrkLTMEeqYI7n2jTg1Ag" calledService_ExternalService="_CtRPADVgEeqPG_FgW3bi6Q" role_ExternalService="_USPXEDVfEeqPG_FgW3bi6Q">
+        <inputVariableUsages__CallAction>
+          <variableCharacterisation_VariableUsage type="VALUE">
+            <specification_VariableCharacterisation specification="items.VALUE"/>
+          </variableCharacterisation_VariableUsage>
+          <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="items"/>
+        </inputVariableUsages__CallAction>
+      </steps_Behaviour>
+      <steps_Behaviour xsi:type="seff:InternalAction" id="_lTsV0LRnEeqBG67dKda_bQ" entityName="buffer" predecessor_AbstractAction="__EMrkLTMEeqYI7n2jTg1Ag" successor_AbstractAction="_OFh10TViEeqPG_FgW3bi6Q">
+        <resourceDemand_Action>
+          <specification_ParametericResourceDemand specification="Max(0.0,((-0.0062079122042275935 * items.VALUE) + 0.06902135987192147) + DoublePMF[(-1.151687;0.002973)(-1.122531;0.003278)(-1.093374;0.003604)(-1.064217;0.003954)(-1.035061;0.004326)(-1.005904;0.004721)(-0.976748;0.00514)(-0.947591;0.005582)(-0.918434;0.006046)(-0.889278;0.006533)(-0.860121;0.007042)(-0.830964;0.007572)(-0.801808;0.008121)(-0.772651;0.008687)(-0.743494;0.009271)(-0.714338;0.009869)(-0.685181;0.010479)(-0.656024;0.011099)(-0.626868;0.011727)(-0.597711;0.012358)(-0.568555;0.012992)(-0.539398;0.013624)(-0.510241;0.01425)(-0.481085;0.01487)(-0.451928;0.015476)(-0.422771;0.016067)(-0.393615;0.016639)(-0.364458;0.017189)(-0.335301;0.017713)(-0.306145;0.018206)(-0.276988;0.018667)(-0.247831;0.019092)(-0.218675;0.019477)(-0.189518;0.019821)(-0.160362;0.020121)(-0.131205;0.020374)(-0.102048;0.020578)(-0.072892;0.020733)(-0.043735;0.020837)(-0.014578;0.02089)(0.014578;0.02089)(0.043735;0.020837)(0.072892;0.020733)(0.102048;0.020578)(0.131205;0.020374)(0.160362;0.020121)(0.189518;0.019821)(0.218675;0.019477)(0.247831;0.019092)(0.276988;0.018667)(0.306145;0.018206)(0.335301;0.017713)(0.364458;0.017189)(0.393615;0.016639)(0.422771;0.016067)(0.451928;0.015476)(0.481085;0.01487)(0.510241;0.01425)(0.539398;0.013624)(0.568555;0.012992)(0.597711;0.012358)(0.626868;0.011727)(0.656024;0.011099)(0.685181;0.010479)(0.714338;0.009869)(0.743494;0.009271)(0.772651;0.008687)(0.801808;0.008121)(0.830964;0.007572)(0.860121;0.007042)(0.889278;0.006533)(0.918434;0.006046)(0.947591;0.005582)(0.976748;0.00514)(1.005904;0.004721)(1.035061;0.004326)(1.064217;0.003954)(1.093374;0.003604)(1.122531;0.003278)(1.151687;0.002973)])"/>
+          <requiredResource_ParametricResourceDemand href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+        </resourceDemand_Action>
+      </steps_Behaviour>
+      <steps_Behaviour xsi:type="seff:InternalAction" id="__EMrkLTMEeqYI7n2jTg1Ag" entityName="REST" predecessor_AbstractAction="_P7sGMDViEeqPG_FgW3bi6Q" successor_AbstractAction="_lTsV0LRnEeqBG67dKda_bQ">
+        <resourceDemand_Action>
+          <specification_ParametericResourceDemand specification="Max(0.0,((-1.227612707854021 * items.VALUE) + 21.891793565473986) + DoublePMF[(-127.284017;0.002973)(-124.061637;0.003278)(-120.839257;0.003604)(-117.616877;0.003954)(-114.394496;0.004326)(-111.172116;0.004721)(-107.949736;0.00514)(-104.727356;0.005582)(-101.504976;0.006046)(-98.282596;0.006533)(-95.060215;0.007042)(-91.837835;0.007572)(-88.615455;0.008121)(-85.393075;0.008687)(-82.170695;0.009271)(-78.948314;0.009869)(-75.725934;0.010479)(-72.503554;0.011099)(-69.281174;0.011727)(-66.058794;0.012358)(-62.836414;0.012992)(-59.614033;0.013624)(-56.391653;0.01425)(-53.169273;0.01487)(-49.946893;0.015476)(-46.724513;0.016067)(-43.502132;0.016639)(-40.279752;0.017189)(-37.057372;0.017713)(-33.834992;0.018206)(-30.612612;0.018667)(-27.390232;0.019092)(-24.167851;0.019477)(-20.945471;0.019821)(-17.723091;0.020121)(-14.500711;0.020374)(-11.278331;0.020578)(-8.05595;0.020733)(-4.83357;0.020837)(-1.61119;0.02089)(1.61119;0.02089)(4.83357;0.020837)(8.05595;0.020733)(11.278331;0.020578)(14.500711;0.020374)(17.723091;0.020121)(20.945471;0.019821)(24.167851;0.019477)(27.390232;0.019092)(30.612612;0.018667)(33.834992;0.018206)(37.057372;0.017713)(40.279752;0.017189)(43.502132;0.016639)(46.724513;0.016067)(49.946893;0.015476)(53.169273;0.01487)(56.391653;0.01425)(59.614033;0.013624)(62.836414;0.012992)(66.058794;0.012358)(69.281174;0.011727)(72.503554;0.011099)(75.725934;0.010479)(78.948314;0.009869)(82.170695;0.009271)(85.393075;0.008687)(88.615455;0.008121)(91.837835;0.007572)(95.060215;0.007042)(98.282596;0.006533)(101.504976;0.006046)(104.727356;0.005582)(107.949736;0.00514)(111.172116;0.004721)(114.394496;0.004326)(117.616877;0.003954)(120.839257;0.003604)(124.061637;0.003278)(127.284017;0.002973)])"/>
+          <requiredResource_ParametricResourceDemand href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+        </resourceDemand_Action>
+      </steps_Behaviour>
+    </serviceEffectSpecifications__BasicComponent>
+    <serviceEffectSpecifications__BasicComponent xsi:type="seff:ResourceDemandingSEFF" id="_mIuJEDViEeqPG_FgW3bi6Q" describedService__SEFF="_J1GicDViEeqPG_FgW3bi6Q">
+      <steps_Behaviour xsi:type="seff:StartAction" id="_mt4EkDViEeqPG_FgW3bi6Q" entityName="start" successor_AbstractAction="_noeroDViEeqPG_FgW3bi6Q"/>
+      <steps_Behaviour xsi:type="seff:StopAction" id="_mt4EkTViEeqPG_FgW3bi6Q" entityName="stop" predecessor_AbstractAction="_noeroDViEeqPG_FgW3bi6Q"/>
+      <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_noeroDViEeqPG_FgW3bi6Q" predecessor_AbstractAction="_mt4EkDViEeqPG_FgW3bi6Q" successor_AbstractAction="_mt4EkTViEeqPG_FgW3bi6Q" calledService_ExternalService="_yF_BwDVhEeqPG_FgW3bi6Q" role_ExternalService="_USPXEDVfEeqPG_FgW3bi6Q">
+        <inputVariableUsages__CallAction>
+          <variableCharacterisation_VariableUsage type="VALUE">
+            <specification_VariableCharacterisation specification="orders.VALUE"/>
+          </variableCharacterisation_VariableUsage>
+          <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="orders"/>
+        </inputVariableUsages__CallAction>
+        <inputVariableUsages__CallAction>
+          <variableCharacterisation_VariableUsage type="VALUE">
+            <specification_VariableCharacterisation specification="orderItems.VALUE"/>
+          </variableCharacterisation_VariableUsage>
+          <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="orderItems"/>
+        </inputVariableUsages__CallAction>
+      </steps_Behaviour>
+    </serviceEffectSpecifications__BasicComponent>
+  </components__Repository>
+  <components__Repository xsi:type="repository:BasicComponent" id="_lnx1oDVWEeqPG_FgW3bi6Q" entityName="Persistence">
+    <providedRoles_InterfaceProvidingEntity xsi:type="repository:OperationProvidedRole" id="_Q62kgDVfEeqPG_FgW3bi6Q" entityName="Provided_Persistence_Persistence" providedInterface__OperationProvidedRole="_Mh_1QDVcEeqPG_FgW3bi6Q"/>
+    <serviceEffectSpecifications__BasicComponent xsi:type="seff:ResourceDemandingSEFF" id="_Q7JfcDVfEeqPG_FgW3bi6Q" describedService__SEFF="_NiisQDVcEeqPG_FgW3bi6Q">
+      <steps_Behaviour xsi:type="seff:StartAction" id="_Q7KGgDVfEeqPG_FgW3bi6Q" entityName="start" successor_AbstractAction="_lYNwgDbTEeq5L_FI-wfNWQ"/>
+      <steps_Behaviour xsi:type="seff:StopAction" id="_Q7KGgTVfEeqPG_FgW3bi6Q" entityName="stop" predecessor_AbstractAction="_lYNwgDbTEeq5L_FI-wfNWQ"/>
+      <steps_Behaviour xsi:type="seff:InternalAction" id="_lYNwgDbTEeq5L_FI-wfNWQ" entityName="persist" predecessor_AbstractAction="_Q7KGgDVfEeqPG_FgW3bi6Q" successor_AbstractAction="_Q7KGgTVfEeqPG_FgW3bi6Q">
+        <resourceDemand_Action>
+          <specification_ParametericResourceDemand specification="Max(0.0,9.938340821917805 + DoublePMF[(-3.596662;0.002355)(-3.524002;0.002547)(-3.451343;0.00275)(-3.378683;0.002965)(-3.306023;0.003191)(-3.233363;0.00343)(-3.160703;0.003679)(-3.088043;0.003941)(-3.015384;0.004216)(-2.942724;0.004502)(-2.870064;0.004799)(-2.797404;0.005108)(-2.724744;0.005428)(-2.652084;0.005759)(-2.579424;0.006101)(-2.506765;0.006452)(-2.434105;0.006813)(-2.361445;0.007182)(-2.288785;0.007559)(-2.216125;0.007943)(-2.143465;0.008334)(-2.070806;0.008729)(-1.998146;0.009129)(-1.925486;0.009533)(-1.852826;0.009937)(-1.780166;0.010343)(-1.707506;0.010748)(-1.634847;0.01115)(-1.562187;0.011551)(-1.489527;0.011944)(-1.416867;0.012333)(-1.344207;0.012713)(-1.271547;0.013085)(-1.198887;0.013446)(-1.126228;0.013795)(-1.053568;0.01413)(-0.980908;0.014449)(-0.908248;0.014753)(-0.835588;0.015039)(-0.762928;0.015306)(-0.690269;0.015553)(-0.617609;0.015779)(-0.544949;0.015982)(-0.472289;0.016161)(-0.399629;0.016317)(-0.326969;0.016448)(-0.254309;0.016554)(-0.18165;0.016634)(-0.10899;0.016687)(-0.03633;0.016713)(0.03633;0.016713)(0.10899;0.016687)(0.18165;0.016634)(0.254309;0.016554)(0.326969;0.016448)(0.399629;0.016317)(0.472289;0.016161)(0.544949;0.015982)(0.617609;0.015779)(0.690269;0.015553)(0.762928;0.015306)(0.835588;0.015039)(0.908248;0.014753)(0.980908;0.014449)(1.053568;0.01413)(1.126228;0.013795)(1.198887;0.013446)(1.271547;0.013085)(1.344207;0.012713)(1.416867;0.012333)(1.489527;0.011944)(1.562187;0.011551)(1.634847;0.01115)(1.707506;0.010748)(1.780166;0.010343)(1.852826;0.009937)(1.925486;0.009533)(1.998146;0.009129)(2.070806;0.008729)(2.143465;0.008334)(2.216125;0.007943)(2.288785;0.007559)(2.361445;0.007182)(2.434105;0.006813)(2.506765;0.006452)(2.579424;0.006101)(2.652084;0.005759)(2.724744;0.005428)(2.797404;0.005108)(2.870064;0.004799)(2.942724;0.004502)(3.015384;0.004216)(3.088043;0.003941)(3.160703;0.003679)(3.233363;0.00343)(3.306023;0.003191)(3.378683;0.002965)(3.451343;0.00275)(3.524002;0.002547)(3.596662;0.002355)])"/>
+          <requiredResource_ParametricResourceDemand href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+        </resourceDemand_Action>
+      </steps_Behaviour>
+    </serviceEffectSpecifications__BasicComponent>
+    <serviceEffectSpecifications__BasicComponent xsi:type="seff:ResourceDemandingSEFF" id="_Q7KtkDVfEeqPG_FgW3bi6Q" describedService__SEFF="_OShXsDVcEeqPG_FgW3bi6Q">
+      <steps_Behaviour xsi:type="seff:StartAction" id="_Q7KtkTVfEeqPG_FgW3bi6Q" entityName="start" successor_AbstractAction="_tBq1MDbTEeq5L_FI-wfNWQ"/>
+      <steps_Behaviour xsi:type="seff:StopAction" id="_Q7KtkjVfEeqPG_FgW3bi6Q" entityName="stop" predecessor_AbstractAction="_BxGmIEFIEeuG-5cAK6lylg"/>
+      <steps_Behaviour xsi:type="seff:InternalAction" id="_tBq1MDbTEeq5L_FI-wfNWQ" entityName="persist" predecessor_AbstractAction="_Q7KtkTVfEeqPG_FgW3bi6Q" successor_AbstractAction="_BxGmIEFIEeuG-5cAK6lylg">
+        <resourceDemand_Action>
+          <specification_ParametericResourceDemand specification="Max(0.0,8.896118692181535 + DoublePMF[(-7.197378;0.002355)(-7.051976;0.002547)(-6.906575;0.00275)(-6.761173;0.002965)(-6.615771;0.003191)(-6.47037;0.00343)(-6.324968;0.003679)(-6.179567;0.003941)(-6.034165;0.004216)(-5.888764;0.004502)(-5.743362;0.004799)(-5.59796;0.005108)(-5.452559;0.005428)(-5.307157;0.005759)(-5.161756;0.006101)(-5.016354;0.006452)(-4.870953;0.006813)(-4.725551;0.007182)(-4.580149;0.007559)(-4.434748;0.007943)(-4.289346;0.008334)(-4.143945;0.008729)(-3.998543;0.009129)(-3.853142;0.009533)(-3.70774;0.009937)(-3.562338;0.010343)(-3.416937;0.010748)(-3.271535;0.01115)(-3.126134;0.011551)(-2.980732;0.011944)(-2.835331;0.012333)(-2.689929;0.012713)(-2.544527;0.013085)(-2.399126;0.013446)(-2.253724;0.013795)(-2.108323;0.01413)(-1.962921;0.014449)(-1.81752;0.014753)(-1.672118;0.015039)(-1.526716;0.015306)(-1.381315;0.015553)(-1.235913;0.015779)(-1.090512;0.015982)(-0.94511;0.016161)(-0.799709;0.016317)(-0.654307;0.016448)(-0.508905;0.016554)(-0.363504;0.016634)(-0.218102;0.016687)(-0.072701;0.016713)(0.072701;0.016713)(0.218102;0.016687)(0.363504;0.016634)(0.508905;0.016554)(0.654307;0.016448)(0.799709;0.016317)(0.94511;0.016161)(1.090512;0.015982)(1.235913;0.015779)(1.381315;0.015553)(1.526716;0.015306)(1.672118;0.015039)(1.81752;0.014753)(1.962921;0.014449)(2.108323;0.01413)(2.253724;0.013795)(2.399126;0.013446)(2.544527;0.013085)(2.689929;0.012713)(2.835331;0.012333)(2.980732;0.011944)(3.126134;0.011551)(3.271535;0.01115)(3.416937;0.010748)(3.562338;0.010343)(3.70774;0.009937)(3.853142;0.009533)(3.998543;0.009129)(4.143945;0.008729)(4.289346;0.008334)(4.434748;0.007943)(4.580149;0.007559)(4.725551;0.007182)(4.870953;0.006813)(5.016354;0.006452)(5.161756;0.006101)(5.307157;0.005759)(5.452559;0.005428)(5.59796;0.005108)(5.743362;0.004799)(5.888764;0.004502)(6.034165;0.004216)(6.179567;0.003941)(6.324968;0.003679)(6.47037;0.00343)(6.615771;0.003191)(6.761173;0.002965)(6.906575;0.00275)(7.051976;0.002547)(7.197378;0.002355)])"/>
+          <requiredResource_ParametricResourceDemand href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+        </resourceDemand_Action>
+      </steps_Behaviour>
+      <steps_Behaviour xsi:type="seff:InternalAction" id="_BxGmIEFIEeuG-5cAK6lylg" entityName="REST" predecessor_AbstractAction="_tBq1MDbTEeq5L_FI-wfNWQ" successor_AbstractAction="_Q7KtkjVfEeqPG_FgW3bi6Q">
+        <resourceDemand_Action>
+          <specification_ParametericResourceDemand specification="Max(0.0,0.9089489643946973 + DoublePMF[(-1.520438;0.002355)(-1.489722;0.002547)(-1.459006;0.00275)(-1.42829;0.002965)(-1.397574;0.003191)(-1.366858;0.00343)(-1.336142;0.003679)(-1.305427;0.003941)(-1.274711;0.004216)(-1.243995;0.004502)(-1.213279;0.004799)(-1.182563;0.005108)(-1.151847;0.005428)(-1.121131;0.005759)(-1.090415;0.006101)(-1.059699;0.006452)(-1.028983;0.006813)(-0.998267;0.007182)(-0.967551;0.007559)(-0.936836;0.007943)(-0.90612;0.008334)(-0.875404;0.008729)(-0.844688;0.009129)(-0.813972;0.009533)(-0.783256;0.009937)(-0.75254;0.010343)(-0.721824;0.010748)(-0.691108;0.01115)(-0.660392;0.011551)(-0.629676;0.011944)(-0.59896;0.012333)(-0.568244;0.012713)(-0.537529;0.013085)(-0.506813;0.013446)(-0.476097;0.013795)(-0.445381;0.01413)(-0.414665;0.014449)(-0.383949;0.014753)(-0.353233;0.015039)(-0.322517;0.015306)(-0.291801;0.015553)(-0.261085;0.015779)(-0.230369;0.015982)(-0.199653;0.016161)(-0.168938;0.016317)(-0.138222;0.016448)(-0.107506;0.016554)(-0.07679;0.016634)(-0.046074;0.016687)(-0.015358;0.016713)(0.015358;0.016713)(0.046074;0.016687)(0.07679;0.016634)(0.107506;0.016554)(0.138222;0.016448)(0.168938;0.016317)(0.199653;0.016161)(0.230369;0.015982)(0.261085;0.015779)(0.291801;0.015553)(0.322517;0.015306)(0.353233;0.015039)(0.383949;0.014753)(0.414665;0.014449)(0.445381;0.01413)(0.476097;0.013795)(0.506813;0.013446)(0.537529;0.013085)(0.568244;0.012713)(0.59896;0.012333)(0.629676;0.011944)(0.660392;0.011551)(0.691108;0.01115)(0.721824;0.010748)(0.75254;0.010343)(0.783256;0.009937)(0.813972;0.009533)(0.844688;0.009129)(0.875404;0.008729)(0.90612;0.008334)(0.936836;0.007943)(0.967551;0.007559)(0.998267;0.007182)(1.028983;0.006813)(1.059699;0.006452)(1.090415;0.006101)(1.121131;0.005759)(1.151847;0.005428)(1.182563;0.005108)(1.213279;0.004799)(1.243995;0.004502)(1.274711;0.004216)(1.305427;0.003941)(1.336142;0.003679)(1.366858;0.00343)(1.397574;0.003191)(1.42829;0.002965)(1.459006;0.00275)(1.489722;0.002547)(1.520438;0.002355)])"/>
+          <requiredResource_ParametricResourceDemand href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+        </resourceDemand_Action>
+      </steps_Behaviour>
+    </serviceEffectSpecifications__BasicComponent>
+  </components__Repository>
+  <components__Repository xsi:type="repository:BasicComponent" id="_m3fxEDVWEeqPG_FgW3bi6Q" entityName="Recommender">
+    <providedRoles_InterfaceProvidingEntity xsi:type="repository:OperationProvidedRole" id="_Zhj7oDVfEeqPG_FgW3bi6Q" entityName="Provided_Recommender_Recommender" providedInterface__OperationProvidedRole="_Sb4SYDVfEeqPG_FgW3bi6Q"/>
+    <requiredRoles_InterfaceRequiringEntity xsi:type="repository:OperationRequiredRole" id="_XvlLMDVgEeqPG_FgW3bi6Q" entityName="Required_RecommenderStrategy_Recommender" requiredInterface__OperationRequiredRole="_BYKdQDVgEeqPG_FgW3bi6Q"/>
+    <serviceEffectSpecifications__BasicComponent xsi:type="seff:ResourceDemandingSEFF" id="_nI0JkDVhEeqPG_FgW3bi6Q" describedService__SEFF="_CtRPADVgEeqPG_FgW3bi6Q">
+      <steps_Behaviour xsi:type="seff:StartAction" id="_naQe4DVhEeqPG_FgW3bi6Q" entityName="start" successor_AbstractAction="_IuHq8DbQEeq5L_FI-wfNWQ"/>
+      <steps_Behaviour xsi:type="seff:StopAction" id="_naRF8DVhEeqPG_FgW3bi6Q" entityName="stop" predecessor_AbstractAction="_IuHq8DbQEeq5L_FI-wfNWQ"/>
+      <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_IuHq8DbQEeq5L_FI-wfNWQ" predecessor_AbstractAction="_naQe4DVhEeqPG_FgW3bi6Q" successor_AbstractAction="_naRF8DVhEeqPG_FgW3bi6Q" calledService_ExternalService="_URhv8DVgEeqPG_FgW3bi6Q" role_ExternalService="_XvlLMDVgEeqPG_FgW3bi6Q">
+        <inputVariableUsages__CallAction>
+          <variableCharacterisation_VariableUsage type="VALUE">
+            <specification_VariableCharacterisation specification="items.VALUE"/>
+          </variableCharacterisation_VariableUsage>
+          <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="items"/>
+        </inputVariableUsages__CallAction>
+      </steps_Behaviour>
+    </serviceEffectSpecifications__BasicComponent>
+    <serviceEffectSpecifications__BasicComponent xsi:type="seff:ResourceDemandingSEFF" id="_QrkiUDbTEeq5L_FI-wfNWQ" describedService__SEFF="_yF_BwDVhEeqPG_FgW3bi6Q">
+      <steps_Behaviour xsi:type="seff:StartAction" id="_RHWfYDbTEeq5L_FI-wfNWQ" entityName="start" successor_AbstractAction="_Gq_WcK19EeqcvaJ1A892dQ"/>
+      <steps_Behaviour xsi:type="seff:StopAction" id="_RHWfYTbTEeq5L_FI-wfNWQ" entityName="stop" predecessor_AbstractAction="_SffXADbTEeq5L_FI-wfNWQ"/>
+      <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_SffXADbTEeq5L_FI-wfNWQ" predecessor_AbstractAction="_npGbYPdtEeqejst3nueXaA" successor_AbstractAction="_RHWfYTbTEeq5L_FI-wfNWQ" calledService_ExternalService="_OJ2AADVgEeqPG_FgW3bi6Q" role_ExternalService="_XvlLMDVgEeqPG_FgW3bi6Q">
+        <inputVariableUsages__CallAction>
+          <variableCharacterisation_VariableUsage type="VALUE">
+            <specification_VariableCharacterisation specification="orders.VALUE"/>
+          </variableCharacterisation_VariableUsage>
+          <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="orders"/>
+        </inputVariableUsages__CallAction>
+        <inputVariableUsages__CallAction>
+          <variableCharacterisation_VariableUsage type="VALUE">
+            <specification_VariableCharacterisation specification="orderItems.VALUE"/>
+          </variableCharacterisation_VariableUsage>
+          <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="orderItems"/>
+        </inputVariableUsages__CallAction>
+      </steps_Behaviour>
+      <steps_Behaviour xsi:type="seff:InternalAction" id="_Gq_WcK19EeqcvaJ1A892dQ" entityName="getOrders" predecessor_AbstractAction="_RHWfYDbTEeq5L_FI-wfNWQ" successor_AbstractAction="_aE-B0Dl1EeuUKoA9UkUjrQ">
+        <resourceDemand_Action>
+          <specification_ParametericResourceDemand specification="Max(0.0,((1.7179568487881156 * orders.VALUE + (-0.34344629928294373 * orderItems.VALUE)) + -4340.171337893637) + DoublePMF[(-759.320157;0.002973)(-740.096862;0.003278)(-720.873567;0.003604)(-701.650272;0.003954)(-682.426977;0.004326)(-663.203681;0.004721)(-643.980386;0.00514)(-624.757091;0.005582)(-605.533796;0.006046)(-586.310501;0.006533)(-567.087206;0.007042)(-547.863911;0.007572)(-528.640616;0.008121)(-509.417321;0.008687)(-490.194025;0.009271)(-470.97073;0.009869)(-451.747435;0.010479)(-432.52414;0.011099)(-413.300845;0.011727)(-394.07755;0.012358)(-374.854255;0.012992)(-355.63096;0.013624)(-336.407664;0.01425)(-317.184369;0.01487)(-297.961074;0.015476)(-278.737779;0.016067)(-259.514484;0.016639)(-240.291189;0.017189)(-221.067894;0.017713)(-201.844599;0.018206)(-182.621304;0.018667)(-163.398008;0.019092)(-144.174713;0.019477)(-124.951418;0.019821)(-105.728123;0.020121)(-86.504828;0.020374)(-67.281533;0.020578)(-48.058238;0.020733)(-28.834943;0.020837)(-9.611648;0.02089)(9.611648;0.02089)(28.834943;0.020837)(48.058238;0.020733)(67.281533;0.020578)(86.504828;0.020374)(105.728123;0.020121)(124.951418;0.019821)(144.174713;0.019477)(163.398008;0.019092)(182.621304;0.018667)(201.844599;0.018206)(221.067894;0.017713)(240.291189;0.017189)(259.514484;0.016639)(278.737779;0.016067)(297.961074;0.015476)(317.184369;0.01487)(336.407664;0.01425)(355.63096;0.013624)(374.854255;0.012992)(394.07755;0.012358)(413.300845;0.011727)(432.52414;0.011099)(451.747435;0.010479)(470.97073;0.009869)(490.194025;0.009271)(509.417321;0.008687)(528.640616;0.008121)(547.863911;0.007572)(567.087206;0.007042)(586.310501;0.006533)(605.533796;0.006046)(624.757091;0.005582)(643.980386;0.00514)(663.203681;0.004721)(682.426977;0.004326)(701.650272;0.003954)(720.873567;0.003604)(740.096862;0.003278)(759.320157;0.002973)])"/>
+          <requiredResource_ParametricResourceDemand href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+        </resourceDemand_Action>
+      </steps_Behaviour>
+      <steps_Behaviour xsi:type="seff:InternalAction" id="_npGbYPdtEeqejst3nueXaA" entityName="prepareTraining" predecessor_AbstractAction="_aE-B0Dl1EeuUKoA9UkUjrQ" successor_AbstractAction="_SffXADbTEeq5L_FI-wfNWQ">
+        <resourceDemand_Action>
+          <specification_ParametericResourceDemand specification="Max(0.0,((1.4833152567532932 * orders.VALUE + (-0.29406853389637305 * orderItems.VALUE)) + -3827.7898523327217) + DoublePMF[(-784.316932;0.002973)(-764.460807;0.003278)(-744.604683;0.003604)(-724.748558;0.003954)(-704.892433;0.004326)(-685.036308;0.004721)(-665.180183;0.00514)(-645.324058;0.005582)(-625.467933;0.006046)(-605.611808;0.006533)(-585.755684;0.007042)(-565.899559;0.007572)(-546.043434;0.008121)(-526.187309;0.008687)(-506.331184;0.009271)(-486.475059;0.009869)(-466.618934;0.010479)(-446.76281;0.011099)(-426.906685;0.011727)(-407.05056;0.012358)(-387.194435;0.012992)(-367.33831;0.013624)(-347.482185;0.01425)(-327.62606;0.01487)(-307.769935;0.015476)(-287.913811;0.016067)(-268.057686;0.016639)(-248.201561;0.017189)(-228.345436;0.017713)(-208.489311;0.018206)(-188.633186;0.018667)(-168.777061;0.019092)(-148.920937;0.019477)(-129.064812;0.019821)(-109.208687;0.020121)(-89.352562;0.020374)(-69.496437;0.020578)(-49.640312;0.020733)(-29.784187;0.020837)(-9.928062;0.02089)(9.928062;0.02089)(29.784187;0.020837)(49.640312;0.020733)(69.496437;0.020578)(89.352562;0.020374)(109.208687;0.020121)(129.064812;0.019821)(148.920937;0.019477)(168.777061;0.019092)(188.633186;0.018667)(208.489311;0.018206)(228.345436;0.017713)(248.201561;0.017189)(268.057686;0.016639)(287.913811;0.016067)(307.769935;0.015476)(327.62606;0.01487)(347.482185;0.01425)(367.33831;0.013624)(387.194435;0.012992)(407.05056;0.012358)(426.906685;0.011727)(446.76281;0.011099)(466.618934;0.010479)(486.475059;0.009869)(506.331184;0.009271)(526.187309;0.008687)(546.043434;0.008121)(565.899559;0.007572)(585.755684;0.007042)(605.611808;0.006533)(625.467933;0.006046)(645.324058;0.005582)(665.180183;0.00514)(685.036308;0.004721)(704.892433;0.004326)(724.748558;0.003954)(744.604683;0.003604)(764.460807;0.003278)(784.316932;0.002973)])"/>
+          <requiredResource_ParametricResourceDemand href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+        </resourceDemand_Action>
+      </steps_Behaviour>
+      <steps_Behaviour xsi:type="seff:InternalAction" id="_aE-B0Dl1EeuUKoA9UkUjrQ" entityName="getOrderItems" predecessor_AbstractAction="_Gq_WcK19EeqcvaJ1A892dQ" successor_AbstractAction="_npGbYPdtEeqejst3nueXaA">
+        <resourceDemand_Action>
+          <specification_ParametericResourceDemand specification="Max(0.0,((2.1576561613320813 * orders.VALUE + (-0.41784568782678816 * orderItems.VALUE)) + -5790.962982625774) + DoublePMF[(-938.989882;0.002973)(-915.217986;0.003278)(-891.446091;0.003604)(-867.674195;0.003954)(-843.902299;0.004326)(-820.130403;0.004721)(-796.358508;0.00514)(-772.586612;0.005582)(-748.814716;0.006046)(-725.04282;0.006533)(-701.270925;0.007042)(-677.499029;0.007572)(-653.727133;0.008121)(-629.955237;0.008687)(-606.183342;0.009271)(-582.411446;0.009869)(-558.63955;0.010479)(-534.867654;0.011099)(-511.095759;0.011727)(-487.323863;0.012358)(-463.551967;0.012992)(-439.780071;0.013624)(-416.008176;0.01425)(-392.23628;0.01487)(-368.464384;0.015476)(-344.692488;0.016067)(-320.920593;0.016639)(-297.148697;0.017189)(-273.376801;0.017713)(-249.604905;0.018206)(-225.83301;0.018667)(-202.061114;0.019092)(-178.289218;0.019477)(-154.517322;0.019821)(-130.745427;0.020121)(-106.973531;0.020374)(-83.201635;0.020578)(-59.429739;0.020733)(-35.657844;0.020837)(-11.885948;0.02089)(11.885948;0.02089)(35.657844;0.020837)(59.429739;0.020733)(83.201635;0.020578)(106.973531;0.020374)(130.745427;0.020121)(154.517322;0.019821)(178.289218;0.019477)(202.061114;0.019092)(225.83301;0.018667)(249.604905;0.018206)(273.376801;0.017713)(297.148697;0.017189)(320.920593;0.016639)(344.692488;0.016067)(368.464384;0.015476)(392.23628;0.01487)(416.008176;0.01425)(439.780071;0.013624)(463.551967;0.012992)(487.323863;0.012358)(511.095759;0.011727)(534.867654;0.011099)(558.63955;0.010479)(582.411446;0.009869)(606.183342;0.009271)(629.955237;0.008687)(653.727133;0.008121)(677.499029;0.007572)(701.270925;0.007042)(725.04282;0.006533)(748.814716;0.006046)(772.586612;0.005582)(796.358508;0.00514)(820.130403;0.004721)(843.902299;0.004326)(867.674195;0.003954)(891.446091;0.003604)(915.217986;0.003278)(938.989882;0.002973)])"/>
+          <requiredResource_ParametricResourceDemand href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+        </resourceDemand_Action>
+      </steps_Behaviour>
+    </serviceEffectSpecifications__BasicComponent>
+  </components__Repository>
+  <components__Repository xsi:type="repository:BasicComponent" id="_AiuxcDVdEeqPG_FgW3bi6Q" entityName="Auth">
+    <providedRoles_InterfaceProvidingEntity xsi:type="repository:OperationProvidedRole" id="_CetV8DVdEeqPG_FgW3bi6Q" entityName="Provided_AuthCart_Auth" providedInterface__OperationProvidedRole="_py9KsDVYEeqPG_FgW3bi6Q"/>
+    <requiredRoles_InterfaceRequiringEntity xsi:type="repository:OperationRequiredRole" id="_B7eGADVdEeqPG_FgW3bi6Q" entityName="Required_LoadBalancer_Auth" requiredInterface__OperationRequiredRole="_gGczsDVZEeqPG_FgW3bi6Q"/>
+    <serviceEffectSpecifications__BasicComponent xsi:type="seff:ResourceDemandingSEFF" id="_CetV8TVdEeqPG_FgW3bi6Q" describedService__SEFF="_v-SrkDVYEeqPG_FgW3bi6Q">
+      <steps_Behaviour xsi:type="seff:StartAction" id="_Cet9ADVdEeqPG_FgW3bi6Q" entityName="start" successor_AbstractAction="_EanpADVdEeqPG_FgW3bi6Q"/>
+      <steps_Behaviour xsi:type="seff:StopAction" id="_Cet9ATVdEeqPG_FgW3bi6Q" entityName="stop" predecessor_AbstractAction="_F5_KADVdEeqPG_FgW3bi6Q"/>
+      <steps_Behaviour xsi:type="seff:InternalAction" id="_EanpADVdEeqPG_FgW3bi6Q" entityName="prepareOrder" predecessor_AbstractAction="_Cet9ADVdEeqPG_FgW3bi6Q" successor_AbstractAction="_N_TEQDVdEeqPG_FgW3bi6Q">
+        <resourceDemand_Action>
+          <specification_ParametericResourceDemand specification="Max(0.0,0.026030924078091107 + DoublePMF[(-0.315616;0.002355)(-0.30924;0.002547)(-0.302864;0.00275)(-0.296488;0.002965)(-0.290112;0.003191)(-0.283736;0.00343)(-0.277359;0.003679)(-0.270983;0.003941)(-0.264607;0.004216)(-0.258231;0.004502)(-0.251855;0.004799)(-0.245479;0.005108)(-0.239103;0.005428)(-0.232727;0.005759)(-0.226351;0.006101)(-0.219975;0.006452)(-0.213599;0.006813)(-0.207223;0.007182)(-0.200846;0.007559)(-0.19447;0.007943)(-0.188094;0.008334)(-0.181718;0.008729)(-0.175342;0.009129)(-0.168966;0.009533)(-0.16259;0.009937)(-0.156214;0.010343)(-0.149838;0.010748)(-0.143462;0.01115)(-0.137086;0.011551)(-0.13071;0.011944)(-0.124334;0.012333)(-0.117957;0.012713)(-0.111581;0.013085)(-0.105205;0.013446)(-0.098829;0.013795)(-0.092453;0.01413)(-0.086077;0.014449)(-0.079701;0.014753)(-0.073325;0.015039)(-0.066949;0.015306)(-0.060573;0.015553)(-0.054197;0.015779)(-0.047821;0.015982)(-0.041445;0.016161)(-0.035068;0.016317)(-0.028692;0.016448)(-0.022316;0.016554)(-0.01594;0.016634)(-0.009564;0.016687)(-0.003188;0.016713)(0.003188;0.016713)(0.009564;0.016687)(0.01594;0.016634)(0.022316;0.016554)(0.028692;0.016448)(0.035068;0.016317)(0.041445;0.016161)(0.047821;0.015982)(0.054197;0.015779)(0.060573;0.015553)(0.066949;0.015306)(0.073325;0.015039)(0.079701;0.014753)(0.086077;0.014449)(0.092453;0.01413)(0.098829;0.013795)(0.105205;0.013446)(0.111581;0.013085)(0.117957;0.012713)(0.124334;0.012333)(0.13071;0.011944)(0.137086;0.011551)(0.143462;0.01115)(0.149838;0.010748)(0.156214;0.010343)(0.16259;0.009937)(0.168966;0.009533)(0.175342;0.009129)(0.181718;0.008729)(0.188094;0.008334)(0.19447;0.007943)(0.200846;0.007559)(0.207223;0.007182)(0.213599;0.006813)(0.219975;0.006452)(0.226351;0.006101)(0.232727;0.005759)(0.239103;0.005428)(0.245479;0.005108)(0.251855;0.004799)(0.258231;0.004502)(0.264607;0.004216)(0.270983;0.003941)(0.277359;0.003679)(0.283736;0.00343)(0.290112;0.003191)(0.296488;0.002965)(0.302864;0.00275)(0.30924;0.002547)(0.315616;0.002355)])"/>
+          <requiredResource_ParametricResourceDemand href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+        </resourceDemand_Action>
+      </steps_Behaviour>
+      <steps_Behaviour xsi:type="seff:InternalAction" id="_F5_KADVdEeqPG_FgW3bi6Q" entityName="finalizeOrder" predecessor_AbstractAction="_P_ZTwDVdEeqPG_FgW3bi6Q" successor_AbstractAction="_Cet9ATVdEeqPG_FgW3bi6Q">
+        <resourceDemand_Action>
+          <specification_ParametericResourceDemand specification="Max(0.0,0.28199205206073796 + DoublePMF[(-0.8919;0.002355)(-0.873881;0.002547)(-0.855863;0.00275)(-0.837845;0.002965)(-0.819827;0.003191)(-0.801809;0.00343)(-0.78379;0.003679)(-0.765772;0.003941)(-0.747754;0.004216)(-0.729736;0.004502)(-0.711718;0.004799)(-0.6937;0.005108)(-0.675681;0.005428)(-0.657663;0.005759)(-0.639645;0.006101)(-0.621627;0.006452)(-0.603609;0.006813)(-0.585591;0.007182)(-0.567572;0.007559)(-0.549554;0.007943)(-0.531536;0.008334)(-0.513518;0.008729)(-0.4955;0.009129)(-0.477482;0.009533)(-0.459463;0.009937)(-0.441445;0.010343)(-0.423427;0.010748)(-0.405409;0.01115)(-0.387391;0.011551)(-0.369373;0.011944)(-0.351354;0.012333)(-0.333336;0.012713)(-0.315318;0.013085)(-0.2973;0.013446)(-0.279282;0.013795)(-0.261263;0.01413)(-0.243245;0.014449)(-0.225227;0.014753)(-0.207209;0.015039)(-0.189191;0.015306)(-0.171173;0.015553)(-0.153154;0.015779)(-0.135136;0.015982)(-0.117118;0.016161)(-0.0991;0.016317)(-0.081082;0.016448)(-0.063064;0.016554)(-0.045045;0.016634)(-0.027027;0.016687)(-0.009009;0.016713)(0.009009;0.016713)(0.027027;0.016687)(0.045045;0.016634)(0.063064;0.016554)(0.081082;0.016448)(0.0991;0.016317)(0.117118;0.016161)(0.135136;0.015982)(0.153154;0.015779)(0.171173;0.015553)(0.189191;0.015306)(0.207209;0.015039)(0.225227;0.014753)(0.243245;0.014449)(0.261263;0.01413)(0.279282;0.013795)(0.2973;0.013446)(0.315318;0.013085)(0.333336;0.012713)(0.351354;0.012333)(0.369373;0.011944)(0.387391;0.011551)(0.405409;0.01115)(0.423427;0.010748)(0.441445;0.010343)(0.459463;0.009937)(0.477482;0.009533)(0.4955;0.009129)(0.513518;0.008729)(0.531536;0.008334)(0.549554;0.007943)(0.567572;0.007559)(0.585591;0.007182)(0.603609;0.006813)(0.621627;0.006452)(0.639645;0.006101)(0.657663;0.005759)(0.675681;0.005428)(0.6937;0.005108)(0.711718;0.004799)(0.729736;0.004502)(0.747754;0.004216)(0.765772;0.003941)(0.78379;0.003679)(0.801809;0.00343)(0.819827;0.003191)(0.837845;0.002965)(0.855863;0.00275)(0.873881;0.002547)(0.8919;0.002355)])"/>
+          <requiredResource_ParametricResourceDemand href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+        </resourceDemand_Action>
+      </steps_Behaviour>
+      <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_N_TEQDVdEeqPG_FgW3bi6Q" predecessor_AbstractAction="_EanpADVdEeqPG_FgW3bi6Q" successor_AbstractAction="_P_ZTwDVdEeqPG_FgW3bi6Q" calledService_ExternalService="_WvtmcDVcEeqPG_FgW3bi6Q" role_ExternalService="_B7eGADVdEeqPG_FgW3bi6Q">
+        <inputVariableUsages__CallAction>
+          <variableCharacterisation_VariableUsage type="VALUE">
+            <specification_VariableCharacterisation specification="persistenceReps.VALUE"/>
+          </variableCharacterisation_VariableUsage>
+          <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="persistenceReps"/>
+        </inputVariableUsages__CallAction>
+      </steps_Behaviour>
+      <steps_Behaviour xsi:type="seff:LoopAction" id="_P_ZTwDVdEeqPG_FgW3bi6Q" entityName="itemLoop" predecessor_AbstractAction="_N_TEQDVdEeqPG_FgW3bi6Q" successor_AbstractAction="_F5_KADVdEeqPG_FgW3bi6Q">
+        <bodyBehaviour_Loop id="_P_hPkDVdEeqPG_FgW3bi6Q">
+          <steps_Behaviour xsi:type="seff:StartAction" id="_P_jr0DVdEeqPG_FgW3bi6Q" successor_AbstractAction="_2dMPYDVdEeqPG_FgW3bi6Q"/>
+          <steps_Behaviour xsi:type="seff:StopAction" id="_P_jr0TVdEeqPG_FgW3bi6Q" predecessor_AbstractAction="_2dMPYDVdEeqPG_FgW3bi6Q"/>
+          <steps_Behaviour xsi:type="seff:ExternalCallAction" id="_2dMPYDVdEeqPG_FgW3bi6Q" predecessor_AbstractAction="_P_jr0DVdEeqPG_FgW3bi6Q" successor_AbstractAction="_P_jr0TVdEeqPG_FgW3bi6Q" calledService_ExternalService="_XirUcDVcEeqPG_FgW3bi6Q" role_ExternalService="_B7eGADVdEeqPG_FgW3bi6Q">
+            <inputVariableUsages__CallAction>
+              <variableCharacterisation_VariableUsage type="VALUE">
+                <specification_VariableCharacterisation specification="persistenceReps.VALUE"/>
+              </variableCharacterisation_VariableUsage>
+              <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="persistenceReps"/>
+            </inputVariableUsages__CallAction>
+          </steps_Behaviour>
+        </bodyBehaviour_Loop>
+        <iterationCount_LoopAction specification="items.VALUE"/>
+      </steps_Behaviour>
+    </serviceEffectSpecifications__BasicComponent>
+    <serviceEffectSpecifications__BasicComponent xsi:type="seff:ResourceDemandingSEFF" id="_Cet9AjVdEeqPG_FgW3bi6Q" describedService__SEFF="_XZ23ADVZEeqPG_FgW3bi6Q">
+      <steps_Behaviour xsi:type="seff:StartAction" id="_Cet9AzVdEeqPG_FgW3bi6Q" entityName="start" successor_AbstractAction="_fmO34DbgEeq5L_FI-wfNWQ"/>
+      <steps_Behaviour xsi:type="seff:StopAction" id="_Cet9BDVdEeqPG_FgW3bi6Q" entityName="stop" predecessor_AbstractAction="_fmO34DbgEeq5L_FI-wfNWQ"/>
+      <steps_Behaviour xsi:type="seff:InternalAction" id="_fmO34DbgEeq5L_FI-wfNWQ" entityName="update" predecessor_AbstractAction="_Cet9AzVdEeqPG_FgW3bi6Q" successor_AbstractAction="_Cet9BDVdEeqPG_FgW3bi6Q">
+        <resourceDemand_Action>
+          <specification_ParametericResourceDemand specification="1&#xA;"/>
+          <requiredResource_ParametricResourceDemand href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+        </resourceDemand_Action>
+      </steps_Behaviour>
+    </serviceEffectSpecifications__BasicComponent>
+  </components__Repository>
+  <components__Repository xsi:type="repository:BasicComponent" id="_YkXeIDVgEeqPG_FgW3bi6Q" entityName="SlopeOneRecommender">
+    <providedRoles_InterfaceProvidingEntity xsi:type="repository:OperationProvidedRole" id="_lR788DVgEeqPG_FgW3bi6Q" entityName="Provided_RecommenderStrategy_SlopeOneRecommender" providedInterface__OperationProvidedRole="_BYKdQDVgEeqPG_FgW3bi6Q"/>
+    <serviceEffectSpecifications__BasicComponent xsi:type="seff:ResourceDemandingSEFF" id="_lR_nUDVgEeqPG_FgW3bi6Q" describedService__SEFF="_OJ2AADVgEeqPG_FgW3bi6Q">
+      <steps_Behaviour xsi:type="seff:StartAction" id="_lSA1cDVgEeqPG_FgW3bi6Q" entityName="start" successor_AbstractAction="_o_OcwLQBEeq7laWsYbb_3A"/>
+      <steps_Behaviour xsi:type="seff:StopAction" id="_lSA1cTVgEeqPG_FgW3bi6Q" entityName="stop" predecessor_AbstractAction="_o_OcwLQBEeq7laWsYbb_3A"/>
+      <steps_Behaviour xsi:type="seff:InternalAction" id="_o_OcwLQBEeq7laWsYbb_3A" entityName="train" predecessor_AbstractAction="_lSA1cDVgEeqPG_FgW3bi6Q" successor_AbstractAction="_lSA1cTVgEeqPG_FgW3bi6Q">
+        <resourceDemand_Action>
+          <specification_ParametericResourceDemand specification="Max(0.0,((18.520199447642607 * orders.VALUE + (-4.502548280167472 * orderItems.VALUE)) + -18788.721698358233) + DoublePMF[(-2409.47786;0.002973)(-2348.47842;0.003278)(-2287.478981;0.003604)(-2226.479541;0.003954)(-2165.480102;0.004326)(-2104.480662;0.004721)(-2043.481223;0.00514)(-1982.481783;0.005582)(-1921.482344;0.006046)(-1860.482904;0.006533)(-1799.483465;0.007042)(-1738.484025;0.007572)(-1677.484586;0.008121)(-1616.485146;0.008687)(-1555.485707;0.009271)(-1494.486267;0.009869)(-1433.486828;0.010479)(-1372.487388;0.011099)(-1311.487949;0.011727)(-1250.488509;0.012358)(-1189.48907;0.012992)(-1128.489631;0.013624)(-1067.490191;0.01425)(-1006.490752;0.01487)(-945.491312;0.015476)(-884.491873;0.016067)(-823.492433;0.016639)(-762.492994;0.017189)(-701.493554;0.017713)(-640.494115;0.018206)(-579.494675;0.018667)(-518.495236;0.019092)(-457.495796;0.019477)(-396.496357;0.019821)(-335.496917;0.020121)(-274.497478;0.020374)(-213.498038;0.020578)(-152.498599;0.020733)(-91.499159;0.020837)(-30.49972;0.02089)(30.49972;0.02089)(91.499159;0.020837)(152.498599;0.020733)(213.498038;0.020578)(274.497478;0.020374)(335.496917;0.020121)(396.496357;0.019821)(457.495796;0.019477)(518.495236;0.019092)(579.494675;0.018667)(640.494115;0.018206)(701.493554;0.017713)(762.492994;0.017189)(823.492433;0.016639)(884.491873;0.016067)(945.491312;0.015476)(1006.490752;0.01487)(1067.490191;0.01425)(1128.489631;0.013624)(1189.48907;0.012992)(1250.488509;0.012358)(1311.487949;0.011727)(1372.487388;0.011099)(1433.486828;0.010479)(1494.486267;0.009869)(1555.485707;0.009271)(1616.485146;0.008687)(1677.484586;0.008121)(1738.484025;0.007572)(1799.483465;0.007042)(1860.482904;0.006533)(1921.482344;0.006046)(1982.481783;0.005582)(2043.481223;0.00514)(2104.480662;0.004721)(2165.480102;0.004326)(2226.479541;0.003954)(2287.478981;0.003604)(2348.47842;0.003278)(2409.47786;0.002973)])"/>
+          <requiredResource_ParametricResourceDemand href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+        </resourceDemand_Action>
+      </steps_Behaviour>
+    </serviceEffectSpecifications__BasicComponent>
+    <serviceEffectSpecifications__BasicComponent xsi:type="seff:ResourceDemandingSEFF" id="_lSA1cjVgEeqPG_FgW3bi6Q" describedService__SEFF="_URhv8DVgEeqPG_FgW3bi6Q">
+      <steps_Behaviour xsi:type="seff:StartAction" id="_lSBcgDVgEeqPG_FgW3bi6Q" entityName="start" successor_AbstractAction="_I-vuUK1oEeqcvaJ1A892dQ"/>
+      <steps_Behaviour xsi:type="seff:StopAction" id="_lSBcgTVgEeqPG_FgW3bi6Q" entityName="stop" predecessor_AbstractAction="_I-vuUK1oEeqcvaJ1A892dQ"/>
+      <steps_Behaviour xsi:type="seff:InternalAction" id="_I-vuUK1oEeqcvaJ1A892dQ" entityName="recommend" predecessor_AbstractAction="_lSBcgDVgEeqPG_FgW3bi6Q" successor_AbstractAction="_lSBcgTVgEeqPG_FgW3bi6Q">
+        <resourceDemand_Action>
+          <specification_ParametericResourceDemand specification="Max(0.0,((7.6519383651246615 * items.VALUE) + 163.86527168344756) + DoublePMF[(-796.198336;0.002973)(-776.041416;0.003278)(-755.884496;0.003604)(-735.727576;0.003954)(-715.570656;0.004326)(-695.413736;0.004721)(-675.256816;0.00514)(-655.099896;0.005582)(-634.942976;0.006046)(-614.786057;0.006533)(-594.629137;0.007042)(-574.472217;0.007572)(-554.315297;0.008121)(-534.158377;0.008687)(-514.001457;0.009271)(-493.844537;0.009869)(-473.687617;0.010479)(-453.530697;0.011099)(-433.373778;0.011727)(-413.216858;0.012358)(-393.059938;0.012992)(-372.903018;0.013624)(-352.746098;0.01425)(-332.589178;0.01487)(-312.432258;0.015476)(-292.275338;0.016067)(-272.118418;0.016639)(-251.961499;0.017189)(-231.804579;0.017713)(-211.647659;0.018206)(-191.490739;0.018667)(-171.333819;0.019092)(-151.176899;0.019477)(-131.019979;0.019821)(-110.863059;0.020121)(-90.706139;0.020374)(-70.54922;0.020578)(-50.3923;0.020733)(-30.23538;0.020837)(-10.07846;0.02089)(10.07846;0.02089)(30.23538;0.020837)(50.3923;0.020733)(70.54922;0.020578)(90.706139;0.020374)(110.863059;0.020121)(131.019979;0.019821)(151.176899;0.019477)(171.333819;0.019092)(191.490739;0.018667)(211.647659;0.018206)(231.804579;0.017713)(251.961499;0.017189)(272.118418;0.016639)(292.275338;0.016067)(312.432258;0.015476)(332.589178;0.01487)(352.746098;0.01425)(372.903018;0.013624)(393.059938;0.012992)(413.216858;0.012358)(433.373778;0.011727)(453.530697;0.011099)(473.687617;0.010479)(493.844537;0.009869)(514.001457;0.009271)(534.158377;0.008687)(554.315297;0.008121)(574.472217;0.007572)(594.629137;0.007042)(614.786057;0.006533)(634.942976;0.006046)(655.099896;0.005582)(675.256816;0.00514)(695.413736;0.004721)(715.570656;0.004326)(735.727576;0.003954)(755.884496;0.003604)(776.041416;0.003278)(796.198336;0.002973)])"/>
+          <requiredResource_ParametricResourceDemand href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+        </resourceDemand_Action>
+      </steps_Behaviour>
+    </serviceEffectSpecifications__BasicComponent>
+  </components__Repository>
+  <components__Repository xsi:type="repository:BasicComponent" id="_kgbngDVgEeqPG_FgW3bi6Q" entityName="OrderBasedRecommender">
+    <providedRoles_InterfaceProvidingEntity xsi:type="repository:OperationProvidedRole" id="_l7poUDVgEeqPG_FgW3bi6Q" entityName="Provided_RecommenderStrategy_aName" providedInterface__OperationProvidedRole="_BYKdQDVgEeqPG_FgW3bi6Q"/>
+    <serviceEffectSpecifications__BasicComponent xsi:type="seff:ResourceDemandingSEFF" id="_l7sEkDVgEeqPG_FgW3bi6Q" describedService__SEFF="_OJ2AADVgEeqPG_FgW3bi6Q">
+      <steps_Behaviour xsi:type="seff:StartAction" id="_l7sEkTVgEeqPG_FgW3bi6Q" entityName="start" successor_AbstractAction="_yqQ1EK1mEeqcvaJ1A892dQ"/>
+      <steps_Behaviour xsi:type="seff:StopAction" id="_l7sEkjVgEeqPG_FgW3bi6Q" entityName="stop" predecessor_AbstractAction="_yqQ1EK1mEeqcvaJ1A892dQ"/>
+      <steps_Behaviour xsi:type="seff:InternalAction" id="_yqQ1EK1mEeqcvaJ1A892dQ" entityName="train" predecessor_AbstractAction="_l7sEkTVgEeqPG_FgW3bi6Q" successor_AbstractAction="_l7sEkjVgEeqPG_FgW3bi6Q">
+        <resourceDemand_Action>
+          <specification_ParametericResourceDemand specification="orders.VALUE"/>
+          <requiredResource_ParametricResourceDemand href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+        </resourceDemand_Action>
+      </steps_Behaviour>
+    </serviceEffectSpecifications__BasicComponent>
+    <serviceEffectSpecifications__BasicComponent xsi:type="seff:ResourceDemandingSEFF" id="_l7sEkzVgEeqPG_FgW3bi6Q" describedService__SEFF="_URhv8DVgEeqPG_FgW3bi6Q">
+      <steps_Behaviour xsi:type="seff:StartAction" id="_l7sroDVgEeqPG_FgW3bi6Q" entityName="start" successor_AbstractAction="_rq4oIK1mEeqcvaJ1A892dQ"/>
+      <steps_Behaviour xsi:type="seff:StopAction" id="_l7sroTVgEeqPG_FgW3bi6Q" entityName="stop" predecessor_AbstractAction="_rq4oIK1mEeqcvaJ1A892dQ"/>
+      <steps_Behaviour xsi:type="seff:InternalAction" id="_rq4oIK1mEeqcvaJ1A892dQ" entityName="recommend" predecessor_AbstractAction="_l7sroDVgEeqPG_FgW3bi6Q" successor_AbstractAction="_l7sroTVgEeqPG_FgW3bi6Q">
+        <resourceDemand_Action>
+          <specification_ParametericResourceDemand specification="items.VALUE"/>
+          <requiredResource_ParametricResourceDemand href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+        </resourceDemand_Action>
+      </steps_Behaviour>
+    </serviceEffectSpecifications__BasicComponent>
+  </components__Repository>
+  <components__Repository xsi:type="repository:BasicComponent" id="_ouzFYDVgEeqPG_FgW3bi6Q" entityName="DummyRecommender">
+    <providedRoles_InterfaceProvidingEntity xsi:type="repository:OperationProvidedRole" id="_qMyGUDVgEeqPG_FgW3bi6Q" entityName="Provided_RecommenderStrategy_DummyRecommender" providedInterface__OperationProvidedRole="_BYKdQDVgEeqPG_FgW3bi6Q"/>
+    <serviceEffectSpecifications__BasicComponent xsi:type="seff:ResourceDemandingSEFF" id="_qMytYDVgEeqPG_FgW3bi6Q" describedService__SEFF="_OJ2AADVgEeqPG_FgW3bi6Q">
+      <steps_Behaviour xsi:type="seff:StartAction" id="_qMzUcDVgEeqPG_FgW3bi6Q" entityName="start" successor_AbstractAction="_qNvpIDbgEeq5L_FI-wfNWQ"/>
+      <steps_Behaviour xsi:type="seff:StopAction" id="_qMzUcTVgEeqPG_FgW3bi6Q" entityName="stop" predecessor_AbstractAction="_qNvpIDbgEeq5L_FI-wfNWQ"/>
+      <steps_Behaviour xsi:type="seff:InternalAction" id="_qNvpIDbgEeq5L_FI-wfNWQ" entityName="recommend" predecessor_AbstractAction="_qMzUcDVgEeqPG_FgW3bi6Q" successor_AbstractAction="_qMzUcTVgEeqPG_FgW3bi6Q">
+        <resourceDemand_Action>
+          <specification_ParametericResourceDemand specification="0.01"/>
+          <requiredResource_ParametricResourceDemand href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+        </resourceDemand_Action>
+      </steps_Behaviour>
+    </serviceEffectSpecifications__BasicComponent>
+    <serviceEffectSpecifications__BasicComponent xsi:type="seff:ResourceDemandingSEFF" id="_qMzUcjVgEeqPG_FgW3bi6Q" describedService__SEFF="_URhv8DVgEeqPG_FgW3bi6Q">
+      <steps_Behaviour xsi:type="seff:StartAction" id="_qMzUczVgEeqPG_FgW3bi6Q" entityName="start" successor_AbstractAction="_uWLeIDbgEeq5L_FI-wfNWQ"/>
+      <steps_Behaviour xsi:type="seff:StopAction" id="_qMzUdDVgEeqPG_FgW3bi6Q" entityName="stop" predecessor_AbstractAction="_uWLeIDbgEeq5L_FI-wfNWQ"/>
+      <steps_Behaviour xsi:type="seff:InternalAction" id="_uWLeIDbgEeq5L_FI-wfNWQ" entityName="recommend" predecessor_AbstractAction="_qMzUczVgEeqPG_FgW3bi6Q" successor_AbstractAction="_qMzUdDVgEeqPG_FgW3bi6Q">
+        <resourceDemand_Action>
+          <specification_ParametericResourceDemand specification="items.VALUE"/>
+          <requiredResource_ParametricResourceDemand href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+        </resourceDemand_Action>
+      </steps_Behaviour>
+    </serviceEffectSpecifications__BasicComponent>
+  </components__Repository>
+  <components__Repository xsi:type="repository:BasicComponent" id="_raxjcDVgEeqPG_FgW3bi6Q" entityName="PopularityBasedRecommender">
+    <providedRoles_InterfaceProvidingEntity xsi:type="repository:OperationProvidedRole" id="_vHNY8DVgEeqPG_FgW3bi6Q" entityName="Provided_RecommenderStrategy_PopularityBasedRecommender" providedInterface__OperationProvidedRole="_BYKdQDVgEeqPG_FgW3bi6Q"/>
+    <serviceEffectSpecifications__BasicComponent xsi:type="seff:ResourceDemandingSEFF" id="_vHaNQDVgEeqPG_FgW3bi6Q" describedService__SEFF="_OJ2AADVgEeqPG_FgW3bi6Q">
+      <steps_Behaviour xsi:type="seff:StartAction" id="_vHa0UDVgEeqPG_FgW3bi6Q" entityName="start" successor_AbstractAction="_axPdsGMREeuCi-18uA4cnA"/>
+      <steps_Behaviour xsi:type="seff:StopAction" id="_vHa0UTVgEeqPG_FgW3bi6Q" entityName="stop" predecessor_AbstractAction="_axPdsGMREeuCi-18uA4cnA"/>
+      <steps_Behaviour xsi:type="seff:InternalAction" id="_axPdsGMREeuCi-18uA4cnA" entityName="train" predecessor_AbstractAction="_vHa0UDVgEeqPG_FgW3bi6Q" successor_AbstractAction="_vHa0UTVgEeqPG_FgW3bi6Q">
+        <resourceDemand_Action>
+          <specification_ParametericResourceDemand specification="Max(0.0,1.510007808000003 + DoublePMF[(-1.185712;0.002355)(-1.161758;0.002547)(-1.137804;0.00275)(-1.11385;0.002965)(-1.089896;0.003191)(-1.065943;0.00343)(-1.041989;0.003679)(-1.018035;0.003941)(-0.994081;0.004216)(-0.970128;0.004502)(-0.946174;0.004799)(-0.92222;0.005108)(-0.898266;0.005428)(-0.874313;0.005759)(-0.850359;0.006101)(-0.826405;0.006452)(-0.802451;0.006813)(-0.778497;0.007182)(-0.754544;0.007559)(-0.73059;0.007943)(-0.706636;0.008334)(-0.682682;0.008729)(-0.658729;0.009129)(-0.634775;0.009533)(-0.610821;0.009937)(-0.586867;0.010343)(-0.562914;0.010748)(-0.53896;0.01115)(-0.515006;0.011551)(-0.491052;0.011944)(-0.467098;0.012333)(-0.443145;0.012713)(-0.419191;0.013085)(-0.395237;0.013446)(-0.371283;0.013795)(-0.34733;0.01413)(-0.323376;0.014449)(-0.299422;0.014753)(-0.275468;0.015039)(-0.251515;0.015306)(-0.227561;0.015553)(-0.203607;0.015779)(-0.179653;0.015982)(-0.155699;0.016161)(-0.131746;0.016317)(-0.107792;0.016448)(-0.083838;0.016554)(-0.059884;0.016634)(-0.035931;0.016687)(-0.011977;0.016713)(0.011977;0.016713)(0.035931;0.016687)(0.059884;0.016634)(0.083838;0.016554)(0.107792;0.016448)(0.131746;0.016317)(0.155699;0.016161)(0.179653;0.015982)(0.203607;0.015779)(0.227561;0.015553)(0.251515;0.015306)(0.275468;0.015039)(0.299422;0.014753)(0.323376;0.014449)(0.34733;0.01413)(0.371283;0.013795)(0.395237;0.013446)(0.419191;0.013085)(0.443145;0.012713)(0.467098;0.012333)(0.491052;0.011944)(0.515006;0.011551)(0.53896;0.01115)(0.562914;0.010748)(0.586867;0.010343)(0.610821;0.009937)(0.634775;0.009533)(0.658729;0.009129)(0.682682;0.008729)(0.706636;0.008334)(0.73059;0.007943)(0.754544;0.007559)(0.778497;0.007182)(0.802451;0.006813)(0.826405;0.006452)(0.850359;0.006101)(0.874313;0.005759)(0.898266;0.005428)(0.92222;0.005108)(0.946174;0.004799)(0.970128;0.004502)(0.994081;0.004216)(1.018035;0.003941)(1.041989;0.003679)(1.065943;0.00343)(1.089896;0.003191)(1.11385;0.002965)(1.137804;0.00275)(1.161758;0.002547)(1.185712;0.002355)])"/>
+          <requiredResource_ParametricResourceDemand href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+        </resourceDemand_Action>
+      </steps_Behaviour>
+    </serviceEffectSpecifications__BasicComponent>
+    <serviceEffectSpecifications__BasicComponent xsi:type="seff:ResourceDemandingSEFF" id="_vHbbYDVgEeqPG_FgW3bi6Q" describedService__SEFF="_URhv8DVgEeqPG_FgW3bi6Q">
+      <steps_Behaviour xsi:type="seff:StartAction" id="_vHbbYTVgEeqPG_FgW3bi6Q" entityName="start" successor_AbstractAction="__RGH0K1oEeqcvaJ1A892dQ"/>
+      <steps_Behaviour xsi:type="seff:StopAction" id="_vHbbYjVgEeqPG_FgW3bi6Q" entityName="stop" predecessor_AbstractAction="__RGH0K1oEeqcvaJ1A892dQ"/>
+      <steps_Behaviour xsi:type="seff:InternalAction" id="__RGH0K1oEeqcvaJ1A892dQ" entityName="recommend" predecessor_AbstractAction="_vHbbYTVgEeqPG_FgW3bi6Q" successor_AbstractAction="_vHbbYjVgEeqPG_FgW3bi6Q">
+        <resourceDemand_Action>
+          <specification_ParametericResourceDemand specification="Max(0.0,0.1197810011930326 + DoublePMF[(-0.642995;0.002355)(-0.630005;0.002547)(-0.617015;0.00275)(-0.604025;0.002965)(-0.591036;0.003191)(-0.578046;0.00343)(-0.565056;0.003679)(-0.552066;0.003941)(-0.539076;0.004216)(-0.526087;0.004502)(-0.513097;0.004799)(-0.500107;0.005108)(-0.487117;0.005428)(-0.474127;0.005759)(-0.461138;0.006101)(-0.448148;0.006452)(-0.435158;0.006813)(-0.422168;0.007182)(-0.409178;0.007559)(-0.396189;0.007943)(-0.383199;0.008334)(-0.370209;0.008729)(-0.357219;0.009129)(-0.34423;0.009533)(-0.33124;0.009937)(-0.31825;0.010343)(-0.30526;0.010748)(-0.29227;0.01115)(-0.279281;0.011551)(-0.266291;0.011944)(-0.253301;0.012333)(-0.240311;0.012713)(-0.227321;0.013085)(-0.214332;0.013446)(-0.201342;0.013795)(-0.188352;0.01413)(-0.175362;0.014449)(-0.162372;0.014753)(-0.149383;0.015039)(-0.136393;0.015306)(-0.123403;0.015553)(-0.110413;0.015779)(-0.097423;0.015982)(-0.084434;0.016161)(-0.071444;0.016317)(-0.058454;0.016448)(-0.045464;0.016554)(-0.032474;0.016634)(-0.019485;0.016687)(-0.006495;0.016713)(0.006495;0.016713)(0.019485;0.016687)(0.032474;0.016634)(0.045464;0.016554)(0.058454;0.016448)(0.071444;0.016317)(0.084434;0.016161)(0.097423;0.015982)(0.110413;0.015779)(0.123403;0.015553)(0.136393;0.015306)(0.149383;0.015039)(0.162372;0.014753)(0.175362;0.014449)(0.188352;0.01413)(0.201342;0.013795)(0.214332;0.013446)(0.227321;0.013085)(0.240311;0.012713)(0.253301;0.012333)(0.266291;0.011944)(0.279281;0.011551)(0.29227;0.01115)(0.30526;0.010748)(0.31825;0.010343)(0.33124;0.009937)(0.34423;0.009533)(0.357219;0.009129)(0.370209;0.008729)(0.383199;0.008334)(0.396189;0.007943)(0.409178;0.007559)(0.422168;0.007182)(0.435158;0.006813)(0.448148;0.006452)(0.461138;0.006101)(0.474127;0.005759)(0.487117;0.005428)(0.500107;0.005108)(0.513097;0.004799)(0.526087;0.004502)(0.539076;0.004216)(0.552066;0.003941)(0.565056;0.003679)(0.578046;0.00343)(0.591036;0.003191)(0.604025;0.002965)(0.617015;0.00275)(0.630005;0.002547)(0.642995;0.002355)])"/>
+          <requiredResource_ParametricResourceDemand href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+        </resourceDemand_Action>
+      </steps_Behaviour>
+    </serviceEffectSpecifications__BasicComponent>
+  </components__Repository>
+  <components__Repository xsi:type="repository:BasicComponent" id="_yA04AKTKEeqKjI323B3R3w" entityName="ImageProvider">
+    <providedRoles_InterfaceProvidingEntity xsi:type="repository:OperationProvidedRole" id="_z_lDsKTKEeqKjI323B3R3w" entityName="Provided_ImageProvider_ImageProvider" providedInterface__OperationProvidedRole="_oPBcMKTJEeqKjI323B3R3w"/>
+    <serviceEffectSpecifications__BasicComponent xsi:type="seff:ResourceDemandingSEFF" id="_z_u0sKTKEeqKjI323B3R3w" describedService__SEFF="_wsW_cKTKEeqKjI323B3R3w">
+      <steps_Behaviour xsi:type="seff:StartAction" id="_z_wC0KTKEeqKjI323B3R3w" entityName="start" successor_AbstractAction="_z_wC0aTKEeqKjI323B3R3w"/>
+      <steps_Behaviour xsi:type="seff:StopAction" id="_z_wC0aTKEeqKjI323B3R3w" entityName="stop" predecessor_AbstractAction="_z_wC0KTKEeqKjI323B3R3w"/>
+    </serviceEffectSpecifications__BasicComponent>
+  </components__Repository>
+  <components__Repository xsi:type="repository:BasicComponent" id="_iaElgKpwEeqHXcsU55mirw" entityName="PreprocessedSlopeOneRecommender">
+    <providedRoles_InterfaceProvidingEntity xsi:type="repository:OperationProvidedRole" id="_koXCAKpwEeqHXcsU55mirw" entityName="Provided_RecommenderStrategy_PreprocessedSlopeOneRecommender" providedInterface__OperationProvidedRole="_BYKdQDVgEeqPG_FgW3bi6Q"/>
+    <serviceEffectSpecifications__BasicComponent xsi:type="seff:ResourceDemandingSEFF" id="_kobTcKpwEeqHXcsU55mirw" describedService__SEFF="_OJ2AADVgEeqPG_FgW3bi6Q">
+      <steps_Behaviour xsi:type="seff:StartAction" id="_kobTcapwEeqHXcsU55mirw" entityName="start" successor_AbstractAction="_hnJlkGMREeuCi-18uA4cnA"/>
+      <steps_Behaviour xsi:type="seff:StopAction" id="_kob6gKpwEeqHXcsU55mirw" entityName="stop" predecessor_AbstractAction="_hnJlkGMREeuCi-18uA4cnA"/>
+      <steps_Behaviour xsi:type="seff:InternalAction" id="_hnJlkGMREeuCi-18uA4cnA" entityName="train" predecessor_AbstractAction="_kobTcapwEeqHXcsU55mirw" successor_AbstractAction="_kob6gKpwEeqHXcsU55mirw">
+        <resourceDemand_Action>
+          <specification_ParametericResourceDemand specification="1"/>
+          <requiredResource_ParametricResourceDemand href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+        </resourceDemand_Action>
+      </steps_Behaviour>
+    </serviceEffectSpecifications__BasicComponent>
+    <serviceEffectSpecifications__BasicComponent xsi:type="seff:ResourceDemandingSEFF" id="_kob6gapwEeqHXcsU55mirw" describedService__SEFF="_URhv8DVgEeqPG_FgW3bi6Q">
+      <steps_Behaviour xsi:type="seff:StartAction" id="_kob6gqpwEeqHXcsU55mirw" entityName="start" successor_AbstractAction="_e9gEoK1oEeqcvaJ1A892dQ"/>
+      <steps_Behaviour xsi:type="seff:StopAction" id="_kob6g6pwEeqHXcsU55mirw" entityName="stop" predecessor_AbstractAction="_e9gEoK1oEeqcvaJ1A892dQ"/>
+      <steps_Behaviour xsi:type="seff:InternalAction" id="_e9gEoK1oEeqcvaJ1A892dQ" entityName="recommend" predecessor_AbstractAction="_kob6gqpwEeqHXcsU55mirw" successor_AbstractAction="_kob6g6pwEeqHXcsU55mirw">
+        <resourceDemand_Action>
+          <specification_ParametericResourceDemand specification="items.VALUE"/>
+          <requiredResource_ParametricResourceDemand href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+        </resourceDemand_Action>
+      </steps_Behaviour>
+    </serviceEffectSpecifications__BasicComponent>
+  </components__Repository>
+  <interfaces__Repository xsi:type="repository:OperationInterface" id="_g6IlUDVXEeqPG_FgW3bi6Q" entityName="CartActions">
+    <signatures__OperationInterface id="_i1PnIDVXEeqPG_FgW3bi6Q" entityName="confirmOrder">
+      <parameters__OperationSignature parameterName="items">
+        <dataType__Parameter xsi:type="repository:PrimitiveDataType" href="pathmap://PCM_MODELS/PrimitiveTypes.repository#//@dataTypes__Repository.0"/>
+      </parameters__OperationSignature>
+      <parameters__OperationSignature parameterName="orderTuple">
+        <dataType__Parameter xsi:type="repository:PrimitiveDataType" href="pathmap://PCM_MODELS/PrimitiveTypes.repository#//@dataTypes__Repository.0"/>
+      </parameters__OperationSignature>
+      <parameters__OperationSignature parameterName="authReps">
+        <dataType__Parameter xsi:type="repository:PrimitiveDataType" href="pathmap://PCM_MODELS/PrimitiveTypes.repository#//@dataTypes__Repository.0"/>
+      </parameters__OperationSignature>
+      <parameters__OperationSignature parameterName="persistenceReps">
+        <dataType__Parameter xsi:type="repository:PrimitiveDataType" href="pathmap://PCM_MODELS/PrimitiveTypes.repository#//@dataTypes__Repository.0"/>
+      </parameters__OperationSignature>
+    </signatures__OperationInterface>
+    <signatures__OperationInterface id="_ju390DVXEeqPG_FgW3bi6Q" entityName="updateOrder">
+      <parameters__OperationSignature parameterName="items">
+        <dataType__Parameter xsi:type="repository:PrimitiveDataType" href="pathmap://PCM_MODELS/PrimitiveTypes.repository#//@dataTypes__Repository.0"/>
+      </parameters__OperationSignature>
+      <parameters__OperationSignature parameterName="authReps">
+        <dataType__Parameter xsi:type="repository:PrimitiveDataType" href="pathmap://PCM_MODELS/PrimitiveTypes.repository#//@dataTypes__Repository.0"/>
+      </parameters__OperationSignature>
+    </signatures__OperationInterface>
+  </interfaces__Repository>
+  <interfaces__Repository xsi:type="repository:OperationInterface" id="_uy1agDVXEeqPG_FgW3bi6Q" entityName="ProductActions">
+    <signatures__OperationInterface id="_v-0FcDVXEeqPG_FgW3bi6Q" entityName="getRecommendations">
+      <parameters__OperationSignature parameterName="cartSize">
+        <dataType__Parameter xsi:type="repository:PrimitiveDataType" href="pathmap://PCM_MODELS/PrimitiveTypes.repository#//@dataTypes__Repository.0"/>
+      </parameters__OperationSignature>
+    </signatures__OperationInterface>
+  </interfaces__Repository>
+  <interfaces__Repository xsi:type="repository:OperationInterface" id="_py9KsDVYEeqPG_FgW3bi6Q" entityName="AuthCart">
+    <signatures__OperationInterface id="_v-SrkDVYEeqPG_FgW3bi6Q" entityName="placeOrder">
+      <parameters__OperationSignature parameterName="items">
+        <dataType__Parameter xsi:type="repository:PrimitiveDataType" href="pathmap://PCM_MODELS/PrimitiveTypes.repository#//@dataTypes__Repository.0"/>
+      </parameters__OperationSignature>
+      <parameters__OperationSignature parameterName="persistenceReps">
+        <dataType__Parameter xsi:type="repository:PrimitiveDataType" href="pathmap://PCM_MODELS/PrimitiveTypes.repository#//@dataTypes__Repository.0"/>
+      </parameters__OperationSignature>
+    </signatures__OperationInterface>
+    <signatures__OperationInterface id="_XZ23ADVZEeqPG_FgW3bi6Q" entityName="updateOrder"/>
+  </interfaces__Repository>
+  <interfaces__Repository xsi:type="repository:OperationInterface" id="_gGczsDVZEeqPG_FgW3bi6Q" entityName="LoadBalancer">
+    <signatures__OperationInterface id="_hE4K0DVZEeqPG_FgW3bi6Q" entityName="placeOrder">
+      <parameters__OperationSignature parameterName="items">
+        <dataType__Parameter xsi:type="repository:PrimitiveDataType" href="pathmap://PCM_MODELS/PrimitiveTypes.repository#//@dataTypes__Repository.0"/>
+      </parameters__OperationSignature>
+      <parameters__OperationSignature parameterName="orders">
+        <dataType__Parameter xsi:type="repository:PrimitiveDataType" href="pathmap://PCM_MODELS/PrimitiveTypes.repository#//@dataTypes__Repository.0"/>
+      </parameters__OperationSignature>
+      <parameters__OperationSignature parameterName="orderItems">
+        <dataType__Parameter xsi:type="repository:PrimitiveDataType" href="pathmap://PCM_MODELS/PrimitiveTypes.repository#//@dataTypes__Repository.0"/>
+      </parameters__OperationSignature>
+      <parameters__OperationSignature parameterName="authReps">
+        <dataType__Parameter xsi:type="repository:PrimitiveDataType" href="pathmap://PCM_MODELS/PrimitiveTypes.repository#//@dataTypes__Repository.0"/>
+      </parameters__OperationSignature>
+      <parameters__OperationSignature parameterName="persistenceReps">
+        <dataType__Parameter xsi:type="repository:PrimitiveDataType" href="pathmap://PCM_MODELS/PrimitiveTypes.repository#//@dataTypes__Repository.0"/>
+      </parameters__OperationSignature>
+    </signatures__OperationInterface>
+    <signatures__OperationInterface id="_h3laIDVZEeqPG_FgW3bi6Q" entityName="updateOrder">
+      <parameters__OperationSignature parameterName="authReps">
+        <dataType__Parameter xsi:type="repository:PrimitiveDataType" href="pathmap://PCM_MODELS/PrimitiveTypes.repository#//@dataTypes__Repository.0"/>
+      </parameters__OperationSignature>
+    </signatures__OperationInterface>
+    <signatures__OperationInterface id="_WvtmcDVcEeqPG_FgW3bi6Q" entityName="persistOrder">
+      <parameters__OperationSignature parameterName="persistenceReps">
+        <dataType__Parameter xsi:type="repository:PrimitiveDataType" href="pathmap://PCM_MODELS/PrimitiveTypes.repository#//@dataTypes__Repository.0"/>
+      </parameters__OperationSignature>
+    </signatures__OperationInterface>
+    <signatures__OperationInterface id="_XirUcDVcEeqPG_FgW3bi6Q" entityName="persistOrderItem">
+      <parameters__OperationSignature parameterName="persistenceReps">
+        <dataType__Parameter xsi:type="repository:PrimitiveDataType" href="pathmap://PCM_MODELS/PrimitiveTypes.repository#//@dataTypes__Repository.0"/>
+      </parameters__OperationSignature>
+    </signatures__OperationInterface>
+    <signatures__OperationInterface id="_pKnpQDVhEeqPG_FgW3bi6Q" entityName="recommendProducts">
+      <parameters__OperationSignature parameterName="items">
+        <dataType__Parameter xsi:type="repository:PrimitiveDataType" href="pathmap://PCM_MODELS/PrimitiveTypes.repository#//@dataTypes__Repository.0"/>
+      </parameters__OperationSignature>
+    </signatures__OperationInterface>
+    <signatures__OperationInterface id="_J1GicDViEeqPG_FgW3bi6Q" entityName="trainRecommender">
+      <parameters__OperationSignature parameterName="orders">
+        <dataType__Parameter xsi:type="repository:PrimitiveDataType" href="pathmap://PCM_MODELS/PrimitiveTypes.repository#//@dataTypes__Repository.0"/>
+      </parameters__OperationSignature>
+      <parameters__OperationSignature parameterName="orderItems">
+        <dataType__Parameter xsi:type="repository:PrimitiveDataType" href="pathmap://PCM_MODELS/PrimitiveTypes.repository#//@dataTypes__Repository.0"/>
+      </parameters__OperationSignature>
+    </signatures__OperationInterface>
+  </interfaces__Repository>
+  <interfaces__Repository xsi:type="repository:OperationInterface" id="_Mh_1QDVcEeqPG_FgW3bi6Q" entityName="Persistence">
+    <signatures__OperationInterface id="_NiisQDVcEeqPG_FgW3bi6Q" entityName="persistOrder"/>
+    <signatures__OperationInterface id="_OShXsDVcEeqPG_FgW3bi6Q" entityName="persistOrderItem"/>
+  </interfaces__Repository>
+  <interfaces__Repository xsi:type="repository:OperationInterface" id="_Sb4SYDVfEeqPG_FgW3bi6Q" entityName="Recommender">
+    <signatures__OperationInterface id="_CtRPADVgEeqPG_FgW3bi6Q" entityName="recommendProducts">
+      <parameters__OperationSignature parameterName="items">
+        <dataType__Parameter xsi:type="repository:PrimitiveDataType" href="pathmap://PCM_MODELS/PrimitiveTypes.repository#//@dataTypes__Repository.0"/>
+      </parameters__OperationSignature>
+    </signatures__OperationInterface>
+    <signatures__OperationInterface id="_yF_BwDVhEeqPG_FgW3bi6Q" entityName="trainRecommender">
+      <parameters__OperationSignature parameterName="orders">
+        <dataType__Parameter xsi:type="repository:PrimitiveDataType" href="pathmap://PCM_MODELS/PrimitiveTypes.repository#//@dataTypes__Repository.0"/>
+      </parameters__OperationSignature>
+      <parameters__OperationSignature parameterName="orderItems">
+        <dataType__Parameter xsi:type="repository:PrimitiveDataType" href="pathmap://PCM_MODELS/PrimitiveTypes.repository#//@dataTypes__Repository.0"/>
+      </parameters__OperationSignature>
+    </signatures__OperationInterface>
+  </interfaces__Repository>
+  <interfaces__Repository xsi:type="repository:OperationInterface" id="_BYKdQDVgEeqPG_FgW3bi6Q" entityName="RecommenderStrategy">
+    <signatures__OperationInterface id="_OJ2AADVgEeqPG_FgW3bi6Q" entityName="train">
+      <parameters__OperationSignature parameterName="orders">
+        <dataType__Parameter xsi:type="repository:PrimitiveDataType" href="pathmap://PCM_MODELS/PrimitiveTypes.repository#//@dataTypes__Repository.0"/>
+      </parameters__OperationSignature>
+      <parameters__OperationSignature parameterName="orderItems">
+        <dataType__Parameter xsi:type="repository:PrimitiveDataType" href="pathmap://PCM_MODELS/PrimitiveTypes.repository#//@dataTypes__Repository.0"/>
+      </parameters__OperationSignature>
+    </signatures__OperationInterface>
+    <signatures__OperationInterface id="_URhv8DVgEeqPG_FgW3bi6Q" entityName="recommend">
+      <parameters__OperationSignature parameterName="items">
+        <dataType__Parameter xsi:type="repository:PrimitiveDataType" href="pathmap://PCM_MODELS/PrimitiveTypes.repository#//@dataTypes__Repository.0"/>
+      </parameters__OperationSignature>
+    </signatures__OperationInterface>
+  </interfaces__Repository>
+  <interfaces__Repository xsi:type="repository:OperationInterface" id="_oPBcMKTJEeqKjI323B3R3w" entityName="ImageProvider">
+    <signatures__OperationInterface id="_wsW_cKTKEeqKjI323B3R3w" entityName="getImages"/>
+  </interfaces__Repository>
+</repository:Repository>

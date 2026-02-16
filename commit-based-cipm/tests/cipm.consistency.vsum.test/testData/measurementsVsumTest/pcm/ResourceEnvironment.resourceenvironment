@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="ASCII"?>
+<resourceenvironment:ResourceEnvironment xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:resourceenvironment="http://palladiosimulator.org/PalladioComponentModel/ResourceEnvironment/5.2">
+  <linkingResources__ResourceEnvironment id="_eeMgIZsCEeu_KIMeU5SOYA" entityName="0fe072fe5533a49725543b1553a72e33&lt;->737c5285a57b87a94ad83138196adbdc" connectedResourceContainers_LinkingResource="_edMakJsCEeu_KIMeU5SOYA _ec9KAJsCEeu_KIMeU5SOYA">
+    <communicationLinkResourceSpecifications_LinkingResource id="_eeMgIJsCEeu_KIMeU5SOYA">
+      <communicationLinkResourceType_CommunicationLinkResourceSpecification href="pathmap://PCM_MODELS/Palladio.resourcetype#_o3sScH2AEdyH8uerKnHYug"/>
+      <latency_CommunicationLinkResourceSpecification specification="0"/>
+      <throughput_CommunicationLinkResourceSpecification specification="1000000.0"/>
+    </communicationLinkResourceSpecifications_LinkingResource>
+  </linkingResources__ResourceEnvironment>
+  <linkingResources__ResourceEnvironment id="_eeUb8JsCEeu_KIMeU5SOYA" entityName="737c5285a57b87a94ad83138196adbdc&lt;->6d85a197331f15ac72418204ddc0fbdd" connectedResourceContainers_LinkingResource="_ec9KAJsCEeu_KIMeU5SOYA _wBhCYJsBEeu_KIMeU5SOYA">
+    <communicationLinkResourceSpecifications_LinkingResource id="_eeT04JsCEeu_KIMeU5SOYA">
+      <communicationLinkResourceType_CommunicationLinkResourceSpecification href="pathmap://PCM_MODELS/Palladio.resourcetype#_o3sScH2AEdyH8uerKnHYug"/>
+      <latency_CommunicationLinkResourceSpecification specification="0"/>
+      <throughput_CommunicationLinkResourceSpecification specification="1000000.0"/>
+    </communicationLinkResourceSpecifications_LinkingResource>
+  </linkingResources__ResourceEnvironment>
+  <linkingResources__ResourceEnvironment id="_eeaikJsCEeu_KIMeU5SOYA" entityName="737c5285a57b87a94ad83138196adbdc&lt;->f525bdebf2078227fcc3905979bb85b0" connectedResourceContainers_LinkingResource="_ec9KAJsCEeu_KIMeU5SOYA _ec11QJsCEeu_KIMeU5SOYA">
+    <communicationLinkResourceSpecifications_LinkingResource id="_eeZ7gJsCEeu_KIMeU5SOYA">
+      <communicationLinkResourceType_CommunicationLinkResourceSpecification href="pathmap://PCM_MODELS/Palladio.resourcetype#_o3sScH2AEdyH8uerKnHYug"/>
+      <latency_CommunicationLinkResourceSpecification specification="0"/>
+      <throughput_CommunicationLinkResourceSpecification specification="1000000.0"/>
+    </communicationLinkResourceSpecifications_LinkingResource>
+  </linkingResources__ResourceEnvironment>
+  <linkingResources__ResourceEnvironment id="_eegCIZsCEeu_KIMeU5SOYA" entityName="737c5285a57b87a94ad83138196adbdc&lt;->57332fa869d926b117d3cfaf5b914b38" connectedResourceContainers_LinkingResource="_ec9KAJsCEeu_KIMeU5SOYA _edFF0JsCEeu_KIMeU5SOYA">
+    <communicationLinkResourceSpecifications_LinkingResource id="_eegCIJsCEeu_KIMeU5SOYA">
+      <communicationLinkResourceType_CommunicationLinkResourceSpecification href="pathmap://PCM_MODELS/Palladio.resourcetype#_o3sScH2AEdyH8uerKnHYug"/>
+      <latency_CommunicationLinkResourceSpecification specification="0"/>
+      <throughput_CommunicationLinkResourceSpecification specification="1000000.0"/>
+    </communicationLinkResourceSpecifications_LinkingResource>
+  </linkingResources__ResourceEnvironment>
+  <linkingResources__ResourceEnvironment id="_qFJwoZsMEeu_KIMeU5SOYA" entityName="737c5285a57b87a94ad83138196adbdc&lt;->01690b9e7350591a48a8a204913f2e6a" connectedResourceContainers_LinkingResource="_ec9KAJsCEeu_KIMeU5SOYA _qFDC8JsMEeu_KIMeU5SOYA">
+    <communicationLinkResourceSpecifications_LinkingResource id="_qFJwoJsMEeu_KIMeU5SOYA">
+      <communicationLinkResourceType_CommunicationLinkResourceSpecification href="pathmap://PCM_MODELS/Palladio.resourcetype#_o3sScH2AEdyH8uerKnHYug"/>
+      <latency_CommunicationLinkResourceSpecification specification="0"/>
+      <throughput_CommunicationLinkResourceSpecification specification="1000000.0"/>
+    </communicationLinkResourceSpecifications_LinkingResource>
+  </linkingResources__ResourceEnvironment>
+  <linkingResources__ResourceEnvironment id="_GsV-EZsOEeu_KIMeU5SOYA" entityName="737c5285a57b87a94ad83138196adbdc&lt;->cf22a862d3b901849758b92b4b459bec" connectedResourceContainers_LinkingResource="_ec9KAJsCEeu_KIMeU5SOYA _GsOpUJsOEeu_KIMeU5SOYA">
+    <communicationLinkResourceSpecifications_LinkingResource id="_GsV-EJsOEeu_KIMeU5SOYA">
+      <communicationLinkResourceType_CommunicationLinkResourceSpecification href="pathmap://PCM_MODELS/Palladio.resourcetype#_o3sScH2AEdyH8uerKnHYug"/>
+      <latency_CommunicationLinkResourceSpecification specification="0"/>
+      <throughput_CommunicationLinkResourceSpecification specification="1000000.0"/>
+    </communicationLinkResourceSpecifications_LinkingResource>
+  </linkingResources__ResourceEnvironment>
+  <resourceContainer_ResourceEnvironment id="_edMakJsCEeu_KIMeU5SOYA" entityName="0fe072fe5533a49725543b1553a72e33">
+    <activeResourceSpecifications_ResourceContainer id="_edNBoJsCEeu_KIMeU5SOYA">
+      <schedulingPolicy href="pathmap://PCM_MODELS/Palladio.resourcetype#ProcessorSharing"/>
+      <activeResourceType_ActiveResourceSpecification href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+      <processingRate_ProcessingResourceSpecification specification="1"/>
+    </activeResourceSpecifications_ResourceContainer>
+  </resourceContainer_ResourceEnvironment>
+  <resourceContainer_ResourceEnvironment id="_wBhCYJsBEeu_KIMeU5SOYA" entityName="6d85a197331f15ac72418204ddc0fbdd">
+    <activeResourceSpecifications_ResourceContainer id="_wBjeoJsBEeu_KIMeU5SOYA">
+      <schedulingPolicy href="pathmap://PCM_MODELS/Palladio.resourcetype#ProcessorSharing"/>
+      <activeResourceType_ActiveResourceSpecification href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+      <processingRate_ProcessingResourceSpecification specification="1"/>
+    </activeResourceSpecifications_ResourceContainer>
+  </resourceContainer_ResourceEnvironment>
+  <resourceContainer_ResourceEnvironment id="_edFF0JsCEeu_KIMeU5SOYA" entityName="57332fa869d926b117d3cfaf5b914b38">
+    <activeResourceSpecifications_ResourceContainer id="_edFs4JsCEeu_KIMeU5SOYA">
+      <schedulingPolicy href="pathmap://PCM_MODELS/Palladio.resourcetype#ProcessorSharing"/>
+      <activeResourceType_ActiveResourceSpecification href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+      <processingRate_ProcessingResourceSpecification specification="1"/>
+    </activeResourceSpecifications_ResourceContainer>
+  </resourceContainer_ResourceEnvironment>
+  <resourceContainer_ResourceEnvironment id="_ec9KAJsCEeu_KIMeU5SOYA" entityName="737c5285a57b87a94ad83138196adbdc">
+    <activeResourceSpecifications_ResourceContainer id="_ec-YIJsCEeu_KIMeU5SOYA">
+      <schedulingPolicy href="pathmap://PCM_MODELS/Palladio.resourcetype#ProcessorSharing"/>
+      <activeResourceType_ActiveResourceSpecification href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+      <processingRate_ProcessingResourceSpecification specification="1"/>
+    </activeResourceSpecifications_ResourceContainer>
+  </resourceContainer_ResourceEnvironment>
+  <resourceContainer_ResourceEnvironment id="_ec11QJsCEeu_KIMeU5SOYA" entityName="f525bdebf2078227fcc3905979bb85b0">
+    <activeResourceSpecifications_ResourceContainer id="_ec3qcJsCEeu_KIMeU5SOYA">
+      <schedulingPolicy href="pathmap://PCM_MODELS/Palladio.resourcetype#ProcessorSharing"/>
+      <activeResourceType_ActiveResourceSpecification href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+      <processingRate_ProcessingResourceSpecification specification="1"/>
+    </activeResourceSpecifications_ResourceContainer>
+  </resourceContainer_ResourceEnvironment>
+  <resourceContainer_ResourceEnvironment id="_qFDC8JsMEeu_KIMeU5SOYA" entityName="01690b9e7350591a48a8a204913f2e6a">
+    <activeResourceSpecifications_ResourceContainer id="_qFDqAJsMEeu_KIMeU5SOYA">
+      <schedulingPolicy href="pathmap://PCM_MODELS/Palladio.resourcetype#ProcessorSharing"/>
+      <activeResourceType_ActiveResourceSpecification href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+      <processingRate_ProcessingResourceSpecification specification="1"/>
+    </activeResourceSpecifications_ResourceContainer>
+  </resourceContainer_ResourceEnvironment>
+  <resourceContainer_ResourceEnvironment id="_GsOpUJsOEeu_KIMeU5SOYA" entityName="cf22a862d3b901849758b92b4b459bec">
+    <activeResourceSpecifications_ResourceContainer id="_GsPQYJsOEeu_KIMeU5SOYA">
+      <schedulingPolicy href="pathmap://PCM_MODELS/Palladio.resourcetype#ProcessorSharing"/>
+      <activeResourceType_ActiveResourceSpecification href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+      <processingRate_ProcessingResourceSpecification specification="1"/>
+    </activeResourceSpecifications_ResourceContainer>
+  </resourceContainer_ResourceEnvironment>
+</resourceenvironment:ResourceEnvironment>

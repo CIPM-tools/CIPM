@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="ASCII"?>
+<allocation:Allocation xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:allocation="http://palladiosimulator.org/PalladioComponentModel/Allocation/5.2" id="_-lK2wDWXEeqEyfgnV4BB-w">
+  <targetResourceEnvironment_Allocation href="resourceenv_29.resourceenvironment#/"/>
+  <system_Allocation href="system_29.system#_qGRmIDWWEeqEyfgnV4BB-w"/>
+  <allocationContexts_Allocation id="_qF2UMJsMEeu_KIMeU5SOYA" entityName="Assembly-Auth-1618176423 -> 01690b9e7350591a48a8a204913f2e6a">
+    <resourceContainer_AllocationContext href="resourceenv_29.resourceenvironment#_qFDC8JsMEeu_KIMeU5SOYA"/>
+    <assemblyContext_AllocationContext href="system_29.system#_qF1GEJsMEeu_KIMeU5SOYA"/>
+  </allocationContexts_Allocation>
+  <allocationContexts_Allocation id="_efpRoJsCEeu_KIMeU5SOYA" entityName="Assembly-WebUI-1618172050 -> 0fe072fe5533a49725543b1553a72e33">
+    <resourceContainer_AllocationContext href="resourceenv_29.resourceenvironment#_edMakJsCEeu_KIMeU5SOYA"/>
+    <assemblyContext_AllocationContext href="system_29.system#_efoDgJsCEeu_KIMeU5SOYA"/>
+  </allocationContexts_Allocation>
+  <allocationContexts_Allocation id="_efqfwJsCEeu_KIMeU5SOYA" entityName="Assembly-Registry-1618172050 -> 737c5285a57b87a94ad83138196adbdc">
+    <resourceContainer_AllocationContext href="resourceenv_29.resourceenvironment#_ec9KAJsCEeu_KIMeU5SOYA"/>
+    <assemblyContext_AllocationContext href="system_29.system#_efpRoZsCEeu_KIMeU5SOYA"/>
+  </allocationContexts_Allocation>
+  <allocationContexts_Allocation id="_efrt4JsCEeu_KIMeU5SOYA" entityName="Assembly-Recommender-1618172050 -> 6d85a197331f15ac72418204ddc0fbdd">
+    <resourceContainer_AllocationContext href="resourceenv_29.resourceenvironment#_wBhCYJsBEeu_KIMeU5SOYA"/>
+    <assemblyContext_AllocationContext href="system_29.system#_efrG0JsCEeu_KIMeU5SOYA"/>
+  </allocationContexts_Allocation>
+  <allocationContexts_Allocation id="_7zmk0JsLEeu_KIMeU5SOYA" entityName="Assembly-SlopeOneRecommender-1618176112 -> 6d85a197331f15ac72418204ddc0fbdd">
+    <resourceContainer_AllocationContext href="resourceenv_29.resourceenvironment#_wBhCYJsBEeu_KIMeU5SOYA"/>
+    <assemblyContext_AllocationContext href="system_29.system#_7zkvoJsLEeu_KIMeU5SOYA"/>
+  </allocationContexts_Allocation>
+  <allocationContexts_Allocation id="_efuxMJsCEeu_KIMeU5SOYA" entityName="Assembly-Auth-1618172050 -> f525bdebf2078227fcc3905979bb85b0">
+    <resourceContainer_AllocationContext href="resourceenv_29.resourceenvironment#_ec11QJsCEeu_KIMeU5SOYA"/>
+    <assemblyContext_AllocationContext href="system_29.system#_efuKIJsCEeu_KIMeU5SOYA"/>
+  </allocationContexts_Allocation>
+  <allocationContexts_Allocation id="_Bnv1EJsJEeu_KIMeU5SOYA" entityName="Assembly-Persistence-1618174863 -> 57332fa869d926b117d3cfaf5b914b38">
+    <resourceContainer_AllocationContext href="resourceenv_29.resourceenvironment#_edFF0JsCEeu_KIMeU5SOYA"/>
+    <assemblyContext_AllocationContext href="system_29.system#_Bnum8JsJEeu_KIMeU5SOYA"/>
+  </allocationContexts_Allocation>
+  <allocationContexts_Allocation id="_GtBTgJsOEeu_KIMeU5SOYA" entityName="Assembly-Persistence-1618177044 -> cf22a862d3b901849758b92b4b459bec">
+    <resourceContainer_AllocationContext href="resourceenv_29.resourceenvironment#_GsOpUJsOEeu_KIMeU5SOYA"/>
+    <assemblyContext_AllocationContext href="system_29.system#_GtAFYJsOEeu_KIMeU5SOYA"/>
+  </allocationContexts_Allocation>
+</allocation:Allocation>

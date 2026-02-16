@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="ASCII"?>
+<usagemodel:UsageModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:stoex="http://sdq.ipd.uka.de/StochasticExpressions/2.2" xmlns:usagemodel="http://palladiosimulator.org/PalladioComponentModel/UsageModel/5.2">
+  <usageScenario_UsageModel id="_FaurkJsWEeu_KIMeU5SOYA" entityName="Scenario0">
+    <scenarioBehaviour_UsageScenario id="_FaurkZsWEeu_KIMeU5SOYA">
+      <actions_ScenarioBehaviour xsi:type="usagemodel:Start" id="_FaurkpsWEeu_KIMeU5SOYA" successor="_FaurlJsWEeu_KIMeU5SOYA"/>
+      <actions_ScenarioBehaviour xsi:type="usagemodel:EntryLevelSystemCall" id="_FaurlJsWEeu_KIMeU5SOYA" successor="_Faurk5sWEeu_KIMeU5SOYA" predecessor="_FaurkpsWEeu_KIMeU5SOYA">
+        <providedRole_EntryLevelSystemCall href="system_29.system#_voi74DWWEeqEyfgnV4BB-w"/>
+        <operationSignature__EntryLevelSystemCall href="repository_29.repository#_v-0FcDVXEeqPG_FgW3bi6Q"/>
+        <inputParameterUsages_EntryLevelSystemCall>
+          <variableCharacterisation_VariableUsage type="VALUE">
+            <specification_VariableCharacterisation specification="IntPMF[(0;0.1266620014)(1;0.2302309307)(2;0.1938418474)(3;0.1630510847)(4;0.1028691393)(5;0.0601819454)(6;0.0391882435)(7;0.0377886634)(8;0.0265920224)(9;0.0146955913)(10;0.0048985304)]"/>
+          </variableCharacterisation_VariableUsage>
+          <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="cartSize"/>
+        </inputParameterUsages_EntryLevelSystemCall>
+      </actions_ScenarioBehaviour>
+      <actions_ScenarioBehaviour xsi:type="usagemodel:Stop" id="_Faurk5sWEeu_KIMeU5SOYA" predecessor="_FaurlJsWEeu_KIMeU5SOYA"/>
+    </scenarioBehaviour_UsageScenario>
+    <workload_UsageScenario xsi:type="usagemodel:OpenWorkload">
+      <interArrivalTime_OpenWorkload specification="2500.0"/>
+    </workload_UsageScenario>
+  </usageScenario_UsageModel>
+  <usageScenario_UsageModel id="_FavSoJsWEeu_KIMeU5SOYA" entityName="Scenario1">
+    <scenarioBehaviour_UsageScenario id="_FavSoZsWEeu_KIMeU5SOYA">
+      <actions_ScenarioBehaviour xsi:type="usagemodel:Start" id="_FavSopsWEeu_KIMeU5SOYA" successor="_FavSpJsWEeu_KIMeU5SOYA"/>
+      <actions_ScenarioBehaviour xsi:type="usagemodel:EntryLevelSystemCall" id="_FavSpJsWEeu_KIMeU5SOYA" successor="_FavSo5sWEeu_KIMeU5SOYA" predecessor="_FavSopsWEeu_KIMeU5SOYA">
+        <providedRole_EntryLevelSystemCall href="system_29.system#_sKCNoDWWEeqEyfgnV4BB-w"/>
+        <operationSignature__EntryLevelSystemCall href="repository_29.repository#_i1PnIDVXEeqPG_FgW3bi6Q"/>
+        <inputParameterUsages_EntryLevelSystemCall>
+          <variableCharacterisation_VariableUsage type="VALUE">
+            <specification_VariableCharacterisation specification="2"/>
+          </variableCharacterisation_VariableUsage>
+          <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="authReps"/>
+        </inputParameterUsages_EntryLevelSystemCall>
+        <inputParameterUsages_EntryLevelSystemCall>
+          <variableCharacterisation_VariableUsage type="VALUE">
+            <specification_VariableCharacterisation specification="DoublePMF[(1.66899781305E11;0.0082644628)(1.66916558525E11;0.0082644628)(1.6693333575E11;0.0082644628)(1.66950112966E11;0.0082644628)(1.66983667404E11;0.0082644628)(1.67017221855E11;0.0082644628)(1.67033999071E11;0.0082644628)(1.67084330735E11;0.0082644628)(1.67117885176E11;0.0082644628)(1.6711788518E11;0.0082644628)(1.67201771283E11;0.0082644628)(1.6725210294E11;0.0165289256)(1.67302434605E11;0.0082644628)(1.67386320703E11;0.0165289256)(1.67403097921E11;0.0082644628)(1.67436652359E11;0.0082644628)(1.67436652363E11;0.0082644628)(1.67453429579E11;0.0082644628)(1.67453429583E11;0.0082644628)(1.67587647345E11;0.0082644628)(1.67621201785E11;0.0082644628)(1.67671533445E11;0.0165289256)(1.67688310665E11;0.0082644628)(1.67705087886E11;0.0082644628)(1.67721865102E11;0.0082644628)(1.6775541954E11;0.0165289256)(1.67772196756E11;0.0082644628)(1.67772196759E11;0.0082644628)(1.67839305635E11;0.0165289256)(1.67856082853E11;0.0165289256)(1.67872860076E11;0.0165289256)(1.67906414512E11;0.0165289256)(1.67956746164E11;0.0082644628)(1.67990300598E11;0.0082644628)(1.68057409481E11;0.0082644628)(1.68074186701E11;0.0082644628)(1.68090963926E11;0.0082644628)(1.68158072802E11;0.0247933884)(1.68208404455E11;0.0082644628)(1.68241958895E11;0.0082644628)(1.68275513335E11;0.0082644628)(1.68292290558E11;0.0082644628)(1.68309067774E11;0.0082644628)(1.68342622215E11;0.0082644628)(1.68392953872E11;0.0082644628)(1.70171339161E11;0.0082644628)(1.71614180096E11;0.0082644628)(1.71630957315E11;0.0082644628)(1.71647734535E11;0.0082644628)(1.71664511754E11;0.0082644628)(1.71681288972E11;0.0165289256)(1.7169806619E11;0.0826446281)(1.71781952277E11;0.0495867769)(1.71781952278E11;0.041322314)(1.71798729494E11;0.0247933884)(1.71798729498E11;0.0578512397)(1.71815506714E11;0.0165289256)(1.71815506715E11;0.0330578512)(1.71832283933E11;0.0165289256)(1.71849061149E11;0.0082644628)(1.71849061154E11;0.0082644628)(1.71865838375E11;0.0247933884)(1.71882615591E11;0.0247933884)(1.71882615592E11;0.0330578512)(1.71899392809E11;0.0082644628)(1.71916170025E11;0.0082644628)(1.71916170029E11;0.0082644628)(1.71932947246E11;0.0165289256)(1.71949724462E11;0.0082644628)(1.71949724469E11;0.0082644628)(1.72050387796E11;0.0082644628)]"/>
+          </variableCharacterisation_VariableUsage>
+          <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="orderTuple"/>
+        </inputParameterUsages_EntryLevelSystemCall>
+        <inputParameterUsages_EntryLevelSystemCall>
+          <variableCharacterisation_VariableUsage type="VALUE">
+            <specification_VariableCharacterisation specification="IntPMF[(1;0.173553719)(2;0.0991735537)(3;0.1652892562)(4;0.1570247934)(5;0.173553719)(6;0.041322314)(7;0.0578512397)(8;0.0495867769)(9;0.0247933884)(10;0.0578512397)]"/>
+          </variableCharacterisation_VariableUsage>
+          <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="items"/>
+        </inputParameterUsages_EntryLevelSystemCall>
+        <inputParameterUsages_EntryLevelSystemCall>
+          <variableCharacterisation_VariableUsage type="VALUE">
+            <specification_VariableCharacterisation specification="2"/>
+          </variableCharacterisation_VariableUsage>
+          <namedReference__VariableUsage xsi:type="stoex:VariableReference" referenceName="persistenceReps"/>
+        </inputParameterUsages_EntryLevelSystemCall>
+      </actions_ScenarioBehaviour>
+      <actions_ScenarioBehaviour xsi:type="usagemodel:Stop" id="_FavSo5sWEeu_KIMeU5SOYA" predecessor="_FavSpJsWEeu_KIMeU5SOYA"/>
+    </scenarioBehaviour_UsageScenario>
+    <workload_UsageScenario xsi:type="usagemodel:OpenWorkload">
+      <interArrivalTime_OpenWorkload specification="2500.0"/>
+    </workload_UsageScenario>
+  </usageScenario_UsageModel>
+</usagemodel:UsageModel>
