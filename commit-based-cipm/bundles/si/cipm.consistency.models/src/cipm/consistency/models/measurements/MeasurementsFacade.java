@@ -9,7 +9,9 @@ import org.eclipse.emf.ecore.resource.Resource;
 import cipm.consistency.base.shared.FileBackedModelUtil;
 import cipm.consistency.base.shared.ModelUtil;
 import cipm.consistency.measurements.Measurements;
+import cipm.consistency.measurements.MeasurementsBlock;
 import cipm.consistency.measurements.MeasurementsFactory;
+import cipm.consistency.measurements.MeasurementsRepository;
 import cipm.consistency.models.ModelFacade;
 
 public class MeasurementsFacade implements ModelFacade {
@@ -46,6 +48,15 @@ public class MeasurementsFacade implements ModelFacade {
 
     private void createModel() {
         measurements = MeasurementsFactory.eINSTANCE.createMeasurements();
+
+        // Initialize with a default repository and block so records can be added immediately
+        MeasurementsRepository repository = MeasurementsFactory.eINSTANCE.createMeasurementsRepository();
+        repository.setUri("default");
+        measurements.getRepositories().add(repository);
+
+        MeasurementsBlock block = MeasurementsFactory.eINSTANCE.createMeasurementsBlock();
+        repository.getBlocks().add(block);
+
         saveToDisk();
     }
 
