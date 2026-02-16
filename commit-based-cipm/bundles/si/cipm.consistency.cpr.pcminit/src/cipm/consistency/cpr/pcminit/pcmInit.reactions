@@ -10,6 +10,7 @@ execute actions in pcm
 reaction AddedPcmRepository {
 	after element pcm::Repository inserted as root
 	call {
+
 		createRepositoryCorrespondence(newValue)
 //		createLuaAnyType(newValue)
 	}
@@ -17,7 +18,9 @@ reaction AddedPcmRepository {
 
 routine createRepositoryCorrespondence(pcm::Repository repo) {
 	update {
+		logger.info("pcmInit: Creating ReactionsCorrespondence: Repository '" + repo.entityName + "' <-> RepositoryPackage.Literals.REPOSITORY")
 		addCorrespondenceBetween(repo, RepositoryPackage.Literals.REPOSITORY)
+		logger.info("pcmInit: Correspondence created successfully")
 //		if (Config.descriptiveNames) {
 //			repo.entityName = "AppSpace Repository"
 //		}
