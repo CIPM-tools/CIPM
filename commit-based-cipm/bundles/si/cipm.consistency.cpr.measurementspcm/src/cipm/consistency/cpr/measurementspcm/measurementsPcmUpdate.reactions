@@ -130,14 +130,17 @@ routine updateInternalActionResourceDemand(measurements::InternalActionRecord ac
 	update {
 		val rd = cipm.consistency.cpr.measurementshelper.MeasurementsHelper.analyse(actionRecord)
 
-		logger.debug("Updating resource demand for InternalAction " + internalAction.id + " with response time: " + rd + " ms")
+		// Check if the strategy provides a rich specification (e.g. DoublePMF StoEx)
+		val specFromHelper = cipm.consistency.cpr.measurementshelper.MeasurementsHelper.getResourceDemandSpecification(actionRecord.internalActionID)
+		val newSpec = if (specFromHelper !== null) specFromHelper else String.valueOf(rd)
 
 		// Update the resource demand specification
 		if (!internalAction.resourceDemand_Action.empty) {
 			val resourceDemand = internalAction.resourceDemand_Action.get(0)
 			if (resourceDemand.specification_ParametericResourceDemand !== null) {
-				resourceDemand.specification_ParametericResourceDemand.specification = String.valueOf(rd)
-				logger.debug("Updated resource demand specification to: " + rd)
+				val oldSpec = resourceDemand.specification_ParametericResourceDemand.specification
+				resourceDemand.specification_ParametericResourceDemand.specification = newSpec
+				logger.info("UPDATED InternalAction [" + internalAction.id + "] '" + internalAction.entityName + "': resource demand " + oldSpec + " -> " + newSpec)
 			}
 		}
 	}

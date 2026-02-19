@@ -48,6 +48,7 @@ import cipm.consistency.measurements.ResourceUtilizationRecord;
 import cipm.consistency.measurements.ServiceContextRecord;
 import cipm.consistency.measurements.reader.MeasurementsReaderException;
 import cipm.consistency.measurements.reader.kieker.KiekerFileMeasurementsReader;
+import cipm.consistency.cpr.measurementshelper.MeasurementsHelper;
 import cipm.consistency.models.im.ImFacade;
 import cipm.consistency.models.measurements.MeasurementsFacade;
 import cipm.consistency.models.pcm.PcmFacade;
@@ -96,6 +97,12 @@ public class MeasurementsVsumIntegrationTest {
     private static final String TEASTORE_MONITORING_PATH =
         "../../bundles/Calibration/CIPM-Pipeline/cipm.consistency.root/cipm.consistency.runtime.pipeline.pcm/src/test/resources/teastore/monitoring";
 
+    /** Sliding window size in milliseconds (6 minutes) */
+    private static final long WINDOW_SIZE_MS = 360_000L;
+
+    /** Trigger time in milliseconds (3 minutes) */
+    private static final long TRIGGER_TIME_MS = 180_000L;
+
     private VsumFacadeImpl vsumFacade;
     private PcmFacade pcmFacade;
     private ImFacade imFacade;
@@ -136,6 +143,12 @@ public class MeasurementsVsumIntegrationTest {
         // Enable headless mode for testing (no UI dialogs)
         vsumFacade.setHeadlessMode(true);
 
+        // Configure measurements helper with window and trigger settings
+        MeasurementsHelper.configure(WINDOW_SIZE_MS, TRIGGER_TIME_MS);
+        LOGGER.info("MeasurementsHelper configured: window=" + WINDOW_SIZE_MS
+            + "ms (" + (WINDOW_SIZE_MS / 60_000) + "min), trigger=" + TRIGGER_TIME_MS
+            + "ms (" + (TRIGGER_TIME_MS / 60_000) + "min)");
+
         // Initialize PCM from INPUT directory (original files with valid cross-references)
         // IM and Measurements go to RESULTS directory
         pcmFacade.initialize(TEST_INPUT_PATH.resolve("pcm"));
@@ -167,6 +180,7 @@ public class MeasurementsVsumIntegrationTest {
 
     @AfterEach
     public void tearDown() {
+        MeasurementsHelper.resetToDefault();
         if (vsumFacade != null && vsumFacade.getVsum() != null) {
             vsumFacade.getVsum().dispose();
         }

@@ -1,7 +1,11 @@
 package tools.cipm.views.measurements;
 
+import java.nio.file.Path;
+
 import org.apache.log4j.Logger;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 
@@ -48,6 +52,72 @@ public class CipmMeasurementsView extends BaseMeasurementsView {
 			block.getRecords().add(record);
 
 			LOGGER.debug("Added " + record.getClass().getSimpleName());
+		});
+	}
+
+	@Override
+	public int clearCurrentBlock() {
+		final int[] cleared = {0};
+		modifyContents((resourceSet) -> {
+			Measurements measurements = findOrCreateMeasurementsInResourceSet(resourceSet);
+			if (!measurements.getRepositories().isEmpty()) {
+				MeasurementsRepository repository = measurements.getRepositories().get(0);
+				if (!repository.getBlocks().isEmpty()) {
+					MeasurementsBlock block = repository.getBlocks().get(repository.getBlocks().size() - 1);
+					cleared[0] = block.getRecords().size();
+					block.getRecords().clear();
+					LOGGER.debug("Cleared " + cleared[0] + " records from current block");
+				}
+			}
+		});
+		return cleared[0];
+	}
+
+	@Override
+	public void startNewBlock() {
+		modifyContents((resourceSet) -> {
+			Measurements measurements = findOrCreateMeasurementsInResourceSet(resourceSet);
+			MeasurementsRepository repository;
+			if (measurements.getRepositories().isEmpty()) {
+				repository = MeasurementsFactory.eINSTANCE.createMeasurementsRepository();
+				repository.setUri("default");
+				measurements.getRepositories().add(repository);
+			} else {
+				repository = measurements.getRepositories().get(0);
+			}
+			MeasurementsBlock newBlock = MeasurementsFactory.eINSTANCE.createMeasurementsBlock();
+			repository.getBlocks().add(newBlock);
+			LOGGER.debug("Started new block (total blocks: " + repository.getBlocks().size() + ")");
+		});
+	}
+
+	@Override
+	public void replaceCurrentBlockWithProxy(String blockFileAbsolutePath) {
+		modifyContents((resourceSet) -> {
+			Measurements measurements = findOrCreateMeasurementsInResourceSet(resourceSet);
+			if (measurements.getRepositories().isEmpty()) {
+				LOGGER.warn("No repositories found, cannot replace block with proxy");
+				return;
+			}
+
+			MeasurementsRepository repository = measurements.getRepositories().get(0);
+			if (repository.getBlocks().isEmpty()) {
+				LOGGER.warn("No blocks found, cannot replace block with proxy");
+				return;
+			}
+
+			// Remove the last (cleared) block
+			int lastIdx = repository.getBlocks().size() - 1;
+			repository.getBlocks().remove(lastIdx);
+
+			// Create a proxy block pointing to the persisted file
+			MeasurementsBlock proxyBlock = MeasurementsFactory.eINSTANCE.createMeasurementsBlock();
+			URI blockURI = URI.createFileURI(Path.of(blockFileAbsolutePath).toAbsolutePath().toString());
+			URI fragmentURI = blockURI.appendFragment("//@repositories.0/@blocks.0");
+			((InternalEObject) proxyBlock).eSetProxyURI(fragmentURI);
+
+			repository.getBlocks().add(proxyBlock);
+			LOGGER.debug("Replaced block " + lastIdx + " with proxy -> " + fragmentURI);
 		});
 	}
 
