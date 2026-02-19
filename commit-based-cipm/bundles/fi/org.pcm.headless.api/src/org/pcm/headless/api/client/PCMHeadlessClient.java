@@ -19,9 +19,9 @@ public class PCMHeadlessClient {
 
 	private static boolean PCM_INITED = false;
 
-	private static final String PING_URL = "rest/ping";
-	private static final String CLEAR_URL = "rest/clear";
-	private static final String PREPARE_URL = "rest/prepare";
+	private static final String PING_URL = "/rest/ping";
+	private static final String CLEAR_URL = "/rest/clear";
+	private static final String PREPARE_URL = "/rest/prepare";
 
 	private String baseUrl;
 
@@ -29,7 +29,7 @@ public class PCMHeadlessClient {
 
 	public PCMHeadlessClient(String baseUrl) {
 		this.client = produceClient(DEFAULT_TIMEOUT);
-		this.baseUrl = baseUrl.endsWith("/") ? baseUrl : baseUrl + "/";
+		this.baseUrl = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
 		if (!this.baseUrl.startsWith("http://")) {
 			this.baseUrl = "http://" + this.baseUrl;
 		}

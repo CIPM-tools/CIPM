@@ -199,7 +199,6 @@ public class SimulationClient {
 			var entity = new UrlEncodedFormEntity(
 				List.of(new BasicNameValuePair("configJson", JSON_MAPPER.writeValueAsString(config)))
 			);
-		
 			var postRequest = new HttpPost(this.baseUrl + integrateId(SET_CONFIG_URL));
 			postRequest.setEntity(entity);
 			
