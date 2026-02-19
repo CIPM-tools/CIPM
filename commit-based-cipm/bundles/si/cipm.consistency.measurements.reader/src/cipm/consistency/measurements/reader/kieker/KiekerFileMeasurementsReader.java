@@ -15,6 +15,7 @@ package cipm.consistency.measurements.reader.kieker;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import org.apache.log4j.Logger;
 
@@ -94,12 +95,11 @@ public class KiekerFileMeasurementsReader implements MeasurementsReader {
         File kiekerMap = new File(dir, "kieker.map");
         return kiekerMap.exists();
     }
-
-    @Override
-    public List<MeasurementRecord> readRecords(String source) throws MeasurementsReaderException {
+    
+    private <TResultType> List<TResultType> readAndConvertRecords(String source, Function<IMonitoringRecord, TResultType> converter) throws MeasurementsReaderException {
         LOGGER.debug("Reading Kieker measurements from directory: " + source);
 
-        List<MeasurementRecord> records = new ArrayList<>();
+        List<TResultType> records = new ArrayList<>();
 
         try {
             // Create Kieker Analysis instance
@@ -111,7 +111,7 @@ public class KiekerFileMeasurementsReader implements MeasurementsReader {
             final FSReader reader = new FSReader(fsReaderConfig, analysisInstance);
 
             // Create filter to collect records
-            final RecordCollectorFilter collector = new RecordCollectorFilter(new Configuration(), analysisInstance, records);
+            final RecordCollectorFilter<TResultType> collector = new RecordCollectorFilter<>(new Configuration(), analysisInstance, records, converter);
 
             // Connect reader to collector
             analysisInstance.connect(reader, FSReader.OUTPUT_PORT_NAME_RECORDS, collector, RecordCollectorFilter.INPUT_PORT_NAME_EVENTS);
@@ -119,18 +119,33 @@ public class KiekerFileMeasurementsReader implements MeasurementsReader {
             // Start reading all records
             analysisInstance.run();
 
-            // Print summary
-            LOGGER.info("========================================");
-            LOGGER.info("Kieker File Reading Summary:");
-            LOGGER.info("  Raw Kieker records:    " + collector.getRawRecordCount());
-            LOGGER.info("  Converted EMF records: " + collector.getConvertedCount());
-            LOGGER.info("  Skipped records:       " + collector.getSkippedCount());
-            LOGGER.info("  Source directory:      " + source);
-            LOGGER.info("========================================");
-
         } catch (IllegalStateException | AnalysisConfigurationException e) {
             throw new MeasurementsReaderException("Failed to read Kieker monitoring logs from: " + source, e);
         }
+
+        return records;
+    }
+    
+    public List<IMonitoringRecord> readKiekerRecords(String source) throws MeasurementsReaderException {
+    	return this.readAndConvertRecords(source, (record) -> (record));
+    }
+
+    @Override
+    public List<MeasurementRecord> readRecords(String source) throws MeasurementsReaderException {
+        LOGGER.debug("Reading Kieker measurements from directory: " + source);
+        
+        KiekerToMMRecordConverter converter = new KiekerToMMRecordConverter();
+
+        List<MeasurementRecord> records = this.readAndConvertRecords(source, converter);
+
+        // Print summary
+        LOGGER.info("========================================");
+        LOGGER.info("Kieker File Reading Summary:");
+        LOGGER.info("  Raw Kieker records:    " + converter.getRawRecordCount());
+        LOGGER.info("  Converted EMF records: " + converter.getConvertedCount());
+        LOGGER.info("  Skipped records:       " + converter.getSkippedCount());
+        LOGGER.info("  Source directory:      " + source);
+        LOGGER.info("========================================");
 
         return records;
     }
@@ -143,23 +158,23 @@ public class KiekerFileMeasurementsReader implements MeasurementsReader {
         }
         return records.size();
     }
-
+    
     /**
-     * Internal Kieker filter plugin to collect and convert monitoring records.
+     * Internal Kieker filter plugin to collect all monitoring records from a file and converting them to another type.
      */
-    private static class RecordCollectorFilter extends AbstractFilterPlugin {
+    private static class RecordCollectorFilter<TConvertedType> extends AbstractFilterPlugin {
 
         static final String INPUT_PORT_NAME_EVENTS = "inputEvents";
 
-        private final List<MeasurementRecord> targetList;
-        private int rawRecordCount = 0;
-        private int convertedCount = 0;
-        private int skippedCount = 0;
-
+        private final List<TConvertedType> targetList;
+        
+        private final Function<IMonitoringRecord, TConvertedType> converter;
+        
         public RecordCollectorFilter(Configuration configuration, IAnalysisController analysisInstance,
-                List<MeasurementRecord> targetList) {
+                List<TConvertedType> targetList, Function<IMonitoringRecord, TConvertedType> converter) {
             super(configuration, analysisInstance);
             this.targetList = targetList;
+            this.converter = converter;
         }
 
         @Override
@@ -169,12 +184,26 @@ public class KiekerFileMeasurementsReader implements MeasurementsReader {
 
         @InputPort(name = INPUT_PORT_NAME_EVENTS, description = "Input monitoring records.", eventTypes = { IMonitoringRecord.class })
         public final void inputEvent(final IMonitoringRecord kiekerRecord) {
+            var convertedRecord = this.converter.apply(kiekerRecord);
+            this.targetList.add(convertedRecord);
+        }
+    }
+    
+    /**
+     * Internal converter for Kieker records to records from the measurements metamodel.
+     */
+    private static class KiekerToMMRecordConverter implements Function<IMonitoringRecord, MeasurementRecord> {
+        private int rawRecordCount = 0;
+        private int convertedCount = 0;
+        private int skippedCount = 0;
+
+        @Override
+        public final MeasurementRecord apply(final IMonitoringRecord kiekerRecord) {
             rawRecordCount++;
             String recordType = kiekerRecord.getClass().getSimpleName();
 
             MeasurementRecord emfRecord = KiekerRecordConverter.convert(kiekerRecord);
             if (emfRecord != null) {
-                targetList.add(emfRecord);
                 convertedCount++;
             } else {
                 skippedCount++;
@@ -186,6 +215,8 @@ public class KiekerFileMeasurementsReader implements MeasurementsReader {
                 LOGGER.info("Progress: " + rawRecordCount + " raw records processed, "
                         + convertedCount + " converted, " + skippedCount + " skipped");
             }
+            
+            return emfRecord;
         }
 
         public int getRawRecordCount() {
