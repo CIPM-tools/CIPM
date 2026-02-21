@@ -174,7 +174,7 @@ public class MonitoringDataEnrichment {
 			.getResourceEnvironmentModel()
 			.getResourceContainer_ResourceEnvironment()
 			.stream()
-			.filter(container -> container.getId().equals(hostId))
+			.filter(container -> container.getId().equals(hostId) || container.getEntityName().equals(hostId))
 			.findFirst()
 			.orElse(null);
 	}
