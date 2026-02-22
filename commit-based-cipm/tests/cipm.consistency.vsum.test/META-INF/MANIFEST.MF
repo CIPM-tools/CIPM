@@ -11,7 +11,6 @@ Require-Bundle: cipm.consistency.commitintegration,
  cipm.consistency.vsum,
  cipm.consistency.measurements,
  cipm.consistency.measurements.reader,
- cipm.consistency.measurements.reader.tests,
  org.eclipse.jgit,
  tools.vitruv.framework.vsum,
  edu.kit.ipd.sdq.commons.util.java,
@@ -53,6 +52,12 @@ Require-Bundle: cipm.consistency.commitintegration,
  cipm.consistency.cpr.javapcm.msa,
  cipm.consistency.commitintegration.lang.java,
  jamopp.resource,
- cipm.consistency.cpr.measurementshelper
+ cipm.consistency.cpr.measurementshelper,
+ cipm.consistency.runtime.pipeline.validation,
+ org.pcm.headless.api,
+ org.pcm.headless.shared,
+ com.fasterxml.jackson.core.jackson-annotations,
+ com.fasterxml.jackson.core.jackson-core,
+ com.fasterxml.jackson.core.jackson-databind
 Export-Package: cipm.consistency.vsum.test
 Bundle-RequiredExecutionEnvironment: JavaSE-11
