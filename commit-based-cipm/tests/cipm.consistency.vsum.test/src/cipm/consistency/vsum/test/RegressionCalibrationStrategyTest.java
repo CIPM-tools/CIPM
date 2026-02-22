@@ -15,6 +15,7 @@ package cipm.consistency.vsum.test;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -44,13 +45,16 @@ import org.palladiosimulator.pcm.repository.RepositoryPackage;
 import org.palladiosimulator.pcm.seff.InternalAction;
 
 import cipm.consistency.base.shared.pcm.util.PCMUtils;
+import cipm.consistency.bridge.monitoring.records.PCMContextRecord;
 import cipm.consistency.cpr.measurementshelper.MeasurementsHelper;
 import cipm.consistency.cpr.measurementshelper.RegressionMeasurementsHelper;
 import cipm.consistency.measurements.InternalActionRecord;
 import cipm.consistency.measurements.MeasurementRecord;
 import cipm.consistency.measurements.Measurements;
+import cipm.consistency.measurements.MeasurementsBlock;
 import cipm.consistency.measurements.MeasurementsFactory;
 import cipm.consistency.measurements.MeasurementsPackage;
+import cipm.consistency.measurements.MeasurementsRepository;
 import cipm.consistency.measurements.ServiceContextRecord;
 import cipm.consistency.measurements.reader.MeasurementsReaderException;
 import cipm.consistency.measurements.reader.kieker.KiekerFileMeasurementsReader;
@@ -58,6 +62,7 @@ import cipm.consistency.models.im.ImFacade;
 import cipm.consistency.models.measurements.MeasurementsFacade;
 import cipm.consistency.models.pcm.PcmFacade;
 import cipm.consistency.vsum.VsumFacadeImpl;
+import cipm.consistency.vsum.test.validation.SelfValidationExecutor;
 import mir.reactions.measurementsInit.MeasurementsInitChangePropagationSpecification;
 import mir.reactions.measurementsPcmUpdate.MeasurementsPcmUpdateChangePropagationSpecification;
 import mir.reactions.pcmInit.PcmInitChangePropagationSpecification;
@@ -92,7 +97,7 @@ public class RegressionCalibrationStrategyTest {
 
     /** TeaStore Kieker monitoring data path */
     private static final String TEASTORE_MONITORING_PATH =
-        "../../bundles/Calibration/CIPM-Pipeline/cipm.consistency.root/cipm.consistency.runtime.pipeline.pcm/src/test/resources/teastore/monitoring";
+        "testData" + File.separator + "kieker";
 
     /** Block duration in nanoseconds (15 seconds per block) */
     private static final long BLOCK_DURATION_NS = 15_000_000_000L;
@@ -183,7 +188,7 @@ public class RegressionCalibrationStrategyTest {
     }
 
     @Test
-    public void testRegressionCalibrationStrategy() throws MeasurementsReaderException, IOException {
+    public void testRegressionCalibrationStrategy() throws Exception, IOException {
         System.out.println("========================================");
         System.out.println("REGRESSION (EMA) CALIBRATION STRATEGY TEST");
         System.out.println("========================================");
@@ -198,6 +203,7 @@ public class RegressionCalibrationStrategyTest {
             System.out.println("WARNING: No Kieker records found. Skipping test.");
             return;
         }
+        SelfValidationExecutor selfValidation = new SelfValidationExecutor(readAllOriginalKiekerRecords());
 
         // Count InternalActionRecords
         long internalCount = allRecords.stream()
@@ -221,6 +227,8 @@ public class RegressionCalibrationStrategyTest {
         int totalPropagatedChanges = 0;
         int totalRecordsProcessed = 0;
         int totalInternalActions = 0;
+        RecordPropagationPerformanceData performanceData = new RecordPropagationPerformanceData();
+        selfValidation.validate(this.pcmFacade.getInMemoryPCM(), 0);
 
         for (int blockIdx = 0; blockIdx < blocks.size(); blockIdx++) {
             List<MeasurementRecord> blockRecords = blocks.get(blockIdx);
@@ -238,8 +246,16 @@ public class RegressionCalibrationStrategyTest {
                 measurementsView.addMeasurement(blockRecords.get(i));
 
                 try {
+                	long time = System.currentTimeMillis();
                     var propagatedChanges = measurementsView.commitChangesAndUpdate();
+                    time = System.currentTimeMillis() - time;
+                    
+                    performanceData.addPerformance(totalRecordsProcessed + i, time);
                     blockChanges += propagatedChanges.size();
+                    
+                    if (MeasurementsHelper.wasTriggered()) {
+                    	selfValidation.validate(this.pcmFacade.getInMemoryPCM(), totalRecordsProcessed + i);
+            		}
                 } catch (IllegalArgumentException e) {
                     // Empty change
                 }
@@ -285,6 +301,10 @@ public class RegressionCalibrationStrategyTest {
 
             blocks.set(blockIdx, null);
         }
+        
+        selfValidation.validate(this.pcmFacade.getInMemoryPCM(), totalRecordsProcessed);
+        selfValidation.saveResults(TEST_RESULTS_PATH.resolve("self-validation.json"));
+        performanceData.saveData(TEST_RESULTS_PATH.resolve("record-propagation-performance.json"));
 
         // Step 5: Print regression results
         System.out.println("========================================");
@@ -502,6 +522,15 @@ public class RegressionCalibrationStrategyTest {
         }
         System.out.println("  InternalAction: " + internal + ", Service: " + service + ", Other: " + other);
         return records;
+    }
+    
+    private List<PCMContextRecord> readAllOriginalKiekerRecords() throws MeasurementsReaderException {
+    	return new KiekerFileMeasurementsReader()
+    		.readKiekerRecords(findMonitoringDirectory().toString())
+			.stream()
+			.filter(PCMContextRecord.class::isInstance)
+			.map(PCMContextRecord.class::cast)
+			.collect(Collectors.toList());
     }
 
     private List<List<MeasurementRecord>> splitIntoBlocks(List<MeasurementRecord> records) {

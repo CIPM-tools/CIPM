@@ -15,6 +15,7 @@ package cipm.consistency.vsum.test;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,9 +41,11 @@ import org.palladiosimulator.pcm.repository.RepositoryPackage;
 import org.palladiosimulator.pcm.seff.InternalAction;
 
 import cipm.consistency.base.shared.pcm.util.PCMUtils;
+import cipm.consistency.bridge.monitoring.records.PCMContextRecord;
 import cipm.consistency.measurements.MeasurementsPackage;
 import tools.vitruv.change.correspondence.Correspondence;
 import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
+import cipm.consistency.cpr.measurementshelper.MeasurementsHelper;
 import cipm.consistency.measurements.InternalActionRecord;
 import cipm.consistency.measurements.LoopActionRecord;
 import cipm.consistency.measurements.MeasurementRecord;
@@ -53,7 +56,9 @@ import cipm.consistency.measurements.reader.kieker.KiekerFileMeasurementsReader;
 import cipm.consistency.models.im.ImFacade;
 import cipm.consistency.models.measurements.MeasurementsFacade;
 import cipm.consistency.models.pcm.PcmFacade;
+import cipm.consistency.runtime.pipeline.validation.ValidationFeedbackComponent;
 import cipm.consistency.vsum.VsumFacadeImpl;
+import cipm.consistency.vsum.test.validation.SelfValidationExecutor;
 import mir.reactions.measurementsInit.MeasurementsInitChangePropagationSpecification;
 import mir.reactions.measurementsPcmUpdate.MeasurementsPcmUpdateChangePropagationSpecification;
 import mir.reactions.pcmInit.PcmInitChangePropagationSpecification;
@@ -89,7 +94,7 @@ public class ShortMeasurementsIntegrationTest {
 
     /** Original TeaStore monitoring data location */
     private static final String TEASTORE_MONITORING_PATH =
-        "../../bundles/Calibration/CIPM-Pipeline/cipm.consistency.root/cipm.consistency.runtime.pipeline.pcm/src/test/resources/teastore/monitoring";
+        "testData" + File.separator + "kieker";
 
     /** Number of trigger intervals to process (limits memory usage) */
     private static final int MAX_TRIGGER_INTERVALS = 2;
@@ -284,7 +289,7 @@ public class ShortMeasurementsIntegrationTest {
      * Test reading filtered Kieker records and verifying reactions update resource demands.
      */
     @Test
-    public void testFilteredMeasurementsUpdateResourceDemands() throws MeasurementsReaderException {
+    public void testFilteredMeasurementsUpdateResourceDemands() throws Exception {
         System.out.println("========================================");
         System.out.println("SHORT MEASUREMENTS INTEGRATION TEST");
         System.out.println("========================================");
@@ -313,6 +318,7 @@ public class ShortMeasurementsIntegrationTest {
         // Step 3: Read and filter Kieker records (first 5 trigger intervals only)
         System.out.println("Step 3: Reading filtered Kieker records...");
         List<MeasurementRecord> filteredRecords = readFilteredKiekerRecords();
+        SelfValidationExecutor selfValidation = new SelfValidationExecutor(readAllKiekerRecords());
 
         if (filteredRecords.isEmpty()) {
             System.out.println("WARNING: No Kieker records found. Test data may be missing.");
@@ -328,16 +334,26 @@ public class ShortMeasurementsIntegrationTest {
         System.out.println("Step 4: Adding records and committing changes...");
         int totalPropagatedChanges = 0;
         int recordCount = 0;
+        RecordPropagationPerformanceData performanceData = new RecordPropagationPerformanceData();
+        selfValidation.validate(this.pcmFacade.getInMemoryPCM(), recordCount);
 
         for (MeasurementRecord record : filteredRecords) {
             measurementsView.addMeasurement(record);
             recordCount++;
 
             try {
+            	long time = System.currentTimeMillis();
                 var propagatedChanges = measurementsView.commitChangesAndUpdate();
+                time = System.currentTimeMillis() - time;
+                performanceData.addPerformance(recordCount, time);
+                
                 int changeCount = propagatedChanges.size();
                 totalPropagatedChanges += changeCount;
 
+                if (MeasurementsHelper.wasTriggered()) {
+                	selfValidation.validate(this.pcmFacade.getInMemoryPCM(), recordCount);
+        		}
+                
                 if (changeCount > 0) {
                     reactionsTriggered.incrementAndGet();
                 }
@@ -351,6 +367,10 @@ public class ShortMeasurementsIntegrationTest {
                 // Empty change - continue
             }
         }
+        
+        selfValidation.validate(this.pcmFacade.getInMemoryPCM(), recordCount);
+        selfValidation.saveResults(TEST_RESULTS_PATH.resolve("self-validation.json"));
+        performanceData.saveData(TEST_RESULTS_PATH.resolve("record-propagation-performance.json"));
 
         System.out.println("  - Processed " + recordCount + " records total");
         System.out.println("  - Total propagated changes: " + totalPropagatedChanges);
@@ -433,6 +453,15 @@ public class ShortMeasurementsIntegrationTest {
 
         LOGGER.info("Filtered " + allRecords.size() + " -> " + filtered.size() + " records");
         return filtered;
+    }
+    
+    private List<PCMContextRecord> readAllKiekerRecords() throws MeasurementsReaderException {
+    	return new KiekerFileMeasurementsReader()
+    		.readKiekerRecords(findMonitoringDirectory().toString())
+			.stream()
+			.filter(PCMContextRecord.class::isInstance)
+			.map(PCMContextRecord.class::cast)
+			.collect(Collectors.toList());
     }
 
     private long findMinTimestamp(List<MeasurementRecord> records) {
