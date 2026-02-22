@@ -20,12 +20,12 @@ public class ValidationFeedbackLoopConfiguration {
 	 * URL where the Headless PCM {@link https://github.com/dmonsch/PCM-Headless} is
 	 * running.
 	 */
-	private String url;
+	private String url = "http://localhost";
 
 	/**
 	 * Port of the Headless PCM.
 	 */
-	private int port;
+	private int port = 8080;
 
 	/**
 	 * Simulation time units.

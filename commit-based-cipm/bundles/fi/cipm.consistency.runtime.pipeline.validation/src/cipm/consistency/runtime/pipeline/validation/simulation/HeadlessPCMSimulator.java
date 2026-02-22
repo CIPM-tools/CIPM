@@ -119,7 +119,6 @@ public class HeadlessPCMSimulator implements IPCMSimulator {
 		res.append(url);
 		res.append(":");
 		res.append(port);
-		res.append("/");
 
 		return res.toString();
 	}
