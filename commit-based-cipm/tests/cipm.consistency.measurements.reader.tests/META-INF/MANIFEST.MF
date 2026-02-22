@@ -9,7 +9,7 @@ Require-Bundle: cipm.consistency.measurements.reader,
  org.junit,
  junit-jupiter-api;bundle-version="5.9.0",
  junit-jupiter-engine,
- org.apache.log4j
-Export-Package: cipm.consistency.measurements.reader.tests,
- cipm.consistency.bridge.monitoring.records
+ org.apache.log4j,
+ cipm.consistency.base.shared
+Export-Package: cipm.consistency.measurements.reader.tests
 Bundle-RequiredExecutionEnvironment: JavaSE-11
