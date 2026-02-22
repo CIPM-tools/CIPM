@@ -27,6 +27,8 @@ import cipm.consistency.measurements.MeasurementsBlock;
 public final class MeasurementsHelper {
     /** The delegate implementation. */
     private static IMeasurementsHelper delegate = new WindowSlidingMeasurementsHelper();
+    
+    private static boolean wasTriggered = false;
 
     private MeasurementsHelper() {
         // Utility class
@@ -110,7 +112,17 @@ public final class MeasurementsHelper {
      * @return true if the trigger condition is met
      */
     public static boolean trigger(InternalActionRecord actionRecord) {
-        return delegate.trigger(actionRecord);
+        wasTriggered = delegate.trigger(actionRecord);
+        return wasTriggered;
+    }
+    
+    /**
+     * Indicates if the last CPR execution should have been triggered-
+     * 
+     * @return true if the last execution should have triggered.
+     */
+    public static boolean wasTriggered() {
+    	return wasTriggered;
     }
 
     /**
