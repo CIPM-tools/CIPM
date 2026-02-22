@@ -51,8 +51,8 @@ public class MonitoringDataEnrichment {
 	public void enrichWithMonitoringData(InMemoryPCM pcm, List<ValidationPoint> points,
 			List<PCMContextRecord> monitoring) {
 		// clear caches
-//		resourceUtilCache.clear();
-//		serviceCallCache.clear();
+		resourceUtilCache.clear();
+		serviceCallCache.clear();
 		cacheResEnv.clear();
 		pcmValidationPointMatcher.clear();
 
