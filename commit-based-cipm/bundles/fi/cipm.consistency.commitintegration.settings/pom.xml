@@ -5,13 +5,26 @@
 
     <modelVersion>4.0.0</modelVersion>
     
-     <groupId>cipm.consistency.commitintegration</groupId>
+    <parent>
+        <groupId>cipm.consistency</groupId>
+        <artifactId>fi</artifactId>
+        <version>0.2.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    
   <artifactId>cipm.consistency.commitintegration.settings</artifactId>
-<version>0.2.0.qualifier</version>
     <packaging>jar</packaging>
     <name>Settings Container for the Commit-Based Integration</name>
     
     
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    
+    
+   
  
         <dependencies>
             
@@ -21,5 +34,32 @@
                 <version>2.8.0</version>
             </dependency>
               </dependencies>
+              
+              <build>
+        <plugins>
+            <plugin>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok-maven-plugin</artifactId>
+                <version>1.18.20.0</version>
+                <executions>
+                    <execution>
+                        <id>delombok</id>
+                        <phase>none</phase> </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.eclipse.xtend</groupId>
+                <artifactId>xtend-maven-plugin</artifactId>
+                <version>2.25.0</version>
+                <executions>
+                    <execution>
+                        <id>default</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
     
     </project>
