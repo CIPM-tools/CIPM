@@ -12,6 +12,24 @@
 	<packaging>pom</packaging>
 	<name>Bundles for first Eclipse instance</name>
 
+	 <repositories>
+       	  <repository>
+             <id>cipm-mvn</id>
+             <name>CIPM's Maven Repository</name>
+             <url>https://CIPM-tools.github.io/updatesite/mvn</url>
+          </repository>
+   	 </repositories>
+
+	<dependencyManagement>
+	 <dependencies>
+	  <dependency>
+            <groupId>org.palladiosimulator.core</groupId>
+            <artifactId>org.palladiosimulator.pcm</artifactId>
+            <version>5.0.0.202102051710</version>
+          </dependency>
+	 </dependencies>
+	</dependencyManagement>
+
 	<modules>
 		<module>cipm.consistency.base.shared</module>
 		<module>cipm.consistency.commitintegration.diff.util</module>
