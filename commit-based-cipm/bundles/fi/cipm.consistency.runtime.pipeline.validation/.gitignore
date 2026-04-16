@@ -40,9 +40,6 @@
 
 # Eclipse
 # -------
-*.classpath
-*.project
-*.settings
 /bin
 /subprojects/*/bin
 atlassian-ide-plugin.xml
