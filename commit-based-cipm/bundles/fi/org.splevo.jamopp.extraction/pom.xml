@@ -1,0 +1,64 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  	<parent>
+		<groupId>cipm.consistency</groupId>
+		<artifactId>fi</artifactId>
+		<version>0.2.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	
+  <groupId>org.splevo.jamopp.extraction</groupId>
+  <artifactId>org.splevo.jamopp.extraction</artifactId>
+  <version>0.2.0-SNAPSHOT</version>
+  
+  <dependencies>
+   <dependency>
+            <groupId>cipm.consistency</groupId>
+            <artifactId>org.splevo.extraction</artifactId>
+   </dependency>
+   <!-- org.emftext.language.java needs to be added -->
+   <!-- jamopp.resource needs to be added -->
+   <dependency>
+    		<groupId>org.eclipse.emf</groupId>
+    		<artifactId>org.eclipse.emf.ecore.xmi</artifactId>
+	</dependency>
+	<dependency>
+             <groupId>commons-io</groupId>
+             <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
+    		<groupId>log4j</groupId>
+    		<artifactId>log4j</artifactId>
+	</dependency>
+	<dependency>
+    	  	<groupId>com.google.guava</groupId>
+	  		<artifactId>guava</artifactId>
+	</dependency>
+	<dependency>
+    		<groupId>org.eclipse.platform</groupId>
+    		<artifactId>org.eclipse.core.resources</artifactId>
+	</dependency>
+	<dependency>
+            <groupId>cipm.consistency</groupId>
+            <artifactId>org.splevo.commons</artifactId>
+    </dependency>
+	<dependency>
+    		<groupId>org.eclipse.core.runtime</groupId>
+    		<artifactId>org.eclipse.core.runtime</artifactId>
+	</dependency>
+  </dependencies>
+  
+  
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <release>11</release>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
