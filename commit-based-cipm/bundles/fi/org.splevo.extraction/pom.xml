@@ -1,0 +1,45 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+		<groupId>cipm.consistency</groupId>
+		<artifactId>fi</artifactId>
+		<version>0.2.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	
+  <groupId>org.splevo.extraction</groupId>
+  <artifactId>org.splevo.extraction</artifactId>
+  <version>0.2.0-SNAPSHOT</version>
+  
+  <dependencies>
+    <dependency>
+    		<groupId>org.eclipse.core.runtime</groupId>
+    		<artifactId>org.eclipse.core.runtime</artifactId>
+	</dependency>
+	<dependency>
+          	<groupId>org.eclipse.emf</groupId>
+    		<artifactId>org.eclipse.emf.ecore</artifactId>
+	</dependency>
+	<dependency>
+    		<groupId>log4j</groupId>
+    		<artifactId>log4j</artifactId>
+	</dependency>
+	<dependency>
+    	    <groupId>com.google.guava</groupId>
+	  		<artifactId>guava</artifactId>
+	</dependency>
+  </dependencies>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <release>11</release>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
