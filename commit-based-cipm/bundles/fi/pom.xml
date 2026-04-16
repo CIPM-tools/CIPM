@@ -119,6 +119,11 @@
             	<artifactId>org.splevo.jamopp.util</artifactId>
             	<version>${project.version}</version>
           </dependency>
+	  <dependency>
+            	<groupId>cipm.consistency</groupId>
+            	<artifactId>cipm.consistency.workflow</artifactId>
+            	<version>${project.version}</version>
+          </dependency>
 
 	 </dependencies>
 	</dependencyManagement>
@@ -138,6 +143,7 @@
 		<module>org.splevo.jamopp.diffing</module>
 		<module>org.splevo.jamopp.extraction</module>
 		<module>org.splevo.jamopp.util</module>
+                <module>../../releng/cipm.consistency.workflow</module>
 	</modules>
 
 </project>
