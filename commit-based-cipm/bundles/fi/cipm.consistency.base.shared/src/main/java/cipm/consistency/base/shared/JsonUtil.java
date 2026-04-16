@@ -2,7 +2,7 @@ package cipm.consistency.base.shared;
 
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.Triple;
+import org.eclipse.net4j.util.collection.Pair;
 
 import com.google.common.collect.Lists;
 
@@ -26,7 +26,7 @@ public class JsonUtil {
      * @return valid JSON string that represents an object which contains the given key-value pair
      */
     public static String wrapAsObject(String attribute, Object value, boolean string) {
-        return wrapAsObject(Lists.newArrayList(Triple.of(attribute, value, string)));
+        return wrapAsObject(Lists.newArrayList(new Pair<>(attribute, new Pair<>(value, string))));
     }
 
     /**
@@ -36,19 +36,19 @@ public class JsonUtil {
      *            triples which are structured as follows: (key, value, wrap as string)
      * @return valid JSON string that represents an object which contains the given key-value pairs
      */
-    public static String wrapAsObject(List<Triple<String, Object, Boolean>> values) {
+    public static String wrapAsObject(List<Pair<String, Pair<Object, Boolean>>> values) {
         StringBuilder outputJson = new StringBuilder();
         outputJson.append("{");
-        for (Triple<String, Object, Boolean> attr : values) {
+        for (Pair<String, Pair<Object, Boolean>> attr : values) {
             outputJson.append("\"");
-            outputJson.append(attr.getLeft());
+            outputJson.append(attr.getElement1());
             outputJson.append("\"");
             outputJson.append(" : ");
-            if (attr.getRight()) {
+            if (attr.getElement2().getElement2()) {
                 outputJson.append("\"");
             }
-            outputJson.append(String.valueOf(attr.getMiddle()));
-            if (attr.getRight()) {
+            outputJson.append(String.valueOf(attr.getElement2().getElement1()));
+            if (attr.getElement2().getElement2()) {
                 outputJson.append("\"");
             }
             outputJson.append(",");

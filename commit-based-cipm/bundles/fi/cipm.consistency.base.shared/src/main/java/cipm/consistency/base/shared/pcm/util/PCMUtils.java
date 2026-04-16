@@ -21,6 +21,7 @@ import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
 import org.palladiosimulator.pcm.resourcetype.ResourceRepository;
 import org.palladiosimulator.pcm.resourcetype.ResourcetypePackage;
+import org.pcm.headless.api.util.PCMUtil;
 
 import de.uka.ipd.sdq.identifier.Identifier;
 //import tools.vitruv.dsls.reactions.meta.correspondence.reactions.ReactionsPackage;
@@ -164,7 +165,7 @@ public class PCMUtils {
      */
     private static void initPathmaps() {
         final String metricSpecModel = "models/Palladio.resourcetype";
-        final URL url = PCMUtils.class.getClassLoader()
+        final URL url = PCMUtil.class.getClassLoader()
             .getResource(metricSpecModel);
         if (url == null) {
             throw new RuntimeException("Error getting common metric definitions");

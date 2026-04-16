@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.net4j.util.collection.Pair;
 
 /**
  * A simple graph data structure that represents a directed graph. It provides access to edges of
@@ -105,19 +105,19 @@ public class DirectedGraph<N, E> {
      *            the new value to set
      */
     public void modifyEdge(N from, N to, E value) {
-        this.edgeProjection.put(Pair.of(from, to), value);
+        this.edgeProjection.put(new Pair<>(from, to), value);
 
         if (!outgoingEdges.containsKey(from)) {
             outgoingEdges.put(from, new ArrayList<>());
         }
         outgoingEdges.get(from)
-            .add(Pair.of(to, value));
+            .add(new Pair<>(to, value));
 
         if (!incomingEdges.containsKey(to)) {
             incomingEdges.put(to, new ArrayList<>());
         }
         incomingEdges.get(to)
-            .add(Pair.of(from, value));
+            .add(new Pair<>(from, value));
     }
 
     /**
@@ -160,7 +160,7 @@ public class DirectedGraph<N, E> {
      * @return true if there is an edge with the given source and target, false otherwise
      */
     public boolean hasEdge(N from, N to) {
-        return this.edgeProjection.containsKey(Pair.of(from, to));
+        return this.edgeProjection.containsKey(new Pair<>(from, to));
     }
 
     /**
@@ -182,7 +182,7 @@ public class DirectedGraph<N, E> {
      * @return the edge or null if it does not exist
      */
     public E getEdge(N n1, N n2) {
-        return this.edgeProjection.get(Pair.of(n1, n2));
+        return this.edgeProjection.get(new Pair<>(n1, n2));
     }
 
     /**
@@ -193,10 +193,10 @@ public class DirectedGraph<N, E> {
     public List<Pair<N, N>> getEdges() {
         return this.edgeProjection.entrySet()
             .stream()
-            .map(e -> Pair.of(e.getKey()
-                .getLeft(),
+            .map(e -> new Pair<N, N>(e.getKey()
+                .getElement1(),
                     e.getKey()
-                        .getRight()))
+                        .getElement2()))
             .collect(Collectors.toList());
     }
 

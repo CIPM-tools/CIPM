@@ -9,7 +9,9 @@ Require-Bundle: tools.vitruv.framework.vsum,
  org.eclipse.emf.ecore.xmi,
  com.google.guava,
  org.palladiosimulator.pcm,
- tools.vitruv.dsls.reactions
+ tools.vitruv.dsls.reactions,
+ org.pcm.headless.api,
+ org.apache.commons.lang
 Export-Package: cipm.consistency.base.shared,
  cipm.consistency.bridge.monitoring.records,
  cipm.consistency.base.shared.json,
@@ -37,7 +39,6 @@ Export-Package: cipm.consistency.base.shared,
 Bundle-ClassPath: 
  dep-gen/org.cache2k.cache2k-api-1.2.4.Final.jar,
  dep-gen/org.cache2k.cache2k-core-1.2.4.Final.jar,
- dep-gen/org.pcm.headless.api-0.6.3.jar,
  lib/kieker-1.13.jar,
  .
 Bundle-ActivationPolicy: lazy

@@ -4,7 +4,6 @@
 	<classpathentry kind="src" path="src/main/resources"/>
 	<classpathentry kind="lib" path="dep-gen/org.cache2k.cache2k-api-1.2.4.Final.jar"/>
 	<classpathentry kind="lib" path="dep-gen/org.cache2k.cache2k-core-1.2.4.Final.jar"/>
-	<classpathentry kind="lib" path="dep-gen/org.pcm.headless.api-0.6.3.jar"/>
 	<classpathentry kind="lib" path="lib/kieker-1.13.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11">
