@@ -26,9 +26,8 @@
 	
 	<dependencies>
 		<dependency>
-    		<groupId>tools.vitruv</groupId>
-    		<artifactId>tools.vitruv.framework.vsum</artifactId>
-    		<version>3.1.0</version>
+				<groupId>tools.vitruv</groupId>
+				<artifactId>tools.vitruv.framework.vsum</artifactId>
 		</dependency>
 		<dependency>
     		<groupId>org.eclipse.emf</groupId>
@@ -42,6 +41,11 @@
 	    	<groupId>org.palladiosimulator.core</groupId> 
 	    	<artifactId>org.palladiosimulator.pcm</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>tools.vitruv</groupId>
+			<artifactId>tools.vitruv.dsls.reactions</artifactId>
+		</dependency>
+		
 	</dependencies>
 
 	  <build>
