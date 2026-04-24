@@ -41,6 +41,18 @@
 				<artifactId>tools.vitruv.dsls.reactions</artifactId>
 				<version>3.0.0</version>
 			</dependency>
+			<dependency>
+				<groupId>org.eclipse.emf.compare</groupId>
+				<artifactId>org.eclipse.emf.compare</artifactId>
+				<version>3.5.3.202209051432</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.emf.compare</groupId>
+				<artifactId>org.eclipse.emf.compare.rcp</artifactId>
+				<version>2.5.2.202209051432</version>
+			</dependency>
+
+
 
 
 

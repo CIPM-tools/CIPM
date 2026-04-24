@@ -13,8 +13,8 @@
   <version>0.2.0-SNAPSHOT</version>
   
   <dependencies>
-    <dependency>
-    		<groupId>org.eclipse.core.runtime</groupId>
+	<dependency>
+    		<groupId>org.eclipse.platform</groupId>
     		<artifactId>org.eclipse.core.runtime</artifactId>
 	</dependency>
 	<dependency>
