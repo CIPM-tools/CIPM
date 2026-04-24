@@ -9,7 +9,6 @@
 	</parent>
 	
   <artifactId>org.splevo.jamopp.extraction</artifactId>
-  <version>0.2.0-SNAPSHOT</version>
   
   <dependencies>
    <dependency>

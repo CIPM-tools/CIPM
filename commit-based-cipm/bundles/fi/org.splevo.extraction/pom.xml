@@ -7,8 +7,7 @@
 		<version>0.2.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-	
-  <groupId>org.splevo.extraction</groupId>
+
   <artifactId>org.splevo.extraction</artifactId>
   <version>0.2.0-SNAPSHOT</version>
   
