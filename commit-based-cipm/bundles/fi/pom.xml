@@ -53,9 +53,9 @@
     		<version>3.18.600</version>
 	  </dependency>
 	  <dependency>
-    		<groupId>org.eclipse.core.runtime</groupId>
+    		<groupId>org.eclipse.platform</groupId>
     		<artifactId>org.eclipse.core.runtime</artifactId>
-    		<version>3.9.100.v20131218</version>
+    		<version>3.34.200</version>
 	  </dependency>
 	  <dependency>
     		<groupId>org.eclipse.platform</groupId>
@@ -63,11 +63,7 @@
    		<version>3.18.0</version>
 	  </dependency>
 
-	  <dependency>
-          	<groupId>org.palladiosimulator.core</groupId>
-          	<artifactId>org.palladiosimulator.pcm</artifactId>
-          	<version>5.0.0.202102051710</version>
-          </dependency>
+	 
 	  <dependency>
     	  	<groupId>com.google.guava</groupId>
 	  	<artifactId>guava</artifactId>
