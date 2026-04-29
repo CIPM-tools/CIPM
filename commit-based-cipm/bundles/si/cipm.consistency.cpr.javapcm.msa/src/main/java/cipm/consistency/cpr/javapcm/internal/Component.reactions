@@ -1,0 +1,87 @@
+import org.palladiosimulator.pcm.repository.RepositoryPackage
+import cipm.consistency.cpr.util.InternalUtils
+
+import "http://www.emftext.org/java" as java
+import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
+
+
+reactions: component
+in reaction to changes in java
+execute actions in pcm
+
+
+routine createOrFindArchitecturalElement(java::ConcreteClassifier classifier) {
+	match {
+		require absence of pcm::RepositoryComponent corresponding to classifier
+	}
+	update {
+		val module = InternalUtils.getModule(classifier)
+		if (module === null) {
+			return
+		}
+		createOrFindArchitecturalElementBasedOnModule(classifier, module)
+	}
+}
+
+routine createOrFindArchitecturalElementBasedOnModule(java::ConcreteClassifier classifier, java::Module module) {
+	match {
+		val pcmComponent = retrieve optional pcm::RepositoryComponent corresponding to module
+	}
+	update {
+		if (!pcmComponent.isPresent) {
+			createBasicComponent(module)
+		}
+		addCorrespondenceForPcmComponentAndClassifierBasedOnModule(classifier, module)
+	}
+}
+
+routine createBasicComponent(java::Module module) {
+	match {
+		val pcmRepository = retrieve pcm::Repository corresponding to RepositoryPackage.Literals.REPOSITORY
+	}
+	create {
+		val pcmBasicComponent = new pcm::BasicComponent
+	}
+	update {
+		pcmBasicComponent.entityName = module.name
+		pcmRepository.components__Repository += pcmBasicComponent
+		addCorrespondenceBetween(pcmBasicComponent, module)
+	}
+}
+
+routine addCorrespondenceForPcmComponentAndClassifierBasedOnModule(java::ConcreteClassifier classifier, java::Module module) {
+	match {
+		val pcmComponent = retrieve pcm::RepositoryComponent corresponding to module
+	}
+	update {
+		addCorrespondenceBetween(pcmComponent, classifier)
+	}
+}
+
+routine checkBasicComponentRemovalForClassifier(java::ConcreteClassifier clazz) {
+	match {
+		val pcmComponent = retrieve pcm::RepositoryComponent corresponding to clazz
+		val otherClassifiers = retrieve many java::ConcreteClassifier corresponding to pcmComponent
+	}
+	update {
+		removeCorrespondenceBetween(clazz, pcmComponent)
+		if (otherClassifiers.size == 1) {
+			removeComponent(pcmComponent)
+		}
+	}
+}
+
+routine checkBasicComponentRemovalForModule(java::Module mod) {
+	match {
+		val pcmComponent = retrieve pcm::RepositoryComponent corresponding to mod
+	}
+	update {
+		removeComponent(pcmComponent)
+	}
+}
+
+routine removeComponent(pcm::RepositoryComponent com) {
+	update {
+		removeObject(com)
+	}
+}

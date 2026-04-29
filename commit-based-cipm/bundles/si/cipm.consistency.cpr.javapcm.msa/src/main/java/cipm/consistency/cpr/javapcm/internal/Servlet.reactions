@@ -1,0 +1,52 @@
+import org.palladiosimulator.pcm.repository.RepositoryPackage
+
+import "http://www.emftext.org/java" as java
+import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
+
+
+reactions: Servlet
+in reaction to changes in java
+execute actions in pcm
+
+
+import JaxRS
+
+routine checkServletInterfaceCreation(java::ConcreteClassifier javaInterface) {
+	match {
+		val com = retrieve pcm::RepositoryComponent corresponding to javaInterface
+	}
+	update {
+		for (cc : javaInterface.allSuperClassifiers) {
+			if (cc.name.equals("HttpServlet")) {
+				createInterface(javaInterface)
+				createServletHierarchy(cc)
+				connectInterfacesByInheritance(javaInterface, cc)
+				return
+			}
+		}
+	}
+}
+
+routine createServletHierarchy(java::ConcreteClassifier start) {
+	match {
+		require absence of pcm::OperationInterface corresponding to start
+		val repository = retrieve pcm::Repository corresponding to RepositoryPackage.Literals.REPOSITORY
+	}
+	create {
+		val servletInterface = new pcm::OperationInterface
+		val genericServletInterface = new pcm::OperationInterface
+		val httpServletInterface = new pcm::OperationInterface
+	}
+	update {
+		servletInterface.entityName = "Servlet"
+		genericServletInterface.entityName = "GenericServlet"
+		genericServletInterface.parentInterfaces__Interface += servletInterface
+		httpServletInterface.entityName = start.name
+		httpServletInterface.parentInterfaces__Interface += genericServletInterface
+
+		repository.interfaces__Repository += servletInterface
+		repository.interfaces__Repository += genericServletInterface
+		repository.interfaces__Repository += httpServletInterface
+		addCorrespondenceBetweenClassifierAndInterface(start, httpServletInterface)
+	}
+}

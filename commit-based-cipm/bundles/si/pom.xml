@@ -48,9 +48,34 @@
     		<version>2.43.0.M2</version>
 	  </dependency>
 	  <dependency>
-    		<groupId>tools.vitruv</groupId>
-    		<artifactId>tools.vitruv.dsls.reactions.runtime</artifactId>
-    		<version>3.2.3</version>
+    		<groupId>org.eclipse.core</groupId>
+    		<artifactId>org.eclipse.core.resources</artifactId>
+    		<version>3.7.100</version>
+	  </dependency>
+	  <dependency>
+    		<groupId>org.eclipse.platform</groupId>
+    		<artifactId>org.eclipse.equinox.registry</artifactId>
+    		<version>3.12.600</version>
+	  </dependency>
+	  <dependency>
+    		<groupId>org.eclipse.jdt</groupId>
+    		<artifactId>org.eclipse.jdt.core</artifactId>
+    		<version>3.45.0</version>
+	  </dependency>
+	  <dependency>
+    		<groupId>org.eclipse.text</groupId>
+    		<artifactId>org.eclipse.text</artifactId>
+    		<version>3.5.101</version>
+	  </dependency>
+	  <dependency>
+    		<groupId>org.apache.commons</groupId>
+    		<artifactId>commons-lang3</artifactId>
+    		<version>3.20.0</version>
+	  </dependency>
+	  <dependency>
+    		<groupId>org.eclipse.xtext</groupId>
+    		<artifactId>org.eclipse.xtend.lib.macro</artifactId>
+    		<version>2.43.0.M2</version>
 	  </dependency>
 
 
@@ -94,6 +119,39 @@
             	<artifactId>cipm.consistency.commitintegration.diff.util</artifactId>
             	<version>${project.version}</version>
           </dependency>
+	  <dependency>
+            	<groupId>cipm.consistency</groupId>
+            	<artifactId>cipm.consistency.cpr.javapcm</artifactId>
+            	<version>${project.version}</version>
+          </dependency>
+	  <dependency>
+            	<groupId>cipm.consistency</groupId>
+            	<artifactId>tools.vitruv.applications.pcmjava.seffstatements.pojotransformations</artifactId>
+            	<version>${project.version}</version>
+          </dependency>
+	  <dependency>
+            	<groupId>cipm.consistency</groupId>
+            	<artifactId>tools.vitruv.applications.pcmjava.seffstatements</artifactId>
+            	<version>${project.version}</version>
+          </dependency>
+	  <dependency>
+            	<groupId>cipm.consistency</groupId>
+            	<artifactId>tools.vitruv.applications.pcmjava.seffstatements.extended</artifactId>
+            	<version>${project.version}</version>
+          </dependency>
+	  <dependency>
+            	<groupId>cipm.consistency</groupId>
+            	<artifactId>tools.vitruv.applications.pcmjava.seffstatements.finegrained</artifactId>
+            	<version>${project.version}</version>
+          </dependency>
+	  <dependency>
+            	<groupId>cipm.consistency</groupId>
+            	<artifactId>cipm.consistency.cpr.util</artifactId>
+            	<version>${project.version}</version>
+          </dependency>
+
+
+
 	 </dependencies>
 	</dependencyManagement>
 
