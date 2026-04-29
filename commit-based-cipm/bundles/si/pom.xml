@@ -12,6 +12,81 @@
 	<packaging>pom</packaging>
 	<name>Bundles for second Eclipse instance</name>
 
+	<repositories>
+       	  <repository>
+             <id>cipm-mvn</id>
+             <name>CIPM's Maven Repository</name>
+             <url>https://CIPM-tools.github.io/updatesite/mvn</url>
+          </repository>
+   	</repositories>
+
+	<dependencyManagement>
+	 <dependencies>
+	  <dependency>
+    		 <groupId>org.eclipse.jgit</groupId>
+    		 <artifactId>org.eclipse.jgit</artifactId>
+    		 <version>6.3.0.202209071007-r</version>
+	  </dependency>
+          <dependency>
+    		<groupId>commons-io</groupId>
+    		<artifactId>commons-io</artifactId>
+    		<version>2.8.0</version>
+	  </dependency>
+	  <dependency>
+    		<groupId>org.eclipse.xtend</groupId>
+    		<artifactId>org.eclipse.xtend.lib</artifactId>
+    		<version>2.28.0</version>
+	  </dependency>
+	  <dependency>
+    		<groupId>org.eclipse.emf</groupId>
+    		<artifactId>org.eclipse.emf.edit</artifactId>
+    		<version>2.23.0</version>
+	  </dependency>
+
+
+	  <dependency>
+            	<groupId>cipm.consistency</groupId>
+            	<artifactId>cipm.consistency.commitintegration.settings</artifactId>
+            	<version>${project.version}</version>
+          </dependency>
+	  <dependency>
+            	<groupId>cipm.consistency</groupId>
+            	<artifactId>cipm.consistency.base.shared</artifactId>
+            	<version>${project.version}</version>
+          </dependency>
+	  <dependency>
+            	<groupId>cipm.consistency</groupId>
+            	<artifactId>cipm.consistency.tools.evaluation.data</artifactId>
+            	<version>${project.version}</version>
+          </dependency>
+	  <dependency>
+            	<groupId>cipm.consistency</groupId>
+            	<artifactId>cipm.consistency.models</artifactId>
+            	<version>${project.version}</version>
+          </dependency>
+	  <dependency>
+            	<groupId>cipm.consistency</groupId>
+            	<artifactId>cipm.consistency.vsum</artifactId>
+            	<version>${project.version}</version>
+          </dependency>
+	  <dependency>
+            	<groupId>cipm.consistency</groupId>
+            	<artifactId>org.splevo.diffing</artifactId>
+            	<version>${project.version}</version>
+          </dependency>
+	  <dependency>
+            	<groupId>cipm.consistency</groupId>
+            	<artifactId>cipm.consistency.commitintegration</artifactId>
+            	<version>${project.version}</version>
+          </dependency>
+	  <dependency>
+            	<groupId>cipm.consistency</groupId>
+            	<artifactId>cipm.consistency.commitintegration.diff.util</artifactId>
+            	<version>${project.version}</version>
+          </dependency>
+	 </dependencies>
+	</dependencyManagement>
+
 	<modules>
 		<module>cipm.consistency.commitintegration</module>
 		<module>cipm.consistency.cpr.javaim</module>
@@ -20,12 +95,18 @@
 		<module>cipm.consistency.cpr.javapcm.teammates</module>
 		<module>cipm.consistency.cpr.pcmim</module>
 		<module>cipm.consistency.designtime.instrumentation2</module>
+		<module>cipm.consistency.models</module>
+		<module>cipm.consistency.tools.evaluation.data</module>
 		<module>cipm.consistency.vsum</module>
 		<module>tools.vitruv.applications.pcmjava.seffstatements</module>
 		<module>tools.vitruv.applications.pcmjava.seffstatements.extended</module>
 		<module>tools.vitruv.applications.pcmjava.seffstatements.finegrained</module>
 		<module>tools.vitruv.applications.pcmjava.seffstatements.pojotransformations</module>
 		<module>cipm.consistency.cpr.util</module>
+		<module>../fi/cipm.consistency.commitintegration.settings</module>
+		<module>../fi/cipm.consistency.base.shared</module>
+		<module>../fi/org.splevo.diffing</module>
+		<module>../fi/cipm.consistency.commitintegration.diff.util</module>
 	</modules>
 
 </project>

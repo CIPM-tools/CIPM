@@ -1,0 +1,110 @@
+    <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  
+  	<parent>
+		<groupId>cipm.consistency</groupId>
+		<artifactId>si</artifactId>
+		<version>0.2.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	
+	
+  <artifactId>cipm.consistency.commitintegration.lang.java</artifactId>
+  
+  <dependencies>
+  	<dependency>
+  		<groupId>tools.vitruv</groupId>
+  		<artifactId>tools.vitruv.change.composite</artifactId>
+  </dependency>
+  <dependency>
+		<groupId>tools.vitruv</groupId>
+		<artifactId>tools.vitruv.framework.vsum</artifactId>
+  </dependency>
+  <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+  </dependency>
+  <dependency>
+        <groupId>cipm.consistency</groupId>
+        <artifactId>cipm.consistency.models</artifactId>
+  </dependency>
+  <dependency>
+    	<groupId>log4j</groupId>
+    	<artifactId>log4j</artifactId>
+  </dependency>
+  <!-- edu.kit.ipd.sdq.commons.util.emf to be added-->
+  <dependency>
+        <groupId>cipm.consistency</groupId>
+        <artifactId>org.splevo.diffing</artifactId>
+  </dependency>
+  <!-- edu.kit.ipd.sdq.activextendannotations to be added-->
+  <dependency>
+    	 <groupId>org.eclipse.emf</groupId>
+    	 <artifactId>org.eclipse.emf.edit</artifactId>
+  </dependency>
+  <dependency>
+          <groupId>cipm.consistency</groupId>
+          <artifactId>cipm.consistency.commitintegration</artifactId>
+  </dependency>
+  <dependency>
+          <groupId>cipm.consistency</groupId>
+          <artifactId>cipm.consistency.tools.evaluation.data</artifactId>
+  </dependency>
+  <dependency>
+		  <groupId>tools.mdsd</groupId>
+		  <artifactId>jamopp.parser.jdt.singlefile</artifactId>
+  </dependency>
+  <dependency>
+		  <groupId>tools.mdsd</groupId>
+		  <artifactId>org.emftext.language.java</artifactId>
+  </dependency>
+  <dependency>
+		  <groupId>tools.mdsd</groupId>
+		  <artifactId>jamopp.resolution</artifactId>
+  </dependency>
+  <dependency>
+		  <groupId>tools.mdsd</groupId>
+		  <artifactId>jamopp.parser</artifactId>
+  </dependency>
+  <dependency>
+           <groupId>cipm.consistency</groupId>
+           <artifactId>cipm.consistency.commitintegration.settings</artifactId>
+  </dependency>
+  <dependency>
+    		<groupId>org.eclipse.xtext</groupId>
+    		<artifactId>org.eclipse.xtext.xbase.lib</artifactId>
+  </dependency>
+  <dependency>
+            <groupId>cipm.consistency</groupId>
+            <artifactId>cipm.consistency.commitintegration.diff.util</artifactId>
+  </dependency>
+
+  </dependencies>
+  
+  <build>
+    <resources>
+      <resource>
+        <directory>src</directory>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
+      </resource>
+      <resource>
+        <directory>xtend-gen</directory>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <release>11</release>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
