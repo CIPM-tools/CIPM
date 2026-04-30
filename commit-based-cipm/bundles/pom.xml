@@ -136,6 +136,12 @@
 				<artifactId>tools.vitruv.change.propagation</artifactId>
 				<version>3.0.0</version>
 			</dependency>
+			<dependency>
+				<groupId>tools.mdsd</groupId>
+				<artifactId>org.somox.util</artifactId>
+				<version>0.0.0-cipm</version>
+			</dependency>
+
 
 
 
