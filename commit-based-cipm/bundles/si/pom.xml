@@ -72,6 +72,11 @@
     		<artifactId>commons-lang3</artifactId>
     		<version>3.20.0</version>
 	  </dependency>
+	  <dependency>
+    		<groupId>org.eclipse.xtext</groupId>
+    		<artifactId>org.eclipse.xtext</artifactId>
+    		<version>2.43.0.M2</version>
+	  </dependency>
 
 
 	  <dependency>
@@ -149,7 +154,16 @@
             	<artifactId>cipm.consistency.cpr.javapcm.msa</artifactId>
             	<version>${project.version}</version>
           </dependency>
-
+	  <dependency>
+            	<groupId>cipm.consistency</groupId>
+            	<artifactId>cipm.consistency.commitintegration.lang.lua</artifactId>
+            	<version>${project.version}</version>
+          </dependency>
+	  <dependency>
+            	<groupId>cipm.consistency</groupId>
+            	<artifactId>cipm.consistency.commitintegration.lang.lua.runtimedata</artifactId>
+            	<version>${project.version}</version>
+          </dependency>
 
 
 	 </dependencies>
@@ -157,6 +171,8 @@
 
 	<modules>
 		<module>cipm.consistency.commitintegration</module>
+		<module>cipm.consistency.commitintegration.lang.lua</module>
+		<module>cipm.consistency.commitintegration.lang.lua.runtimedata</module>
 		<module>cipm.consistency.cpr.javaim</module>
 		<module>cipm.consistency.cpr.javapcm.additional.validation</module>
 		<module>cipm.consistency.cpr.javapcm.msa</module>
