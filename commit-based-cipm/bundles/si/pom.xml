@@ -77,6 +77,31 @@
     		<artifactId>org.eclipse.xtext</artifactId>
     		<version>2.43.0.M2</version>
 	  </dependency>
+	  <dependency>
+    		<groupId>javax.inject</groupId>
+    		<artifactId>javax.inject</artifactId>
+    		<version>1</version>
+	  </dependency>
+	  <dependency>
+    		<groupId>org.eclipse.jface</groupId>
+    		<artifactId>jface</artifactId>
+    		<version>3.12.1</version>
+	  </dependency>
+	  <dependency>
+    		<groupId>org.eclipse.platform</groupId>
+    		<artifactId>org.eclipse.e4.ui.model.workbench</artifactId>
+    		<version>2.4.700</version>
+	  </dependency>
+	  <dependency>
+    		<groupId>org.eclipse.platform</groupId>
+    		<artifactId>org.eclipse.e4.ui.di</artifactId>
+    		<version>1.5.700</version>
+	  </dependency>
+	  <dependency>
+    		<groupId>org.eclipse.platform</groupId>
+    		<artifactId>org.eclipse.e4.ui.services</artifactId>
+    		<version>1.6.600</version>
+	  </dependency>
 
 
 	  <dependency>
