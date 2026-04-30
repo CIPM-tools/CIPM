@@ -21,6 +21,11 @@
 
 	<dependencyManagement>
         	<dependencies>
+            		<dependency>
+				<groupId>tools.mdsd</groupId>
+				<artifactId>org.emftext.language.java</artifactId>
+				<version>5.1.0-cipm</version>
+			</dependency>
 			<dependency>
 				<groupId>org.palladiosimulator.core</groupId>
 				<artifactId>org.palladiosimulator.pcm</artifactId>
