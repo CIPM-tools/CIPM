@@ -121,6 +121,12 @@
 				<artifactId>org.somox.kdmhelper</artifactId>
 				<version>0.0.0-cipm</version>
 			</dependency>
+			<dependency>
+				<groupId>tools.vitruv</groupId>
+				<artifactId>tools.vitruv.framework.views</artifactId>
+				<version>3.0.0</version>
+			</dependency>
+
 
 
 

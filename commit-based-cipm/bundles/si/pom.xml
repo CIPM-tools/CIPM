@@ -146,6 +146,21 @@
           </dependency>
 	  <dependency>
             	<groupId>cipm.consistency</groupId>
+            	<artifactId>org.splevo.jamopp.diffing</artifactId>
+            	<version>${project.version}</version>
+          </dependency>
+	  <dependency>
+            	<groupId>cipm.consistency</groupId>
+            	<artifactId>org.splevo.jamopp.extraction</artifactId>
+            	<version>${project.version}</version>
+          </dependency>
+	  <dependency>
+            	<groupId>cipm.consistency</groupId>
+            	<artifactId>org.splevo.commons</artifactId>
+            	<version>${project.version}</version>
+          </dependency>
+	  <dependency>
+            	<groupId>cipm.consistency</groupId>
             	<artifactId>cipm.consistency.commitintegration</artifactId>
             	<version>${project.version}</version>
           </dependency>
@@ -224,7 +239,10 @@
 		<module>cipm.consistency.cpr.util</module>
 		<module>../fi/cipm.consistency.commitintegration.settings</module>
 		<module>../fi/cipm.consistency.base.shared</module>
+		<module>../fi/org.splevo.commons</module>
 		<module>../fi/org.splevo.diffing</module>
+		<module>../fi/org.splevo.jamopp.diffing</module>
+		<module>../fi/org.splevo.jamopp.extraction</module>
 		<module>../fi/cipm.consistency.commitintegration.diff.util</module>
 	</modules>
 
