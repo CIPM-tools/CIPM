@@ -31,7 +31,6 @@
 			<dependency>
 				<groupId>org.eclipse.emf</groupId>
 				<artifactId>org.eclipse.emf.ecore</artifactId>
-				<version>2.42.0</version>
 			</dependency>
 			<dependency>
 				<groupId>tools.mdsd</groupId>
@@ -45,7 +44,6 @@
 				<groupId>tools.mdsd</groupId>
 				<artifactId>org.somox.sourcecodedecorator</artifactId>
 			</dependency>
-
 			<dependency>
 				<groupId>tools.vitruv</groupId>
 				<artifactId>tools.vitruv.change.interaction</artifactId>
@@ -69,7 +67,6 @@
 			<dependency>
 				<groupId>tools.vitruv</groupId>
 				<artifactId>tools.vitruv.dsls.reactions.runtime</artifactId>
-				<version>3.0.0</version>
 			</dependency>
 		</dependencies>
 		<build>

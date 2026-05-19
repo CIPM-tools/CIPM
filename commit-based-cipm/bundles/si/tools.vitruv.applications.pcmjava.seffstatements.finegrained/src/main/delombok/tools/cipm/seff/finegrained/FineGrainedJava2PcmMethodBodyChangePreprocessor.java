@@ -1,0 +1,15 @@
+package tools.cipm.seff.finegrained;
+
+import org.emftext.language.java.members.Method;
+import org.somox.gast2seff.visitors.AbstractFunctionClassificationStrategy;
+import org.somox.gast2seff.visitors.InterfaceOfExternalCallFindingFactory;
+import org.somox.gast2seff.visitors.ResourceDemandingBehaviourForClassMethodFinding;
+import tools.cipm.seff.BasicComponentFinding;
+import tools.cipm.seff.ClassMethodBodyChangedTransformation;
+import tools.cipm.seff.extended.ExtendedJava2PcmMethodBodyChangePreprocessor;
+
+public class FineGrainedJava2PcmMethodBodyChangePreprocessor extends ExtendedJava2PcmMethodBodyChangePreprocessor {
+  protected ClassMethodBodyChangedTransformation createTransformation(final Method newMethod, final BasicComponentFinding basicComponentFinding, final AbstractFunctionClassificationStrategy classification, final InterfaceOfExternalCallFindingFactory interfaceOfExternalCallFinderFactory, final ResourceDemandingBehaviourForClassMethodFinding resourceDemandingBehaviourForClassMethodFinding) {
+    return new FineGrainedClassMethodBodyChangedTransformation(newMethod, basicComponentFinding, classification, interfaceOfExternalCallFinderFactory, resourceDemandingBehaviourForClassMethodFinding);
+  }
+}
