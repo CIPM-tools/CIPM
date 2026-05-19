@@ -22,33 +22,6 @@
 
 	<dependencyManagement>
 	 <dependencies>
-	  <dependency>
-    		<groupId>org.eclipse.platform</groupId>
-    		<artifactId>org.eclipse.equinox.registry</artifactId>
-    		<version>3.11.200</version>
-	  </dependency>
-	  <dependency>
-    		<groupId>org.eclipse.platform</groupId>
-    		<artifactId>org.eclipse.core.runtime</artifactId>
-    		<version>3.34.200</version>
-	  </dependency>
-	  <dependency>
-    		<groupId>org.eclipse.platform</groupId>
-    		<artifactId>org.eclipse.core.resources</artifactId>
-   		<version>3.18.0</version>
-	  </dependency>
-
-	 
-	  <dependency>
-    		<groupId>org.eclipse.emf</groupId>
-    		<artifactId>org.eclipse.emf.ecore.xmi</artifactId>
-    		<version>2.17.0</version>
-	  </dependency>
-	  <dependency>
-    		<groupId>org.eclipse.xtend</groupId>
-    		<artifactId>org.eclipse.xtend.lib</artifactId>
-    		<version>2.28.0</version>
-	  </dependency>
 
 	  <dependency>
             	<groupId>cipm.consistency</groupId>
@@ -84,14 +57,26 @@
 	 </dependencies>
 	</dependencyManagement>
 
+	<profiles>
+        	<profile>
+            		<id>first-instance-build</id>
+            		<properties>
+                		<skipTests>true</skipTests>
+                		<maven.javadoc.skip>true</maven.javadoc.skip>
+                		<checkstyle.skip>true</checkstyle.skip>
+
+				<maven.compiler.source>11</maven.compiler.source>
+        			<maven.compiler.target>11</maven.compiler.target>
+        			<maven.compiler.release>11</maven.compiler.release>
+            		</properties>
+            	</profile>
+    	</profiles>
+
+
 	<modules>
 		<module>cipm.consistency.base.shared</module>
 		<module>cipm.consistency.commitintegration.diff.util</module>
 		<module>cipm.consistency.commitintegration.settings</module>
-		<module>cipm.consistency.domains.im</module>
-		<module>cipm.consistency.domains.java</module>
-		<module>cipm.consistency.domains.pcm</module>
-		<module>cipm.consistency.models.instrumentation</module>
 		<module>cipm.consistency.tools.evaluation.data</module>
 		<module>org.splevo.commons</module>
 		<module>org.splevo.diffing</module>
