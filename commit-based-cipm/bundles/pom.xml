@@ -161,6 +161,12 @@
 				<artifactId>tools.cipm.models.instrumentation</artifactId>
 				<version>1.0.0</version>
 			</dependency>
+<dependency>
+	<groupId>org.palladiosimulator.commons</groupId>
+	<artifactId>de.uka.ipd.sdq.identifier</artifactId>
+	<version>5.0.0.202102051655</version>
+</dependency>
+
 
 
 
