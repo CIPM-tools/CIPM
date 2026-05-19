@@ -39,7 +39,10 @@
 			<groupId>tools.vitruv</groupId>
 			<artifactId>tools.vitruv.dsls.reactions.runtime</artifactId>
 		</dependency>
-		<!-- tools.cipm.models.instrumentation-->
+			<dependency>
+				<groupId>tools.cipm</groupId>
+				<artifactId>tools.cipm.models.instrumentation</artifactId>
+			</dependency>
 		<dependency>
 			<groupId>org.eclipse.xtext</groupId>
 			<artifactId>org.eclipse.xtext</artifactId>
