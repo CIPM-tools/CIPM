@@ -1,0 +1,20 @@
+import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationModelPackage
+
+import "http://www.dmodel.com/InstrumentationMetamodel" as im
+
+reactions: imInit
+in reaction to changes in im
+execute actions in im
+
+reaction AddedIMModel {
+	after element im::InstrumentationModel inserted as root
+	call {
+		createLiteralCorrespondence(newValue)
+	}
+}
+
+routine createLiteralCorrespondence(im::InstrumentationModel im) {
+	update {
+		addCorrespondenceBetween(im, InstrumentationModelPackage.Literals.INSTRUMENTATION_MODEL)
+	}
+}
