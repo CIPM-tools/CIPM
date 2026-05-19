@@ -19,10 +19,6 @@
 			<artifactId>org.eclipse.osgi</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.jface</groupId>
-			<artifactId>jface</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.e4.ui.model.workbench</artifactId>
 		</dependency>
@@ -74,7 +70,10 @@
 			<groupId>org.eclipse.text</groupId>
 			<artifactId>org.eclipse.text</artifactId>
 		</dependency>
-		<!-- tools.cipm.models.instrumentation-->
+		<dependency>
+			<groupId>tools.cipm</groupId>
+			<artifactId>tools.cipm.models.instrumentation</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>cipm.consistency</groupId>
 			<artifactId>cipm.consistency.commitintegration</artifactId>
