@@ -141,13 +141,26 @@
 				<artifactId>org.somox.util</artifactId>
 				<version>0.0.0-cipm</version>
 			</dependency>
-
-
-
-
-
-
-
+			<dependency>
+				<groupId>tools.vitruv</groupId>
+				<artifactId>edu.kit.ipd.sdq.commons.util.emf</artifactId>
+				<version>2.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>tools.vitruv</groupId>
+				<artifactId>edu.kit.ipd.sdq.activextendannotations</artifactId>
+				<version>1.5.0</version>
+			</dependency>
+			<dependency>
+				<groupId>tools.vitruv</groupId>
+				<artifactId>edu.kit.ipd.sdq.commons.util.pcm</artifactId>
+				<version>2.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>tools.cipm</groupId>
+				<artifactId>tools.cipm.models.instrumentation</artifactId>
+				<version>1.0.0</version>
+			</dependency>
 
 
 
@@ -200,6 +213,12 @@
     				<artifactId>org.eclipse.osgi</artifactId>
     				<version>3.18.600</version>
 	  		</dependency>
+			<dependency>
+				<groupId>tools.cipm</groupId>
+				<artifactId>org.xtext.lua</artifactId>
+				<version>0.1.0</version>
+			</dependency>
+
 		</dependencies>
     	</dependencyManagement>
 

@@ -9,7 +9,6 @@
 
 
 	<artifactId>cipm.consistency.commitintegration.lang.lua</artifactId>
-	<version>0.2.0-SNAPSHOT</version>
 
 	<dependencies>
 		<dependency>
@@ -38,30 +37,36 @@
 		<dependency>
 			<groupId>cipm.consistency</groupId>
 			<artifactId>cipm.consistency.models</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 		</dependency>
-		<!--  edu.kit.ipd.sdq.commons.util.emf -->
-	  <dependency>
-            	<groupId>cipm.consistency</groupId>
-            	<artifactId>org.splevo.diffing</artifactId>
-            	</dependency>
-	  <dependency>
-    		<groupId>org.eclipse.emf</groupId>
-    		<artifactId>org.eclipse.emf.edit</artifactId>
-	  </dependency>
-	  <dependency>
-            	<groupId>cipm.consistency</groupId>
-            	<artifactId>cipm.consistency.commitintegration</artifactId>
-          </dependency>
-	  <dependency>
-            	<groupId>cipm.consistency</groupId>
-            	<artifactId>cipm.consistency.tools.evaluation.data</artifactId>
-          </dependency>
-          <!-- org.xtext.lua.tests -->
+		<dependency>
+			<groupId>tools.vitruv</groupId>
+			<artifactId>edu.kit.ipd.sdq.commons.util.emf</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cipm.consistency</groupId>
+			<artifactId>org.splevo.diffing</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.emf</groupId>
+			<artifactId>org.eclipse.emf.edit</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cipm.consistency</groupId>
+			<artifactId>cipm.consistency.commitintegration</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cipm.consistency</groupId>
+			<artifactId>cipm.consistency.tools.evaluation.data</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>tools.cipm</groupId>
+			<artifactId>org.xtext.lua</artifactId>
+		</dependency>
+
 
 	</dependencies>
 
