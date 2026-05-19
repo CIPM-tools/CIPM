@@ -64,10 +64,10 @@
 			<groupId>cipm.consistency</groupId>
 			<artifactId>org.splevo.commons</artifactId>
 		</dependency>
-<dependency>
-	<groupId>org.palladiosimulator.commons</groupId>
-	<artifactId>de.uka.ipd.sdq.identifier</artifactId>
-</dependency>
+		<dependency>
+			<groupId>org.palladiosimulator.commons</groupId>
+			<artifactId>de.uka.ipd.sdq.identifier</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<resources>
