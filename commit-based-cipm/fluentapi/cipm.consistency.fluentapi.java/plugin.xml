@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated java-fluentapi -->
+      <package
+            uri="https://CIPM-tools.github.io/metamodels/fluentapi/1.0/java/api"
+            class="cipm.consistency.fluentapi.java.api.ApiPackage"
+            genModel="metamodel/java-fluentapi.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated java-fluentapi -->
+      <package
+            uri="https://CIPM-tools.github.io/metamodels/fluentapi/1.0/java/api/inits"
+            class="cipm.consistency.fluentapi.java.api.inits.InitsPackage"
+            genModel="metamodel/java-fluentapi.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated java-fluentapi -->
+      <package
+            uri="https://CIPM-tools.github.io/metamodels/fluentapi/1.0/java/api/placeholderTypes"
+            class="cipm.consistency.fluentapi.java.api.placeholderTypes.PlaceholderTypesPackage"
+            genModel="metamodel/java-fluentapi.genmodel"/>
+   </extension>
+
+</plugin>
