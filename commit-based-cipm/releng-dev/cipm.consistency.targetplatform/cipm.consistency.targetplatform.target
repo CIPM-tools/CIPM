@@ -72,9 +72,9 @@
 			<unit id="tools.vitruv.applications.pcmjava.feature.feature.group" version="3.0.0"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-            <repository location="https://cipm-tools.github.io/updatesite/release/jamopp-5.1.0-cipm/"/>
-			<unit id="org.emftext.language.java" version="5.1.0.202412231903"/>
-			<unit id="org.emftext.language.java.feature.feature.group" version="5.1.0.202412231903"/>
+            <repository location="https://cipm-tools.github.io/updatesite/release/jamopp-5.1.1-cipm/"/>
+			<unit id="org.emftext.language.java" version="0.0.0"/>
+			<unit id="org.emftext.language.java.feature.feature.group" version="0.0.0"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
             <repository location="https://cipm-tools.github.io/updatesite/release/somox-0.0.0-cipm/"/>
