@@ -21,6 +21,19 @@ import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
 
 public class JavaModelCountEvaluator {
+	public static class JavaModelCountResult {
+		private JavaModelCounts overallCounts;
+		private EnumMap<Origin, JavaModelCounts> countsPerOrigin;
+		
+		public JavaModelCounts getOverallCounts() {
+			return overallCounts;
+		}
+		
+		public EnumMap<Origin, JavaModelCounts> getCountsPerOrigin() {
+			return countsPerOrigin;
+		}
+	}
+	
 	public static class JavaModelCounts {
 		private int noRootElements = 0;
 		private int noModelElements = 0;
@@ -49,9 +62,33 @@ public class JavaModelCountEvaluator {
 				noRecoveredReferences
 			);
 		}
+
+		public int getNoRootElements() {
+			return noRootElements;
+		}
+
+		public int getNoModelElements() {
+			return noModelElements;
+		}
+
+		public int getNoContainmentReferences() {
+			return noContainmentReferences;
+		}
+
+		public int getNoNonContainmentReferences() {
+			return noNonContainmentReferences;
+		}
+
+		public int getNoReferences() {
+			return noReferences;
+		}
+
+		public int getNoRecoveredReferences() {
+			return noRecoveredReferences;
+		}
 	}
 	
-	public void countJavaModelProperties(Path modelPath) {
+	public JavaModelCountResult countJavaModelProperties(Path modelPath) {
 		var set = new ResourceSetImpl();
 		var resource = set.getResource(URI.createFileURI(modelPath.toAbsolutePath().toString()), true);
 		var originToCounts = new EnumMap<Origin, JavaModelCounts>(Origin.class);
@@ -62,11 +99,11 @@ public class JavaModelCountEvaluator {
 			originToCounts.put(javaRoot.getOrigin(), counts);
 			
 			counts.noRootElements++;
-			counts.noModelElements += ModelElementsCounter.countModelElements(javaRoot);
-			var refCount = ModelElementsCounter.countReferences(javaRoot);
-			counts.noContainmentReferences += refCount.getNumberOfContainmentReferences();
-			counts.noNonContainmentReferences += refCount.getNumberOfNonContainmentReferences();
-			counts.noReferences += refCount.getNumberOfContainmentReferences() + refCount.getNumberOfNonContainmentReferences();
+			var modelCounts = ModelElementsCounter.countModelElements(javaRoot);
+			counts.noModelElements += modelCounts.getNumberOfElements();
+			counts.noContainmentReferences += modelCounts.getNumberOfContainmentReferences();
+			counts.noNonContainmentReferences += modelCounts.getNumberOfNonContainmentReferences();
+			counts.noReferences += modelCounts.getNumberOfContainmentReferences() + modelCounts.getNumberOfNonContainmentReferences();
 			counts.noRecoveredReferences += this.countRevoceredReferences(javaRoot);
 		}
 		
@@ -74,8 +111,11 @@ public class JavaModelCountEvaluator {
 		for (var singleCounts : originToCounts.entrySet()) {
 			overall.merge(singleCounts.getValue());
 		}
-		System.out.println(originToCounts);
-		System.out.println(overall);
+		
+		var result = new JavaModelCountResult();
+		result.overallCounts = overall;
+		result.countsPerOrigin = originToCounts;
+		return result;
 	}
 	
 	private int countRevoceredReferences(JavaRoot root) {

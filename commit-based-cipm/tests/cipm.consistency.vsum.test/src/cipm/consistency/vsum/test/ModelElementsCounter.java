@@ -2,52 +2,38 @@ package cipm.consistency.vsum.test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 
 public final class ModelElementsCounter {
-	public static class ReferenceCountResult {
-		private int containmentReferences;
-		private int nonContainmentReferences;
-		
-		ReferenceCountResult(int containmentReferences, int nonContainmentReferences) {
-			this.containmentReferences = containmentReferences;
-			this.nonContainmentReferences = nonContainmentReferences;
-		}
-		
-		public int getNumberOfContainmentReferences() {
-			return this.containmentReferences;
-		}
-		
-		public int getNumberOfNonContainmentReferences() {
-			return this.nonContainmentReferences;
-		}
-	}
-	
 	private ModelElementsCounter() {
 	}
+
+	static ModelCountResult countModelElements(Resource resource) {
+		return countModelElementsFromTreeIterator(resource.getAllContents());
+	}
 	
-	public static int countModelElements(Resource resource) {
+	public static ModelCountResult countModelElements(EObject eobj) {
+		var subCount = countModelElementsFromTreeIterator(eobj.eAllContents());
+		return new ModelCountResult(
+			subCount.getNumberOfElements() + 1,
+			subCount.getNumberOfContainmentReferences() + eobj.eContents().size(),
+			subCount.getNumberOfNonContainmentReferences() + eobj.eCrossReferences().size()
+		);
+	}
+
+	private static ModelCountResult countModelElementsFromTreeIterator(TreeIterator<EObject> iterator) {
 		AtomicInteger counter = new AtomicInteger();
-		resource.getAllContents().forEachRemaining(o -> counter.incrementAndGet());
-		return counter.get();
-	}
-	
-	public static int countModelElements(EObject eobj) {
-		AtomicInteger counter = new AtomicInteger(1);
-		eobj.eAllContents().forEachRemaining(o -> counter.incrementAndGet());
-		return counter.get();
-	}
-	
-	public static ReferenceCountResult countReferences(EObject eobj) {
 		AtomicInteger containCounter = new AtomicInteger();
 		AtomicInteger nonContainCounter = new AtomicInteger();
-		containCounter.addAndGet(eobj.eContents().size());
-		nonContainCounter.addAndGet(eobj.eCrossReferences().size());
-		eobj.eAllContents().forEachRemaining(child -> {
-			child.eContents().forEach(o -> containCounter.incrementAndGet());
-			child.eCrossReferences().forEach(o -> nonContainCounter.incrementAndGet());
+
+		iterator.forEachRemaining(eObj -> {
+			counter.incrementAndGet();
+			containCounter.addAndGet(eObj.eContents().size());
+			nonContainCounter.addAndGet(eObj.eCrossReferences().size());
 		});
-		return new ReferenceCountResult(containCounter.get(), nonContainCounter.get());
+
+		return new ModelCountResult(counter.get(), containCounter.get(), nonContainCounter.get());
 	}
 }
