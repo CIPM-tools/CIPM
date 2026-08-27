@@ -7,8 +7,6 @@ Automatic-Module-Name: cipm.consistency.vsum.test
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Require-Bundle: cipm.consistency.commitintegration,
  org.apache.log4j,
- junit-jupiter-api,
- junit-jupiter-engine,
  cipm.consistency.vsum,
  org.eclipse.jgit,
  tools.vitruv.framework.vsum,
@@ -34,3 +32,4 @@ Require-Bundle: cipm.consistency.commitintegration,
  cipm.consistency.cpr.javapcm.msa,
  cipm.consistency.cpr.javapcm.teammates
 Export-Package: cipm.consistency.vsum.test
+Import-Package: org.junit.jupiter.api

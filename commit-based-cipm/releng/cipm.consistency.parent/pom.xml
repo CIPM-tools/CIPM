@@ -127,6 +127,16 @@
 			</repositories>
 		</profile>
 		<profile>
+			<id>test</id>
+			<repositories>
+				<repository>
+					<id>CIPM3</id>
+					<layout>p2</layout>
+					<url>http://localhost:8081/cipm3/</url>
+				</repository>
+			</repositories>
+		</profile>
+		<profile>
 			<id>dsls-generation</id>
 			<activation>
 				<file>

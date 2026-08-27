@@ -41,6 +41,21 @@
 			<modules>
 				<module>tests/cipm.consistency.vsum.test</module>
 			</modules>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>tycho-surefire-plugin</artifactId>
+						<configuration>
+							<showEclipseLog>true</showEclipseLog>
+							<providerHint>junit5</providerHint>
+							<includes>
+								<include>**/TEAMMATESCITest.java</include>
+							</includes>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 	</profiles>
 
