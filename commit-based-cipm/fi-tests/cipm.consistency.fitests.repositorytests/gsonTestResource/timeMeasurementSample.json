@@ -1,0 +1,1062 @@
+{
+  "startTime": "2025-09-08T14:52:53.972324",
+  "endTime": "2025-09-08T14:57:35.3576288",
+  "timeMeasurerDescription": "org.apache.commons.lang.time.StopWatch",
+  "timeUnit": "MILLISECONDS",
+  "overallRunTime": 281319,
+  "measurementTagSummary": {
+    "TEST_AFTEREACH": 4,
+    "TEST_BEFOREEACH": 15,
+    "DELETE_LOCAL_REPO_CLONE": 2,
+    "MODEL_RESOURCE_COMPARISON": 266233,
+    "TEST_OVERHEAD": 879,
+    "SAVE_EXPECTED_SIMILARITY_RESULTS": 7,
+    "LOAD_EXPECTED_SIMILARITY_RESULTS": 77,
+    "LOAD_MODEL_RESOURCE": 14094,
+    "SAVE_MODEL_RESOURCE": 4,
+    "EXPECTED_SIMILARITY_RESULT_COMPUTATION": 4
+  },
+  "measurementTagPercentageSummary": {
+    "TEST_AFTEREACH": "0.00",
+    "TEST_BEFOREEACH": "0.01",
+    "DELETE_LOCAL_REPO_CLONE": "0.00",
+    "MODEL_RESOURCE_COMPARISON": "94.64",
+    "TEST_OVERHEAD": "0.31",
+    "SAVE_EXPECTED_SIMILARITY_RESULTS": "0.00",
+    "LOAD_EXPECTED_SIMILARITY_RESULTS": "0.03",
+    "LOAD_MODEL_RESOURCE": "5.01",
+    "SAVE_MODEL_RESOURCE": "0.00",
+    "EXPECTED_SIMILARITY_RESULT_COMPUTATION": "0.00"
+  },
+  "measurements": [
+    {
+      "timeElapsed": 15,
+      "key": {
+        "keyMap": {
+          "REPOSITORY_URI": "https://github.com/TEAMMATES/teammates",
+          "TEST_CLASS_NAME": "TeammatesRepoTest",
+          "REPOSITORY_NAME": "teammates"
+        }
+      },
+      "tag": "TEST_BEFOREEACH"
+    },
+    {
+      "timeElapsed": 77,
+      "key": {
+        "keyMap": {
+          "REPOSITORY_URI": "https://github.com/TEAMMATES/teammates",
+          "TEST_CLASS_NAME": "TeammatesRepoTest",
+          "REPOSITORY_NAME": "teammates"
+        }
+      },
+      "tag": "LOAD_EXPECTED_SIMILARITY_RESULTS"
+    },
+    {
+      "timeElapsed": 4433,
+      "key": {
+        "keyMap": {
+          "REPOSITORY_URI": "https://github.com/TEAMMATES/teammates",
+          "TEST_CLASS_NAME": "TeammatesRepoTest",
+          "MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/648425746bb9434051647c8266dfab50a8f2d6a3.javaxmi",
+          "REPOSITORY_NAME": "teammates"
+        }
+      },
+      "tag": "LOAD_MODEL_RESOURCE"
+    },
+    {
+      "timeElapsed": 2287,
+      "key": {
+        "keyMap": {
+          "REPOSITORY_URI": "https://github.com/TEAMMATES/teammates",
+          "TEST_CLASS_NAME": "TeammatesRepoTest",
+          "MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "REPOSITORY_NAME": "teammates"
+        }
+      },
+      "tag": "LOAD_MODEL_RESOURCE"
+    },
+    {
+      "timeElapsed": 2292,
+      "key": {
+        "keyMap": {
+          "REPOSITORY_URI": "https://github.com/TEAMMATES/teammates",
+          "TEST_CLASS_NAME": "TeammatesRepoTest",
+          "MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "REPOSITORY_NAME": "teammates"
+        }
+      },
+      "tag": "LOAD_MODEL_RESOURCE"
+    },
+    {
+      "timeElapsed": 2247,
+      "key": {
+        "keyMap": {
+          "REPOSITORY_URI": "https://github.com/TEAMMATES/teammates",
+          "TEST_CLASS_NAME": "TeammatesRepoTest",
+          "MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "REPOSITORY_NAME": "teammates"
+        }
+      },
+      "tag": "LOAD_MODEL_RESOURCE"
+    },
+    {
+      "timeElapsed": 2835,
+      "key": {
+        "keyMap": {
+          "REPOSITORY_URI": "https://github.com/TEAMMATES/teammates",
+          "TEST_CLASS_NAME": "TeammatesRepoTest",
+          "MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/ce4463a8741840fd25a41b14801eab9193c7ed18.javaxmi",
+          "REPOSITORY_NAME": "teammates"
+        }
+      },
+      "tag": "LOAD_MODEL_RESOURCE"
+    },
+    {
+      "timeElapsed": 2,
+      "key": {
+        "keyMap": {
+          "REPOSITORY_URI": "https://github.com/TEAMMATES/teammates",
+          "TEST_CLASS_NAME": "TeammatesRepoTest",
+          "REPOSITORY_NAME": "teammates"
+        }
+      },
+      "tag": "DELETE_LOCAL_REPO_CLONE"
+    },
+    {
+      "timeElapsed": 20,
+      "key": {
+        "keyMap": {
+          "REPOSITORY_URI": "https://github.com/TEAMMATES/teammates",
+          "TEST_CLASS_NAME": "TeammatesRepoTest",
+          "REPOSITORY_NAME": "teammates"
+        }
+      },
+      "tag": "TEST_OVERHEAD"
+    },
+    {
+      "timeElapsed": 3,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_SOURCE_FILE_DIR_LOCATION": "testmodel-cache/teammates/648425746bb9434051647c8266dfab50a8f2d6a3.javaxmi",
+          "LEFT_MODEL_SOURCE_FILE_DIR_LOCATION": "testmodel-cache/teammates/648425746bb9434051647c8266dfab50a8f2d6a3.javaxmi",
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/648425746bb9434051647c8266dfab50a8f2d6a3.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/648425746bb9434051647c8266dfab50a8f2d6a3.javaxmi"
+        }
+      },
+      "tag": "EXPECTED_SIMILARITY_RESULT_COMPUTATION"
+    },
+    {
+      "timeElapsed": 7693,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/648425746bb9434051647c8266dfab50a8f2d6a3.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/648425746bb9434051647c8266dfab50a8f2d6a3.javaxmi",
+          "MODEL_COMPARISON_CLASS_NAME": "JavaModelComparator"
+        }
+      },
+      "tag": "MODEL_RESOURCE_COMPARISON"
+    },
+    {
+      "timeElapsed": 133,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/648425746bb9434051647c8266dfab50a8f2d6a3.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/648425746bb9434051647c8266dfab50a8f2d6a3.javaxmi"
+        }
+      },
+      "tag": "TEST_OVERHEAD"
+    },
+    {
+      "timeElapsed": 5381,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/648425746bb9434051647c8266dfab50a8f2d6a3.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/648425746bb9434051647c8266dfab50a8f2d6a3.javaxmi",
+          "MODEL_COMPARISON_CLASS_NAME": "JavaModelComparator"
+        }
+      },
+      "tag": "MODEL_RESOURCE_COMPARISON"
+    },
+    {
+      "timeElapsed": 84,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/648425746bb9434051647c8266dfab50a8f2d6a3.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/648425746bb9434051647c8266dfab50a8f2d6a3.javaxmi"
+        }
+      },
+      "tag": "TEST_OVERHEAD"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_SOURCE_FILE_DIR_LOCATION": "testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "LEFT_MODEL_SOURCE_FILE_DIR_LOCATION": "testmodel-cache/teammates/648425746bb9434051647c8266dfab50a8f2d6a3.javaxmi",
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/648425746bb9434051647c8266dfab50a8f2d6a3.javaxmi"
+        }
+      },
+      "tag": "EXPECTED_SIMILARITY_RESULT_COMPUTATION"
+    },
+    {
+      "timeElapsed": 18792,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/648425746bb9434051647c8266dfab50a8f2d6a3.javaxmi",
+          "MODEL_COMPARISON_CLASS_NAME": "JavaModelComparator"
+        }
+      },
+      "tag": "MODEL_RESOURCE_COMPARISON"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/648425746bb9434051647c8266dfab50a8f2d6a3.javaxmi"
+        }
+      },
+      "tag": "TEST_OVERHEAD"
+    },
+    {
+      "timeElapsed": 15107,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/648425746bb9434051647c8266dfab50a8f2d6a3.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "MODEL_COMPARISON_CLASS_NAME": "JavaModelComparator"
+        }
+      },
+      "tag": "MODEL_RESOURCE_COMPARISON"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/648425746bb9434051647c8266dfab50a8f2d6a3.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi"
+        }
+      },
+      "tag": "TEST_OVERHEAD"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_SOURCE_FILE_DIR_LOCATION": "testmodel-cache/teammates/648425746bb9434051647c8266dfab50a8f2d6a3.javaxmi",
+          "LEFT_MODEL_SOURCE_FILE_DIR_LOCATION": "testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/648425746bb9434051647c8266dfab50a8f2d6a3.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi"
+        }
+      },
+      "tag": "EXPECTED_SIMILARITY_RESULT_COMPUTATION"
+    },
+    {
+      "timeElapsed": 12863,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/648425746bb9434051647c8266dfab50a8f2d6a3.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "MODEL_COMPARISON_CLASS_NAME": "JavaModelComparator"
+        }
+      },
+      "tag": "MODEL_RESOURCE_COMPARISON"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/648425746bb9434051647c8266dfab50a8f2d6a3.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi"
+        }
+      },
+      "tag": "TEST_OVERHEAD"
+    },
+    {
+      "timeElapsed": 13244,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/648425746bb9434051647c8266dfab50a8f2d6a3.javaxmi",
+          "MODEL_COMPARISON_CLASS_NAME": "JavaModelComparator"
+        }
+      },
+      "tag": "MODEL_RESOURCE_COMPARISON"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/648425746bb9434051647c8266dfab50a8f2d6a3.javaxmi"
+        }
+      },
+      "tag": "TEST_OVERHEAD"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_SOURCE_FILE_DIR_LOCATION": "testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "LEFT_MODEL_SOURCE_FILE_DIR_LOCATION": "testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi"
+        }
+      },
+      "tag": "EXPECTED_SIMILARITY_RESULT_COMPUTATION"
+    },
+    {
+      "timeElapsed": 4806,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "MODEL_COMPARISON_CLASS_NAME": "JavaModelComparator"
+        }
+      },
+      "tag": "MODEL_RESOURCE_COMPARISON"
+    },
+    {
+      "timeElapsed": 76,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi"
+        }
+      },
+      "tag": "TEST_OVERHEAD"
+    },
+    {
+      "timeElapsed": 4779,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "MODEL_COMPARISON_CLASS_NAME": "JavaModelComparator"
+        }
+      },
+      "tag": "MODEL_RESOURCE_COMPARISON"
+    },
+    {
+      "timeElapsed": 77,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi"
+        }
+      },
+      "tag": "TEST_OVERHEAD"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_SOURCE_FILE_DIR_LOCATION": "testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "LEFT_MODEL_SOURCE_FILE_DIR_LOCATION": "testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi"
+        }
+      },
+      "tag": "EXPECTED_SIMILARITY_RESULT_COMPUTATION"
+    },
+    {
+      "timeElapsed": 13388,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "MODEL_COMPARISON_CLASS_NAME": "JavaModelComparator"
+        }
+      },
+      "tag": "MODEL_RESOURCE_COMPARISON"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi"
+        }
+      },
+      "tag": "TEST_OVERHEAD"
+    },
+    {
+      "timeElapsed": 13419,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "MODEL_COMPARISON_CLASS_NAME": "JavaModelComparator"
+        }
+      },
+      "tag": "MODEL_RESOURCE_COMPARISON"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi"
+        }
+      },
+      "tag": "TEST_OVERHEAD"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_SOURCE_FILE_DIR_LOCATION": "testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "LEFT_MODEL_SOURCE_FILE_DIR_LOCATION": "testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi"
+        }
+      },
+      "tag": "EXPECTED_SIMILARITY_RESULT_COMPUTATION"
+    },
+    {
+      "timeElapsed": 13256,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "MODEL_COMPARISON_CLASS_NAME": "JavaModelComparator"
+        }
+      },
+      "tag": "MODEL_RESOURCE_COMPARISON"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi"
+        }
+      },
+      "tag": "TEST_OVERHEAD"
+    },
+    {
+      "timeElapsed": 12802,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "MODEL_COMPARISON_CLASS_NAME": "JavaModelComparator"
+        }
+      },
+      "tag": "MODEL_RESOURCE_COMPARISON"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi"
+        }
+      },
+      "tag": "TEST_OVERHEAD"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_SOURCE_FILE_DIR_LOCATION": "testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "LEFT_MODEL_SOURCE_FILE_DIR_LOCATION": "testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi"
+        }
+      },
+      "tag": "EXPECTED_SIMILARITY_RESULT_COMPUTATION"
+    },
+    {
+      "timeElapsed": 5301,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "MODEL_COMPARISON_CLASS_NAME": "JavaModelComparator"
+        }
+      },
+      "tag": "MODEL_RESOURCE_COMPARISON"
+    },
+    {
+      "timeElapsed": 75,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi"
+        }
+      },
+      "tag": "TEST_OVERHEAD"
+    },
+    {
+      "timeElapsed": 4282,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "MODEL_COMPARISON_CLASS_NAME": "JavaModelComparator"
+        }
+      },
+      "tag": "MODEL_RESOURCE_COMPARISON"
+    },
+    {
+      "timeElapsed": 77,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi"
+        }
+      },
+      "tag": "TEST_OVERHEAD"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_SOURCE_FILE_DIR_LOCATION": "testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "LEFT_MODEL_SOURCE_FILE_DIR_LOCATION": "testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi"
+        }
+      },
+      "tag": "EXPECTED_SIMILARITY_RESULT_COMPUTATION"
+    },
+    {
+      "timeElapsed": 12529,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "MODEL_COMPARISON_CLASS_NAME": "JavaModelComparator"
+        }
+      },
+      "tag": "MODEL_RESOURCE_COMPARISON"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi"
+        }
+      },
+      "tag": "TEST_OVERHEAD"
+    },
+    {
+      "timeElapsed": 12677,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "MODEL_COMPARISON_CLASS_NAME": "JavaModelComparator"
+        }
+      },
+      "tag": "MODEL_RESOURCE_COMPARISON"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi"
+        }
+      },
+      "tag": "TEST_OVERHEAD"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_SOURCE_FILE_DIR_LOCATION": "testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "LEFT_MODEL_SOURCE_FILE_DIR_LOCATION": "testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi"
+        }
+      },
+      "tag": "EXPECTED_SIMILARITY_RESULT_COMPUTATION"
+    },
+    {
+      "timeElapsed": 12667,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "MODEL_COMPARISON_CLASS_NAME": "JavaModelComparator"
+        }
+      },
+      "tag": "MODEL_RESOURCE_COMPARISON"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi"
+        }
+      },
+      "tag": "TEST_OVERHEAD"
+    },
+    {
+      "timeElapsed": 12812,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "MODEL_COMPARISON_CLASS_NAME": "JavaModelComparator"
+        }
+      },
+      "tag": "MODEL_RESOURCE_COMPARISON"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi"
+        }
+      },
+      "tag": "TEST_OVERHEAD"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_SOURCE_FILE_DIR_LOCATION": "testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "LEFT_MODEL_SOURCE_FILE_DIR_LOCATION": "testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi"
+        }
+      },
+      "tag": "EXPECTED_SIMILARITY_RESULT_COMPUTATION"
+    },
+    {
+      "timeElapsed": 4452,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "MODEL_COMPARISON_CLASS_NAME": "JavaModelComparator"
+        }
+      },
+      "tag": "MODEL_RESOURCE_COMPARISON"
+    },
+    {
+      "timeElapsed": 105,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi"
+        }
+      },
+      "tag": "TEST_OVERHEAD"
+    },
+    {
+      "timeElapsed": 4853,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "MODEL_COMPARISON_CLASS_NAME": "JavaModelComparator"
+        }
+      },
+      "tag": "MODEL_RESOURCE_COMPARISON"
+    },
+    {
+      "timeElapsed": 77,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi"
+        }
+      },
+      "tag": "TEST_OVERHEAD"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_SOURCE_FILE_DIR_LOCATION": "testmodel-cache/teammates/ce4463a8741840fd25a41b14801eab9193c7ed18.javaxmi",
+          "LEFT_MODEL_SOURCE_FILE_DIR_LOCATION": "testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/ce4463a8741840fd25a41b14801eab9193c7ed18.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi"
+        }
+      },
+      "tag": "EXPECTED_SIMILARITY_RESULT_COMPUTATION"
+    },
+    {
+      "timeElapsed": 12428,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/ce4463a8741840fd25a41b14801eab9193c7ed18.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "MODEL_COMPARISON_CLASS_NAME": "JavaModelComparator"
+        }
+      },
+      "tag": "MODEL_RESOURCE_COMPARISON"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/ce4463a8741840fd25a41b14801eab9193c7ed18.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi"
+        }
+      },
+      "tag": "TEST_OVERHEAD"
+    },
+    {
+      "timeElapsed": 13154,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/ce4463a8741840fd25a41b14801eab9193c7ed18.javaxmi",
+          "MODEL_COMPARISON_CLASS_NAME": "JavaModelComparator"
+        }
+      },
+      "tag": "MODEL_RESOURCE_COMPARISON"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/ce4463a8741840fd25a41b14801eab9193c7ed18.javaxmi"
+        }
+      },
+      "tag": "TEST_OVERHEAD"
+    },
+    {
+      "timeElapsed": 1,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_SOURCE_FILE_DIR_LOCATION": "testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "LEFT_MODEL_SOURCE_FILE_DIR_LOCATION": "testmodel-cache/teammates/ce4463a8741840fd25a41b14801eab9193c7ed18.javaxmi",
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/ce4463a8741840fd25a41b14801eab9193c7ed18.javaxmi"
+        }
+      },
+      "tag": "EXPECTED_SIMILARITY_RESULT_COMPUTATION"
+    },
+    {
+      "timeElapsed": 12968,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/ce4463a8741840fd25a41b14801eab9193c7ed18.javaxmi",
+          "MODEL_COMPARISON_CLASS_NAME": "JavaModelComparator"
+        }
+      },
+      "tag": "MODEL_RESOURCE_COMPARISON"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/ce4463a8741840fd25a41b14801eab9193c7ed18.javaxmi"
+        }
+      },
+      "tag": "TEST_OVERHEAD"
+    },
+    {
+      "timeElapsed": 13186,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/ce4463a8741840fd25a41b14801eab9193c7ed18.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "MODEL_COMPARISON_CLASS_NAME": "JavaModelComparator"
+        }
+      },
+      "tag": "MODEL_RESOURCE_COMPARISON"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/ce4463a8741840fd25a41b14801eab9193c7ed18.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi"
+        }
+      },
+      "tag": "TEST_OVERHEAD"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_SOURCE_FILE_DIR_LOCATION": "testmodel-cache/teammates/ce4463a8741840fd25a41b14801eab9193c7ed18.javaxmi",
+          "LEFT_MODEL_SOURCE_FILE_DIR_LOCATION": "testmodel-cache/teammates/ce4463a8741840fd25a41b14801eab9193c7ed18.javaxmi",
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/ce4463a8741840fd25a41b14801eab9193c7ed18.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/ce4463a8741840fd25a41b14801eab9193c7ed18.javaxmi"
+        }
+      },
+      "tag": "EXPECTED_SIMILARITY_RESULT_COMPUTATION"
+    },
+    {
+      "timeElapsed": 4802,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/ce4463a8741840fd25a41b14801eab9193c7ed18.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/ce4463a8741840fd25a41b14801eab9193c7ed18.javaxmi",
+          "MODEL_COMPARISON_CLASS_NAME": "JavaModelComparator"
+        }
+      },
+      "tag": "MODEL_RESOURCE_COMPARISON"
+    },
+    {
+      "timeElapsed": 77,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/ce4463a8741840fd25a41b14801eab9193c7ed18.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/ce4463a8741840fd25a41b14801eab9193c7ed18.javaxmi"
+        }
+      },
+      "tag": "TEST_OVERHEAD"
+    },
+    {
+      "timeElapsed": 4592,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/ce4463a8741840fd25a41b14801eab9193c7ed18.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/ce4463a8741840fd25a41b14801eab9193c7ed18.javaxmi",
+          "MODEL_COMPARISON_CLASS_NAME": "JavaModelComparator"
+        }
+      },
+      "tag": "MODEL_RESOURCE_COMPARISON"
+    },
+    {
+      "timeElapsed": 78,
+      "key": {
+        "keyMap": {
+          "RIGHT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/ce4463a8741840fd25a41b14801eab9193c7ed18.javaxmi",
+          "TEST_FACTORY_CLASS_NAME": "ModelComparisonTestFactory",
+          "EXPECTED_SIMILARITY_RESULT_PROVIDER_CLASS_NAME": "RepoCacheSimilarityResultProvider",
+          "LEFT_MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/ce4463a8741840fd25a41b14801eab9193c7ed18.javaxmi"
+        }
+      },
+      "tag": "TEST_OVERHEAD"
+    },
+    {
+      "timeElapsed": 7,
+      "key": {
+        "keyMap": {
+          "REPOSITORY_URI": "https://github.com/TEAMMATES/teammates",
+          "TEST_CLASS_NAME": "TeammatesRepoTest",
+          "REPOSITORY_NAME": "teammates"
+        }
+      },
+      "tag": "SAVE_EXPECTED_SIMILARITY_RESULTS"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "REPOSITORY_URI": "https://github.com/TEAMMATES/teammates",
+          "TEST_CLASS_NAME": "TeammatesRepoTest",
+          "REPOSITORY_NAME": "teammates"
+        }
+      },
+      "tag": "TEST_AFTEREACH"
+    },
+    {
+      "timeElapsed": 1,
+      "key": {
+        "keyMap": {
+          "REPOSITORY_URI": "https://github.com/TEAMMATES/teammates",
+          "TEST_CLASS_NAME": "TeammatesRepoTest",
+          "MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/83f518e279807dc7eb7023d008a4d1ab290fefee.javaxmi",
+          "REPOSITORY_NAME": "teammates"
+        }
+      },
+      "tag": "SAVE_MODEL_RESOURCE"
+    },
+    {
+      "timeElapsed": 0,
+      "key": {
+        "keyMap": {
+          "REPOSITORY_URI": "https://github.com/TEAMMATES/teammates",
+          "TEST_CLASS_NAME": "TeammatesRepoTest",
+          "MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/f33d0bcd5843678b832efd8ee2963e72a95ecfc9.javaxmi",
+          "REPOSITORY_NAME": "teammates"
+        }
+      },
+      "tag": "SAVE_MODEL_RESOURCE"
+    },
+    {
+      "timeElapsed": 1,
+      "key": {
+        "keyMap": {
+          "REPOSITORY_URI": "https://github.com/TEAMMATES/teammates",
+          "TEST_CLASS_NAME": "TeammatesRepoTest",
+          "MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/ce4463a8741840fd25a41b14801eab9193c7ed18.javaxmi",
+          "REPOSITORY_NAME": "teammates"
+        }
+      },
+      "tag": "SAVE_MODEL_RESOURCE"
+    },
+    {
+      "timeElapsed": 1,
+      "key": {
+        "keyMap": {
+          "REPOSITORY_URI": "https://github.com/TEAMMATES/teammates",
+          "TEST_CLASS_NAME": "TeammatesRepoTest",
+          "MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/648425746bb9434051647c8266dfab50a8f2d6a3.javaxmi",
+          "REPOSITORY_NAME": "teammates"
+        }
+      },
+      "tag": "SAVE_MODEL_RESOURCE"
+    },
+    {
+      "timeElapsed": 1,
+      "key": {
+        "keyMap": {
+          "REPOSITORY_URI": "https://github.com/TEAMMATES/teammates",
+          "TEST_CLASS_NAME": "TeammatesRepoTest",
+          "MODEL_RESOURCE_LOCATION": "testResources/testmodel-cache/teammates/48b67bae03babf5a5e578aefce47f0285e8de8b4.javaxmi",
+          "REPOSITORY_NAME": "teammates"
+        }
+      },
+      "tag": "SAVE_MODEL_RESOURCE"
+    },
+    {
+      "timeElapsed": 4,
+      "key": {
+        "keyMap": {
+          "REPOSITORY_URI": "https://github.com/TEAMMATES/teammates",
+          "TEST_CLASS_NAME": "TeammatesRepoTest",
+          "REPOSITORY_NAME": "teammates"
+        }
+      },
+      "tag": "TEST_AFTEREACH"
+    }
+  ]
+}
