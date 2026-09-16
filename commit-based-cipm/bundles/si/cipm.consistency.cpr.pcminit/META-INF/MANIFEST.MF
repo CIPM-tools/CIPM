@@ -5,7 +5,6 @@ Bundle-SymbolicName: cipm.consistency.cpr.pcminit;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Export-Package: cipm.consistency.cpr.pcminit,
  mir.reactions.pcmInit
-Require-Bundle: tools.vitruv.dsls.reactions.runtime,
- org.palladiosimulator.pcm
+Require-Bundle: org.palladiosimulator.pcm
 Automatic-Module-Name: cipm.consistency.cpr.pcminit
 Bundle-RequiredExecutionEnvironment: JavaSE-11

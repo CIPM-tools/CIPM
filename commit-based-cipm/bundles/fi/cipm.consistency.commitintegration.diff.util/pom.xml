@@ -1,81 +1,84 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  
-  	<parent>
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
 		<groupId>cipm.consistency</groupId>
 		<artifactId>fi</artifactId>
 		<version>0.2.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-	
 
-  <artifactId>cipm.consistency.commitintegration.diff.util</artifactId>
-    
-  <dependencies>
-  <dependency>
-  		<groupId>org.eclipse.emf</groupId>
-  		<artifactId>org.eclipse.emf.ecore</artifactId>
-  </dependency>
-  <dependency>
-		<groupId>org.eclipse.emf.compare</groupId>
-		<artifactId>org.eclipse.emf.compare</artifactId>
-  </dependency>
-  <dependency>
-    	<groupId>org.eclipse.emf</groupId>
-    	<artifactId>org.eclipse.emf.common</artifactId>
-  </dependency>
-  <dependency>
-    	 <groupId>com.google.guava</groupId>
-	  	 <artifactId>guava</artifactId>
-  </dependency>
-  <dependency>
-         <groupId>cipm.consistency</groupId>
-         <artifactId>org.splevo.commons</artifactId>
-  </dependency>
-  <dependency>
-         <groupId>cipm.consistency</groupId>
-         <artifactId>org.splevo.diffing</artifactId>
-  </dependency>
-  <dependency>
-         <groupId>cipm.consistency</groupId>
-         <artifactId>org.splevo.extraction</artifactId>
-  </dependency>
-  <dependency>
-         <groupId>cipm.consistency</groupId>
-         <artifactId>org.splevo.jamopp.diffing</artifactId>
-  </dependency>
-  <dependency>
-         <groupId>cipm.consistency</groupId>
-         <artifactId>org.splevo.jamopp.extraction</artifactId>
-  </dependency>
-  <dependency>
-         <groupId>cipm.consistency</groupId>
-         <artifactId>org.splevo.jamopp.util</artifactId>
-  </dependency>
-  <dependency>
-		  <groupId>org.eclipse.emf.compare</groupId>
-		  <artifactId>org.eclipse.emf.compare.rcp</artifactId>
-  </dependency>
-  <dependency>
-		<groupId>tools.mdsd</groupId>
-		<artifactId>org.emftext.language.java</artifactId>
-  </dependency>
-  <dependency>
-        <groupId>org.palladiosimulator.core</groupId>
-        <artifactId>org.palladiosimulator.pcm</artifactId>
-  </dependency>
-  </dependencies>
-  
-  
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
-        <configuration>
-          <release>11</release>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+	<artifactId>cipm.consistency.commitintegration.diff.util</artifactId>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.eclipse.emf</groupId>
+			<artifactId>org.eclipse.emf.ecore</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.emf</groupId>
+			<artifactId>org.eclipse.emf.common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.emf.compare</groupId>
+			<artifactId>org.eclipse.emf.compare</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.emf.compare</groupId>
+			<artifactId>org.eclipse.emf.compare.rcp</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cipm.consistency</groupId>
+			<artifactId>org.splevo.commons</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cipm.consistency</groupId>
+			<artifactId>org.splevo.diffing</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cipm.consistency</groupId>
+			<artifactId>org.splevo.extraction</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cipm.consistency</groupId>
+			<artifactId>org.splevo.jamopp.diffing</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cipm.consistency</groupId>
+			<artifactId>org.splevo.jamopp.extraction</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cipm.consistency</groupId>
+			<artifactId>org.splevo.jamopp.util</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>tools.mdsd</groupId>
+			<artifactId>org.emftext.language.java</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.palladiosimulator.core</groupId>
+			<artifactId>org.palladiosimulator.pcm</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.palladiosimulator.commons</groupId>
+			<artifactId>de.uka.ipd.sdq.identifier</artifactId>
+		</dependency>
+	</dependencies>
+
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
+				<configuration>
+					<release>11</release>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

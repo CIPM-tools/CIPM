@@ -76,28 +76,6 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
-		<plugins>
-			<plugin>
-				<groupId>org.projectlombok</groupId>
-				<artifactId>lombok-maven-plugin</artifactId>
-				<version>1.18.20.0</version>
-				<executions>
-					<execution>
-						<id>delombok</id>
-						<phase>generate-sources</phase>
-						<goals>
-						  <goal>delombok</goal>
-						</goals>
-						<configuration>
-							<sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
-							<outputDirectory>${project.basedir}/src/main/delombok</outputDirectory>
-							<verbose>true</verbose>
-							<encoding>utf-8</encoding>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
 	</build>
 
 	<profiles>

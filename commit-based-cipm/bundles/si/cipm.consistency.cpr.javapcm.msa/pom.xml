@@ -115,20 +115,16 @@
 		</dependency>
 		<dependency>
 			<groupId>tools.vitruv</groupId>
+			<artifactId>edu.kit.ipd.sdq.commons.util.pcm</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>tools.vitruv</groupId>
 			<artifactId>tools.vitruv.applications.pcmjava</artifactId>
 		</dependency>
 
 
 	</dependencies>
 	<build>
-		<resources>
-			<resource>
-				<directory>src</directory>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
-			</resource>
-		</resources>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -148,7 +144,6 @@
 						</goals>
 						<configuration>
 							<sources>
-								<source>src/main/java</source>
 								<source>src-gen</source>
 							</sources>
 						</configuration>

@@ -4,13 +4,6 @@ Bundle-Name: Utilities for Consistency Preservation Rules
 Bundle-SymbolicName: cipm.consistency.cpr.util
 Bundle-Version: 0.2.0.qualifier
 Export-Package: cipm.consistency.cpr.util
-Require-Bundle: org.emftext.language.java,
- org.palladiosimulator.pcm,
- tools.vitruv.change.correspondence,
- tools.vitruv.applications.pcmjava.seffstatements.pojotransformations,
- tools.vitruv.applications.pcmjava.seffstatements.extended,
- tools.vitruv.applications.pcmjava.seffstatements,
- org.eclipse.emf.ecore
+Require-Bundle: org.palladiosimulator.pcm
 Automatic-Module-Name: cipm.consistency.cpr.util
 Bundle-RequiredExecutionEnvironment: JavaSE-11
-Import-Package: tools.vitruv.dsls.reactions.runtime.correspondence

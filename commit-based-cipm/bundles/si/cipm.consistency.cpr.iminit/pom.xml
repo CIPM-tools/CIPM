@@ -1,4 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -9,29 +10,55 @@
 	</parent>
 
 	<artifactId>cipm.consistency.cpr.iminit</artifactId>
-	<dependencies>
 
+	<dependencies>
 		<dependency>
 			<groupId>tools.vitruv</groupId>
 			<artifactId>tools.vitruv.dsls.reactions.runtime</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>tools.vitruv</groupId>
+			<artifactId>tools.vitruv.change.atomic</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>tools.vitruv</groupId>
+			<artifactId>tools.vitruv.change.composite</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>tools.vitruv</groupId>
+			<artifactId>tools.vitruv.change.propagation</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>tools.vitruv</groupId>
+			<artifactId>tools.vitruv.change.interaction</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>tools.vitruv</groupId>
+			<artifactId>tools.vitruv.change.correspondence</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.emf</groupId>
+			<artifactId>org.eclipse.emf.ecore</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>tools.cipm</groupId>
 			<artifactId>tools.cipm.models.instrumentation</artifactId>
-			<version>1.0.0</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.eclipse.xtext</groupId>
+			<artifactId>org.eclipse.xtext.xbase.lib</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.palladiosimulator.commons</groupId>
+			<artifactId>de.uka.ipd.sdq.identifier</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
-		<resources>
-			<resource>
-				<directory>src</directory>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
-			</resource>
-		</resources>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>

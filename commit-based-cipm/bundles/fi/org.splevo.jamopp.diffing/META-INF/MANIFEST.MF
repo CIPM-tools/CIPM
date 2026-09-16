@@ -7,20 +7,6 @@ Bundle-ClassPath: .
 Bundle-Activator: org.splevo.jamopp.diffing.Activator
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.emf.ecore;visibility:=reexport,
- org.eclipse.emf.compare;visibility:=reexport,
- org.emftext.language.java;visibility:=reexport,
- org.splevo.diffing;visibility:=reexport,
- org.apache.log4j,
- org.apache.commons.io,
- org.splevo.jamopp.extraction,
- org.splevo.jamopp.util,
- com.google.guava,
- jamopp.printer,
- org.splevo.commons,
- org.splevo.extraction,
- cipm.consistency.workflow;resolution:=optional
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Export-Package: org.splevo.jamopp.diffing,
  org.splevo.jamopp.diffing.diff,

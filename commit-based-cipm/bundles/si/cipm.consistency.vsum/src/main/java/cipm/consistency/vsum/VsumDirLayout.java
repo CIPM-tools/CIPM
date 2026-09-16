@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.xtend.lib.annotations.Accessors;
 import org.eclipse.xtext.xbase.lib.Pure;
+import cipm.consistency.models.ModelDirLayoutImpl;
 
 /**
  * Internal layout for the directory structure of VSUM, PCM and IMM.
@@ -11,17 +12,17 @@ import org.eclipse.xtext.xbase.lib.Pure;
  * @author Martin Armbruster
  */
 
-public class VsumDirLayout /* implements ModelDirLayoutImpl  */{
+public class VsumDirLayout extends ModelDirLayoutImpl {
   private static final String vsumCorrespondenceModelName = "correspondence.correspondence";
 
   private Path vsumCorrespondenceModelPath;
 
   private URI vsumCorrespondenceModelUri;
 
-  public URI initialize(final Path rootDirPath) {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field super is undefined"
-      + "\ninitialize cannot be resolved");
+  public void initialize(final Path rootDirPath) {
+    super.initialize(rootDirPath);
+    this.vsumCorrespondenceModelPath = rootDirPath.resolve(VsumDirLayout.vsumCorrespondenceModelName);
+    this.vsumCorrespondenceModelUri = URI.createFileURI(this.vsumCorrespondenceModelPath.toString());
   }
 
   public Path getVsumCorrespondenceModelPath() {

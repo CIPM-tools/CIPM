@@ -7,5 +7,7 @@ Automatic-Module-Name: cipm.consistency.tools.evaluation.data
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Require-Bundle: org.eclipse.jgit,
  org.apache.commons.io,
- com.google.gson
+ com.google.gson,
+ cipm.consistency.commitintegration.diff.util,
+ org.eclipse.emf.ecore
 Export-Package: cipm.consistency.tools.evaluation.data

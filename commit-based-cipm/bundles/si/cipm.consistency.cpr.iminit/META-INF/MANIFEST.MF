@@ -4,8 +4,7 @@ Bundle-Name: Consistency Preservation Rules to initialize the IM
 Bundle-SymbolicName: cipm.consistency.cpr.iminit;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Export-Package: cipm.consistency.cpr.iminit,
- mir.reactions.imInit
-Require-Bundle: tools.vitruv.dsls.reactions.runtime,
- cipm.consistency.models.instrumentation
+ mir.reactions.imInit,
+ mir.routines.imInit
 Automatic-Module-Name: cipm.consistency.cpr.iminit
 Bundle-RequiredExecutionEnvironment: JavaSE-11

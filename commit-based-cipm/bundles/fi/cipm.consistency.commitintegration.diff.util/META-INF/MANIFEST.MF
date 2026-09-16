@@ -5,18 +5,6 @@ Bundle-SymbolicName: cipm.consistency.commitintegration.diff.util;singleton:=tru
 Bundle-Version: 0.2.0.qualifier
 Export-Package: cipm.consistency.commitintegration.diff.util,
  cipm.consistency.commitintegration.diff.util.pcm
-Require-Bundle: org.eclipse.emf.ecore,
- org.eclipse.emf.compare,
- org.eclipse.emf.common,
- com.google.guava;bundle-version="[30.0.0,33.2.0)",
- org.splevo.commons,
- org.splevo.diffing,
- org.splevo.extraction,
- org.splevo.jamopp.diffing,
- org.splevo.jamopp.extraction,
- org.splevo.jamopp.util,
- org.eclipse.emf.compare.rcp,
- org.emftext.language.java,
- org.palladiosimulator.pcm
+Require-Bundle: org.palladiosimulator.pcm
 Automatic-Module-Name: cipm.consistency.commitintegration.diff.util
 Bundle-RequiredExecutionEnvironment: JavaSE-11

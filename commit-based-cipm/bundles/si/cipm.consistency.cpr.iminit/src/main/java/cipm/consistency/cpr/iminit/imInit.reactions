@@ -1,4 +1,4 @@
-import cipm.consistency.base.models.instrumentation.InstrumentationModel.InstrumentationModelPackage
+import tools.cipm.models.instrumentation.InstrumentationModel.InstrumentationModelPackage
 
 import "http://www.dmodel.com/InstrumentationMetamodel" as im
 

@@ -31,7 +31,6 @@ import tools.vitruv.framework.vsum.internal.InternalVirtualModel;
  * @author Martin Armbruster
  * @author Lukas Burgey
  */
-@SuppressWarnings("restriction")
 public class VsumFacadeImpl implements VsumFacade {
     private static final Logger LOGGER = Logger.getLogger(VsumFacadeImpl.class.getName());
 

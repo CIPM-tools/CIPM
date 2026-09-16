@@ -1,5 +1,6 @@
 package cipm.consistency.models.pcm;
 
+import cipm.consistency.base.shared.pcm.LocalFilesystemPCM;
 import cipm.consistency.models.ModelDirLayoutImpl;
 import java.nio.file.Path;
 import org.eclipse.emf.common.util.URI;
@@ -52,14 +53,14 @@ public class PcmDirLayout extends ModelDirLayoutImpl {
     this.pcmResourceEnvironmentURI = URI.createFileURI(this.pcmResourceEnvironmentPath.toString());
   }
 
-  public /* LocalFilesystemPCM */Object getFilePCM() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nLocalFilesystemPCM cannot be resolved."
-      + "\nsetRepositoryFile cannot be resolved"
-      + "\nsetAllocationModelFile cannot be resolved"
-      + "\nsetSystemFile cannot be resolved"
-      + "\nsetResourceEnvironmentFile cannot be resolved"
-      + "\nsetUsageModelFile cannot be resolved");
+  public LocalFilesystemPCM getFilePCM() {
+	var filePCM = new LocalFilesystemPCM();
+	filePCM.setRepositoryFile(pcmRepositoryPath.toFile());
+	filePCM.setAllocationModelFile(pcmAllocationPath.toFile());
+	filePCM.setSystemFile(pcmSystemPath.toFile());
+	filePCM.setResourceEnvironmentFile(pcmResourceEnvironmentPath.toFile());
+	filePCM.setUsageModelFile(pcmUsageModelPath.toFile());
+	return filePCM;
   }
 
   public Path getPcmRepositoryPath() {

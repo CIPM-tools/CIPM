@@ -35,18 +35,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.projectlombok</groupId>
-				<artifactId>lombok-maven-plugin</artifactId>
-				<version>1.18.20.0</version>
-				<executions>
-					<execution>
-						<id>delombok</id>
-						<phase>none</phase>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
 				<groupId>org.eclipse.xtend</groupId>
 				<artifactId>xtend-maven-plugin</artifactId>
 				<executions>
