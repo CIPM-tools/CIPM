@@ -109,3 +109,8 @@ tmp/
 
 # polygot
 *.polyglot.META-INF
+
+# Parser tests under fitests
+**/repo-clones
+**/testmodel-cache
+**/results-cache
