@@ -15,8 +15,8 @@ import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
  */
 public class BasicComponentForCommitIntegrationFinder implements BasicComponentFinding {
     @Override
-    public BasicComponent findBasicComponentForMethod(final Method newMethod, final EditableCorrespondenceModelView<Correspondence> ci) {
-    	var correspondences = CorrespondenceModelUtil.getCorrespondingEObjects(ci,
+    public BasicComponent findBasicComponentForMethod(final Method newMethod, final EditableCorrespondenceModelView<Correspondence> correspondenceModel) {
+    	var correspondences = CorrespondenceModelUtil.getCorrespondingEObjects(correspondenceModel,
     			newMethod.getContainingConcreteClassifier(), BasicComponent.class);
     	if (correspondences != null && !correspondences.isEmpty()) {
     		return correspondences.iterator().next();

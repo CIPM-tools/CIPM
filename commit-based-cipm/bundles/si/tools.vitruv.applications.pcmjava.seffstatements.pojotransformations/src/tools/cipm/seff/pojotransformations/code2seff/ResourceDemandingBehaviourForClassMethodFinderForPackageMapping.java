@@ -12,6 +12,12 @@ import tools.cipm.seff.CorrespondenceModelUtil;
 import tools.vitruv.change.correspondence.Correspondence;
 import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
 
+/**
+ * Package-mapping implementation of {@link ResourceDemandingBehaviourForClassMethodFinding}:
+ * looks up the SEFF or internal behaviour corresponding to a class method through the
+ * correspondence model. If several correspond, the first is returned and a warning is
+ * logged.
+ */
 public class ResourceDemandingBehaviourForClassMethodFinderForPackageMapping
         implements ResourceDemandingBehaviourForClassMethodFinding {
 
@@ -25,6 +31,9 @@ public class ResourceDemandingBehaviourForClassMethodFinderForPackageMapping
         this.correspondenceModel = correspondenceModel;
     }
 
+    /**
+     * @return the SEFF corresponding to the class method, or {@code null} if there is none.
+     */
     @Override
     public ResourceDemandingSEFF getCorrespondingRDSEFForClassMethod(final ClassMethod classMethod) {
         return this.getFirstCorrespondingEObjectIfAny(classMethod, ResourceDemandingSEFF.class);
@@ -43,6 +52,10 @@ public class ResourceDemandingBehaviourForClassMethodFinderForPackageMapping
         return correspondingObjects.iterator().next();
     }
 
+    /**
+     * @return the internal behaviour corresponding to the class method, or {@code null} if
+     *         there is none.
+     */
     @Override
     public ResourceDemandingInternalBehaviour getCorrespondingResourceDemandingInternalBehaviour(
             final ClassMethod classMethod) {

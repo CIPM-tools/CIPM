@@ -2,6 +2,7 @@ package tools.cipm.seff.finegrained;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.palladiosimulator.pcm.seff.AbstractAction;
 
@@ -12,16 +13,29 @@ import org.palladiosimulator.pcm.seff.AbstractAction;
  * @author Martin Armbruster
  */
 public class ResourceDemandingBehaviourDiff {
-	private List<AbstractAction> deletedAbstractActions;
-	private List<AbstractAction> addedAbstractActions;
-	private List<AbstractActionMatching> modifiedAbstractActions;
-	private List<AbstractActionMatching> unmodifiedAbstractActions;
-	
-	public ResourceDemandingBehaviourDiff() {
-		deletedAbstractActions =  new ArrayList<>();
-		addedAbstractActions = new ArrayList<>();
-		modifiedAbstractActions = new ArrayList<>();
-		unmodifiedAbstractActions = new ArrayList<>();
+	private final List<AbstractAction> deletedAbstractActions = new ArrayList<>();
+	private final List<AbstractAction> addedAbstractActions = new ArrayList<>();
+	private final List<AbstractActionMatching> modifiedAbstractActions = new ArrayList<>();
+	private final List<AbstractActionMatching> unmodifiedAbstractActions = new ArrayList<>();
+
+	public void addDeletedAbstractAction(AbstractAction deletedAbstractAction) {
+		deletedAbstractActions.add(deletedAbstractAction);
+	}
+
+	public void addAddedAbstractAction(AbstractAction addedAbstractAction) {
+		addedAbstractActions.add(addedAbstractAction);
+	}
+
+	public void addAddedAbstractActions(List<AbstractAction> newAddedAbstractActions) {
+		addedAbstractActions.addAll(newAddedAbstractActions);
+	}
+
+	public void addModifiedAbstractAction(AbstractActionMatching matching) {
+		modifiedAbstractActions.add(matching);
+	}
+
+	public void addUnmodifiedAbstractAction(AbstractActionMatching matching) {
+		unmodifiedAbstractActions.add(matching);
 	}
 
 	public List<AbstractAction> getDeletedAbstractActions() {
@@ -35,47 +49,42 @@ public class ResourceDemandingBehaviourDiff {
 	public List<AbstractActionMatching> getModifiedAbstractActions() {
 		return modifiedAbstractActions;
 	}
-	
+
 	public List<AbstractActionMatching> getUnmodifiedAbstractActions() {
 		return unmodifiedAbstractActions;
 	}
-	
+
+	public boolean isModified(AbstractActionMatching matching) {
+		return modifiedAbstractActions.contains(matching);
+	}
+
 	public boolean hasOldAbstractActionMatching(AbstractAction oldAbstractAction) {
-		for (AbstractActionMatching matching : getModifiedAbstractActions()) {
-			if (oldAbstractAction == matching.getOldAbstractAction()) {
-				return true;
-			}
-		}
-		for (AbstractActionMatching matching : getUnmodifiedAbstractActions()) {
-			if (oldAbstractAction == matching.getOldAbstractAction()) {
-				return true;
-			}
-		}
-		return false;
+		return findMatching(matching -> matching.getOldAbstractAction() == oldAbstractAction) != null;
 	}
-	
+
 	public boolean hasNewAbstractActionMatching(AbstractAction newAbstractAction) {
-		for (AbstractActionMatching matching : getModifiedAbstractActions()) {
-			if (matching.getNewAbstractAction() == newAbstractAction) {
-				return true;
-			}
-		}
-		for (AbstractActionMatching matching : getUnmodifiedAbstractActions()) {
-			if (matching.getNewAbstractAction() == newAbstractAction) {
-				return true;
-			}
-		}
-		return false;
+		return getNewAbstractActionMatching(newAbstractAction) != null;
 	}
-	
+
 	public AbstractActionMatching getNewAbstractActionMatching(AbstractAction newAction) {
-		for (var matching : getModifiedAbstractActions()) {
-			if (matching.getNewAbstractAction() == newAction) {
+		return findMatching(matching -> matching.getNewAbstractAction() == newAction);
+	}
+
+	/**
+	 * Searches the modified and, afterwards, the unmodified matchings for the first
+	 * one satisfying the given condition.
+	 *
+	 * @param condition the condition a matching has to satisfy.
+	 * @return the first matching satisfying the condition, or null if there is none.
+	 */
+	private AbstractActionMatching findMatching(Predicate<AbstractActionMatching> condition) {
+		for (AbstractActionMatching matching : modifiedAbstractActions) {
+			if (condition.test(matching)) {
 				return matching;
 			}
 		}
-		for (var matching : getUnmodifiedAbstractActions()) {
-			if (matching.getNewAbstractAction() == newAction) {
+		for (AbstractActionMatching matching : unmodifiedAbstractActions) {
+			if (condition.test(matching)) {
 				return matching;
 			}
 		}

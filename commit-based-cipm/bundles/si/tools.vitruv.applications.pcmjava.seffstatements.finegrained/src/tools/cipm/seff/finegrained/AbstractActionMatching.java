@@ -9,8 +9,8 @@ import org.palladiosimulator.pcm.seff.AbstractAction;
  * @author Martin Armbruster
  */
 public class AbstractActionMatching {
-	private AbstractAction newAbstractAction;
-	private AbstractAction oldAbstractAction;
+	private final AbstractAction newAbstractAction;
+	private final AbstractAction oldAbstractAction;
 	
 	/**
 	 * Creates a new instance.
@@ -26,16 +26,8 @@ public class AbstractActionMatching {
 	public AbstractAction getNewAbstractAction() {
 		return newAbstractAction;
 	}
-	
-	public void setNewAbstractAction(AbstractAction newAbstractAction) {
-		this.newAbstractAction = newAbstractAction;
-	}
-	
+
 	public AbstractAction getOldAbstractAction() {
 		return oldAbstractAction;
-	}
-	
-	public void setOldAbstractAction(AbstractAction oldAbstractAction) {
-		this.oldAbstractAction = oldAbstractAction;
 	}
 }

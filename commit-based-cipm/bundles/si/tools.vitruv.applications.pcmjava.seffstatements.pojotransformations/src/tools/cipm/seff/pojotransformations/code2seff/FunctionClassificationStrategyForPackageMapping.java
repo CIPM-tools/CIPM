@@ -28,14 +28,14 @@ public class FunctionClassificationStrategyForPackageMapping extends AbstractFun
 
     private final BasicComponentFinding basicComponentFinding;
     private final EditableCorrespondenceModelView<Correspondence> correspondenceModel;
-    private final BasicComponent myBasicComponent;
+    private final BasicComponent basicComponent;
 
     public FunctionClassificationStrategyForPackageMapping(final BasicComponentFinding basicComponentFinding,
-            final EditableCorrespondenceModelView<Correspondence> ci, final BasicComponent myBasicComponent) {
+            final EditableCorrespondenceModelView<Correspondence> correspondenceModel, final BasicComponent basicComponent) {
         super(new MethodCallFinder());
         this.basicComponentFinding = basicComponentFinding;
-        this.correspondenceModel = ci;
-        this.myBasicComponent = myBasicComponent;
+        this.correspondenceModel = correspondenceModel;
+        this.basicComponent = basicComponent;
     }
 
     /**
@@ -58,7 +58,7 @@ public class FunctionClassificationStrategyForPackageMapping extends AbstractFun
         if (method instanceof ClassMethod) {
             final BasicComponent basicComponent = this.basicComponentFinding.findBasicComponentForMethod(method,
                     this.correspondenceModel);
-            if (null == basicComponent || basicComponent.getId().equals(this.myBasicComponent.getId())) {
+            if (null == basicComponent || basicComponent.getId().equals(this.basicComponent.getId())) {
                 return false;
             }
             return true;
@@ -77,7 +77,7 @@ public class FunctionClassificationStrategyForPackageMapping extends AbstractFun
         if (null == basicComponentOfMethod) {
             return true;
         }
-        if (basicComponentOfMethod.getId().equals(this.myBasicComponent.getId())) {
+        if (basicComponentOfMethod.getId().equals(this.basicComponent.getId())) {
             return false;
         }
         LOGGER.warn("The destination of a call to the method " + method

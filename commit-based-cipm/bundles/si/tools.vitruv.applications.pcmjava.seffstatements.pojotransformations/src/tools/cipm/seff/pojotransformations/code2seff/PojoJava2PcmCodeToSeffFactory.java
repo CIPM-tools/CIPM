@@ -12,6 +12,11 @@ import tools.cipm.seff.Code2SeffFactory;
 import tools.vitruv.change.correspondence.Correspondence;
 import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
 
+/**
+ * {@link Code2SeffFactory} for the plain package-mapping reconstruction, where components
+ * are derived from the Java package structure. This is the default set of finders and
+ * strategy that the other factories build on.
+ */
 public class PojoJava2PcmCodeToSeffFactory implements Code2SeffFactory {
 
 	@Override
@@ -25,8 +30,8 @@ public class PojoJava2PcmCodeToSeffFactory implements Code2SeffFactory {
 		return new InterfaceOfExternalCallFindingFactory() {
 			public InterfaceOfExternalCallFinding createInterfaceOfExternalCallFinding(
 					SourceCodeDecoratorRepository sourceCodeDecoratorRepository,
-					BasicComponent basicComponent) {
-				return new InterfaceOfExternalCallFinderForPackageMapping(correspondenceModel, basicComponent);
+					BasicComponent innerBasicComponent) {
+				return new InterfaceOfExternalCallFinderForPackageMapping(correspondenceModel, innerBasicComponent);
 			}
 		};
 	}
@@ -39,7 +44,7 @@ public class PojoJava2PcmCodeToSeffFactory implements Code2SeffFactory {
 
 	@Override
 	public AbstractFunctionClassificationStrategy createAbstractFunctionClassificationStrategy(
-			final BasicComponentFinding basicComponentFinding, final EditableCorrespondenceModelView<Correspondence> correspondenceModel,
+			final EditableCorrespondenceModelView<Correspondence> correspondenceModel, final BasicComponentFinding basicComponentFinding,
 			final BasicComponent basicComponent) {
 		return new FunctionClassificationStrategyForPackageMapping(basicComponentFinding, correspondenceModel,
 				basicComponent);

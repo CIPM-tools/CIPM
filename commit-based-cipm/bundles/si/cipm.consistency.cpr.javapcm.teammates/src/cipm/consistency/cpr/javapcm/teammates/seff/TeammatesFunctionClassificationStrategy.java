@@ -12,14 +12,14 @@ import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
 public class TeammatesFunctionClassificationStrategy extends FunctionClassificationStrategyForPackageMapping {
     private final BasicComponentFinding basicComponentFinding;
     private final EditableCorrespondenceModelView<Correspondence> correspondenceModel;
-    private final BasicComponent myBasicComponent;
+    private final BasicComponent basicComponent;
 
     public TeammatesFunctionClassificationStrategy(final BasicComponentFinding basicComponentFinding,
-            final EditableCorrespondenceModelView<Correspondence> ci, final BasicComponent myBasicComponent) {
-        super(basicComponentFinding, ci, myBasicComponent);
+            final EditableCorrespondenceModelView<Correspondence> correspondenceModel, final BasicComponent basicComponent) {
+        super(basicComponentFinding, correspondenceModel, basicComponent);
         this.basicComponentFinding = basicComponentFinding;
-        this.correspondenceModel = ci;
-        this.myBasicComponent = myBasicComponent;
+        this.correspondenceModel = correspondenceModel;
+        this.basicComponent = basicComponent;
     }
 
     /**
@@ -32,7 +32,7 @@ public class TeammatesFunctionClassificationStrategy extends FunctionClassificat
         }
         final BasicComponent basicComponent = this.basicComponentFinding.findBasicComponentForMethod(method,
                 this.correspondenceModel);
-        if (null == basicComponent || basicComponent.getId().equals(this.myBasicComponent.getId())) {
+        if (null == basicComponent || basicComponent.getId().equals(this.basicComponent.getId())) {
             return false;
         }
         return true;

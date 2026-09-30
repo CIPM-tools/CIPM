@@ -17,16 +17,22 @@ import org.palladiosimulator.pcm.PcmPackage
 import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView
 import tools.vitruv.change.correspondence.Correspondence
 
+/**
+ * Change-propagation preprocessor that reconstructs a method's SEFF when the method
+ * changes. It builds a {@link ClassMethodBodyChangedTransformation} from the given
+ * {@link Code2SeffFactory} and runs it. Subclasses override {@link #createTransformation}
+ * to supply a more specific transformation (see the extended and fine-grained variants).
+ */
 class Java2PcmMethodBodyChangePreprocessor extends AbstractChangePropagationSpecification {
 	val Code2SeffFactory code2SeffFactory;
 	
-	new(Code2SeffFactory code2SEFFfactory) {
-		this(code2SEFFfactory, MetamodelDescriptor.of(JavaPackage.eINSTANCE), MetamodelDescriptor.of(PcmPackage.eINSTANCE));
+	new(Code2SeffFactory code2SeffFactory) {
+		this(code2SeffFactory, MetamodelDescriptor.of(JavaPackage.eINSTANCE), MetamodelDescriptor.of(PcmPackage.eINSTANCE));
 	}
 	
-	new(Code2SeffFactory code2SEFFfactory, MetamodelDescriptor sourceDomain, MetamodelDescriptor targetDomain) {
+	new(Code2SeffFactory code2SeffFactory, MetamodelDescriptor sourceDomain, MetamodelDescriptor targetDomain) {
 		super(sourceDomain, targetDomain)
-		this.code2SeffFactory = code2SEFFfactory
+		this.code2SeffFactory = code2SeffFactory
 	}
 
 	override propagateChange(EChange change, EditableCorrespondenceModelView<Correspondence> correspondenceModel, ResourceAccess resourceAccess) {
@@ -48,27 +54,27 @@ class Java2PcmMethodBodyChangePreprocessor extends AbstractChangePropagationSpec
 	}
 
 	private def void executeClassMethodBodyChangeRefiner(EditableCorrespondenceModelView<Correspondence> correspondenceModel,
-		UserInteractor userInteracting, Method newMethod) {
+		UserInteractor userInteractor, Method newMethod) {
 		val basicComponentFinding = code2SeffFactory.createBasicComponentFinding
-		val BasicComponent myBasicComponent = basicComponentFinding.findBasicComponentForMethod(newMethod,
+		val BasicComponent basicComponent = basicComponentFinding.findBasicComponentForMethod(newMethod,
 			correspondenceModel);
-		val classification = code2SeffFactory.createAbstractFunctionClassificationStrategy(basicComponentFinding,
-			correspondenceModel, myBasicComponent);
-		val InterfaceOfExternalCallFindingFactory interfaceOfExternalCallFinderFactory = code2SeffFactory.
-			createInterfaceOfExternalCallFindingFactory(correspondenceModel, myBasicComponent);
+		val classification = code2SeffFactory.createAbstractFunctionClassificationStrategy(correspondenceModel,
+			basicComponentFinding, basicComponent);
+		val InterfaceOfExternalCallFindingFactory interfaceOfExternalCallFindingFactory = code2SeffFactory.
+			createInterfaceOfExternalCallFindingFactory(correspondenceModel, basicComponent);
 		val ResourceDemandingBehaviourForClassMethodFinding resourceDemandingBehaviourForClassMethodFinding =
 			code2SeffFactory.createResourceDemandingBehaviourForClassMethodFinding(correspondenceModel);
 		val ClassMethodBodyChangedTransformation methodBodyChanged = createTransformation(
-			newMethod, basicComponentFinding, classification, interfaceOfExternalCallFinderFactory,
+			newMethod, basicComponentFinding, classification, interfaceOfExternalCallFindingFactory,
 			resourceDemandingBehaviourForClassMethodFinding);
-		methodBodyChanged.execute(correspondenceModel, userInteracting);
+		methodBodyChanged.execute(correspondenceModel, userInteractor);
 	}
 	
 	protected def ClassMethodBodyChangedTransformation createTransformation(Method newMethod,
 		BasicComponentFinding basicComponentFinding, AbstractFunctionClassificationStrategy classification,
-		InterfaceOfExternalCallFindingFactory interfaceOfExternalCallFinderFactory,
+		InterfaceOfExternalCallFindingFactory interfaceOfExternalCallFindingFactory,
 		ResourceDemandingBehaviourForClassMethodFinding resourceDemandingBehaviourForClassMethodFinding) {
 		return new ClassMethodBodyChangedTransformation(newMethod, basicComponentFinding, classification,
-			interfaceOfExternalCallFinderFactory, resourceDemandingBehaviourForClassMethodFinding)
+			interfaceOfExternalCallFindingFactory, resourceDemandingBehaviourForClassMethodFinding)
 	}
 }

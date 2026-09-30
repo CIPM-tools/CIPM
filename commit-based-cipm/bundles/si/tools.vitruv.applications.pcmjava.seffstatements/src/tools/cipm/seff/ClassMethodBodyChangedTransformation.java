@@ -43,11 +43,11 @@ public class ClassMethodBodyChangedTransformation {
 
 	private static final Logger LOGGER = Logger.getLogger(ClassMethodBodyChangedTransformation.class.getSimpleName());
 
-	private final Method newMethod;
-	private final BasicComponentFinding basicComponentFinder;
+	protected final Method newMethod;
+	protected final BasicComponentFinding basicComponentFinder;
 	private final IFunctionClassificationStrategy iFunctionClassificationStrategy;
 
-	private final InterfaceOfExternalCallFindingFactory interfaceOfExternalCallFinderFactory;
+	private final InterfaceOfExternalCallFindingFactory interfaceOfExternalCallFindingFactory;
 
 	private final ResourceDemandingBehaviourForClassMethodFinding resourceDemandingBehaviourForClassMethodFinding;
 	
@@ -61,7 +61,7 @@ public class ClassMethodBodyChangedTransformation {
 		this.newMethod = newMethod;
 		this.basicComponentFinder = basicComponentFinder;
 		this.iFunctionClassificationStrategy = iFunctionClassificationStrategy;
-		this.interfaceOfExternalCallFinderFactory = interfaceOfExternalCallFindingFactory;
+		this.interfaceOfExternalCallFindingFactory = interfaceOfExternalCallFindingFactory;
 		this.resourceDemandingBehaviourForClassMethodFinding = resourceDemandingBehaviourForClassMethodFinding;
 	}
 	
@@ -81,10 +81,10 @@ public class ClassMethodBodyChangedTransformation {
 	 * 3) reconnect the newly extracted SEFF elements with the old elements.
 	 * 
 	 * @param correspondenceModel the current correspondence model.
-	 * @param userInteracting the user interactor.
+	 * @param userInteractor the user interactor.
 	 */
 	public void execute(final EditableCorrespondenceModelView<Correspondence> correspondenceModel,
-			final UserInteractor userInteracting) {
+			final UserInteractor userInteractor) {
 		if (!this.isArchitectureRelevantChange(correspondenceModel)) {
 			LOGGER.debug("Change within the method: " + this.newMethod
 					+ " is not an architecture relevant change");
@@ -97,12 +97,15 @@ public class ClassMethodBodyChangedTransformation {
 		// 2)
 		final ResourceDemandingBehaviour resourceDemandingBehaviour = this
 				.findRdBehaviorToInsertElements(correspondenceModel);
+		if (resourceDemandingBehaviour == null) {
+			return;
+		}
 		final BasicComponent basicComponent = this.basicComponentFinder.findBasicComponentForMethod(this.newMethod,
 				correspondenceModel);
 		this.executeSoMoXForMethod(basicComponent, resourceDemandingBehaviour);
 
 		// 3)
-		this.connectCreatedResourceDemandingBehaviour(resourceDemandingBehaviour, correspondenceModel);
+		this.connectCreatedResourceDemandingBehaviour(resourceDemandingBehaviour);
 	}
 
 	/**
@@ -110,17 +113,17 @@ public class ClassMethodBodyChangedTransformation {
 	 * the case if either the new or the old method does have a corresponding
 	 * ResourceDemandingBehaviour.
 	 *
-	 * @param ci the current correspondence model.
+	 * @param correspondenceModel the current correspondence model.
 	 * @return true if the method is architecture relevant. false otherwise.
 	 */
-	protected boolean isArchitectureRelevantChange(final EditableCorrespondenceModelView<Correspondence> ci) {
-		return this.isMethodArchitectureRelevant(this.newMethod, ci);
+	protected boolean isArchitectureRelevantChange(final EditableCorrespondenceModelView<Correspondence> correspondenceModel) {
+		return this.isMethodArchitectureRelevant(this.newMethod, correspondenceModel);
 	}
 
-	private boolean isMethodArchitectureRelevant(final Method method, final EditableCorrespondenceModelView<Correspondence> ci) {
+	private boolean isMethodArchitectureRelevant(final Method method, final EditableCorrespondenceModelView<Correspondence> correspondenceModel) {
 		if (null != method) {
 			final List<ResourceDemandingBehaviour> correspondingEObjectsByType = CorrespondenceModelUtil
-				.getCorrespondingEObjects(ci, method, ResourceDemandingBehaviour.class);
+				.getCorrespondingEObjects(correspondenceModel, method, ResourceDemandingBehaviour.class);
 			if (null != correspondingEObjectsByType && !correspondingEObjectsByType.isEmpty()) {
 				return true;
 			}
@@ -142,7 +145,7 @@ public class ClassMethodBodyChangedTransformation {
 			// changing an abstract method to a ClassMethod
 			VisitorUtils.visitJaMoPPMethod(targetResourceDemandingBehaviour, basicComponent,
 					(StatementListContainer) this.newMethod, sourceCodeDecorator,
-					functionCallClassificationVisitor, this.interfaceOfExternalCallFinderFactory,
+					functionCallClassificationVisitor, this.interfaceOfExternalCallFindingFactory,
 					this.resourceDemandingBehaviourForClassMethodFinding, methodCallFinder, this.generateInternalCallActions());
 			for (var rdiLink : sourceCodeDecorator.getMethodLevelResourceDemandingInternalBehaviorLink()) {
 				if (targetResourceDemandingBehaviour instanceof ResourceDemandingSEFF
@@ -159,62 +162,88 @@ public class ClassMethodBodyChangedTransformation {
 
 	}
 
-	private void connectCreatedResourceDemandingBehaviour(final ResourceDemandingBehaviour rdBehavior,
-			final EditableCorrespondenceModelView<Correspondence> ci) {
+	/**
+	 * Ensures that the given ResourceDemandingBehaviour starts with a StartAction
+	 * and ends with a StopAction, adding whichever of the two is missing. Any
+	 * actions already present are left untouched.
+	 *
+	 * Callers that also need the actions to be linked to each other have to invoke
+	 * {@link VisitorUtils#connectActions(ResourceDemandingBehaviour)} themselves,
+	 * because they differ in when that has to happen.
+	 *
+	 * @param rdBehavior the behaviour to complete.
+	 */
+	protected static void ensureStartAndStopAction(final ResourceDemandingBehaviour rdBehavior) {
 		final EList<AbstractAction> steps = rdBehavior.getSteps_Behaviour();
 		final boolean addStartAction = 0 == steps.size() || !(steps.get(0) instanceof StartAction);
 		final boolean addStopAction = 0 == steps.size() || !(steps.get(steps.size() - 1) instanceof StopAction);
 
 		if (addStartAction) {
-			rdBehavior.getSteps_Behaviour().add(0, SeffFactory.eINSTANCE.createStartAction());
+			steps.add(0, SeffFactory.eINSTANCE.createStartAction());
 		}
 		if (addStopAction) {
-			final AbstractAction stopAction = SeffFactory.eINSTANCE.createStopAction();
-			rdBehavior.getSteps_Behaviour().add(stopAction);
+			steps.add(SeffFactory.eINSTANCE.createStopAction());
 		}
+	}
+
+	private void connectCreatedResourceDemandingBehaviour(final ResourceDemandingBehaviour rdBehavior) {
+		ensureStartAndStopAction(rdBehavior);
 		VisitorUtils.connectActions(rdBehavior);
 	}
 
-	private void emptyCorrespondingSeffs(final EditableCorrespondenceModelView<Correspondence> ci) {
+	private void emptyCorrespondingSeffs(final EditableCorrespondenceModelView<Correspondence> correspondenceModel) {
 		var correspondingSeff = CorrespondenceModelUtil
-				.getCorrespondingEObjects(ci, this.newMethod, ResourceDemandingSEFF.class);
-		
+				.getCorrespondingEObjects(correspondenceModel, this.newMethod, ResourceDemandingSEFF.class);
+
 		if (correspondingSeff == null || correspondingSeff.isEmpty()) {
 			return;
 		}
 		if (correspondingSeff.size() > 1) {
 			LOGGER.warn("More than one SEFF corresponding to a method.");
 		}
-		
+
 		for (var seff : correspondingSeff) {
 			for (var action : new ArrayList<>(seff.getSteps_Behaviour())) {
-				removeObjectWithChildren(ci, action);
+				removeObjectWithChildren(correspondenceModel, action);
 			}
 			for (var rdBehavior : new ArrayList<>(seff.getResourceDemandingInternalBehaviours())) {
-				removeObjectWithChildren(ci, rdBehavior);
+				removeObjectWithChildren(correspondenceModel, rdBehavior);
 			}
 		}
 	}
-	
-	private void removeObjectWithChildren(EditableCorrespondenceModelView<Correspondence> ci, EObject obj) {
+
+	private void removeObjectWithChildren(EditableCorrespondenceModelView<Correspondence> correspondenceModel, EObject obj) {
 		for (var child : new ArrayList<>(obj.eContents())) {
-			removeObjectWithChildren(ci, child);
+			removeObjectWithChildren(correspondenceModel, child);
 		}
-		CorrespondenceModelUtil.removeCorrespondencesFor(ci, obj);
+		CorrespondenceModelUtil.removeCorrespondencesFor(correspondenceModel, obj);
 		EcoreUtil.remove(obj);
 	}
 
-	protected ResourceDemandingBehaviour findRdBehaviorToInsertElements(final EditableCorrespondenceModelView<Correspondence> ci) {
+	/**
+	 * Finds the RD behaviour that newly extracted SEFF elements for {@link #newMethod}
+	 * should be inserted into.
+	 *
+	 * @param correspondenceModel the current correspondence model.
+	 * @return the corresponding RD behaviour, or {@code null} if the method has none
+	 *         (a warning is logged in that case).
+	 */
+	protected ResourceDemandingBehaviour findRdBehaviorToInsertElements(final EditableCorrespondenceModelView<Correspondence> correspondenceModel) {
 		final List<ResourceDemandingBehaviour> correspondingResourceDemandingBehaviours =
-			CorrespondenceModelUtil.getCorrespondingEObjects(ci, this.newMethod, ResourceDemandingBehaviour.class);
+			CorrespondenceModelUtil.getCorrespondingEObjects(correspondenceModel, this.newMethod, ResourceDemandingBehaviour.class);
 		if (null == correspondingResourceDemandingBehaviours || correspondingResourceDemandingBehaviours.isEmpty()) {
 			LOGGER.warn("No ResourceDemandingBehaviours found for method " + this.newMethod
-					+ ". Could not create ResourceDemandingBehavoir to insert SEFF elements");
+					+ ". Could not create ResourceDemandingBehaviour to insert SEFF elements");
 			return null;
 		}
 		return correspondingResourceDemandingBehaviours.iterator().next();
 	}
 	
+	/**
+	 * Returns the source-code-decorator repository produced while running SoMoX for this
+	 * method. It is {@code null} until {@link #execute} has run SoMoX (i.e. only meaningful
+	 * after {@code execute} has processed an architecture-relevant change).
+	 */
 	protected SourceCodeDecoratorRepository getSourceCodeDecoratorRepository() {
 		return sourceCodeDecorator;
 	}

@@ -41,7 +41,7 @@ public class BasicComponentForPackageMappingFinder implements BasicComponentFind
      * component by finding the BasicComponent of the parent component.
      */
     @Override
-    public BasicComponent findBasicComponentForMethod(final Method newMethod, final EditableCorrespondenceModelView<Correspondence> ci) {
+    public BasicComponent findBasicComponentForMethod(final Method newMethod, final EditableCorrespondenceModelView<Correspondence> correspondenceModel) {
         final CompilationUnit cu = newMethod.getContainingCompilationUnit();
         if (null == cu) {
             LOGGER.info("Could not find basic component for method " + newMethod
@@ -49,7 +49,7 @@ public class BasicComponentForPackageMappingFinder implements BasicComponentFind
             return null;
         }
         final Package jaMoPPPackage = this.createPackage(cu, cu.getNamespaces());
-        final BasicComponent correspondingBc = this.findCorrespondingBasicComponentForPackage(jaMoPPPackage, ci);
+        final BasicComponent correspondingBc = this.findCorrespondingBasicComponentForPackage(jaMoPPPackage, correspondenceModel);
         if (null == correspondingBc) {
             LOGGER.info("Could not find basic component for method " + newMethod + " in package " + jaMoPPPackage);
         }
@@ -67,6 +67,9 @@ public class BasicComponentForPackageMappingFinder implements BasicComponentFind
             final int newLength = packageURIString.length() - lastSegment.length();
             packageURIString = packageURIString.substring(0, newLength);
             packageURIString = packageURIString + "package-info.java";
+        } else {
+            LOGGER.warn("Could not strip the last segment '" + lastSegment + "' from URI '" + packageURIString
+                    + "' when creating the dummy package resource; using the URI unmodified.");
         }
         final URI packageVuri = URI.createURI(packageURIString);
         final Resource dummyResource = this.dummyResourceSet.createResource(packageVuri);
@@ -79,20 +82,20 @@ public class BasicComponentForPackageMappingFinder implements BasicComponentFind
      * hierarchy and returns the first matching basic component.
      *
      * @param jaMoPPPackage the package model to investigate.
-     * @param ci the current correspondence model.
+     * @param correspondenceModel the current correspondence model.
      * @return the first matching basic component.
      */
     private BasicComponent findCorrespondingBasicComponentForPackage(final Package jaMoPPPackage,
-            final EditableCorrespondenceModelView<Correspondence> ci) {
+            final EditableCorrespondenceModelView<Correspondence> correspondenceModel) {
         if (0 == jaMoPPPackage.getNamespaces().size()) {
             return null;
         };
         final List<BasicComponent> correspondingComponents = CorrespondenceModelUtil
-                .getCorrespondingEObjects(ci, jaMoPPPackage, BasicComponent.class);
+                .getCorrespondingEObjects(correspondenceModel, jaMoPPPackage, BasicComponent.class);
         if (null == correspondingComponents || correspondingComponents.isEmpty()) {
 
             jaMoPPPackage.getNamespaces().remove(jaMoPPPackage.getNamespaces().size() - 1);
-            return this.findCorrespondingBasicComponentForPackage(jaMoPPPackage, ci);
+            return this.findCorrespondingBasicComponentForPackage(jaMoPPPackage, correspondenceModel);
         }
         return correspondingComponents.iterator().next();
     }

@@ -30,7 +30,7 @@ import tools.vitruv.change.interaction.UserInteractor;
  * @author Martin Armbruster
  */
 public class ExtendedClassMethodBodyChangedTransformation extends ClassMethodBodyChangedTransformation {
-	private boolean shouldGenerateInternalCallActions;
+	private final boolean shouldGenerateInternalCallActions;
 	
 	public ExtendedClassMethodBodyChangedTransformation(final Method newMethod,
 			final BasicComponentFinding basicComponentFinder,
@@ -64,9 +64,9 @@ public class ExtendedClassMethodBodyChangedTransformation extends ClassMethodBod
 	 */
 	@Override
 	public void execute(final EditableCorrespondenceModelView<Correspondence> correspondenceModel,
-			final UserInteractor userInteracting) {
-		super.execute(correspondenceModel, userInteracting);
-		var decorator = super.getSourceCodeDecoratorRepository();
+			final UserInteractor userInteractor) {
+		super.execute(correspondenceModel, userInteractor);
+		var decorator = this.getSourceCodeDecoratorRepository();
 		if (decorator != null) {
 			// 5) Link the abstract actions with their corresponding statements.
 			this.bindAbstractActionsAndStatements(decorator, correspondenceModel);
@@ -80,12 +80,12 @@ public class ExtendedClassMethodBodyChangedTransformation extends ClassMethodBod
 
         for (SeffElementSourceCodeLink seffElementSourceCodeLink : seffElementSourceCodeLinks) {
             if (seffElementSourceCodeLink.getSeffElement() instanceof AbstractAction) {
-            	AbstractAction ab = (AbstractAction) seffElementSourceCodeLink.getSeffElement();
+            	AbstractAction action = (AbstractAction) seffElementSourceCodeLink.getSeffElement();
             	// Actions in ResourceDemandingInternalBehaviours are ignored.
-            	if (this.isContainedInResourceDemandingInternalBehaviour(ab)) {
+            	if (this.isContainedInResourceDemandingInternalBehaviour(action)) {
             		continue;
             	}
-            	List<EObject> actionList = Lists.newArrayList(ab);
+            	List<EObject> actionList = Lists.newArrayList(action);
 	            for (Statement statement : seffElementSourceCodeLink.getStatement()) {
                     correspondenceModel.addCorrespondenceBetween(actionList, Lists.newArrayList(statement), "");
 	            }
