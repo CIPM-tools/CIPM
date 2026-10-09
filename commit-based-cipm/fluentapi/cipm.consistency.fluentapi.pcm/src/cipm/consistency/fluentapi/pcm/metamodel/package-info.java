@@ -1,0 +1,1 @@
+package cipm.consistency.fluentapi.pcm.metamodel;

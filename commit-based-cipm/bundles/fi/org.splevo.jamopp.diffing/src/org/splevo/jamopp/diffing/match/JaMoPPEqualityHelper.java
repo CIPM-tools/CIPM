@@ -13,7 +13,7 @@ package org.splevo.jamopp.diffing.match;
 
 import org.eclipse.emf.compare.utils.EqualityHelper;
 import org.eclipse.emf.ecore.EObject;
-import org.splevo.jamopp.diffing.similarity.SimilarityChecker;
+import org.splevo.jamopp.diffing.similarity.base.ISimilarityChecker;
 
 import com.google.common.cache.LoadingCache;
 
@@ -23,7 +23,7 @@ import com.google.common.cache.LoadingCache;
 public class JaMoPPEqualityHelper extends EqualityHelper {
 
     /** A similarity checker for internal similarity comparisons. */
-    private SimilarityChecker similarityChecker = null;
+    private ISimilarityChecker similarityChecker = null;
 
     /**
      * Constructor to initialize the required cache.
@@ -34,7 +34,7 @@ public class JaMoPPEqualityHelper extends EqualityHelper {
      *            The similarity checker to be used.
      */
     public JaMoPPEqualityHelper(LoadingCache<EObject, org.eclipse.emf.common.util.URI> uriCache,
-            SimilarityChecker similarityChecker) {
+            ISimilarityChecker similarityChecker) {
         super(uriCache);
         this.similarityChecker = similarityChecker;
     }
