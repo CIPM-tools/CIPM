@@ -83,7 +83,7 @@ public abstract class CommitIntegrationController<CM extends CodeModelFacade> {
      * 
      * @return The Propagation instance including the used model paths
      */
-    private Optional<Propagation> propagateCurrentCheckout() {
+    public Optional<Propagation> propagateCurrentCheckout() {
         // run possible hooks
         prePropagationHook();
 
