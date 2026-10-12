@@ -2,6 +2,7 @@ package cipm.consistency.commitintegration;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Files;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -186,7 +187,12 @@ public class CommitIntegrationState<CM extends CodeModelFacade> {
 //    }
 
     private void loadEvaluationData() {
-        var loadedContainer = EvaluationDataContainerReaderWriter.read(dirLayout.getEvaluationDataFilePath());
+    	EvaluationDataContainer loadedContainer = null;
+    	if(Files.exists(dirLayout.getNewEvaluationDataFilePath())) {
+    		loadedContainer = EvaluationDataContainerReaderWriter.readNew(dirLayout.getNewEvaluationDataFilePath());
+    	}else if(Files.exists(dirLayout.getEvaluationDataFilePath())){
+    		loadedContainer = EvaluationDataContainerReaderWriter.readLegacyAndConvert(dirLayout.getEvaluationDataFilePath());
+    	}
         if (loadedContainer != null) {
             EvaluationDataContainer.set(loadedContainer);
         }
@@ -194,7 +200,7 @@ public class CommitIntegrationState<CM extends CodeModelFacade> {
 
     public void persistEvaluationData() {
         var data = EvaluationDataContainer.get();
-        EvaluationDataContainerReaderWriter.write(data, dirLayout.getEvaluationDataFilePath());
+        EvaluationDataContainerReaderWriter.writeNew(data, dirLayout.getNewEvaluationDataFilePath());
     }
 
     public Path createSnapshot() {
