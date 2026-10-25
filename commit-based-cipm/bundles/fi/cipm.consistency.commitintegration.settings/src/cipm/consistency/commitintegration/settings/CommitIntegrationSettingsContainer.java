@@ -6,6 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 
+import java.io.UncheckedIOException;
+
 /**
  * A container for the settings of the commit-based integration.
  * 
@@ -31,6 +33,9 @@ public final class CommitIntegrationSettingsContainer {
             try (InputStream in = Files.newInputStream(this.settingsFile)) {
                 properties.load(in);
             } catch (IOException e) {
+            	throw new UncheckedIOException(
+            			"Falied to load settings file:" + path, e
+            			);
             }
         }
     }
