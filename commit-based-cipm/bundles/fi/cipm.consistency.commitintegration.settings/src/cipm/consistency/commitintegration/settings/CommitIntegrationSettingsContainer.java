@@ -28,16 +28,34 @@ public final class CommitIntegrationSettingsContainer {
 
     private CommitIntegrationSettingsContainer(Path path) {
         this.settingsFile = path;
-        properties = new Properties();
-        if (Files.exists(path)) {
-            try (InputStream in = Files.newInputStream(this.settingsFile)) {
-                properties.load(in);
-            } catch (IOException e) {
-            	throw new UncheckedIOException(
-            			"Falied to load settings file:" + path, e
-            			);
-            }
+        //1.Load default settings
+        Properties defaults = new Properties();
+        try(InputStream in= CommitIntegrationSettingsContainer.class
+        		.getResourceAsStream("/default-settings.properties")){
+        	if (in == null) {
+        		throw new IllegalStateException(
+        				"Default settings resource not found"
+        				);
+        	}
+        	defaults.load(in);
+        }catch(IOException e) {
+        	throw new UncheckedIOException(
+        			"failed to load default settings",e
+        			);
         }
+        //2.Create properties with defaults
+        this.properties = new Properties(defaults);
+        
+        //3. Load specific settings if the file exists
+        if(Files.exists(path)) {
+        	try(InputStream in = Files.newInputStream(path)){
+        		properties.load(in);
+        	}catch(IOException e) {
+            	throw new UncheckedIOException(
+            			"failed to load setting file: "+path,e
+            			);
+          }
+       }
     }
 
     public String getProperty(String key) {
