@@ -79,4 +79,12 @@ public class CommitIntegrationSettingsContainerTest {
 					);
 		}
 	
+	
+	@Test
+	void TestUseDEfaultWhenSpecificFileIsMissing(@TempDir Path tempDir) {
+		Path missingFile = tempDir.resolve("setting.settings");
+		CommitIntegrationSettingsContainer.initialize(missingFile);
+		var container = CommitIntegrationSettingsContainer.getSettingsContainer();
+		assertEquals("false",container.getProperty(SettingKeys.PERFORM_FULL_INSTRUMENTATION));
+	}
 }
