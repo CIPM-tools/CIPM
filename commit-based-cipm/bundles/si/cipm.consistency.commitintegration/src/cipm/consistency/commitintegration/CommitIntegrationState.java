@@ -3,6 +3,7 @@ package cipm.consistency.commitintegration;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.nio.file.Files;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -79,14 +80,20 @@ public class CommitIntegrationState<CM extends CodeModelFacade> {
 
         // delete the directory layout if we are overwriting
         if (overwrite) {
-            LOGGER.info(String.format("Deleting CommitIntegrationState at %s", commitIntegration.getRootPath()));
-            dirLayout.delete();
-            dirLayout.initialize(commitIntegration.getRootPath());
+            LOGGER.info(String.format(
+                "Deleting CommitIntegrationState at %s",
+                rootPath
+            ));
+
+            recreateDirectoryPreservingSettings(rootPath);
+
             isFresh = true;
         }
 
         // the settings container needs to be initialized before everything else
-        // CommitIntegrationSettingsContainer.initialize(dirLayout.getSettingsFilePath());
+        CommitIntegrationSettingsContainer.initialize(dirLayout.getSettingsFilePath());
+     
+        
         gitRepositoryWrapper = commitIntegration.getGitRepositoryWrapper();
 
         // initialize models
@@ -105,6 +112,27 @@ public class CommitIntegrationState<CM extends CodeModelFacade> {
         if (loadVsum) {
             vsumFacade.initialize(dirLayout.getVsumDirPath(), List.of(pcmFacade, imFacade),
                     commitIntegration.getChangeSpecs(), commitIntegration.getStateBasedChangeResolutionStrategy());
+        }
+    }
+    
+    private void recreateDirectoryPreservingSettings(Path rootPath)
+            throws IOException {
+
+        Path settingsPath = dirLayout.getSettingsFilePath();
+        byte[] settingsContents = null;
+
+        if (Files.exists(settingsPath)) {
+            settingsContents = Files.readAllBytes(settingsPath);
+        }
+
+        dirLayout.delete();
+        dirLayout.initialize(rootPath);
+
+        if (settingsContents != null) {
+            Files.write(
+                dirLayout.getSettingsFilePath(),
+                settingsContents
+            );
         }
     }
 

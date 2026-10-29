@@ -52,8 +52,8 @@ public abstract class CommitIntegrationController<CM extends CodeModelFacade> {
         if (!state.isFresh()) {
             LOGGER.info("Resetting commitintegration");
             var ci = state.getCommitIntegration();
-            state.getDirLayout()
-                .delete();
+            //state.getDirLayout()
+              //  .delete();
             state.dispose();
             state.initialize(ci, ci.getRootPath(), true);
         }
@@ -177,8 +177,8 @@ public abstract class CommitIntegrationController<CM extends CodeModelFacade> {
                 try {
                     LOGGER.info("Resetting commit integration state");
                     var ci = state.getCommitIntegration();
-                    state.getDirLayout()
-                        .delete();
+                   // state.getDirLayout()
+                     //   .delete();
                     state.dispose();
                     state.initialize(ci, ci.getRootPath(), true);
                 } catch (IOException | GitAPIException e) {
