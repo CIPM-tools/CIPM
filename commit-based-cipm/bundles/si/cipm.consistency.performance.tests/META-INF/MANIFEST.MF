@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Performance Measurement Unit Tests
+Bundle-SymbolicName: cipm.consistency.performance.tests
+Bundle-Version: 0.2.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Require-Bundle: cipm.consistency.tools.evaluation.data,
+ cipm.consistency.commitintegration,
+ cipm.consistency.commitintegration.lang.java,
+ cipm.consistency.commitintegration.settings,
+ cipm.consistency.cpr.javapcm.msa,
+ cipm.consistency.cpr.javapcm.teammates,
+ tools.vitruv.change.atomic,
+ tools.vitruv.change.correspondence,
+ tools.vitruv.change.propagation,
+ org.eclipse.emf.ecore.change,
+ org.apache.log4j;bundle-version="1.2.15",
+ junit-jupiter-api;bundle-version="5.9.0",
+ junit-jupiter-engine;bundle-version="5.9.0",
+ junit-jupiter-params;bundle-version="5.9.0",
+ junit-platform-commons;bundle-version="1.9.0"
+Automatic-Module-Name: cipm.consistency.performance.tests

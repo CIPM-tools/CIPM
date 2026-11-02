@@ -199,6 +199,9 @@ public abstract class CommitIntegrationController<CM extends CodeModelFacade> {
             return Optional.empty();
         }
 
+        EvaluationDataContainer.get()
+            .resetExecutionTimes();
+
         var cs = EvaluationDataContainer.get()
             .resetChangeStatistic();
         cs.setOldCommit(firstCommitId);

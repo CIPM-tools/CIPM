@@ -166,12 +166,18 @@ class JavaStateBasedChangeResolutionStrategy implements StateBasedChangeResoluti
 	private def compareStatesAndReplayChanges(Notifier newState, Notifier currentState,
 			List<Resource> newResources, List<Resource> currentResources) {
 		val postProcessor = new JavaChangedMethodDetectorDiffPostProcessor()
+		val comparisonStart = System.currentTimeMillis()
 		val changes = JavaModelComparator.compareJavaModels(newState, currentState,
 				newResources, currentResources, postProcessor)
+		EvaluationDataContainer.get.executionTimes.recordFineGrainedTiming("javaModelComparison",
+			System.currentTimeMillis() - comparisonStart)
 		// Replay the EMF compare differences.
 		val mergerRegistry = IMerger.RegistryImpl.createStandaloneInstance()
 		val merger = new BatchMerger(mergerRegistry)
+		val replayStart = System.currentTimeMillis()
 		merger.copyAllLeftToRight(changes.differences, new BasicMonitor)
+		EvaluationDataContainer.get.executionTimes.recordFineGrainedTiming("changeReplay",
+			System.currentTimeMillis() - replayStart)
 		postProcessor.getChangedMethods.forEach[
 			val oldName = it.name
 			it.name = ""

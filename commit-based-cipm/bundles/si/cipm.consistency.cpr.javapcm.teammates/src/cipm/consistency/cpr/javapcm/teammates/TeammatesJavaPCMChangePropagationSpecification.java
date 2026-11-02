@@ -1,6 +1,7 @@
 package cipm.consistency.cpr.javapcm.teammates;
 
 import cipm.consistency.cpr.javapcm.teammates.seff.TeammatesJava2PcmMethodBodyChangePreprocessor;
+import cipm.consistency.tools.evaluation.data.EvaluationDataContainer;
 import mir.reactions.allTeammatesRules.AllTeammatesRulesChangePropagationSpecification;
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.correspondence.Correspondence;
@@ -35,9 +36,20 @@ public class TeammatesJavaPCMChangePropagationSpecification extends AllTeammates
 	@Override
 	public void propagateChange(EChange change, EditableCorrespondenceModelView<Correspondence> correspondenceModel,
 			ResourceAccess resourceAccess) {
+		String changeType = change.getClass().getSimpleName();
+
+		long superStart = System.nanoTime();
 		super.propagateChange(change, correspondenceModel, resourceAccess);
+		long superDuration = System.nanoTime() - superStart;
+		EvaluationDataContainer.get().getExecutionTimes()
+				.recordChangePropagationTimeForChangeType(changeType, superDuration);
+
 		if (this.bodyTransformation.doesHandleChange(change, correspondenceModel)) {
+			long bodyStart = System.nanoTime();
 			this.bodyTransformation.propagateChange(change, correspondenceModel, resourceAccess);
+			long bodyDuration = System.nanoTime() - bodyStart;
+			EvaluationDataContainer.get().getExecutionTimes()
+					.recordBodyTransformationTimeForChangeType(changeType, bodyDuration);
 		}
 	}
 }

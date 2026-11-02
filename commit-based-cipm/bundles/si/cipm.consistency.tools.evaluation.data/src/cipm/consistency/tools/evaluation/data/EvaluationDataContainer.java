@@ -54,6 +54,11 @@ public class EvaluationDataContainer {
         return imUpdateEval;
     }
 
+    public ExecutionTimeData resetExecutionTimes() {
+        executionTimes = new ExecutionTimeData();
+        return executionTimes;
+    }
+
     public ChangeStatistic getChangeStatistic() {
         return changeStatistic;
     }
