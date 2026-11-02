@@ -14,6 +14,7 @@ import org.emftext.language.java.containers.JavaRoot;
 
 import tools.cipm.models.instrumentation.InstrumentationModel.InstrumentationModel;
 import cipm.consistency.models.ModelFacade;
+import cipm.consistency.tools.evaluation.data.EvaluationDataContainer;
 import tools.vitruv.change.composite.description.PropagatedChange;
 import tools.vitruv.change.correspondence.Correspondence;
 import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
@@ -127,6 +128,15 @@ public class VsumFacadeImpl implements VsumFacade {
 
         var view = viewSelector.createView()
             .withChangeDerivingTrait(stateBasedChangeResolutionStrategy);
+        // Attached after construction, not passed into it - the listener is only ever read
+        // later, inside commitChanges(), so there's no need to route it through the view's
+        // constructor (and the View/BasicView classes it would otherwise have to touch).
+        view.setTimingListener(
+            // Vitruv reports nanoseconds; fineGrainedTimings is kept in milliseconds to
+            // match every other entry already written into it (see point 1's instrumentation
+            // in JavaStateBasedChangeResolutionStrategy).
+            (label, durationNanos) -> EvaluationDataContainer.get().getExecutionTimes()
+                .recordFineGrainedTiming(label, durationNanos / 1_000_000));
 
         return view;
     }
