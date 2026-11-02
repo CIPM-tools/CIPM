@@ -2,6 +2,7 @@ package cipm.consistency.cpr.javapcm;
 
 import cipm.consistency.commitintegration.settings.CommitIntegrationSettingsContainer;
 import cipm.consistency.commitintegration.settings.SettingKeys;
+import cipm.consistency.tools.evaluation.data.EvaluationDataContainer;
 import mir.reactions.all.AllChangePropagationSpecification;
 import tools.cipm.seff.Java2PcmMethodBodyChangePreprocessor;
 import tools.cipm.seff.extended.ExtendedJava2PcmMethodBodyChangePreprocessor;
@@ -43,9 +44,20 @@ public class CommitIntegrationJavaPCMChangePropagationSpecification extends AllC
 	@Override
 	public void propagateChange(EChange change, EditableCorrespondenceModelView<Correspondence> correspondenceModel,
 			ResourceAccess resourceAccess) {
+		String changeType = change.getClass().getSimpleName();
+
+		long superStart = System.nanoTime();
 		super.propagateChange(change, correspondenceModel, resourceAccess);
+		long superDuration = System.nanoTime() - superStart;
+		EvaluationDataContainer.get().getExecutionTimes()
+				.recordChangePropagationTimeForChangeType(changeType, superDuration);
+
 		if (this.bodyTransformation.doesHandleChange(change, correspondenceModel)) {
+			long bodyStart = System.nanoTime();
 			this.bodyTransformation.propagateChange(change, correspondenceModel, resourceAccess);
+			long bodyDuration = System.nanoTime() - bodyStart;
+			EvaluationDataContainer.get().getExecutionTimes()
+					.recordBodyTransformationTimeForChangeType(changeType, bodyDuration);
 		}
 	}
 }
