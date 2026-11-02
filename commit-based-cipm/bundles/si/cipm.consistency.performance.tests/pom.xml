@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>cipm.consistency</groupId>
+		<artifactId>si</artifactId>
+		<version>0.2.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>cipm.consistency.performance.tests</artifactId>
+	<packaging>eclipse-test-plugin</packaging>
+	<name>Performance Measurement Unit Tests</name>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-surefire-plugin</artifactId>
+				<configuration>
+					<!-- Plain, isolated unit tests - no Eclipse application/UI needed to run them. -->
+					<useUIHarness>false</useUIHarness>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
