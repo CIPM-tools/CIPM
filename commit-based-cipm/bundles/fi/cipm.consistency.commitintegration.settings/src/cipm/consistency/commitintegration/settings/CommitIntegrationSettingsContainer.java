@@ -14,55 +14,49 @@ import java.io.UncheckedIOException;
  * @author Martin Armbruster
  */
 public final class CommitIntegrationSettingsContainer {
-    private static CommitIntegrationSettingsContainer instance;
-    private Path settingsFile;
-    private Properties properties;
+	private static CommitIntegrationSettingsContainer instance;
+	private Path settingsFile;
+	private Properties properties;
 
-    public static void initialize(Path path) {
-        instance = new CommitIntegrationSettingsContainer(path);
-    }
+	public static void initialize(Path path) {
+		instance = new CommitIntegrationSettingsContainer(path);
+	}
 
-    public static CommitIntegrationSettingsContainer getSettingsContainer() {
-        return instance;
-    }
+	public static CommitIntegrationSettingsContainer getSettingsContainer() {
+		return instance;
+	}
 
-    private CommitIntegrationSettingsContainer(Path path) {
-        this.settingsFile = path;
-        //1.Load default settings
-        Properties defaults = new Properties();
-        try(InputStream in= CommitIntegrationSettingsContainer.class
-        		.getResourceAsStream("/default-settings.properties")){
-        	if (in == null) {
-        		throw new IllegalStateException(
-        				"Default settings resource not found"
-        				);
-        	}
-        	defaults.load(in);
-        }catch(IOException e) {
-        	throw new UncheckedIOException(
-        			"failed to load default settings",e
-        			);
-        }
-        //2.Create properties with defaults
-        this.properties = new Properties(defaults);
-        
-        //3. Load specific settings if the file exists
-        if(Files.exists(path)) {
-        	try(InputStream in = Files.newInputStream(path)){
-        		properties.load(in);
-        	}catch(IOException e) {
-            	throw new UncheckedIOException(
-            			"failed to load setting file: "+path,e
-            			);
-          }
-       }
-    }
+	private CommitIntegrationSettingsContainer(Path path) {
+		this.settingsFile = path;
+		// 1.Load default settings
+		Properties defaults = new Properties();
+		try (InputStream in = CommitIntegrationSettingsContainer.class
+				.getResourceAsStream("/default-settings.properties")) {
+			if (in == null) {
+				throw new IllegalStateException("Default settings resource not found");
+			}
+			defaults.load(in);
+		} catch (IOException e) {
+			throw new UncheckedIOException("failed to load default settings", e);
+		}
+		// 2.Create properties with defaults
+		this.properties = new Properties(defaults);
 
-    public String getProperty(String key) {
-        return properties.getProperty(key);
-    }
+		// 3. Load specific settings if the file exists
+		if (Files.exists(path)) {
+			try (InputStream in = Files.newInputStream(path)) {
+				properties.load(in);
+			} catch (IOException e) {
+				throw new UncheckedIOException("failed to load setting file: " + path, e);
+			}
+		}
+	}
 
-    public boolean getPropertyAsBoolean(String key) {
-        return Boolean.parseBoolean(getProperty(key));
-    }
+	public String getProperty(String key) {
+		return properties.getProperty(key);
+	}
+
+	public boolean getPropertyAsBoolean(String key) {
+		return Boolean.parseBoolean(getProperty(key));
+	}
 }

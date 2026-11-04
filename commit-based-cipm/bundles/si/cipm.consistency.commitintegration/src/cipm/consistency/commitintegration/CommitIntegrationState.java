@@ -91,7 +91,14 @@ public class CommitIntegrationState<CM extends CodeModelFacade> {
         }
 
         // the settings container needs to be initialized before everything else
-        CommitIntegrationSettingsContainer.initialize(dirLayout.getSettingsFilePath());
+     
+        
+     // Initialize global settings only for the main integration state
+        initializeSettingsForState(
+        	    commitIntegration.getRootPath(),
+        	    rootPath,
+        	    dirLayout.getSettingsFilePath()
+        	);
      
         
         gitRepositoryWrapper = commitIntegration.getGitRepositoryWrapper();
@@ -133,6 +140,26 @@ public class CommitIntegrationState<CM extends CodeModelFacade> {
                 dirLayout.getSettingsFilePath(),
                 settingsContents
             );
+        }
+    }
+    
+    private static boolean isMainStatePath(
+            Path integrationRoot,
+            Path stateRoot) {
+
+        Path mainPath = integrationRoot.toAbsolutePath().normalize();
+        Path currentPath = stateRoot.toAbsolutePath().normalize();
+
+        return mainPath.equals(currentPath);
+    }
+    
+    private static void initializeSettingsForState(
+            Path integrationRoot,
+            Path stateRoot,
+            Path settingsFile) {
+
+        if (isMainStatePath(integrationRoot, stateRoot)) {
+            CommitIntegrationSettingsContainer.initialize(settingsFile);
         }
     }
 
