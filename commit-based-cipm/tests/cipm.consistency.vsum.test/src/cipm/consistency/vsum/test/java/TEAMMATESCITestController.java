@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.nio.file.StandardCopyOption;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -28,6 +29,7 @@ import cipm.consistency.vsum.test.appspace.LoggingSetup;
 import cipm.consistency.vsum.test.evaluator.PropagationEvaluator;
 import cipm.consistency.vsum.test.evaluator.commitHistory.CommitHistoryEvaluator;
 import jamopp.resource.JavaResource2Factory;
+import cipm.consistency.commitintegration.settings.SettingKeys;
 
 public class TEAMMATESCITestController {
 	private static final String COMMIT_TAG_V_8_0_0_RC_0 = "648425746bb9434051647c8266dfab50a8f2d6a3";
@@ -66,15 +68,26 @@ public class TEAMMATESCITestController {
 
         // overwrite existing files?
         try {
+        	Path sourceSettings = Paths.get("teammates-exec-files","settings.properties");
+        	Path targetSettings = this.rootPath.resolve("settings.settings");
+        	Files.createDirectories(this.rootPath);
+        	Files.copy(sourceSettings, targetSettings, StandardCopyOption.REPLACE_EXISTING);
+        	
         	this.teammatesController.initialize(this.teammatesController);
-        	this.state = this.teammatesController.getState();        	
-            // state.initialize(this.teammatesController, this.teammatesController.getRootPath(), overwrite);
+        	this.state = this.teammatesController.getState();  
+        	
+        	String parserExcludes = CommitIntegrationSettingsContainer
+        								.getSettingsContainer()
+        								.getProperty(SettingKeys.JAVA_PARSER_EXCLUSION_PATTERNS);
+        	Assert.assertNotNull(parserExcludes);
+        	Assert.assertFalse(parserExcludes.isEmpty());
+        	
+       
             if (Files.exists(this.localRepository)) {
             	this.teammatesController.getGitRepositoryWrapper().withLocalDirectory(this.localRepository.resolve(".git"));
             } else {
             	this.teammatesController.getGitRepositoryWrapper().withRemoteRepositoryCopy(this.localRepository, this.remoteRepository);
             }
-            CommitIntegrationSettingsContainer.initialize(Paths.get("teammates-exec-files", "settings.properties"));
         } catch (IOException | GitAPIException e) {
             e.printStackTrace();
             failTest("Unable to setup commit integration state");
@@ -111,7 +124,9 @@ public class TEAMMATESCITestController {
 
     @AfterEach
     public void cleanupAfterTest() {
-        state.dispose();
+        if (state!=null) {
+        	state.dispose();
+        }
     }
 
     protected void failTest(String msg) {
@@ -234,5 +249,12 @@ public class TEAMMATESCITestController {
     @Test
     public void testTeammates() {
     	propagateAndEvaluate(COMMIT_HASHES);
+    }
+    
+    @Test
+    public void testAutomaticSettingsInitialization() {
+        Assert.assertTrue(
+            Files.exists(rootPath.resolve("settings.settings"))
+        );
     }
 }
