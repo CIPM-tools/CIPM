@@ -1,6 +1,7 @@
 package cipm.consistency.models.im;
 
 import java.io.IOException;
+
 import java.nio.file.Path;
 import java.util.List;
 
@@ -11,6 +12,10 @@ import tools.cipm.models.instrumentation.InstrumentationModel.InstrumentationMod
 import cipm.consistency.base.shared.FileBackedModelUtil;
 import cipm.consistency.base.shared.ModelUtil;
 import cipm.consistency.models.ModelFacade;
+
+
+import tools.cipm.models.instrumentation
+    .InstrumentationModel.InstrumentationModelPackage;
 
 public class ImFacade implements ModelFacade {
 
@@ -61,9 +66,12 @@ public class ImFacade implements ModelFacade {
     }
 
     private void loadModel() {
+    	//Ensure the IM metamodel is registered before loading the model.
+    	InstrumentationModelPackage.eINSTANCE.eClass();
         im = ModelUtil.readFromFile(dirLayout.getImFilePath()
             .toFile(), InstrumentationModel.class);
     }
+    
 
     public void loadOrCreateModelResources() {
         if (!fileExists()) {
