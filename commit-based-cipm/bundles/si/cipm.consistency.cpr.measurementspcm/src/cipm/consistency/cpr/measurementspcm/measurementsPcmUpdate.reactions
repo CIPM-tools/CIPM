@@ -1,5 +1,8 @@
 import org.palladiosimulator.pcm.repository.RepositoryPackage
 import cipm.consistency.measurements.MeasurementsPackage
+import cipm.consistency.base.shared.pcm.InMemoryPCM
+import org.palladiosimulator.pcm.allocation.AllocationPackage
+import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage
 
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
 import "http://www.2025.2025/consistency/measurements/1.0" as measurements
@@ -127,13 +130,21 @@ routine createInternalActionCorrespondenceAndUpdate(measurements::InternalAction
 }
 
 routine updateInternalActionResourceDemand(measurements::InternalActionRecord actionRecord, pcm::InternalAction internalAction) {
+	match {
+		val repository = retrieve pcm::Repository corresponding to RepositoryPackage.Literals.REPOSITORY
+		val allocation = retrieve pcm::Allocation corresponding to AllocationPackage.Literals.ALLOCATION
+		val usageModel = retrieve pcm::UsageModel corresponding to UsagemodelPackage.Literals.USAGE_MODEL
+	}
 	update {
 		val rd = cipm.consistency.cpr.measurementshelper.MeasurementsHelper.analyse(actionRecord)
 
 		// Check if the strategy provides a rich specification (e.g. DoublePMF StoEx)
 		val specFromHelper = cipm.consistency.cpr.measurementshelper.MeasurementsHelper.getResourceDemandSpecification(actionRecord.internalActionID)
 		val newSpec = if (specFromHelper !== null) specFromHelper else String.valueOf(rd)
-
+		
+		val memoryPcm = new InMemoryPCM(repository, allocation.system_Allocation, usageModel, allocation, allocation.targetResourceEnvironment_Allocation);
+		cipm.consistency.cpr.measurementshelper.MeasurementsHelper.validate(actionRecord, memoryPcm)
+		
 		// Update the resource demand specification
 		if (!internalAction.resourceDemand_Action.empty) {
 			val resourceDemand = internalAction.resourceDemand_Action.get(0)

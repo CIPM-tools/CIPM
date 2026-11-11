@@ -143,9 +143,10 @@ public class PcmFacade implements ModelFacade {
 
     @Override
     public List<Resource> getResources() {
-        return List.of(pcm.getSystem()
-            .eResource(),
+        return List.of(
                 pcm.getRepository()
+                    .eResource(),
+                pcm.getSystem()
                     .eResource(),
                 pcm.getResourceEnvironmentModel()
                     .eResource(),

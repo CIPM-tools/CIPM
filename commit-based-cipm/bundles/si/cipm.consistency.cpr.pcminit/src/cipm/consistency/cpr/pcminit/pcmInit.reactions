@@ -1,5 +1,7 @@
 //import cipm.consistency.cpr.luapcm.Config // TODO: Move somewhere else
 import org.palladiosimulator.pcm.repository.RepositoryPackage
+import org.palladiosimulator.pcm.allocation.AllocationPackage
+import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage
 
 import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
 
@@ -41,3 +43,29 @@ routine createRepositoryCorrespondence(pcm::Repository repo) {
 //		addCorrespondenceBetween(anyType, RepositoryPackage.Literals.REPOSITORY)
 //	}
 //}
+
+reaction AddedPcmAllocation {
+	after element pcm::Allocation inserted as root
+	call {
+		createAllocationCorrespondence(newValue)
+	}
+}
+
+routine createAllocationCorrespondence(pcm::Allocation allocation) {
+	update {
+		addCorrespondenceBetween(allocation, AllocationPackage.Literals.ALLOCATION)
+	}
+}
+
+reaction AddedUsageModel {
+	after element pcm::UsageModel inserted as root
+	call {
+		createUsageModelCorrespondence(newValue)
+	}
+}
+
+routine createUsageModelCorrespondence(pcm::UsageModel usageModel) {
+	update {
+		addCorrespondenceBetween(usageModel, UsagemodelPackage.Literals.USAGE_MODEL)
+	}
+}

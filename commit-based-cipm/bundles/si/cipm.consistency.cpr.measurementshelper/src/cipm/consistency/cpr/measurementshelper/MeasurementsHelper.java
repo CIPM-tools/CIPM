@@ -2,6 +2,7 @@ package cipm.consistency.cpr.measurementshelper;
 
 import java.util.List;
 
+import cipm.consistency.base.shared.pcm.InMemoryPCM;
 import cipm.consistency.measurements.BranchActionRecord;
 import cipm.consistency.measurements.InternalActionRecord;
 import cipm.consistency.measurements.LoopActionRecord;
@@ -279,5 +280,9 @@ public final class MeasurementsHelper {
      */
     public static String getResourceDemandSpecification(String actionId) {
         return delegate.getResourceDemandSpecification(actionId);
+    }
+    
+    public static boolean validate(InternalActionRecord record, InMemoryPCM pcm) {
+    	return delegate.validate(record, pcm);
     }
 }

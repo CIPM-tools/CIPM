@@ -6,5 +6,8 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: CIPM
 Automatic-Module-Name: cipm.consistency.cpr.measurementshelper
 Bundle-RequiredExecutionEnvironment: JavaSE-11
-Require-Bundle: cipm.consistency.measurements
+Require-Bundle: cipm.consistency.measurements,
+ cipm.consistency.base.shared,
+ cipm.consistency.runtime.pipeline.validation,
+ org.palladiosimulator.pcm
 Export-Package: cipm.consistency.cpr.measurementshelper

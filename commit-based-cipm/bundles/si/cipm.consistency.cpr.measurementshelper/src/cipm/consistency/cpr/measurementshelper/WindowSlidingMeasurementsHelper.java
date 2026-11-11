@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import cipm.consistency.base.shared.pcm.InMemoryPCM;
 import cipm.consistency.measurements.BranchActionRecord;
 import cipm.consistency.measurements.InternalActionRecord;
 import cipm.consistency.measurements.LoopActionRecord;
@@ -429,6 +430,16 @@ public class WindowSlidingMeasurementsHelper implements IMeasurementsHelper {
     @Override
     public String analyse(BranchActionRecord branchRecord) {
         return branchRecord.getExecutedBranchID();
+    }
+    
+    public boolean validate(InternalActionRecord record, InMemoryPCM pcm) {
+    	// TODO: Implement this method.
+    	// 1. Split the measurements in the window into a training and validation set.
+    	// 2. From the training set, obtain a new estimate.
+    	// 3. Simulate the PCM with the new estimate.
+    	// 4. Compare the simulation results from the PCM with the validation set.
+    	// 5. If the comparison is sufficient, return true. Otherwise, false.
+    	return true;
     }
 
     // ===============================

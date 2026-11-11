@@ -12,7 +12,8 @@ Require-Bundle: org.palladiosimulator.pcm,
  tools.vitruv.dsls.reactions.runtime,
  cipm.consistency.measurements,
  cipm.consistency.cpr.measurementshelper,
- org.eclipse.xtext
+ org.eclipse.xtext,
+ cipm.consistency.base.shared
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Automatic-Module-Name: cipm.consistency.cpr.measurementspcm
 Export-Package: cipm.consistency.cpr.measurementspcm,
